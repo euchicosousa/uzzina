@@ -218,6 +218,7 @@ export type Database = {
           strategies: Json | null;
           time: number;
           title: string;
+          topic_id: string | null;
           updated_at: string;
           user_id: string;
           work_files: string[] | null;
@@ -241,6 +242,7 @@ export type Database = {
           strategies?: Json | null;
           time?: number;
           title: string;
+          topic_id?: string | null;
           updated_at: string;
           user_id?: string;
           work_files?: string[] | null;
@@ -264,11 +266,20 @@ export type Database = {
           strategies?: Json | null;
           time?: number;
           title?: string;
+          topic_id?: string | null;
           updated_at?: string;
           user_id?: string;
           work_files?: string[] | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "actions_topic_id_fkey";
+            columns: ["topic_id"];
+            isOneToOne: false;
+            referencedRelation: "partner_topics";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       celebrations: {
         Row: {
@@ -293,6 +304,44 @@ export type Database = {
           title?: string;
         };
         Relationships: [];
+      };
+      partner_topics: {
+        Row: {
+          color: string;
+          created_at: string;
+          id: string;
+          partner_id: string;
+          position: number;
+          title: string;
+          updated_at: string;
+        };
+        Insert: {
+          color: string;
+          created_at?: string;
+          id?: string;
+          partner_id: string;
+          position?: number;
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          color?: string;
+          created_at?: string;
+          id?: string;
+          partner_id?: string;
+          position?: number;
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "partner_topics_partner_id_fkey";
+            columns: ["partner_id"];
+            isOneToOne: false;
+            referencedRelation: "partners";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       partner_holidays: {
         Row: {
@@ -791,6 +840,7 @@ export type Database = {
           strategies: Json | null;
           time: number;
           title: string;
+          topic_id: string | null;
           updated_at: string;
           user_id: string;
           work_files: string[] | null;

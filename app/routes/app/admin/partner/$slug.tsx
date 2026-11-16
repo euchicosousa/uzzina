@@ -48,6 +48,7 @@ import {
 import type { Partner } from "~/types";
 import { CloudIcon } from "lucide-react";
 import { AdminGuard } from "~/components/features/AdminGuard";
+import { PartnerTopicsEditor } from "~/components/features/PartnerTopicsEditor";
 export const Route = createFileRoute("/app/admin/partner/$slug")({
   component: AdminPartnerEditPageWrapper,
 });
@@ -589,6 +590,13 @@ function AdminPartnerEditPage() {
               }}
             />
           </div>
+
+          {!isNew && partner?.id && (
+            <PartnerTopicsEditor
+              brandColors={brandColors}
+              partnerId={partner.id}
+            />
+          )}
 
           <div className="grid gap-4">
             <div className="flex items-center justify-between gap-2 font-medium">

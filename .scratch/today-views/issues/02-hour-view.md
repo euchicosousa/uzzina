@@ -1,6 +1,6 @@
 # HOJE-02 — Nova visualização do Hoje "Linha do tempo" (o dia por hora, estilo Gantt)
 
-**Status.** Implementado localmente na `main` em 16/11/2026 (Etapas 1–5 concluídas, ainda sem commit), aguardando validação visual/interação final do proprietário em dev/produção e commit. Decisões ajustadas durante a execução em 16/11/2026 (ver seção "Decisões fechadas").
+**Status.** **Encerrado com aceite do proprietário em 16/11/2026; commitado (sem push).** Implementado localmente na `main` em 16/11/2026 (Etapas 1–5 concluídas, ainda sem commit), aguardando validação visual/interação final do proprietário em dev/produção e commit. Decisões ajustadas durante a execução em 16/11/2026 (ver seção "Decisões fechadas").
 
 **Independência.** Este ticket e o [HOJE-01](01-priority-view.md) (visualização por prioridade) são separados e um não depende do outro. Os dois acrescentam um botão ao mesmo seletor de visualização do Hoje, então são executados um de cada vez no checkout.
 

@@ -9,6 +9,7 @@ import {
   extractCookie,
   hashSessionToken,
 } from "../server/dash-session.js";
+import { pickActionColor } from "../app/lib/action-color.js";
 
 const MAX_PERIOD_DAYS = 62;
 const BATCH_SIZE = 500;
@@ -29,7 +30,37 @@ interface PublicActionDto {
   partners: string[];
 }
 
-function toPublicActionDto(action: Record<string, unknown>): PublicActionDto {
+const ACTION_COLUMNS =
+  "id, title, date, category, phase, description, content_description, instagram_caption, content_files, work_files, color, topic_id, updated_at, partners";
+
+/** Colors of the topics used by these actions (service role; the DTO only carries the resolved color). */
+async function loadTopicColors(
+  supabaseAdmin: ReturnType<typeof createServiceClient>,
+  actions: Record<string, unknown>[],
+): Promise<Map<string, string>> {
+  const topicIds = [
+    ...new Set(
+      actions
+        .map((action) => action.topic_id)
+        .filter((id): id is string => typeof id === "string"),
+    ),
+  ];
+  const colors = new Map<string, string>();
+  for (let index = 0; index < topicIds.length; index += BATCH_SIZE) {
+    const { data, error } = await supabaseAdmin
+      .from("partner_topics")
+      .select("id, color")
+      .in("id", topicIds.slice(index, index + BATCH_SIZE));
+    if (error) throw error;
+    for (const row of data ?? []) colors.set(String(row.id), String(row.color));
+  }
+  return colors;
+}
+
+function toPublicActionDto(
+  action: Record<string, unknown>,
+  topicColors: ReadonlyMap<string, string>,
+): PublicActionDto {
   return {
     id: String(action.id ?? ""),
     title: String(action.title ?? ""),
@@ -51,7 +82,17 @@ function toPublicActionDto(action: Record<string, unknown>): PublicActionDto {
     work_files: Array.isArray(action.work_files)
       ? (action.work_files as string[])
       : null,
-    color: String(action.color ?? ""),
+    // Resolved on the server: topic color, else the action's own color.
+    color: String(
+      pickActionColor(
+        {
+          color: typeof action.color === "string" ? action.color : null,
+          topic_id:
+            typeof action.topic_id === "string" ? action.topic_id : null,
+        },
+        topicColors,
+      ) ?? "",
+    ),
     updated_at: String(action.updated_at ?? ""),
     partners: Array.isArray(action.partners)
       ? (action.partners as string[])
@@ -202,9 +243,7 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
     while (hasMore) {
       const { data: batch, error } = await supabaseAdmin
         .from("actions")
-        .select(
-          "id, title, date, category, phase, description, content_description, instagram_caption, content_files, work_files, color, updated_at, partners",
-        )
+        .select(ACTION_COLUMNS)
         .is("archived", false)
         .contains("partners", [partner])
         .neq("phase", "idea")
@@ -232,10 +271,10 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
       }
     }
 
+    const rows = allActions as Record<string, unknown>[];
+    const topicColors = await loadTopicColors(supabaseAdmin, rows);
     return res.status(200).json({
-      actions: allActions.map((a) =>
-        toPublicActionDto(a as Record<string, unknown>),
-      ),
+      actions: rows.map((a) => toPublicActionDto(a, topicColors)),
     });
   }
 
@@ -249,9 +288,7 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
 
     const { data: action, error } = await supabaseAdmin
       .from("actions")
-      .select(
-        "id, title, date, category, phase, description, content_description, instagram_caption, content_files, work_files, color, updated_at, partners",
-      )
+      .select(ACTION_COLUMNS)
       .eq("id", id)
       .single();
 
@@ -275,9 +312,11 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
       return res.status(404).json({ error: "Ação não encontrada." });
     }
 
+    const row = action as Record<string, unknown>;
+    const topicColors = await loadTopicColors(supabaseAdmin, [row]);
     return res
       .status(200)
-      .json({ action: toPublicActionDto(action as Record<string, unknown>) });
+      .json({ action: toPublicActionDto(row, topicColors) });
   }
 
   return res.status(400).json({ error: "Operação não suportada." });

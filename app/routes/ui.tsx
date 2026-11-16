@@ -41,6 +41,7 @@ import {
   UzzinaPartnersComboboxSection,
   UzzinaCategoriesComboboxSection,
   UzzinaPhaseComboboxSection,
+  UzzinaTopicComboboxSection,
   UzzinaIconsSection,
   UzzinaAvatarSection,
   UzzinaComboboxTriggerSection,
@@ -197,6 +198,12 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     section: "uzzina",
     keywords: ["fase", "phase", "combobox", "progresso"],
     approved: true,
+  },
+  {
+    id: "uzzina-topic-combobox",
+    label: "UTopicCombobox",
+    section: "uzzina",
+    keywords: ["topico", "tópico", "cor", "acao", "gaveta", "parceiro"],
   },
   {
     id: "uzzina-phase-icon",
@@ -1135,6 +1142,7 @@ function UIPage() {
               <UzzinaPartnerCelebrationsSelectorSection />
               <UzzinaPartnersComboboxSection />
               <UzzinaPhaseComboboxSection />
+              <UzzinaTopicComboboxSection />
               <UzzinaPhaseIconSection />
               <UzzinaPeopleComboboxSection />
               <RichTextEditorSection />

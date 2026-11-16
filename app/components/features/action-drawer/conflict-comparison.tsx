@@ -4,7 +4,8 @@ import { useAppContext } from "~/contexts/AppContext";
 import { CATEGORIES, PHASES, PRIORITIES } from "~/lib/CONSTANTS";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
-import type { Action, Partner, Person } from "~/types";
+import { usePartnerTopics } from "~/hooks/usePartnerTopics";
+import type { Action, Partner, PartnerTopic, Person } from "~/types";
 import { parseU } from "~/utils/date";
 import { parseStrategies } from "~/utils/format";
 import { sanitizeHtml } from "~/utils/sanitize";
@@ -26,6 +27,7 @@ const FIELD_LABELS: Record<string, string> = {
   content_files: "Arquivos do conteúdo",
   work_files: "Arquivos de trabalho",
   color: "Cor",
+  topic_id: "Tópico",
   time: "Tempo",
   archived: "Arquivamento",
 };
@@ -67,6 +69,7 @@ export function getChangedFields(
 type ComparisonNames = {
   partners?: Pick<Partner, "slug" | "title">[];
   people?: Pick<Person, "user_id" | "name" | "surname">[];
+  topics?: Pick<PartnerTopic, "id" | "title">[];
 };
 export function formatConflictValue(
   field: string,
@@ -100,6 +103,11 @@ export function formatConflictValue(
   }
   if (field === "archived" && typeof value === "boolean")
     return value ? "Sim" : "Não";
+  if (field === "topic_id" && typeof value === "string")
+    return (
+      names.topics?.find((topic) => topic.id === value)?.title ??
+      "Tópico indisponível"
+    );
   if (field === "time" && typeof value === "number")
     return `${value} ${value === 1 ? "minuto" : "minutos"}`;
   if (field === "strategies") {
@@ -166,6 +174,7 @@ export function ConflictComparison({
   local?: Record<string, unknown>;
 }) {
   const { person, partners } = useAppContext();
+  const { topics } = usePartnerTopics();
   const { data: people = [] } = useQuery({
     queryKey: QUERY_KEYS.people(person.user_id),
     queryFn: fetchPeople,
@@ -262,7 +271,11 @@ export function ConflictComparison({
                           }}
                         />
                       ) : (
-                        formatConflictValue(field, value, { partners, people })
+                        formatConflictValue(field, value, {
+                          partners,
+                          people,
+                          topics,
+                        })
                       )}
                     </dd>
                   </div>

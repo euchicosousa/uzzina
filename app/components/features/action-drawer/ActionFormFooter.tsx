@@ -8,22 +8,29 @@ import {
 } from "lucide-react";
 import {
   useCallback,
+  useContext,
   useLayoutEffect,
   useRef,
   useState,
   type FocusEvent,
   type ReactNode,
 } from "react";
-import { UColorPickerDropdown } from "~/components/uzzina/UColorPickerDropdown";
 import { ULoader } from "~/components/uzzina/ULoader";
 import { UCategoriesCombobox } from "~/components/uzzina/UCategoriesCombobox";
 import { UPartnersCombobox } from "~/components/uzzina/UPartnersCombobox";
 import { UPhaseCombobox } from "~/components/uzzina/UPhaseCombobox";
+import { UTopicCombobox } from "~/components/uzzina/UTopicCombobox";
 import { UPeopleCombobox } from "~/components/uzzina/UPeopleCombobox";
+import { AppContext } from "~/contexts/AppContext";
 import { useActionMutations } from "~/hooks/useActionMutations";
+import { usePartnerTopics } from "~/hooks/usePartnerTopics";
 import { INTENT } from "~/lib/CONSTANTS";
 import { getTimeForCategoryChange, isSocialMediaContent } from "~/utils";
 import { PrismButton } from "~/components/prism";
+import {
+  groupTopicsByPartner,
+  shouldKeepTopicAfterPartnerChange,
+} from "~/utils/topics";
 interface ActionFormFooterProps {
   /** Phone-width panel: one scrolling strip plus an icon-only save button. */
   compact?: boolean;
@@ -46,6 +53,8 @@ export function ActionFormFooter({
   handleClose,
 }: ActionFormFooterProps) {
   const { handleAction } = useActionMutations();
+  const { topics } = usePartnerTopics();
+  const allPartners = useContext(AppContext)?.partners ?? currentPartners;
 
   const saveLabel = RawAction.id
     ? isPending
@@ -111,8 +120,21 @@ export function ActionFormFooter({
               ) {
                 color = first.colors[0];
               }
-              setRawAction({ ...RawAction, partners: selected, color });
-              await updateAction({ partners: selected, color });
+              // The topic leaves only when the partner that owns it leaves the action.
+              const keepTopic = shouldKeepTopicAfterPartnerChange(
+                RawAction.topic_id,
+                selected,
+                topics,
+                allPartners,
+              );
+              const topicPatch = keepTopic ? {} : { topic_id: null };
+              setRawAction({
+                ...RawAction,
+                partners: selected,
+                color,
+                ...topicPatch,
+              });
+              await updateAction({ partners: selected, color, ...topicPatch });
             }}
             selectedPartners={RawAction.partners}
             showText={false}
@@ -157,16 +179,21 @@ export function ActionFormFooter({
         </div>
         {isSocialMediaContent(RawAction.category) && (
           <div className="contents" data-drawer-focus="control">
-            <UColorPickerDropdown
-              size="icon-lg"
-              variant="ghost"
-              value={RawAction.color}
-              onChange={async (color) => {
-                setRawAction({ ...RawAction, color });
-                await updateAction({ color });
+            <UTopicCombobox
+              fallbackColor={RawAction.color}
+              groups={groupTopicsByPartner(
+                topics,
+                allPartners,
+                RawAction.partners,
+              )}
+              onSelect={async (topic_id) => {
+                setRawAction({ ...RawAction, topic_id });
+                await updateAction({ topic_id });
               }}
-              partners={currentPartners}
+              selectedTopicId={RawAction.topic_id}
+              size="icon-lg"
               tabIndex={0}
+              variant="ghost"
             />
           </div>
         )}

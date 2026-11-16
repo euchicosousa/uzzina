@@ -52,6 +52,7 @@ function makeAction(overrides: Partial<Action> & { id: string }): Action {
     content_description: null,
     content_files: null,
     work_files: null,
+    topic_id: null,
     instagram_caption: null,
     strategies: null,
     created_at: "2026-11-16T00:00:00.000Z",

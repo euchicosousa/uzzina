@@ -41,6 +41,7 @@ export function calendarAction(
     instagram_caption: null,
     content_files: [],
     work_files: [],
+    topic_id: null,
     sprints: [],
     strategies: [],
     user_id: calendarPerson.user_id,

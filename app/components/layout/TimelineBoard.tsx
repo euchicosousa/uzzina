@@ -517,7 +517,12 @@ export function TimelineBoard({
   );
 
   return (
-    <div className={cn("w-full", fillHeight && "flex h-full min-h-0 flex-col")}>
+    <div
+      className={cn(
+        "isolate z-0 w-full",
+        fillHeight && "flex h-full min-h-0 flex-col",
+      )}
+    >
       {person?.admin && (
         <div className="flex flex-wrap items-center justify-end gap-4 pb-2">
           <UPeopleCombobox

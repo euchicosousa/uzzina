@@ -24,6 +24,7 @@ function makeFakeAction(overrides: Partial<Action> = {}): Action {
     archived: false,
     content_files: [],
     work_files: [],
+    topic_id: null,
     sprints: [],
     strategies: [],
     ...overrides,

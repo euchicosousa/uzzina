@@ -33,6 +33,7 @@ export * from "./UzzinaViewOptionsSection";
 export * from "./UzzinaPartnersComboboxSection";
 export * from "./UzzinaCategoriesComboboxSection";
 export * from "./UzzinaPhaseComboboxSection";
+export * from "./UzzinaTopicComboboxSection";
 export * from "./UzzinaIconsSection";
 export * from "./UzzinaAvatarSection";
 export * from "./UzzinaComboboxTriggerSection";

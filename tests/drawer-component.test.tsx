@@ -69,6 +69,7 @@ const action: Action = {
   instagram_caption: null,
   content_files: [],
   work_files: [],
+  topic_id: null,
   sprints: [],
   strategies: [],
   user_id: "test-user",
@@ -466,14 +467,13 @@ it("the main drawer sequence skips auxiliary controls in both directions", async
   expect(writes).toEqual([]);
 });
 
-it("social actions include color before save and skip sprint and destructive commands", async () => {
+it("social actions include the topic before save and skip sprint and destructive commands", async () => {
   mount(draft({ category: "reels", description: "<p></p>" }));
   await descriptionEditor();
   const user = userEvent.setup();
   for (let step = 0; step < 5; step++) await user.tab();
   expect(
-    document.activeElement ===
-      screen.getByRole("button", { name: "Seletor de cor" }),
+    document.activeElement === screen.getByRole("button", { name: /^Tópico:/ }),
   ).toBe(true);
   await user.tab();
   expect(
@@ -482,8 +482,7 @@ it("social actions include color before save and skip sprint and destructive com
   ).toBe(true);
   await user.tab({ shift: true });
   expect(
-    document.activeElement ===
-      screen.getByRole("button", { name: "Seletor de cor" }),
+    document.activeElement === screen.getByRole("button", { name: /^Tópico:/ }),
   ).toBe(true);
 });
 
@@ -2017,7 +2016,7 @@ describe("phone-width action panel", () => {
       screen.getByRole("button", { name: "Agency" }),
       screen.getByRole("button", { name: /^Fase:/ }),
       screen.getByRole("button", { name: /^Categoria:/ }),
-      screen.getByRole("button", { name: "Seletor de cor" }),
+      screen.getByRole("button", { name: /^Tópico:/ }),
       screen.getByRole("button", { name: "Sprints" }),
       screen.getByRole("button", { name: "Ver ID da ação" }),
       screen.getByRole("button", { name: "Duplicar ação (Shift+D)" }),
@@ -2139,7 +2138,7 @@ describe("phone-width action panel", () => {
       screen.getByRole("button", { name: "Agency" }),
       screen.getByRole("button", { name: /^Fase:/ }),
       screen.getByRole("button", { name: /^Categoria:/ }),
-      screen.getByRole("button", { name: "Seletor de cor" }),
+      screen.getByRole("button", { name: /^Tópico:/ }),
       screen.getByRole("button", { name: "Atualizar" }),
     ];
     for (const target of sequence.slice(1)) {

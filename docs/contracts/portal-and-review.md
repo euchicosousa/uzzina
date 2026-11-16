@@ -14,6 +14,7 @@ Leia antes de mexer no portal `/dash`, em `/dash/review`, em `/api/dash-*`, `/ap
 
 - `Content` é compartilhado com portal/revisão: renderize sem providers privados; monte consultas da equipe somente quando o campo e a identidade precisarem delas.
 
+- Cor do quadradinho do conteúdo (TOP-01): `api/dash-data.ts` lê `topic_id` e a cor do tópico (service role, `partner_topics`) e devolve em `color` a cor já resolvida (tópico, senão a cor da ação); o DTO não ganhou campo e o nome do tópico não aparece no portal. `Content` não consulta tópicos fora do app da equipe (`TeamContent` só existe com `AppContext`). A revisão pública não envia cor. O SQL dos tópicos precisa estar aplicado antes do deploy, porque `dash-data` passa a selecionar `topic_id`.
 - No calendário de `/dash`, o ícone abaixo da capa identifica a categoria da ação e fica ao lado da hora.
 
 ## Login do portal

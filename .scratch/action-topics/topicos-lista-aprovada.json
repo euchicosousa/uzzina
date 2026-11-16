@@ -1,0 +1,162 @@
+[
+  {
+    "partner": "agenciacnvt",
+    "title": "Agência CNVT ™",
+    "topics": [
+      { "title": "Portfólio", "color": "#000000", "actions": 75 },
+      { "title": "Autoridade", "color": "#f9fafc", "actions": 14 },
+      { "title": "Educação", "color": "#999999", "actions": 6 }
+    ]
+  },
+  {
+    "partner": "draanaliarocha",
+    "title": "Ana Lia Rocha",
+    "topics": [
+      { "title": "Puericultura", "color": "#fabcb5", "actions": 135 },
+      { "title": "Maternidade", "color": "#8394a8", "actions": 19 },
+      { "title": "Opinião", "color": "#86cbb7", "actions": 14 }
+    ]
+  },
+  {
+    "partner": "brendavasconcelos",
+    "title": "Brenda Vasconcelos",
+    "topics": [
+      { "title": "Puericultura", "color": "#f05cc1", "actions": 165 },
+      { "title": "Atração", "color": "#7b3df0", "actions": 119 },
+      { "title": "Maternidade", "color": "#f9e66c", "actions": 23 },
+      { "title": "Mitos e verdades", "color": "#66e597", "actions": 20 },
+      { "title": "Conselhos e cuidados", "color": "#80b7ff", "actions": 18 }
+    ]
+  },
+  {
+    "partner": "euchicosousa",
+    "title": "Chico Sousa",
+    "topics": [
+      { "title": "Posicionamento", "color": "#0000ff", "actions": 29 },
+      { "title": "Atração", "color": "#f2f2ed", "actions": 8 },
+      { "title": "Opinião", "color": "#ffffff", "actions": 7 }
+    ]
+  },
+  {
+    "partner": "clinicadengo",
+    "title": "Clínica Dengo",
+    "topics": [
+      { "title": "Amamentação", "color": "#dcb1e2", "actions": 309 },
+      { "title": "Pediatria", "color": "#eec8dd", "actions": 196 },
+      { "title": "Dengo", "color": "#eacbd1", "actions": 128 },
+      { "title": "Psicologia", "color": "#c2ceea", "actions": 50 },
+      { "title": "Nutrição infantil", "color": "#cfeabd", "actions": 49 },
+      { "title": "Urologia", "color": "#eceab1", "actions": 33 },
+      { "title": "Fisioterapia", "color": "#a2dbdd", "actions": 29 },
+      { "title": "Parceria São Luiz", "color": "#c0ccb8", "actions": 12 },
+      { "title": "Parentalidade", "color": "#eeddab", "actions": 10 }
+    ]
+  },
+  {
+    "partner": "clinicaunivetsobral",
+    "title": "Clínica Univet",
+    "topics": [
+      { "title": "Atração", "color": "#987c2f", "actions": 387 },
+      { "title": "Casos e datas", "color": "#f8f4e2", "actions": 62 },
+      { "title": "Bastidores", "color": "#3c320b", "actions": 49 },
+      { "title": "Produtos e serviços", "color": "#000000", "actions": 38 },
+      { "title": "Cuidados", "color": "#e1ce84", "actions": 15 },
+      { "title": "Saúde animal", "color": "#5b8c40", "actions": 10 }
+    ]
+  },
+  {
+    "partner": "draiaratomaz",
+    "title": "Dra. Iara Tomaz",
+    "topics": [
+      { "title": "Histeroscopia", "color": "#e3c0c7", "actions": 240 },
+      { "title": "Ultrassonografia", "color": "#b36b6b", "actions": 51 },
+      { "title": "Bastidores", "color": "#e5d1cd", "actions": 7 }
+    ]
+  },
+  {
+    "partner": "dramargaridacarneiro",
+    "title": "Dra. Margarida Carneiro",
+    "topics": [
+      { "title": "Educação", "color": "#5fa4ad", "actions": 129 },
+      { "title": "Curiosidades", "color": "#ed7d96", "actions": 13 },
+      { "title": "Casos", "color": "#67b35f", "actions": 9 },
+      { "title": "Rotina", "color": "#efe240", "actions": 9 }
+    ]
+  },
+  {
+    "partner": "exactaconsultoria",
+    "title": "Exacta Consultoria",
+    "topics": [
+      { "title": "Dica de livro", "color": "#000000", "actions": 13 },
+      { "title": "Notícia", "color": "#c8ba74", "actions": 5 },
+      { "title": "Dica", "color": "#f2edd4", "actions": 5 }
+    ]
+  },
+  {
+    "partner": "hospitaldrthomazcorrea",
+    "title": "Hospital Dr. Thomaz Corrêa",
+    "topics": [
+      { "title": "Serviços", "color": "#447240", "actions": 372 },
+      { "title": "Educação", "color": "#dce5d1", "actions": 108 },
+      { "title": "Corpo clínico", "color": "#022c07", "actions": 42 },
+      { "title": "Datas", "color": "#f56d24", "actions": 22 }
+    ]
+  },
+  {
+    "partner": "lumatorremarques",
+    "title": "Luma Torre",
+    "topics": [
+      { "title": "Sono infantil", "color": "#f0dab0", "actions": 72 },
+      { "title": "Maternidade real", "color": "#a76d63", "actions": 7 },
+      { "title": "Consultoria", "color": "#eabebe", "actions": 6 }
+    ]
+  },
+  {
+    "partner": "odontomelo",
+    "title": "Odonto Melo",
+    "topics": [{ "title": "Educação", "color": "#000000", "actions": 25 }]
+  },
+  {
+    "partner": "parksobral",
+    "title": "PARK Sobral",
+    "topics": [
+      { "title": "Cardápio", "color": "#003780", "actions": 631 },
+      { "title": "Experiência", "color": "#c69653", "actions": 68 },
+      { "title": "Pratos e eventos", "color": "#ece1c6", "actions": 57 }
+    ]
+  },
+  {
+    "partner": "smartmed_massape",
+    "title": "SmartMed",
+    "topics": [
+      { "title": "Serviços", "color": "#4f3a9c", "actions": 647 },
+      { "title": "Corpo clínico", "color": "#301868", "actions": 52 },
+      { "title": "Datas e campanhas", "color": "#e2e5e9", "actions": 49 },
+      { "title": "Terapias infantis", "color": "#7db030", "actions": 47 },
+      { "title": "Atendimentos do dia", "color": "#999999", "actions": 13 },
+      { "title": "Oftalmologia", "color": "#5fa4ad", "actions": 5 }
+    ]
+  },
+  {
+    "partner": "toroburgerandbeer",
+    "title": "Toro Burger & Beer",
+    "topics": [
+      { "title": "Produto", "color": "#fff7ed", "actions": 175 },
+      { "title": "Atração", "color": "#ff1a1a", "actions": 104 },
+      { "title": "Engajamento", "color": "#7a2500", "actions": 49 },
+      { "title": "Bastidores", "color": "#000000", "actions": 42 },
+      { "title": "Ofertas", "color": "#dc2626", "actions": 24 },
+      { "title": "Ocasiões", "color": "#f25145", "actions": 19 }
+    ]
+  },
+  {
+    "partner": "videresaude",
+    "title": "VIDERE SAÚDE",
+    "topics": [
+      { "title": "Institucional", "color": "#e9e8e4", "actions": 45 },
+      { "title": "Aniversários", "color": "#1e40af", "actions": 31 },
+      { "title": "Especialidades", "color": "#123b6a", "actions": 12 },
+      { "title": "Datas", "color": "#172554", "actions": 6 }
+    ]
+  }
+]

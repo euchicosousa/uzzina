@@ -65,6 +65,7 @@ const { FileFsRef } = require("@vercel/build-utils");
       "api/review.ts",
       "api/review-links.ts",
       "api/client-accounts.ts",
+      "app/lib/action-color.ts",
       "app/lib/ai-contract.ts",
       "app/lib/ai-model-registry.ts",
       "app/lib/strategy-operation-contract.ts",

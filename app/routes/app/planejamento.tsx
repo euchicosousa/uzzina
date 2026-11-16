@@ -508,7 +508,7 @@ function PlanningPage() {
             <PrismButton
               onClick={() => setCurrentPlan(null)}
               size="sm"
-              variant="outline"
+              variant="secondary"
             >
               Novo / Trocar proposta
               <RotateCcwIcon className="size-4" />

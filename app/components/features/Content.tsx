@@ -6,22 +6,15 @@ import { getFormattedDateTime, UIcons, isSprint } from "~/utils";
 import { cn } from "cnfast";
 import { UAvatarGroup } from "../uzzina/UAvatar";
 import { getPeople } from "~/utils/filter";
-import { safeColor } from "~/utils/uzzina-utils";
+import { resolveActionColor } from "~/utils/uzzina-utils";
+import { usePartnerTopics } from "~/hooks/usePartnerTopics";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
 import { AppContext } from "~/contexts/AppContext";
 import { useContext } from "react";
 import type { Person } from "~/types";
-export function Content({
-  action,
-  category,
-  className,
-  isSquared,
-  showDate = true,
-  showResponsibles,
-  dateTimeDisplay = DATE_TIME_DISPLAY.TimeOnly,
-}: {
+interface ContentProps {
   action: Action | DashActionDto;
   category?: (typeof CATEGORIES)[keyof typeof CATEGORIES];
   className?: string;
@@ -29,11 +22,45 @@ export function Content({
   showDate?: boolean;
   showResponsibles?: boolean;
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
-}) {
+}
+
+const NO_TOPIC_COLORS: ReadonlyMap<string, string> = new Map();
+
+/** Portal and public review render without the team providers: no topic query there. */
+export function Content(props: ContentProps) {
+  const isTeamApp = useContext(AppContext) !== null;
+  return isTeamApp ? (
+    <TeamContent {...props} />
+  ) : (
+    <ContentBody {...props} topicColors={NO_TOPIC_COLORS} />
+  );
+}
+
+function TeamContent(props: ContentProps) {
+  const { topicColors } = usePartnerTopics();
+  return <ContentBody {...props} topicColors={topicColors} />;
+}
+
+function ContentBody({
+  action,
+  category,
+  className,
+  isSquared,
+  showDate = true,
+  showResponsibles,
+  dateTimeDisplay = DATE_TIME_DISPLAY.TimeOnly,
+  topicColors,
+}: ContentProps & { topicColors: ReadonlyMap<string, string> }) {
   const person = useContext(AppContext)?.person;
 
-  // Normaliza e valida a cor — nunca quebra mesmo se action.color vier inválido do banco
-  const actionColor = safeColor(action.color);
+  // Topic color first, then the action's own color; always a valid hex (the portal DTO arrives already resolved).
+  const actionColor = resolveActionColor(
+    {
+      color: action.color,
+      topic_id: "topic_id" in action ? action.topic_id : null,
+    },
+    topicColors,
+  );
   const hasFiles = action.content_files?.length;
   const backgroundColor = Color(actionColor);
   const foregroundColor = hasFiles

@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tópicos em lote</title>
+<style>
+:root{--bg:#f7f7f5;--fg:#18181b;--muted:#6b6b70;--line:#e3e3df;--input:#ffffff;--accent:#2f5bd3;--warn:#a15c00;--warn-bg:#fff4e0;--ok:#1d7a46;--chip:#ececE8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141416;--fg:#ececee;--muted:#9a9aa2;--line:#2a2a2f;--input:#1c1c20;--accent:#8aa8ff;--warn:#f0b35c;--warn-bg:#2b2112;--ok:#6fd49b;--chip:#26262b}}
+:root[data-theme="dark"]{--bg:#141416;--fg:#ececee;--muted:#9a9aa2;--line:#2a2a2f;--input:#1c1c20;--accent:#8aa8ff;--warn:#f0b35c;--warn-bg:#2b2112;--ok:#6fd49b;--chip:#26262b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1040px;margin:0 auto;padding:24px 16px 80px}
+h1{font-size:22px;margin:0 0 6px;letter-spacing:-.01em}
+h2{font-size:17px;margin:0;letter-spacing:-.01em}
+p{margin:0 0 8px}
+.lead{color:var(--muted);max-width:760px}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:12px 0;margin:16px 0 8px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+.stat b{font-variant-numeric:tabular-nums}
+.grow{flex:1}
+button{font:inherit;border:1px solid var(--line);background:var(--input);color:var(--fg);border-radius:12px;padding:6px 12px;cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.primary{color:#0d0d10}}
+label.toggle{display:inline-flex;gap:6px;align-items:center;color:var(--muted)}
+section.partner{padding:20px 0;border-bottom:1px solid var(--line)}
+.head{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-bottom:10px}
+.badge{font-size:12px;border-radius:999px;padding:1px 8px;background:var(--chip);color:var(--muted)}
+.brand{display:inline-flex;gap:4px;align-items:center;color:var(--muted);font-size:12px}
+.sw{display:inline-block;width:18px;height:18px;border-radius:6px;border:1px solid rgba(127,127,127,.35);vertical-align:middle;flex:none}
+.sw.sm{width:12px;height:12px;border-radius:4px}
+.cover{margin-left:auto;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+table{width:100%;border-collapse:collapse}
+td{padding:5px 6px;border-top:1px solid var(--line);vertical-align:middle}
+td.n{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);width:56px}
+td.c{width:30px}
+td.hex{font-family:ui-monospace,Menlo,monospace;font-size:12px;width:110px;color:var(--muted)}
+td.name{width:240px}
+td.note{color:var(--muted);font-size:12.5px}
+input[type=text]{width:100%;font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:10px;background:var(--input);color:var(--fg)}
+input[type=text]:disabled{opacity:.45}
+tr.off td{opacity:.55}
+tr.bad td.hex{text-decoration:line-through}
+.warn{background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:6px 10px;font-size:13px;margin-top:8px}
+details{margin-top:6px}
+summary{cursor:pointer;color:var(--muted);font-size:13px}
+.copied{color:var(--ok);font-size:13px}
+@media (max-width:640px){td.note{display:none}td.name{width:auto}td.hex{width:auto}}
+</style>
+</head>
+<body>
+<main>
+<h1>Tópicos em lote</h1>
+<p class="lead">Uma linha por cor que cada parceiro já usa nas ações, com a quantidade de ações. Marque as cores que viram tópico e ajuste o nome. Na migração, cada ação cuja cor for exatamente a cor de um tópico do seu parceiro recebe esse tópico; as demais ficam sem tópico e continuam com a cor que já têm. Sugestões de nome feitas a partir dos títulos das ações (16/11/2026); são chutes para revisar.</p>
+<p class="lead">Ao terminar, use “Copiar lista” e cole a lista na conversa: é ela que vira a carga de tópicos e a migração. As edições ficam salvas neste navegador.</p>
+
+<div class="bar">
+  <span class="stat">Tópicos marcados: <b id="tTopics">0</b></span>
+  <span class="stat">Ações que ganham tópico: <b id="tCovered">0</b> de <b id="tTotal">0</b></span>
+  <label class="toggle"><input type="checkbox" id="showArchived"> mostrar arquivados</label>
+  <span class="grow"></span>
+  <span id="copied" class="copied"></span>
+  <button id="reset">Voltar às sugestões</button>
+  <button id="copy" class="primary">Copiar lista</button>
+</div>
+
+<div id="list"></div>
+</main>
+
+<script>
+// Production snapshot (read-only query, 16/11/2026). n = actions of the partner with that color (all categories).
+const PARTNERS = [
+ {slug:"agenciacnvt",title:"Agência CNVT ™",short:"cnvt",archived:false,colors:["#f5f6f7","#030509","#f5f6f7"],used:[["#ffffff",85],["rgba(120,140,150,.2)",81],["#000000",75],["#f9fafc",14],["#f5f6f7",10],["#003780",9],["#4f3a9c",7],["#987c2f",6],["#447240",6],["#dcb1e2",6],["#999999",6],["#fff7ed",5],["#f05cc1",5],["#0000e6",5],["#ff1a1a",4],["#e3c0c7",4],["#3c320b",4],["#7a2500",3],["#f9f2ec",3],["#666666",3],["#5fa4ad",3],["#7db030",3],["#eec8dd",3],["#e65c00",2],["#eceab1",2],["#5400d1",2],["#56697c",1],["#eacbd1",1],["#111213",1],["#7b3df0",1],["#bb677c",1],["#030509",1],["#f03598",1],["#f8f4e2",1],["#0047bb",1],["#f9e66c",1],["#6594d2",1],["#a2dbdd",1],["#fef8e7",1],["#6688cc",1],["#0000c8",1],["#1e40af",1]]},
+ {slug:"draanaliarocha",title:"Ana Lia Rocha",short:"lia",archived:false,colors:["#FABCB5","#ffffff","#86CBB7","#5A6061","#F59A93","#8394A8","#fff8d1","#c59dcd"],used:[["#fabcb5",135],["#8394a8",19],["#86cbb7",14],["#ffffff",10],["#dfa9a9",5],["#f59a93",4],["#6688cc",4],["#f0dab0",2],["#fff8d1",2],["#666666",1]]},
+ {slug:"brendavasconcelos",title:"Brenda Vasconcelos",short:"brnd",archived:false,colors:["#7b3df0","#F2F1F9","#66e597","#f05cc1","#f9e66c","#80b7ff"],used:[["#f05cc1",165],["#7b3df0",119],["rgba(120,140,150,.2)",37],["#f9e66c",23],["#66e597",20],["#80b7ff",18],["#ffffff",6],["#eacbd1",5],["#f2f1f9",4],["#999999",2],["#eec8dd",2],["#5fa4ad",2],["#dcb1e2",2],["#fabcb5",1],["#f2f2ed",1],["#f4f7f9",1],["#f0dab0",1],["#0000ff",1],["#c2ceea",1]]},
+ {slug:"euchicosousa",title:"Chico Sousa",short:"chco",archived:false,colors:["#f2f2ed","#404444","#00f","#ff0"],used:[["#0000ff",29],["#f2f2ed",8],["#ffffff",7],["#404444",2],["#666666",2],["#000000",1],["#999999",1],["#003780",1]]},
+ {slug:"clinicadengo",title:"Clínica Dengo",short:"deng",archived:false,colors:["#EACBD1","#ffffff","#B4A3B5","#BECCDE","#C0CCB8","#EEDDAB","#B2E4D9"],used:[["#dcb1e2",309],["#eec8dd",196],["#eacbd1",128],["#c2ceea",50],["#cfeabd",49],["#eceab1",33],["#a2dbdd",29],["#f05cc1",16],["#c0ccb8",12],["rgba(120,140,150,.2)",10],["#eeddab",10],["#beccde",9],["#ddbbee",7],["#bfdbfe",6],["#b4a3b5",6],["#999999",6],["#7b3df0",6],["#ffffff",5],["#f0dab0",4],["#cdbbe2",2],["#000000",1],["#fbcfe8",1],["#b2e4d9",1],["#7a2500",1],["#4f3a9c",1],["#bbddaa",1]]},
+ {slug:"clinicaunivetsobral",title:"Clínica Univet",short:"unvt",archived:false,colors:["#987c2f","#ffffff","#f8f4e2","#e1ce84","#5b8c40","#000000"],used:[["#987c2f",387],["#f8f4e2",62],["rgba(120,140,150,.2)",59],["#3c320b",49],["#000000",38],["#e1ce84",15],["#5b8c40",10],["#ffffff",7],["#f05cc1",4],["#999999",2],["#7a2500",1]]},
+ {slug:"draiaratomaz",title:"Dra. Iara Tomaz",short:"iara",archived:false,colors:["#B36B6B","#E0D3C6","#E5D1CD","#BE9694","#652E29","#F8F3F2"],used:[["#e3c0c7",240],["#b36b6b",51],["#9e7079",41],["#ffffff",32],["#ffdbe4",7],["#e5d1cd",7],["#e0d3c6",4],["#447240",3],["#652e29",3],["#999999",2],["#f5f6f7",1],["#4f3a9c",1],["#b03a5f",1],["#f8f3f2",1]]},
+ {slug:"dramargaridacarneiro",title:"Dra. Margarida Carneiro",short:"marg",archived:false,colors:["#5fa4ad","#ffffff","#ffffff","#ed7d96","#efe240","#67b35f"],used:[["#5fa4ad",129],["#ed7d96",13],["#67b35f",9],["#efe240",9],["#ffffff",6],["#4f3a9c",2],["#86cbb7",1],["#999999",1],["#e9e8e4",1]]},
+ {slug:"exactaconsultoria",title:"Exacta Consultoria",short:"exac",archived:false,colors:["#000000","#f2edd4","#c8ba74","#564425"],used:[["#000000",13],["#c8ba74",5],["#f2edd4",5]]},
+ {slug:"hospitaldrthomazcorrea",title:"Hospital Dr. Thomaz Corrêa",short:"htc",archived:false,colors:["#447240","#f4f1e6","#f56d24","#dce5d1","#022c07","#f4f1e6"],used:[["#447240",372],["#dce5d1",108],["rgba(120,140,150,.2)",87],["#022c07",42],["#f56d24",22],["#ffffff",6],["#5fa4ad",4],["#4f3a9c",2],["#301868",1],["#e9e8e4",1],["#999999",1]]},
+ {slug:"lumatorremarques",title:"Luma Torre",short:"luma",archived:false,colors:["#F0DAB0","#A76D63","#E5CEC1","#EABEBE","#C18E8E"],used:[["#f0dab0",72],["#a76d63",7],["#eabebe",6],["#eacbd1",2],["#030509",1],["#b36b6b",1],["#f9fafc",1],["#c18e8e",1],["#ffffff",1],["#666666",1]]},
+ {slug:"odontomelo",title:"Odonto Melo",short:"melo",archived:false,colors:["#000000","#d3cb73"],used:[["#000000",25]]},
+ {slug:"parksobral",title:"PARK Sobral",short:"park",archived:false,colors:["#003780","#ece1c6","#ece1c6","#c69653","#001229"],used:[["#003780",631],["rgba(120,140,150,.2)",104],["#001229",83],["#c69653",68],["#ece1c6",57],["#999999",6],["#ffffff",4],["#7a2500",1],["#fff7ed",1],["#002657",1]]},
+ {slug:"smartmed_massape",title:"SmartMed",short:"smrt",archived:false,colors:["#4f3a9c","#ffffff","#301868","#7db030","#e2e5e9"],used:[["#4f3a9c",647],["#301868",52],["#e2e5e9",49],["#7db030",47],["#999999",13],["rgba(120,140,150,.2)",8],["#5fa4ad",5],["#ffffff",3],["#000000",2],["#666666",2],["#003780",2],["#f2f2ed",2],["#5400d1",1],["#447240",1],["#e3c0c7",1],["null",1],["#eceab1",1],["#ff9955",1],["#7a2500",1],["#dce5d1",1]]},
+ {slug:"toroburgerandbeer",title:"Toro Burger & Beer",short:"toro",archived:false,colors:["#fff7ed","#f25145","#3a3636","#7a2500","#38613d","#ea9534","#dc2626"],used:[["#fff7ed",175],["#ff1a1a",104],["rgba(120,140,150,.2)",82],["#7a2500",49],["#000000",42],["#dc2626",24],["#f25145",19],["#ffffff",5],["#3a3636",4],["#ea9534",4],["#fff9f0",4],["#999999",2],["#ecddc6",2],["#003780",1],["#f2f2ed",1]]},
+ {slug:"videresaude",title:"VIDERE SAÚDE",short:"vdre",archived:false,colors:["#E9E8E4","#123B6A","#5D99B7"],used:[["#e9e8e4",45],["#1e40af",31],["#123b6a",12],["#ffffff",7],["#172554",6],["#fff7ed",3],["#e3c0c7",2],["#263759",2],["#f5f6f7",1],["#f9f6eb",1],["#447240",1],["#666666",1],["#5fa4ad",1],["#999999",1],["#5d99b7",1]]},
+ {slug:"attractor",title:"ATTRACTOR",short:"attr",archived:true,colors:["#ff1a1a","#ffffff"],used:[["#000000",1],["#ff1a1a",1]]},
+ {slug:"beccodosamba",title:"Becco do Samba",short:"smba",archived:true,colors:["#1a612f","#d0c6a9"],used:[["#1a612f",1]]},
+ {slug:"blushfitt",title:"Blush Fit",short:"blsh",archived:true,colors:["#f03598","#ECE2E6","#DAAFC2","#D88DAE","#C15680","#754551"],used:[["#f03598",96],["#ece2e6",21],["#ffffff",9],["#754551",6],["#daafc2",5],["#db48c0",3],["#c15680",3],["#d88dae",2],["#111111",1],["#4f3a9c",1],["#ff99cc",1],["f",1],["#ffdbe8",1]]},
+ {slug:"cali.pizza.holiday",title:"Cali",short:"cali",archived:true,colors:["#523624","#e4e3d7","#c13e3e","#621d1d","#374f26"],used:[["#ffffff",131],["#c13e3e",40],["#523624",11],["#621d1d",5],["#ffdd94",3],["#f2f2ed",1],["#171717",1]]},
+ {slug:"opaidobranding",title:"Chico Sousa (O Pai do Branding)",short:"pdb",archived:true,colors:["#0000b4","#ffffff","#000000"],used:[]},
+ {slug:"anaarcanjoodontologia",title:"Clínica Ana Arcanjo",short:"anaarc",archived:true,colors:["#f9f2ec","#865946","#865946","#3e2014"],used:[["#f9f2ec",101],["rgba(120,140,150,.2)",74],["#865946",31],["#3e2014",20],["#f05cc1",1]]},
+ {slug:"dnaassessment",title:"DNA Assessment",short:"dna",archived:true,colors:["#56697c","#ffffff"],used:[["#56697c",24],["rgba(120,140,150,.2)",10]]},
+ {slug:"donaformigasobral",title:"Dona Formiga",short:"frmg",archived:true,colors:["#e1cdc6","#080808","#927063"],used:[["#e1cdc6",34],["#a67464",5],["#927063",2]]},
+ {slug:"dranataliagomes",title:"Dra. Natália Gomes",short:"natl",archived:true,colors:["#f0f6ff","#3c5eaf"],used:[["#f0f6ff",18],["rgba(120,140,150,.2)",1]]},
+ {slug:"dubecco",title:"Du Becco",short:"becc",archived:true,colors:["#fef8e7","#bb677c","#bb677c","#329ccc"],used:[["#fef8e7",25],["#bb677c",4],["#f05cc1",2],["#6594d2",2],["rgba(120,140,150,.2)",2],["#329ccc",2]]},
+ {slug:"executetecnologia",title:"Execute Tecnologia",short:"exe",archived:true,colors:["#e4111e","#ffffff","#f5f5f5","#cccaca","#5e5858","#140e0e"],used:[["#e4111e",62],["#f5f5f5",8],["#140e0e",4],["rgba(120,140,150,.2)",2],["#5e5858",2],["#cccaca",1]]},
+ {slug:"frotasgas",title:"FROTAS GÁS",short:"gas",archived:true,colors:["#79c300","#0047bb","#0047bb"],used:[["#79c300",51],["#0047bb",17],["rgba(120,140,150,.2)",5],["#0000c8",4],["#0000e6",2],["#fef8e7",1]]},
+ {slug:"postosfrotas",title:"Postos Frotas",short:"frotas",archived:true,colors:["#0000e6","#ffffff","#e65c00","#000875","#ffffff"],used:[["#0000e6",105],["rgba(120,140,150,.2)",88],["#000875",56],["#e65c00",48],["#ffffff",18],["#7a2500",1],["#4f3a9c",1]]},
+ {slug:"sobralprotensao",title:"Sobral Protensão",short:"sobpro",archived:true,colors:["#0091ff","#ffffff"],used:[["rgba(120,140,150,.2)",19]]}
+];
+
+// Suggested topics: "short:color" -> [name, reason]. Anything not listed starts unchecked.
+const SUGGEST = {
+ "cnvt:#000000":["Portfólio","logotipos e identidades de clientes"],
+ "cnvt:#f9fafc":["Autoridade","textos sobre marca e posicionamento"],
+ "cnvt:#999999":["Educação","posts sobre marketing e diferenciação"],
+ "lia:#fabcb5":["Educação","dicas e checklists de pediatria"],
+ "lia:#8394a8":["Saúde e nutrição","bronquiolite, vitaminas, seletividade alimentar"],
+ "lia:#86cbb7":["Opinião da pediatra","“coisas que eu não me importo”, “dei e não morreu”"],
+ "brnd:#f05cc1":["Educação","dicas de saúde infantil"],
+ "brnd:#7b3df0":["Atração","“verdades que o Instagram odeia”, “pode ou não pode”"],
+ "brnd:#f9e66c":["Maternidade","maternidade real, estímulo do bebê"],
+ "brnd:#66e597":["Mitos e verdades","antibiótico, “comi e nem morri”"],
+ "brnd:#80b7ff":["Conselhos e cuidados","conselhos de vó, repelente, injeção"],
+ "chco:#0000ff":["Posicionamento","posicionamento, storytelling"],
+ "chco:#f2f2ed":["Atração","treta-feira, trends"],
+ "chco:#ffffff":["Opinião","comentários sobre mercado e perfil"],
+ "deng:#dcb1e2":["Serviços","consultoria do sono, fisioterapia, especialidades"],
+ "deng:#eec8dd":["Dicas do dia a dia","lancheira, incontinência, avisos"],
+ "deng:#eacbd1":["Datas e aniversários","Natal, aniversários da equipe"],
+ "deng:#c2ceea":["Equipe","apresentação das profissionais"],
+ "deng:#cfeabd":["Nutrição infantil","receitas, frutas, azeite"],
+ "deng:#eceab1":["Amamentação","pega, Agosto Dourado"],
+ "deng:#a2dbdd":["Psicologia","conteúdos PSI e novas especialidades"],
+ "deng:#f05cc1":["Pediatria","puericultura, primeira consulta"],
+ "deng:#c0ccb8":["Parceria São Luiz","série com o São Luiz"],
+ "deng:#eeddab":["Parentalidade","frustração, manha, sono"],
+ "exac:#000000":["Dica de livro","“Dica de Livro”"],
+ "exac:#c8ba74":["Notícia","“Notícia”"],
+ "exac:#f2edd4":["Dica","“Dica”"],
+ "htc:#447240":["Serviços","especialidades, horários, stories de atendimento"],
+ "htc:#dce5d1":["Educação","saúde e prevenção"],
+ "htc:#022c07":["Corpo clínico","médicos, vídeos de profissionais, novidades"],
+ "htc:#f56d24":["Datas","dia do ginecologista, dia dos pais"],
+ "iara:#e3c0c7":["Educação","dúvidas, exames, preparação"],
+ "iara:#b36b6b":["Histeroscopia","histeroscopia, DIU, pólipo"],
+ "iara:#9e7079":["Doenças e cirurgias","lesões, ovário, IST"],
+ "iara:#e5d1cd":["Bastidores","vlog, check-up, quem eu sou"],
+ "luma:#f0dab0":["Sono infantil","sonecas, autonomia do sono"],
+ "luma:#a76d63":["Maternidade real","frases e desabafos de mãe"],
+ "luma:#eabebe":["Consultoria","depoimentos, dúvidas sobre a consultoria"],
+ "marg:#5fa4ad":["Educação","estrabismo, toxoplasmose, casos"],
+ "marg:#ed7d96":["Curiosidades","óculos de sol, personagens com desvio"],
+ "marg:#67b35f":["Onde atendo","fotos nas cidades de atendimento"],
+ "marg:#efe240":["Óculos e rotina","óculos, lacrimejamento, fotos com pacientes"],
+ "melo:#000000":["Educação","única cor usada: série de mitos e situações"],
+ "park:#003780":["Cardápio","drinks, pizzas, jantar"],
+ "park:#001229":["Ofertas","happy hour, oferta de pizza, “só vem”"],
+ "park:#c69653":["Experiência","drinks especiais, programação musical"],
+ "park:#ece1c6":["Pratos e eventos","sobremesas, eventos no PARK"],
+ "park:#999999":["Música ao vivo","artistas da programação"],
+ "smrt:#4f3a9c":["Serviços","especialidades e exames"],
+ "smrt:#301868":["Corpo clínico","vídeos e datas dos médicos"],
+ "smrt:#e2e5e9":["Datas e campanhas","Carnaval, Outubro Rosa, Setembro Amarelo"],
+ "smrt:#7db030":["Terapias infantis","desenvolvimento, oftalmoped, localização"],
+ "smrt:#999999":["Atendimentos do dia","“AT Margarida”, “AT Emanuel”"],
+ "smrt:#5fa4ad":["Oftalmologia","ceratocone, retinoblastoma"],
+ "toro:#fff7ed":["Produto","burger em destaque"],
+ "toro:#ff1a1a":["Atração","humor, trends, data do hambúrguer"],
+ "toro:#7a2500":["Engajamento","perguntas, “comente”, jeito de comer"],
+ "toro:#000000":["Bastidores","abrindo o saco, “treinei”, rodízio"],
+ "toro:#dc2626":["Ofertas","smash em dobro, Torobox, avaliação"],
+ "toro:#f25145":["Ocasiões","amigos na mesa, Toro de novembro"],
+ "unvt:#987c2f":["Atração","reels de humor e emoção com tutores"],
+ "unvt:#f8f4e2":["Casos e datas","casos, vacinação, dia dos animais"],
+ "unvt:#3c320b":["Bastidores","pacientes na clínica, campanhas"],
+ "unvt:#000000":["Produtos e serviços","carrossel de produtos, depoimento"],
+ "unvt:#e1ce84":["Cuidados","carrapato, banho e tosa, alimentação"],
+ "unvt:#5b8c40":["Saúde animal","doenças, Dezembro Verde"],
+ "vdre:#e9e8e4":["Institucional","lista de serviços e profissionais"],
+ "vdre:#1e40af":["Aniversários","aniversários da equipe"],
+ "vdre:#123b6a":["Especialidades","oftalmo ped, estética, dentista"],
+ "vdre:#172554":["Datas","dia do ginecologista, dentista, médico"],
+ "blsh:#f03598":["Principal","cor mais usada (parceiro arquivado)"],
+ "blsh:#ece2e6":["Secundário","segunda cor mais usada"],
+ "cali:#c13e3e":["Principal","cor de marca mais usada (parceiro arquivado)"],
+ "anaarc:#f9f2ec":["Principal","cor mais usada (parceiro arquivado)"],
+ "anaarc:#865946":["Secundário","segunda cor"],
+ "anaarc:#3e2014":["Terciário","terceira cor"],
+ "dna:#56697c":["Principal","única cor de marca usada"],
+ "frmg:#e1cdc6":["Principal","cor mais usada"],
+ "natl:#f0f6ff":["Principal","única cor usada"],
+ "becc:#fef8e7":["Principal","cor mais usada"],
+ "exe:#e4111e":["Principal","cor mais usada"],
+ "gas:#79c300":["Principal","cor mais usada"],
+ "gas:#0047bb":["Secundário","segunda cor"],
+ "frotas:#0000e6":["Principal","cor mais usada"],
+ "frotas:#000875":["Secundário","segunda cor"],
+ "frotas:#e65c00":["Terciário","terceira cor"]
+};
+
+const STORE = "uzzina-topicos-em-lote-v1";
+const isHex = c => /^#[0-9a-f]{6}$/.test(c);
+let state = {};
+function defaults(){
+  const s = {};
+  for (const p of PARTNERS) for (const [c] of p.used) {
+    const k = p.short + ":" + c, sug = SUGGEST[k];
+    s[k] = {on: !!sug && isHex(c) && !p.archived, name: sug ? sug[0] : ""};
+  }
+  return s;
+}
+function load(){
+  state = defaults();
+  try { const saved = JSON.parse(localStorage.getItem(STORE) || "null"); if (saved) for (const k in saved) if (state[k]) state[k] = saved[k]; } catch {}
+}
+function save(){ try { localStorage.setItem(STORE, JSON.stringify(state)); } catch {} }
+
+const esc = s => String(s).replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+const fmt = n => n.toLocaleString("pt-BR");
+
+function render(){
+  const showArch = document.getElementById("showArchived").checked;
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+  for (const p of PARTNERS) {
+    if (p.archived && !showArch) continue;
+    const sec = document.createElement("section");
+    sec.className = "partner"; sec.dataset.short = p.short;
+    const brand = p.colors.map(c => `<span class="sw sm" title="${esc(c)}" style="background:${esc(c)}"></span>`).join("");
+    const rows = p.used.map(([c, n]) => {
+      const k = p.short + ":" + c, st = state[k], ok = isHex(c), sug = SUGGEST[k];
+      const note = !ok ? "cor fora do padrão: não pode virar tópico" : (sug ? sug[1] : "");
+      return `<tr class="${st.on ? "" : "off"} ${ok ? "" : "bad"}" data-k="${esc(k)}">
+        <td><input type="checkbox" aria-label="Criar tópico ${esc(c)}" ${st.on ? "checked" : ""} ${ok ? "" : "disabled"}></td>
+        <td class="c"><span class="sw" style="background:${ok ? esc(c) : "transparent"}"></span></td>
+        <td class="hex">${esc(c)}</td>
+        <td class="n">${fmt(n)}</td>
+        <td class="name"><input type="text" aria-label="Nome do tópico ${esc(c)}" value="${esc(st.name)}" placeholder="Nome do tópico" ${st.on ? "" : "disabled"}></td>
+        <td class="note">${esc(note)}</td></tr>`;
+    });
+    const main = rows.slice(0, 8).join(""), rest = rows.slice(8).join("");
+    sec.innerHTML = `<div class="head"><h2>${esc(p.title)}</h2>${p.archived ? '<span class="badge">arquivado</span>' : ""}
+      <span class="brand">Cores da Marca ${brand}</span><span class="cover" data-cover></span></div>
+      ${p.used.length ? `<table><tbody>${main}</tbody></table>${rest ? `<details><summary>Mais ${p.used.length - 8} cores pouco usadas</summary><table><tbody>${rest}</tbody></table></details>` : ""}` : "<p class='lead'>Nenhuma ação.</p>"}
+      <div data-warn></div>`;
+    list.appendChild(sec);
+  }
+  totals();
+}
+
+function totals(){
+  let topics = 0, covered = 0, total = 0;
+  const showArch = document.getElementById("showArchived").checked;
+  for (const p of PARTNERS) {
+    if (p.archived && !showArch) continue;
+    let pc = 0, pt = 0; const names = new Map();
+    for (const [c, n] of p.used) {
+      const st = state[p.short + ":" + c]; pt += n;
+      if (st.on) { pc += n; topics++; const nm = st.name.trim().toLowerCase(); names.set(nm, (names.get(nm) || 0) + 1); }
+    }
+    covered += pc; total += pt;
+    const sec = document.querySelector(`section[data-short="${CSS.escape(p.short)}"]`);
+    if (!sec) continue;
+    sec.querySelector("[data-cover]").textContent = pt ? `${fmt(pc)} de ${fmt(pt)} ações ganham tópico (${Math.round(100 * pc / pt)}%)` : "";
+    const probs = [];
+    if (names.has("")) probs.push("há tópico marcado sem nome");
+    for (const [nm, k] of names) if (nm && k > 1) probs.push(`nome repetido: “${nm}”`);
+    if ([...names.values()].reduce((a, b) => a + b, 0) > 12) probs.push("mais de 12 tópicos");
+    sec.querySelector("[data-warn]").innerHTML = probs.length ? `<div class="warn">${probs.map(esc).join(" · ")}</div>` : "";
+  }
+  document.getElementById("tTopics").textContent = fmt(topics);
+  document.getElementById("tCovered").textContent = fmt(covered);
+  document.getElementById("tTotal").textContent = fmt(total);
+}
+
+document.getElementById("list").addEventListener("input", e => {
+  const tr = e.target.closest("tr[data-k]"); if (!tr) return;
+  const st = state[tr.dataset.k];
+  if (e.target.type === "checkbox") {
+    st.on = e.target.checked; tr.classList.toggle("off", !st.on);
+    tr.querySelector("input[type=text]").disabled = !st.on;
+  } else st.name = e.target.value;
+  save(); totals();
+});
+document.getElementById("showArchived").addEventListener("change", render);
+document.getElementById("reset").addEventListener("click", () => {
+  if (!confirm("Descartar as edições e voltar às sugestões?")) return;
+  state = defaults(); save(); render();
+});
+document.getElementById("copy").addEventListener("click", async () => {
+  const out = [];
+  for (const p of PARTNERS) {
+    const topics = p.used.filter(([c]) => state[p.short + ":" + c].on)
+      .map(([c, n]) => ({title: state[p.short + ":" + c].name.trim(), color: c, actions: n}));
+    if (topics.length) out.push({partner: p.slug, title: p.title, topics});
+  }
+  const text = JSON.stringify(out, null, 1);
+  const msg = document.getElementById("copied");
+  try { await navigator.clipboard.writeText(text); msg.textContent = "Lista copiada."; }
+  catch { const w = window.open(); if (w) { w.document.body.innerText = text; msg.textContent = "Lista aberta em outra aba."; } }
+  setTimeout(() => msg.textContent = "", 3000);
+});
+load(); render();
+</script>
+</body>
+</html>

@@ -51,6 +51,7 @@ export const getCleanAction = ({
     category: "post",
     responsibles: [user_id],
     color: DEFAULT_ACTION_COLOR,
+    topic_id: null,
     date: _date,
     partners: partners || [],
     time: 10,

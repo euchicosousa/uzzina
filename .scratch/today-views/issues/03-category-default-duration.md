@@ -1,6 +1,6 @@
 # HOJE-03 — Duração padrão da ação por categoria
 
-**Status.** Aberto em 16/11/2026 a pedido do proprietário, a partir do [HOJE-02](02-hour-view.md). Levantamento feito (código e contagem no banco de produção, só leitura). Nenhum arquivo do app foi alterado. Tabela aprovada em 16/11. Respondido pelo proprietário em 16/11/2026 (seção "Decisões do proprietário, 16/11/2026").
+**Status.** **Encerrado com aceite do proprietário em 16/11/2026; commitado (sem push).** Aberto em 16/11/2026 a pedido do proprietário, a partir do [HOJE-02](02-hour-view.md). Levantamento feito (código e contagem no banco de produção, só leitura). Nenhum arquivo do app foi alterado. Tabela aprovada em 16/11. Respondido pelo proprietário em 16/11/2026 (seção "Decisões do proprietário, 16/11/2026").
 
 **Implementado localmente (16/11/2026), não commitado.** Regra aprovada pelo proprietário: a duração acompanha a categoria só quando a ação ainda estava no padrão da anterior (ou sem duração); ajuste manual é mantido. Ações existentes não mudam (sem migração); ajuste manual não altera o padrão da categoria. Arquivos: `app/lib/CONSTANTS.ts`, `app/utils/factory.ts`, `app/utils/format.tsx`, `app/lib/supabase.mutations.ts`, `app/hooks/useActionMutations.tsx`, `app/components/features/action-drawer/ActionFormFooter.tsx`, `app/components/features/BulkActionMenu.tsx`, `app/components/uzzina/UCategoriesCombobox.tsx`, `app/components/ui-sections/UzzinaCategoriesComboboxSection.tsx`. Ordem de execução decidida: HOJE-01, **HOJE-03**, HOJE-02.
 

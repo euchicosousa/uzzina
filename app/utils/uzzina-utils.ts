@@ -1,4 +1,5 @@
 import Color from "color";
+import { pickActionColor } from "~/lib/action-color";
 export const getGridCols = (count: number, max = 5) => {
   // Se for muito item, não tentamos ser espertos, usamos um padrão
   if (count > 20) return "grid-cols-4 sm:grid-cols-5";
@@ -67,6 +68,17 @@ export function safeColor(raw: string | null | undefined): string {
   } catch {
     return DEFAULT_ACTION_COLOR;
   }
+}
+
+/**
+ * Displayed color of an action: its topic color, else its own color, else the
+ * default gray. Always a valid #RRGGBB string.
+ */
+export function resolveActionColor(
+  action: { color?: string | null; topic_id?: string | null },
+  topicColors: ReadonlyMap<string, string>,
+): string {
+  return safeColor(pickActionColor(action, topicColors));
 }
 
 /** True when the color is unset or normalizes to the default action color. */

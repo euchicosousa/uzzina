@@ -5549,3 +5549,19 @@ Encerrado com aceite do proprietário em 16/11/2026. Na Home e na página Hoje, 
 ## DS20 — Revisar e completar a seção "Cores Semânticas OKLCH" na galeria `/ui`
 
 Encerrado com aceite do proprietário em 16/11/2026. Na galeria `/ui` (`TokensColorsSection.tsx`), a grade antiga de 18 amostras deu lugar a 35 tokens divididos em 5 categorias (`Superfícies, Estrutura e Texto Neutro`, `Cartão de Ação e Versões`, `Marca, Destaque e Foco`, `Feedbacks Semânticos e Verde Firme` e `Prioridades — Hoje`), mostrando a amostra, a classe Tailwind e de qual cor cada uma deriva. `--color-success-foreground` foi adicionada ao `@theme inline` de `app/tailwind.css`. Na seção "Aplicação no Mundo Real", os títulos deixaram de usar `<span>` inline dentro de `space-y-*` (que gerava 0 px de margem no Tailwind v4), os cartões fictícios de workflow e a tira de calendário inventada saíram e entraram réplicas fiéis do `ActionItem` (bloco e linha, com repouso/hover, atrasado `late-surface` e fase suave/viva), além da atualização dos textos dos feedbacks opacos e do bloco de `success-strong`. Commit local, sem push. [Ticket](../design-system-audit/issues/20-semantic-colors-gallery-review.md)
+
+## HOJE-03 — Duração padrão da ação por categoria
+
+Encerrado com aceite do proprietário em 16/11/2026. A ação nova nasce com a duração da categoria (tabela aprovada em `app/lib/CONSTANTS.ts`); trocar a categoria na gaveta ou no menu em lote só aplica o padrão novo se a ação estava no padrão da anterior, preservando ajuste manual. Ações existentes intactas, sem banco. Botão `ID` removido do rodapé da gaveta. Commitado (`fd2845b`, `bf3191f`), sem push. Pendência técnica: 4 testes de `tests/drawer-component.test.tsx` ainda procuram o botão "Ver ID da ação". [Ticket](../today-views/issues/03-category-default-duration.md)
+
+## HOJE-02 — Visualização "Linha do tempo" do Hoje
+
+Encerrado com aceite do proprietário em 16/11/2026. O dia por hora, estilo Gantt: arrastar, alças de início/fim e teclado (passo 5 min, mínimo 10 min), auto-scroll para "Agora", filtro de responsáveis para admin, opção em Minha Conta → Visualização inicial do Hoje (migration `20261116130000` aplicada em produção). Commitado (`80e6462` e o ajuste de camadas `isolate z-0` em `TimelineBoard.tsx` no commit seguinte), sem push. [Ticket](../today-views/issues/02-hour-view.md)
+
+## TOP-01 — Tópicos por parceiro no lugar da cor da ação
+
+Encerrado com aceite do proprietário em 16/11/2026. Seção "Tópicos" em Admin → Parceiro (nome e cor, até 12 por parceiro, exclusão com contagem de ações), seletor de tópico no rodapé da gaveta no lugar da cor livre (desabilitado quando o parceiro não tem tópicos), "Alterar Tópico" no menu em lote (mesmo conjunto de parceiros) e cor exibida resolvida (tópico, senão a cor da própria ação) no app e no portal. Banco de produção: migration `20261116140000_partner_topics.sql` e carga (66 tópicos, 5.236 ações classificadas pela cor, `updated_at` intacto). Commitado, sem push; o app publicado só mostra tópicos após o deploy. Não verificado: acesso real de usuário não admin. [Ticket](../action-topics/issues/01-topics-with-color.md)
+
+## DS22 — Unificar os botões secundários de adicionar
+
+Encerrado com aceite do proprietário em 16/11/2026. "Adicionar Cor" (Admin → Parceiro) e "Novo / Trocar proposta" (Planejamento) passaram de `outline` para `secondary` `sm`, igual a "Novo tópico". Link "Adicionar arquivo" do portal e os `xs` de conteúdo/arquivos mantidos pelo contexto. Commitado, sem push. [Ticket](../design-system-audit/issues/22-secondary-buttons-unification.md) · [Estudo](../../docs/audits/2026-11-16-ds22-secondary-buttons-study.md)

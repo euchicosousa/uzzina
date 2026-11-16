@@ -13,12 +13,10 @@ import { ULoader } from "~/components/uzzina/ULoader";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { toHex } from "~/utils/uzzina-utils";
 import { getTimeForCategoryChange } from "~/utils/factory";
 import { toast } from "sonner";
 import {
   BulkArchiveDialog,
-  BulkColorDialog,
   BulkDateTimeDialog,
   type BulkDateTimeResult,
   BulkResponsiblesDialog,
@@ -27,6 +25,8 @@ import {
 import { useAppContext } from "~/contexts/AppContext";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { useMultiSelection } from "~/hooks/useMultiSelection";
+import { usePartnerTopics } from "~/hooks/usePartnerTopics";
+import { getSharedPartnerSet, groupTopicsByPartner } from "~/utils/topics";
 import { CATEGORIES, PHASES, PRIORITIES } from "~/lib/CONSTANTS";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
@@ -76,50 +76,26 @@ export function BulkActionMenu() {
       ? partners.find((p) => p.slug === params.slug)
       : undefined;
 
-  const partnerColors = useMemo(() => {
-    if (selectedIds.length === 0) return [];
-
-    const selectedPartnerSlugs = new Set(
-      eligibleActions
-        .filter((action) => selectedIds.includes(action.id))
-        .flatMap((action) => action.partners),
-    );
-
-    const colorsSet = new Set<string>();
-    if (selectedPartnerSlugs.size > 0) {
-      for (const slug of selectedPartnerSlugs) {
-        const partner = partners.find((p) => p.slug === slug);
-        if (partner?.colors) {
-          for (const c of partner.colors) {
-            if (c) colorsSet.add(toHex(c));
-          }
-        }
-      }
-    }
-
-    if (colorsSet.size === 0) {
-      if (currentPartner?.colors && currentPartner.colors.length > 0) {
-        for (const c of currentPartner.colors) {
-          if (c) colorsSet.add(toHex(c));
-        }
-      } else {
-        for (const partner of partners) {
-          if (partner.colors) {
-            for (const c of partner.colors) {
-              if (c) colorsSet.add(toHex(c));
-            }
-          }
-        }
-      }
-    }
-
-    return Array.from(colorsSet);
-  }, [selectedIds, partners, currentPartner, eligibleActions]);
+  // Topics can change in bulk only when every selected action has the same partners.
+  const { topics } = usePartnerTopics();
+  const sharedPartnerSlugs = useMemo(
+    () =>
+      getSharedPartnerSet(
+        eligibleActions.filter((action) => selectedIds.includes(action.id)),
+      ),
+    [selectedIds, eligibleActions],
+  );
+  const topicGroups = useMemo(
+    () =>
+      sharedPartnerSlugs
+        ? groupTopicsByPartner(topics, partners, sharedPartnerSlugs)
+        : [],
+    [sharedPartnerSlugs, topics, partners],
+  );
 
   // ─── Estados dos dialogs ─────────────────────────────────────────────────────
   const [dateTimeOpen, setDateTimeOpen] = useState(false);
   const [responsiblesOpen, setResponsiblesOpen] = useState(false);
-  const [colorOpen, setColorOpen] = useState(false);
   const [sprintOpen, setSprintOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -224,11 +200,9 @@ export function BulkActionMenu() {
     });
   };
 
-  // ─── Handlers: Cor ───────────────────────────────────────────────────────────
-  const applyColor = (color: string) => {
-    performBulkAction({
-      color,
-    });
+  // ─── Handlers: Tópico ────────────────────────────────────────────────────────
+  const applyTopic = (topic_id: string | null) => {
+    performBulkAction({ topic_id });
   };
 
   // ─── Handlers: Sprints ───────────────────────────────────────────────────────
@@ -313,14 +287,6 @@ export function BulkActionMenu() {
         onOpenChange={setResponsiblesOpen}
         open={responsiblesOpen}
         people={people}
-        selectedCount={effectiveCount}
-      />
-
-      <BulkColorDialog
-        onApply={applyColor}
-        onOpenChange={setColorOpen}
-        open={colorOpen}
-        partnerColors={partnerColors}
         selectedCount={effectiveCount}
       />
 
@@ -473,10 +439,62 @@ export function BulkActionMenu() {
             <CalendarIcon /> Alterar Data e Hora
           </PrismMenuItem>
 
-          {/* Cor — abre o dialog com as cores do parceiro atual */}
-          <PrismMenuItem onAction={() => setColorOpen(true)} textValue="Cor">
-            <PaletteIcon /> Alterar Cor
-          </PrismMenuItem>
+          {/* Tópico — só para ações com exatamente os mesmos parceiros */}
+          {sharedPartnerSlugs ? (
+            <PrismMenuSub>
+              <PrismMenuSubTrigger textValue="Tópico">
+                <PaletteIcon /> Alterar Tópico
+              </PrismMenuSubTrigger>
+              <PrismMenuSubContent className="max-h-72 overflow-y-auto">
+                <PrismMenuItem
+                  onAction={() => applyTopic(null)}
+                  textValue="Sem tópico"
+                >
+                  Sem tópico
+                </PrismMenuItem>
+                {topicGroups.flatMap((group) =>
+                  group.topics.map((topic) => (
+                    <PrismMenuItem
+                      key={topic.id}
+                      onAction={() => applyTopic(topic.id)}
+                      textValue={`${group.partner.title} ${topic.title}`}
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="size-3 shrink-0 rounded-full border border-border"
+                        style={{ backgroundColor: topic.color }}
+                      />
+                      <span className="truncate">
+                        {topicGroups.length > 1
+                          ? `${group.partner.title} · ${topic.title}`
+                          : topic.title}
+                      </span>
+                    </PrismMenuItem>
+                  )),
+                )}
+                {topicGroups.every((group) => group.topics.length === 0) && (
+                  <PrismMenuItem isDisabled textValue="Sem tópicos criados">
+                    <span className="text-xs">
+                      Os parceiros não têm tópicos. Crie em Admin → Parceiro.
+                    </span>
+                  </PrismMenuItem>
+                )}
+              </PrismMenuSubContent>
+            </PrismMenuSub>
+          ) : (
+            <PrismMenuItem
+              isDisabled
+              textValue="Alterar Tópico. Só para ações com os mesmos parceiros"
+            >
+              <PaletteIcon />
+              <span className="flex min-w-0 flex-col">
+                <span>Alterar Tópico</span>
+                <span className="text-xs font-normal">
+                  Só funciona com ações dos mesmos parceiros
+                </span>
+              </span>
+            </PrismMenuItem>
+          )}
 
           {/* Responsáveis — abre o dialog de seleção de pessoas */}
           <PrismMenuItem

@@ -174,6 +174,7 @@ const baseAction = (overrides: Partial<Action> = {}): Action => ({
   instagram_caption: null,
   content_files: [],
   work_files: [],
+  topic_id: null,
   sprints: [],
   strategies: [],
   user_id: "test-user",

@@ -209,7 +209,7 @@ export function UPaletteEditor({
         isDisabled={disabled}
         onClick={addColor}
         size="sm"
-        variant="outline"
+        variant="secondary"
       >
         Adicionar Cor
         <PlusIcon className="size-4" />
