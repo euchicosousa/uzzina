@@ -244,13 +244,22 @@ async function updateBulkActions(
   return result;
 }
 
+/** One patch for every action, or a patch computed per action. */
+export type BulkActionPatch =
+  ActionPatchInput | ((action: Action) => ActionPatchInput);
+
 export function bulkUpdateActionsClient(
   actions: Action[],
-  updates: ActionPatchInput,
+  updates: BulkActionPatch,
   onConfirmed?: (action: Action) => void,
   beforeWrite?: () => void,
 ) {
-  return updateBulkActions(actions, () => updates, onConfirmed, beforeWrite);
+  return updateBulkActions(
+    actions,
+    typeof updates === "function" ? updates : () => updates,
+    onConfirmed,
+    beforeWrite,
+  );
 }
 
 export function bulkUpdateDateOnlyClient(

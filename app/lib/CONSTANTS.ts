@@ -59,6 +59,7 @@ export const CATEGORIES = {
     area: "account",
     tag: "ADS",
     tag_min: "ad",
+    defaultTime: 15,
   },
   capture: {
     slug: "capture",
@@ -68,6 +69,7 @@ export const CATEGORIES = {
     area: "creative",
     tag: "REC",
     tag_min: "gr",
+    defaultTime: 120,
   },
   carousel: {
     slug: "carousel",
@@ -77,6 +79,7 @@ export const CATEGORIES = {
     area: "creative",
     tag: "CRSL",
     tag_min: "cr",
+    defaultTime: 20,
   },
   design: {
     slug: "design",
@@ -86,6 +89,7 @@ export const CATEGORIES = {
     area: "creative",
     tag: "DSGN",
     tag_min: "dg",
+    defaultTime: 30,
   },
   dev: {
     slug: "dev",
@@ -95,6 +99,7 @@ export const CATEGORIES = {
     area: "creative",
     tag: "TECH",
     tag_min: "tc",
+    defaultTime: 30,
   },
   finance: {
     slug: "finance",
@@ -104,6 +109,7 @@ export const CATEGORIES = {
     area: "adm",
     tag: "FINC",
     tag_min: "fn",
+    defaultTime: 5,
   },
   meeting: {
     slug: "meeting",
@@ -113,6 +119,7 @@ export const CATEGORIES = {
     area: "account",
     tag: "REUN",
     tag_min: "re",
+    defaultTime: 60,
   },
   post: {
     slug: "post",
@@ -122,6 +129,7 @@ export const CATEGORIES = {
     area: "creative",
     tag: "POST",
     tag_min: "pt",
+    defaultTime: 10,
   },
   print: {
     slug: "print",
@@ -131,6 +139,7 @@ export const CATEGORIES = {
     area: "creative",
     tag: "IMPR",
     tag_min: "im",
+    defaultTime: 30,
   },
   reels: {
     slug: "reels",
@@ -140,6 +149,7 @@ export const CATEGORIES = {
     area: "creative",
     tag: "REEL",
     tag_min: "rl",
+    defaultTime: 30,
   },
   sm: {
     slug: "sm",
@@ -149,6 +159,7 @@ export const CATEGORIES = {
     area: "account",
     tag: "SOCI",
     tag_min: "sm",
+    defaultTime: 15,
   },
   stories: {
     slug: "stories",
@@ -158,6 +169,7 @@ export const CATEGORIES = {
     area: "creative",
     tag: "STOR",
     tag_min: "st",
+    defaultTime: 5,
   },
   todo: {
     slug: "todo",
@@ -167,6 +179,7 @@ export const CATEGORIES = {
     area: "account",
     tag: "TASK",
     tag_min: "ta",
+    defaultTime: 5,
   },
 } as const;
 export type CATEGORY = keyof typeof CATEGORIES;

@@ -124,6 +124,19 @@ export function UzzinaCategoriesComboboxSection() {
           <GalleryItem label="UCategoriesCombobox">
             <CategoriesComboboxPlayground />
           </GalleryItem>
+          <GalleryItem label="UCategoriesCombobox com duração (showTime)">
+            <GalleryAppProviders>
+              <div className="flex w-fit items-center justify-center p-4">
+                <UCategoriesCombobox
+                  onSelect={() => undefined}
+                  selectedCategories={["reels"]}
+                  showTime
+                  size="sm"
+                  variant="outline"
+                />
+              </div>
+            </GalleryAppProviders>
+          </GalleryItem>
         </GallerySectionContent>
       </GallerySection>
     </div>

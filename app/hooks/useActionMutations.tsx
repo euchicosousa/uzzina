@@ -19,6 +19,7 @@ import {
   bulkUpdateDateOnlyClient,
   bulkUpdateTimeOnlyClient,
   ActionConflictError,
+  type BulkActionPatch,
 } from "~/lib/supabase.mutations";
 import type { ActionCreateInput, ActionPatchInput } from "~/utils/validation";
 
@@ -181,7 +182,7 @@ export function useActionMutations() {
       updates,
     }: {
       actions: Action[];
-      updates: ActionPatchInput;
+      updates: BulkActionPatch;
     }) => {
       requireCurrentSession();
       return await bulkUpdateActionsClient(
@@ -264,7 +265,7 @@ export function useActionMutations() {
   );
 
   const handleBulkAction = useCallback(
-    async (actions: Action[], updates: ActionPatchInput) => {
+    async (actions: Action[], updates: BulkActionPatch) => {
       return bulkActionMutation.mutateAsync({ actions, updates });
     },
     [bulkActionMutation.mutateAsync],

@@ -29,6 +29,12 @@ export function getFormattedPeopleName(people: Person[]) {
   return names.join(", ");
 }
 
+/** Short duration label for a value in minutes: "5 min", "30 min", "1 h", "2 h". */
+export function formatActionDuration(minutes: number): string {
+  if (minutes >= 60 && minutes % 60 === 0) return `${minutes / 60} h`;
+  return `${minutes} min`;
+}
+
 export function parseStrategies(raw: unknown): StrategyItem[] {
   if (!raw) return [];
   let parsed = raw;

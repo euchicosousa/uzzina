@@ -7,7 +7,7 @@ import {
   setMinutes,
   setSeconds,
 } from "date-fns";
-import { PHASES, PRIORITIES } from "~/lib/CONSTANTS";
+import { CATEGORIES, type CATEGORY, PHASES, PRIORITIES } from "~/lib/CONSTANTS";
 import type { Action } from "~/types";
 import { DEFAULT_ACTION_COLOR } from "~/utils/uzzina-utils";
 
@@ -82,6 +82,44 @@ export function resolveDraftPartners({
   return partnerFilters.length === 1 ? [partnerFilters[0]] : [];
 }
 
+/** Duration (minutes) used when a category is unknown or has no default. */
+const FALLBACK_ACTION_TIME = 10;
+
+function isCategorySlug(slug: string): slug is CATEGORY {
+  return Object.hasOwn(CATEGORIES, slug);
+}
+
+/** Default duration in minutes for a category slug (10 for unknown slugs). */
+export function getCategoryDefaultTime(category: string): number {
+  return isCategorySlug(category)
+    ? CATEGORIES[category].defaultTime
+    : FALLBACK_ACTION_TIME;
+}
+
+/**
+ * Duration to store when an action's category changes. The new category's
+ * default applies only while the action still has the old category's default
+ * (or no duration); a duration adjusted by hand is kept.
+ */
+export function getTimeForCategoryChange({
+  fromCategory,
+  toCategory,
+  currentTime,
+}: {
+  fromCategory: string;
+  toCategory: string;
+  currentTime: number | null | undefined;
+}): number {
+  if (fromCategory === toCategory)
+    return currentTime ?? getCategoryDefaultTime(toCategory);
+  if (
+    currentTime == null ||
+    currentTime === getCategoryDefaultTime(fromCategory)
+  )
+    return getCategoryDefaultTime(toCategory);
+  return currentTime;
+}
+
 /**
  * Single entry point for "Nova ação" drafts. A draft has no `id`, `created_at`
  * or `updated_at`; the drawer fills the timestamps locally and the server
@@ -101,9 +139,11 @@ export function createActionDraft({
   category?: string;
 }): Action {
   const base = getCleanAction({ user_id: userId, date, partners });
+  const draftCategory = category || base.category;
   return {
     ...base,
     ...(responsibles ? { responsibles } : {}),
-    ...(category ? { category } : {}),
+    category: draftCategory,
+    time: getCategoryDefaultTime(draftCategory),
   } as unknown as Action;
 }

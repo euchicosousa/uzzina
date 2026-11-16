@@ -16,7 +16,9 @@ Leia antes de mexer na gaveta de ação (Essencial, Instagram, Observações), n
 
 - Chaves privadas incluem identidade/audiência. Prefixos gerais servem para invalidação. `resetQuerySession` limpa queries/mutations e avança a geração; callbacks antigos ignoram resultados. Providers remontam por identidade; bootstrap verifica geração e ID retornado.
 
-- Lote/duplicação conferem continuidade da sessão antes da próxima escrita. Limpar cache não desfaz uma escrita já enviada. Sessão do portal e token de revisão têm chaves separadas.
+- Lote/duplicação conferem continuidade da sessão antes da próxima escrita.
+- Duração padrão por categoria (`CATEGORIES.defaultTime`, HOJE-03): criar usa a da categoria; trocar a categoria na gaveta ou no menu em lote grava `time` junto com `category` e só troca a duração se a ação ainda estava na padrão da categoria anterior (ou sem duração); ajuste manual é mantido. Ações existentes não mudam e o ajuste manual nunca altera o padrão da categoria (`getTimeForCategoryChange`, `app/utils/factory.ts`). Limpar cache não desfaz uma escrita já enviada. Sessão do portal e token de revisão têm chaves separadas.
+- Seletor de categoria do rodapé da gaveta mostra a duração padrão (`UCategoriesCombobox` com `showTime`); o quadro Categorias é somente leitura e não troca categoria; não há atalhos de teclado para categoria (16/11/2026).
 
 ## Gaveta de ação (editor da equipe)
 

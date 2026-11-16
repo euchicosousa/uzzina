@@ -11,6 +11,8 @@ import {
 } from "~/components/prism";
 import { AREAS, CATEGORIES } from "~/lib/CONSTANTS";
 import { UIcons } from "~/components/uzzina/UIcons";
+import { getCategoryDefaultTime } from "~/utils/factory";
+import { formatActionDuration } from "~/utils/format";
 import {
   UComboboxTrigger,
   type UComboboxTriggerProps,
@@ -31,6 +33,8 @@ export interface UCategoriesComboboxProps {
   showInstagramGroup?: boolean;
   tabIndex?: number;
   showText?: boolean;
+  /** Shows each category's default duration next to its name on hover/focus/selection. */
+  showTime?: boolean;
   variant?: UComboboxTriggerProps["variant"];
   size?: UComboboxTriggerProps["size"];
 }
@@ -42,6 +46,7 @@ export function UCategoriesCombobox({
   showInstagramGroup,
   tabIndex,
   showText = true,
+  showTime = false,
   variant,
   size,
 }: UCategoriesComboboxProps) {
@@ -238,6 +243,13 @@ export function UCategoriesCombobox({
                         slug={category.slug}
                       />
                       <span>{category.title}</span>
+                      {showTime && Object.hasOwn(CATEGORIES, category.slug) && (
+                        <span className="text-xs text-secondary-foreground tabular-nums opacity-0 group-hover/command-item:opacity-100 group-data-focused/command-item:opacity-100 group-data-[checked=true]/command-item:opacity-100 group-data-[selected=true]/command-item:opacity-100">
+                          {formatActionDuration(
+                            getCategoryDefaultTime(category.slug),
+                          )}
+                        </span>
+                      )}
                     </PrismCommandItem>
                   ))}
                 </PrismCommandGroup>

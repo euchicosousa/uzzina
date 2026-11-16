@@ -14,6 +14,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toHex } from "~/utils/uzzina-utils";
+import { getTimeForCategoryChange } from "~/utils/factory";
 import { toast } from "sonner";
 import {
   BulkArchiveDialog,
@@ -399,9 +400,16 @@ export function BulkActionMenu() {
                   <PrismMenuItem
                     key={category.slug}
                     onAction={() =>
-                      performBulkAction({
-                        category: category.slug,
-                      })
+                      runBulk(() =>
+                        handleBulkAction(targets, (action) => ({
+                          category: category.slug,
+                          time: getTimeForCategoryChange({
+                            fromCategory: action.category,
+                            toCategory: category.slug,
+                            currentTime: action.time,
+                          }),
+                        })),
+                      )
                     }
                     textValue={category.title}
                   >
