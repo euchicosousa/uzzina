@@ -12,7 +12,7 @@ import {
 } from "~/lib/CONSTANTS";
 import { cn } from "cnfast";
 import { ActionItem } from "../features/ActionItem";
-import { Draggable, Droppable } from "../features/DnD";
+import { DROP_TARGET_HIGHLIGHT, Draggable, Droppable } from "../features/DnD";
 import { DragStateContext } from "../features/DragStateContext";
 import { useIsDesktop } from "~/hooks/useIsDesktop";
 import { PrismBadge } from "../prism";
@@ -159,7 +159,7 @@ const KanbanColumn = ({
           <div
             className={cn(
               "flex h-full flex-col overflow-hidden border-t-4 transition-colors",
-              isOver && "border-primary text-primary",
+              isOver && DROP_TARGET_HIGHLIGHT,
             )}
             style={{
               borderTopColor: phase.color,

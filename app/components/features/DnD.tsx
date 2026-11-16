@@ -7,6 +7,10 @@ import React from "react";
 import { cn } from "cnfast";
 import { CSS } from "@dnd-kit/utilities";
 
+// Background of a column while a card is dragged over it (shared by the
+// Kanban boards); tweak the strength here.
+export const DROP_TARGET_HIGHLIGHT = "bg-secondary/50";
+
 export function Droppable({
   id,
   children,

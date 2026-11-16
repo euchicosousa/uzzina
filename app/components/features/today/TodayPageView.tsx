@@ -39,7 +39,7 @@ export function TodayPageView({
   const pageRef = useRef<HTMLDivElement>(null);
   useFillScrollViewport(pageRef);
 
-  const isKanban = view === "kanban";
+  const isKanban = view === "kanban" || view === "priority";
   return (
     <div
       ref={pageRef}

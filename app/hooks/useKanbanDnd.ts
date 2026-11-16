@@ -19,7 +19,7 @@ export function useKanbanDnd<T extends string | null>({
   parseTarget,
 }: {
   actions: Action[];
-  fieldKey: "phase" | "date";
+  fieldKey: "phase" | "date" | "priority";
   onDrop: (action: Action, newValue: T) => Promise<Action>;
   parseTarget: (overId: string, action: Action) => T | undefined;
 }) {

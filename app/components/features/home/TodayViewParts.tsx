@@ -3,6 +3,7 @@ import { format, isSameDay, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import {
   BlocksIcon,
+  FlagIcon,
   Grid3x3Icon,
   HeartHandshakeIcon,
   KanbanIcon,
@@ -12,6 +13,7 @@ import { ActionContainer } from "~/components/features/ActionContainer";
 import { CategoriesBoard } from "~/components/layout/CategoriesBoard";
 import KanbanPhasesBoard from "~/components/layout/KanbanPhasesBoard";
 import { PartnersBoard } from "~/components/layout/PartnersBoard";
+import { PriorityBoard } from "~/components/layout/PriorityBoard";
 import {
   PrismToggleGroup,
   PrismToggleGroupItem,
@@ -30,6 +32,7 @@ export const TODAY_VIEW_LABELS: Record<TodayViewMode, string> = {
   categories: "Categorias",
   feed: "Feed do Instagram",
   partners: "Parceiros",
+  priority: "Prioridade",
 };
 
 export function useTodayActions(
@@ -120,6 +123,11 @@ export function TodayViewToggle({
           <HeartHandshakeIcon />
         </PrismToggleGroupItem>
       </PrismTooltip>
+      <PrismTooltip label={TODAY_VIEW_LABELS.priority}>
+        <PrismToggleGroupItem aria-label="Visão por Prioridade" id="priority">
+          <FlagIcon />
+        </PrismToggleGroupItem>
+      </PrismTooltip>
     </PrismToggleGroup>
   );
 }
@@ -141,6 +149,8 @@ export function TodayBoard({
 }) {
   if (view === "kanban")
     return <KanbanPhasesBoard actions={actions} fillHeight={fillHeight} />;
+  if (view === "priority")
+    return <PriorityBoard actions={actions} fillHeight={fillHeight} />;
   if (view === "feed")
     return (
       <div className="w-full max-w-full overflow-hidden">

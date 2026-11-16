@@ -173,6 +173,24 @@ const COLOR_SWATCHES = [
     group: "Status & Feedback",
   },
   {
+    name: "Prioridade Baixa",
+    bg: "bg-priority-low",
+    fg: "text-foreground",
+    group: "Status & Feedback",
+  },
+  {
+    name: "Prioridade Média",
+    bg: "bg-priority-medium",
+    fg: "text-foreground",
+    group: "Status & Feedback",
+  },
+  {
+    name: "Prioridade Alta",
+    bg: "bg-priority-high",
+    fg: "text-foreground",
+    group: "Status & Feedback",
+  },
+  {
     name: "Success Strong",
     bg: "bg-success-strong",
     fg: "text-success-strong-foreground",

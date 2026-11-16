@@ -17,6 +17,7 @@ import {
   Grid3x3Icon,
   HeartHandshakeIcon,
   KanbanIcon,
+  FlagIcon,
   ImageIcon,
   LaptopIcon,
   LayoutGridIcon,
@@ -1295,6 +1296,13 @@ function ProfilePage() {
               >
                 <HeartHandshakeIcon />
                 <div className="truncate">Parceiros</div>
+              </PrismToggleGroupItem>
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_CLASS_NAME}
+                id="priority"
+              >
+                <FlagIcon />
+                <div className="truncate">Prioridade</div>
               </PrismToggleGroupItem>
             </PrismToggleGroup>
           </ProfileSetting>

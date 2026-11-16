@@ -105,6 +105,11 @@
     var(--card)
   );
 
+  /* Priority colors (Today priority board): green, yellow and red. */
+  --priority-low: oklch(0.7 0.17 150);
+  --priority-medium: oklch(0.82 0.16 90);
+  --priority-high: oklch(0.65 0.22 25);
+
   --color-info: oklch(
     calc(var(--luminosity) * 1.2) var(--chroma) var(--info-hue)
   );
@@ -215,6 +220,11 @@
     var(--color-success) 14%,
     var(--card)
   );
+
+  /* Priority colors (Today priority board): green, yellow and red. */
+  --priority-low: oklch(0.75 0.16 150);
+  --priority-medium: oklch(0.85 0.15 95);
+  --priority-high: oklch(0.7 0.2 25);
 
   --color-info: oklch(
     calc(var(--luminosity) * 1.2) var(--chroma) var(--info-hue)
@@ -415,6 +425,9 @@
   --color-warning-background: var(--color-warning-background);
   --color-success: var(--color-success);
   --color-success-background: var(--color-success-background);
+  --color-priority-low: var(--priority-low);
+  --color-priority-medium: var(--priority-medium);
+  --color-priority-high: var(--priority-high);
   --color-info: var(--color-info);
   --color-info-foreground: var(--info-foreground);
   --color-info-background: var(--color-info-background);

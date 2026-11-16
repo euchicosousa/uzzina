@@ -6,14 +6,16 @@ import {
 import { publicAIModels } from "./ai-model-registry";
 import type { PhaseColorMode } from "./CONSTANTS";
 
-export type TodayViewMode = "kanban" | "feed" | "categories" | "partners";
+export type TodayViewMode =
+  "kanban" | "feed" | "categories" | "partners" | "priority";
 
 export function isTodayViewMode(value: unknown): value is TodayViewMode {
   return (
     value === "kanban" ||
     value === "feed" ||
     value === "categories" ||
-    value === "partners"
+    value === "partners" ||
+    value === "priority"
   );
 }
 

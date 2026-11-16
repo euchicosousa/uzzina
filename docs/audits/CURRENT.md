@@ -2,13 +2,17 @@
 
 Atualizado em 16/11/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
 
-O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso para esse commit. Fila atual: 12 tickets do Planejamento em espera, dois de design system aguardando aceite visual (DS17 e DS18; DS08 encerrado em 13/11 sem implementação), um aberto em 16/11 pronto para execução (DS19; WA01 aberto e encerrado no mesmo dia, sem implementação) e um de arquitetura (16 no total, conforme o tracker em `.scratch/README.md`). Em 16/11 a `main` está igual a `origin/main` (até o commit de documentação seguinte a `8d9353e`); o deploy Ready desses commits na Vercel não foi conferido. Commits locais ainda não enviados: `git log origin/main..main`. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
+O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso para esse commit. Fila atual: 12 tickets do Planejamento em espera, dois de design system aguardando aceite visual (DS17 e DS18; DS08 encerrado em 13/11 sem implementação), um aberto em 16/11 pronto para execução (DS19; WA01 aberto e encerrado no mesmo dia, sem implementação) um de arquitetura e um estudo de envio de arquivos (UP01; o INF01 foi aberto e encerrado em 16/11) e dois do Hoje (HOJE-03, duração padrão por categoria, aguardando uma resposta do proprietário; HOJE-02, nova visualização por hora, com decisões fechadas), sem o HOJE-01, aceito em 16/11 (19 no total, conforme o tracker em `.scratch/README.md`). Em 16/11 a `main` está igual a `origin/main` (até o commit de documentação seguinte a `8d9353e`); o deploy Ready desses commits na Vercel não foi conferido. Commits locais ainda não enviados: `git log origin/main..main`. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
 
 ## Pendências reais
 
 - **Deploy na Vercel:** DS05, DS11–DS18 já estão no GitHub (`main` = `origin/main` em 15/11); falta confirmar que a versão mais recente (DS19, `8d9353e`) ficou Ready.
 - **Aceite visual do DS17 e do DS18** no app, claro e escuro; no DS17, testar também salvar "Cor viva no escuro" e "Texto na cor viva" em Minha Conta.
 - **DS19 enviado ao GitHub** (16/11, `8d9353e`): migração `20261116120000_phase_color_preference.sql` aplicada em produção em 16/11, build ok. Falta confirmar o deploy Ready na Vercel, testar salvar "Cor da fase" em Minha Conta e o aceite visual (claro e escuro).
+- **HOJE-01 aceito pelo proprietário em 16/11 e commitado localmente, sem push** (visualização "Prioridade" do Hoje, colunas Baixa → Média → Alta; arrastar muda a prioridade; destaque ao soltar `bg-secondary/50`, que o proprietário subiu de 20% para 50% em 16/11 depois de ver). Migration `20261116130000_today_view_priority_timeline.sql` aplicada em produção em 16/11. Próximos na fila do Hoje: HOJE-03 (falta uma resposta do proprietário: manter a duração ajustada à mão quando a categoria muda), depois HOJE-02.
+- **HOJE-03** (duração padrão da ação por categoria, sem código): tabela aprovada em 16/11; falta a regra ao trocar a categoria de ação com duração ajustada.
+- **Ações sem responsável:** 5 em produção (3 ativas, marcadas para 19/11); o banco e a gaveta permitem lista vazia. Só registrado; impedir isso não tem ticket.
+- **UP01 (estudo do envio próprio de arquivos):** preparado em 16/11 e em espera por decisão do proprietário; desenho e decisões no ticket (janela "Arquivos", prévia do Instagram, avatar com recorte próprio, portal depois).
 - **Sombra colorida da paleta (DS14):** encerrada com aceite do proprietário em 12/11; falta só publicar (a migração `20261112120000` já está aplicada em produção).
 - **Não verificado ainda:** aparência no navegador dos botões do Admin (Novo Usuário, Novo Cliente, Novo Parceiro) e comportamento dos menus Visualizar/Ordenar/Exibir com leitor de tela.
 
@@ -27,6 +31,18 @@ O ticket foi ajustado para encaminhamento. A primeira entrega é o inventário e
 O [ticket de sombra do tema](../../.scratch/design-system-audit/issues/14-global-theme-shadow.md) descreve como concluída uma implementação ausente da `main` local em `19c3585` e do diff do checkout. A revisão documental confirmou que menus, diálogos e outras superfícies listadas ainda usam as sombras atuais. A proposta é coerente como direção. Antes de executar, falta corrigir o status e a sequência de aprovação, delimitar elevações e exceções, separar a cor global da opção de relevo dos cartões e definir o comportamento do tema Personalizado. A bancada anuncia 11 paletas e define seis, com retorno para Ônix nas demais, e mantém sombras neutras nas amostras. O aceite precisa comparar sombras antes e depois em componentes reais, com as duas intensidades propostas e cobertura dos estados e temas relevantes. Referências e diff conferidos em revisão de código e documentação.
 
 ## Registro recente
+
+### HOJE-01 e HOJE-02 abertos — 16/11
+
+Dois tickets independentes de novas visualizações do Hoje, só com levantamento; nenhum arquivo do app foi alterado. [HOJE-01](../../.scratch/today-views/issues/01-priority-view.md), por prioridade (Baixa, Média, Alta): o campo existe; no banco de produção quase tudo está em Média (7.336 Média, 34 Alta, 3 Baixa, 16 com "null" antigo); reaproveita o arrastar entre colunas do Kanban (`useKanbanDnd`). [HOJE-02](../../.scratch/today-views/issues/02-hour-view.md), por hora, estilo Gantt, com arrastar e alças de início e fim: a duração (`time`, em minutos) existe mas não é editável em nenhum lugar do app hoje; a duração mínima real é 5 minutos (3.595 ações com 5, 2.792 com 10) e cerca de 40% dos inícios não caem em minuto redondo; a execução começa por uma prévia. Contagens feitas por consulta de leitura em produção. Decisões do proprietário em 16/11: HOJE-01 com o nome "Prioridade", colunas Alta → Média → Baixa, arrastar muda a prioridade, sem campo na gaveta; HOJE-02 com o nome "Linha do tempo" (`timeline`), passo e mínimo de 5 minutos, 8h às 22h com expandir, administrador vê todas as pessoas, concluídas sem esmaecer, duração editável só nessa visualização. As duas entram como opção em "Visualização inicial do Hoje" (padrão continua "Parceiros"), o que exige uma migration única de `update_my_preferences`, ainda não escrita. Aberto também o [HOJE-03](../../.scratch/today-views/issues/03-category-default-duration.md): o app não tem duração padrão por categoria (toda ação nasce com 10 minutos); tabela aprovada pelo proprietário em 16/11 (Carrossel 20, Reels 30, Gravação 120, Impresso 30, demais como os dados). Ajustes do mesmo dia: HOJE-01 com colunas Baixa → Média → Alta; HOJE-02 com filtro de responsáveis para o administrador, caixa "24 horas" e ação sem responsável na linha de quem a criou.
+
+### INF01 encerrado e UP01 aberto — 16/11
+
+O proprietário encerrou o [INF01](../../.scratch/backend-platform/issues/01-appwrite-migration-study.md) sem migração: não há vantagem em trocar o Supabase pelo Appwrite, que não cobre o que o Cloudinary faz; o limite da Vercel não aumenta no Pro e o plano pago do Cloudinary ele avalia depois. O [relatório](2026-11-16-inf01-appwrite-study.md) fica como referência e o registro está no [histórico](../../.scratch/archive/resolved-tickets.md). Aberto o [UP01](../../.scratch/file-upload/issues/01-own-upload-dropzone.md), ticket de estudo de um envio próprio com arrastar e soltar no lugar do widget do Cloudinary, aproveitando a janela de organizar arquivos; só levantamento inicial, sem alteração no app.
+
+### INF01 aberto com estudo entregue — 16/11
+
+Ticket de estudo [INF01](../../.scratch/backend-platform/issues/01-appwrite-migration-study.md) e [relatório](2026-11-16-inf01-appwrite-study.md), por leitura do código e pesquisa na web, sem testes e sem alteração no app. Achados: o envio de arquivos vai direto do navegador ao Cloudinary, então o limite de 4,5 MB da Vercel não o atinge e não aumenta no Pro; o limite sentido é o do Cloudinary gratuito (10 MB imagem, 100 MB vídeo); arrastar e soltar é possível com componente próprio enviando direto ao Cloudinary; trocar o Supabase pelo Appwrite exigiria reescrever regras de acesso, funções, gatilhos, APIs e portal. Recomendação: não migrar. Preços de planos pagos não confirmados em fonte oficial. Aguarda respostas do proprietário.
 
 ### DS19: migração da preferência aplicada — 16/11
 
@@ -284,7 +300,7 @@ O proprietário aceitou o DS05 (todo ícone à direita do texto), que saiu da fi
 - **DS05:** decisão do proprietário: todos os ícones ficam à direita do texto. A decisão anterior (ícone à esquerda) e o branch `proposal/ds05-save-icon-first` estão superados. A implementação está em andamento no branch `fix/ds05-icons-right`. O ticket segue aberto.
 - **Planejamento (T01–T11):** adiado pelo proprietário. T02 segue aberto. O proprietário informou que PostgreSQL local não é necessário; a conexão com o Supabase será discutida depois.
 - **DS01 e EST-03:** sem menção do proprietário; mantidos como estão.
-- Fila ativa: 16 tickets.
+- Fila ativa: 19 tickets.
 
 ### Abas underline 1px: contrato atualizado — 06/11
 
