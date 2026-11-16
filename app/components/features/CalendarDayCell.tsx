@@ -66,7 +66,7 @@ export function CalendarDayCell({
       key={format(day, "yyyy-MM-dd")}
       ref={setNodeRef}
       className={cn(
-        "group/column flex min-h-0 flex-col hover:bg-secondary",
+        "group/column flex min-h-0 flex-col hover:bg-secondary/50 dark:hover:bg-secondary/20",
         showBorder && "border-b",
         viewOptions.limitHeight && "max-h-[min(24rem,60dvh)]",
       )}

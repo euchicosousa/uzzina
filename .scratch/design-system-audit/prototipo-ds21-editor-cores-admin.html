@@ -1,0 +1,3498 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      UZZINA Admin — Laboratório e Editor Completo de Cores dos Temas (DS21)
+    </title>
+    <style>
+      :root {
+        --font-sans:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, sans-serif;
+        --font-mono:
+          ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+        /* Defaults overridden dynamically by JS palette engine */
+        --background: oklch(0.96 0.002 200);
+        --foreground: oklch(0 0 0);
+        --card-l-delta: -0.02;
+        --popover-l-delta: 0.02;
+        --input-l-delta: -0.04;
+        --border-l-delta: -0.07;
+        --action-l-delta: 0.02;
+        --action-hover-l-delta: 0.1;
+
+        --primary-h: 0;
+        --primary-c: 0;
+        --primary-l: 0;
+        --primary: oklch(0 0 0);
+        --primary-foreground: oklch(1 0 0);
+        --ring: oklch(0 0 0);
+        --accent-l-delta: -0.15;
+
+        --secondary-mix: 5%;
+        --secondary-fg-mix: 65%;
+
+        --shadow-tint: oklch(0.25 0.01 200);
+        --shadow-alpha: 10%;
+        --overlay-alpha: 30%;
+        --action-relief: 1;
+        --action-ring-alpha: 5%;
+        --action-top-border: #ffffff;
+
+        /* Phase Surface & Vivid knobs */
+        --phase-mix: 7%;
+        --phase-mix-hover: 12%;
+        --phase-ring-alpha: 30%;
+        --vivid-hover-dl: 0.04;
+        --vivid-edge-dl: 0.06;
+        --vivid-top-light: 45%;
+
+        /* Semantic base colors */
+        --color-error: oklch(0.8 0.22 16.339);
+        --error-foreground: oklch(0.6 0.22 16.339);
+        --error-bg-mix: 13%;
+
+        --color-warning: oklch(1 0.2 70);
+        --warning-foreground: oklch(0.5 0.2 70);
+        --warning-bg-mix: 7%;
+
+        --color-success: oklch(0.508 0.14 163);
+        --success-foreground: oklch(0.42 0.14 163);
+        --success-bg-mix: 7%;
+
+        --color-info: oklch(0.84 0.2 250);
+        --info-foreground: oklch(0.5 0.2 250);
+        --info-bg-mix: 7%;
+
+        --success-strong: oklch(0.596 0.145 163.225);
+        --success-strong-hover: oklch(0.508 0.118 165.612);
+        --success-strong-foreground: #ffffff;
+
+        /* Priorities */
+        --priority-low: oklch(0.7 0.17 150);
+        --priority-medium: oklch(0.82 0.16 90);
+        --priority-high: oklch(0.65 0.22 25);
+
+        /* 6 Phases */
+        --phase-idea: #fbbf24;
+        --phase-do: #f97316;
+        --phase-doing: #ec4899;
+        --phase-review: #a855f7;
+        --phase-done: #38bdf8;
+        --phase-finished: #4ade80;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: var(--font-sans);
+        background-color: var(--background);
+        color: var(--foreground);
+        -webkit-font-smoothing: antialiased;
+        line-height: 1.45;
+        transition:
+          background-color 150ms ease,
+          color 150ms ease;
+      }
+
+      code,
+      .mono {
+        font-family: var(--font-mono);
+      }
+
+      /* Squircle approximation + standard radii */
+      .squircle {
+        corner-shape: superellipse(1.5);
+      }
+
+      /* Top Admin AppBar */
+      .admin-header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background-color: var(--popover);
+        border-bottom: 1px solid var(--border);
+        box-shadow: var(--shadow-sm);
+        padding: 12px 24px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .admin-header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .admin-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        background-color: var(--primary);
+        color: var(--primary-foreground);
+      }
+
+      .admin-title {
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .admin-subtitle {
+        font-size: 12px;
+        color: var(--secondary-foreground);
+      }
+
+      .header-controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .control-pill-group {
+        display: inline-flex;
+        align-items: center;
+        background-color: var(--secondary);
+        padding: 3px;
+        border-radius: 14px;
+        gap: 2px;
+      }
+
+      .pill-btn {
+        border: none;
+        background: transparent;
+        color: var(--secondary-foreground);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 6px 12px;
+        border-radius: 11px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 120ms ease;
+      }
+
+      .pill-btn.active {
+        background-color: var(--primary);
+        color: var(--primary-foreground);
+        box-shadow: var(--shadow-xs);
+      }
+
+      .palette-dots {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+
+      .palette-dot {
+        width: 24px;
+        height: 24px;
+        border-radius: 999px;
+        border: 2px solid rgba(128, 128, 128, 0.25);
+        cursor: pointer;
+        position: relative;
+        transition: transform 120ms ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .palette-dot:hover {
+        transform: scale(1.14);
+      }
+
+      .palette-dot.active {
+        outline: 2px solid var(--foreground);
+        outline-offset: 2px;
+        transform: scale(1.1);
+      }
+
+      /* Main 2-column workspace */
+      .admin-workspace {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 460px;
+        min-height: calc(100vh - 65px);
+      }
+
+      @media (max-width: 1200px) {
+        .admin-workspace {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Left column: Live component showcase */
+      .showcase-pane {
+        padding: 28px 32px 64px;
+        display: flex;
+        flex-direction: column;
+        gap: 36px;
+        overflow-x: hidden;
+      }
+
+      /* Right column: Sticky sidebar editor */
+      .editor-sidebar {
+        position: sticky;
+        top: 65px;
+        height: calc(100vh - 65px);
+        overflow-y: auto;
+        border-left: 1px solid var(--border);
+        background-color: var(--background);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .sidebar-header {
+        padding: 16px 20px 12px;
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        background-color: var(--background);
+        z-index: 20;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .sidebar-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      .sidebar-tab {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 5px 9px;
+        border-radius: 10px;
+        border: 1px solid transparent;
+        background-color: var(--secondary);
+        color: var(--secondary-foreground);
+        cursor: pointer;
+      }
+
+      .sidebar-tab.active {
+        background-color: var(--primary);
+        color: var(--primary-foreground);
+      }
+
+      .sidebar-body {
+        padding: 16px 20px 48px;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      /* Legend banner explaining Editable vs Calculated */
+      .legend-strip {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 16px;
+        border-radius: 16px;
+        background-color: var(--secondary);
+        font-size: 12px;
+      }
+
+      .badge-editable {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        background-color: var(--primary);
+        color: var(--primary-foreground);
+      }
+
+      .badge-calc {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        background-color: var(--info-background);
+        color: var(--info-foreground);
+        border: 1px solid color-mix(in srgb, var(--color-info) 35%, transparent);
+      }
+
+      /* Section styling in left showcase */
+      .showcase-section {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        padding-bottom: 32px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .showcase-section:last-child {
+        border-bottom: none;
+      }
+
+      .section-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .section-desc {
+        font-size: 13px;
+        color: var(--secondary-foreground);
+        max-width: 72ch;
+      }
+
+      /* State comparison headers (Repouso | Hover | Foco) */
+      .side-by-side-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .side-by-side-3 {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      @media (max-width: 900px) {
+        .side-by-side-grid,
+        .side-by-side-3 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .state-column {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .state-label-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--secondary-foreground);
+      }
+
+      /* Real ActionItem cards */
+      .action-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 13px 14px;
+        border-radius: 16px;
+        background-color: var(--action);
+        color: var(--foreground);
+        border-top: 1px solid var(--action-top-border);
+        box-shadow:
+          0 0 0 1px var(--action-ring),
+          var(--action-shadow);
+        transition: all 150ms ease;
+      }
+
+      .action-card.is-hover-locked {
+        background-color: var(--action-hover);
+        box-shadow:
+          0 0 0 1px var(--action-ring),
+          var(--action-hover-shadow);
+      }
+
+      .action-card.is-line {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        border-radius: 13px;
+      }
+
+      .action-card.is-late {
+        background-color: color-mix(
+          in oklab,
+          var(--color-error-background) 80%,
+          transparent
+        );
+        color: var(--error-foreground);
+        box-shadow:
+          0 0 0 1px color-mix(in srgb, var(--color-error) 30%, transparent),
+          var(--late-resting-shadow);
+      }
+
+      .action-card.is-late.is-hover-locked {
+        background-color: var(--color-error-background);
+        box-shadow:
+          0 0 0 1px color-mix(in srgb, var(--color-error) 45%, transparent),
+          var(--late-hover-shadow);
+      }
+
+      .action-card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .action-card-title {
+        font-size: 13.5px;
+        font-weight: 600;
+        line-height: 1.3;
+      }
+
+      .action-card-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        font-size: 11.5px;
+        color: var(--secondary-foreground);
+      }
+
+      .action-card.is-late .action-card-meta {
+        color: var(--error-foreground);
+        opacity: 0.9;
+      }
+
+      .phase-dot-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        flex-shrink: 0;
+      }
+
+      /* 6 Phases comparison matrix */
+      .phases-matrix {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .phase-row {
+        display: grid;
+        grid-template-columns: 185px repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        align-items: stretch;
+        padding: 10px 0;
+        border-bottom: 1px dashed var(--border);
+      }
+
+      .phase-row:last-child {
+        border-bottom: none;
+      }
+
+      @media (max-width: 1400px) {
+        .phase-row {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      .phase-origin-cell {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 10px 12px;
+        border-radius: 14px;
+        border: 1px dashed var(--border);
+      }
+
+      /* PrismButton matrix */
+      .btn-matrix {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .btn-matrix-row {
+        display: grid;
+        grid-template-columns: 170px repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px dashed var(--border);
+      }
+
+      @media (max-width: 960px) {
+        .btn-matrix-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .prism-btn {
+        height: 40px;
+        padding: 0 18px;
+        border-radius: 16px;
+        font-size: 13.5px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 1px solid transparent;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 120ms ease;
+        width: fit-content;
+      }
+
+      .prism-btn.is-focused {
+        border-color: color-mix(
+          in oklab,
+          var(--ring) 60%,
+          transparent
+        ) !important;
+        box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 30%, transparent) !important;
+      }
+
+      /* Form Inputs & Popover showcase */
+      .prism-input-demo {
+        height: 40px;
+        width: 100%;
+        border-radius: 16px;
+        padding: 0 16px;
+        font-size: 13.5px;
+        background-color: var(--input);
+        color: var(--foreground);
+        border: 1px solid transparent;
+        outline: none;
+      }
+
+      .prism-input-demo.is-focused {
+        border-color: color-mix(in oklab, var(--ring) 60%, transparent);
+        box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 30%, transparent);
+      }
+
+      .prism-input-demo.is-invalid {
+        background-color: var(--color-error-background);
+        color: var(--error-foreground);
+        border-color: var(--color-error);
+        box-shadow: 0 0 0 3px var(--color-error-background);
+      }
+
+      .popover-demo {
+        border-radius: 16px;
+        background-color: var(--popover);
+        border: 1px solid color-mix(in srgb, var(--foreground) 8%, transparent);
+        box-shadow: var(--shadow-lg);
+        padding: 6px;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+
+      .popover-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        border-radius: 12px;
+        font-size: 13px;
+      }
+
+      .popover-item.is-hover {
+        background-color: var(--secondary);
+      }
+
+      /* Alerts & Badges */
+      .prism-alert-demo {
+        border-radius: 16px;
+        padding: 14px 16px;
+        border: 1px solid transparent;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .prism-badge-demo {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        height: 22px;
+        padding: 0 9px;
+        border-radius: 999px;
+        font-size: 11.5px;
+        font-weight: 600;
+        width: fit-content;
+      }
+
+      /* Right Sidebar Editor Controls */
+      .editor-group {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .editor-group-title {
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--foreground);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .token-editor-block {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px 0;
+        border-top: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+      }
+
+      .token-editor-block:first-of-type {
+        border-top: none;
+        padding-top: 4px;
+      }
+
+      .token-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .token-name-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .swatch-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        border: 1px solid rgba(128, 128, 128, 0.35);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+
+      .swatch-btn input[type="color"] {
+        position: absolute;
+        inset: -6px;
+        width: 44px;
+        height: 44px;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .slider-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .slider-row {
+        display: grid;
+        grid-template-columns: 78px 1fr 58px;
+        align-items: center;
+        gap: 8px;
+        font-size: 11.5px;
+      }
+
+      .slider-row label {
+        color: var(--secondary-foreground);
+        font-weight: 500;
+      }
+
+      .slider-row input[type="range"] {
+        width: 100%;
+        accent-color: var(--primary);
+        cursor: pointer;
+      }
+
+      .slider-val {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        text-align: right;
+        color: var(--foreground);
+      }
+
+      /* Tree of Derived / Calculated tokens inside the Sidebar */
+      .derived-tree {
+        margin-left: 12px;
+        padding-left: 12px;
+        border-left: 2px solid
+          color-mix(in srgb, var(--color-info) 45%, var(--border));
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 4px;
+      }
+
+      .derived-item {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        padding: 7px 10px;
+        border-radius: 12px;
+        background-color: var(--secondary);
+      }
+
+      .derived-item-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .derived-swatch-pair {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+      }
+
+      .mini-swatch {
+        width: 22px;
+        height: 22px;
+        border-radius: 7px;
+        border: 1px solid rgba(128, 128, 128, 0.35);
+        flex-shrink: 0;
+      }
+
+      .formula-tag {
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        color: var(--secondary-foreground);
+      }
+
+      /* Modal for Code Export */
+      .export-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background-color: var(--color-overlay);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+        padding: 24px;
+      }
+
+      .export-modal-backdrop.open {
+        display: flex;
+      }
+
+      .export-modal {
+        background-color: var(--popover);
+        color: var(--foreground);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-2xl);
+        border-radius: 20px;
+        width: 100%;
+        max-width: 720px;
+        max-height: 85vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .export-modal-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .export-pre {
+        padding: 16px 20px;
+        overflow-y: auto;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        line-height: 1.5;
+        background-color: var(--input);
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- TOP BAR: Mode, 11 Official Palettes, Relief & Vivid Knobs -->
+    <header class="admin-header">
+      <div class="admin-header-left">
+        <span class="admin-badge">Admin · DS21</span>
+        <div>
+          <div class="admin-title">
+            Laboratório & Editor Completo de Cores dos Temas
+          </div>
+          <div class="admin-subtitle">
+            Rota proposta: <code>/app/admin/themes</code> — Estados Repouso,
+            Hover e Foco lado a lado + Cores Calculadas em Tempo Real
+          </div>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <!-- Light / Dark Toggle -->
+        <div class="control-pill-group" role="group" aria-label="Modo do tema">
+          <button
+            type="button"
+            class="pill-btn active"
+            id="btn-mode-light"
+            onclick="setMode('light')"
+          >
+            ☀️ Claro
+          </button>
+          <button
+            type="button"
+            class="pill-btn"
+            id="btn-mode-dark"
+            onclick="setMode('dark')"
+          >
+            🌙 Escuro
+          </button>
+        </div>
+
+        <!-- 11 Palettes -->
+        <div
+          style="display: flex; align-items: center; gap: 8px"
+          title="Escolher uma das 11 paletas oficiais como ponto de partida"
+        >
+          <span
+            style="
+              font-size: 11px;
+              font-weight: 700;
+              text-transform: uppercase;
+              color: var(--secondary-foreground);
+            "
+            >Paleta:</span
+          >
+          <div class="palette-dots" id="palette-dots-container"></div>
+          <span
+            id="active-palette-label"
+            style="font-size: 12px; font-weight: 700; min-width: 64px"
+            >Ônix</span
+          >
+        </div>
+
+        <!-- Relief Switch -->
+        <div class="control-pill-group">
+          <button
+            type="button"
+            class="pill-btn active"
+            id="btn-relief-toggle"
+            onclick="toggleRelief()"
+          >
+            ✨ Relevo: Ativo
+          </button>
+        </div>
+
+        <!-- Reset & Export -->
+        <div style="display: flex; align-items: center; gap: 8px">
+          <button
+            type="button"
+            class="pill-btn"
+            style="background: var(--secondary); color: var(--foreground)"
+            onclick="resetCurrentPalette()"
+          >
+            ↺ Restaurar Paleta
+          </button>
+          <button
+            type="button"
+            class="pill-btn active"
+            onclick="openExportModal()"
+          >
+            { } Exportar Código TS / CSS
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN 2-COLUMN WORKSPACE -->
+    <div class="admin-workspace">
+      <!-- LEFT COLUMN: LIVE REAL COMPONENTS WITH SIDE-BY-SIDE STATES -->
+      <main class="showcase-pane">
+        <!-- Legend Strip -->
+        <div class="legend-strip">
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              flex-wrap: wrap;
+            "
+          >
+            <span class="badge-editable">🎨 Cor Original Editável</span>
+            <span
+              >Você controla Matiz (H), Croma (C), Luma (L) e Hex diretamente na
+              barra direita.</span
+            >
+          </div>
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              flex-wrap: wrap;
+            "
+          >
+            <span class="badge-calc">⚡ Calculada em Tempo Real</span>
+            <span
+              >Derivada automaticamente da cor mãe (exibida lado a lado sem
+              precisar passar o mouse).</span
+            >
+          </div>
+        </div>
+
+        <!-- SECTION 1: ACTION CARDS (REPOUSO vs HOVER SIDE BY SIDE) -->
+        <section class="showcase-section" id="sec-actions">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">
+                1. Cartões de Ação (<code>ActionItem</code>) — Repouso e Hover
+                Lado a Lado
+              </h2>
+              <p class="section-desc">
+                Cada variante do cartão de ação aparece permanentemente em
+                <strong>Repouso (Original)</strong> à esquerda e em
+                <strong>Hover Calculado</strong> à direita, permitindo calibrar
+                <code>--action-l-delta</code>,
+                <code>--action-hover-l-delta</code>, borda superior, anel e
+                sombra sem precisar passar o mouse.
+              </p>
+            </div>
+          </div>
+
+          <!-- 1.1 Block Card: Resting vs Hover -->
+          <div class="side-by-side-grid">
+            <div class="state-column">
+              <div class="state-label-bar">
+                <span>Cartão Bloco — Estado Original (Repouso)</span>
+                <span class="badge-calc" id="lbl-action-rest-formula"
+                  >⚡ bg-action (Bg + ΔL)</span
+                >
+              </div>
+              <div class="action-card">
+                <div class="action-card-top">
+                  <span class="action-card-title"
+                    >Campanha Dia dos Pais — Reels 01</span
+                  >
+                  <span
+                    class="phase-dot-indicator"
+                    style="background-color: var(--phase-doing)"
+                  ></span>
+                </div>
+                <div class="action-card-meta">
+                  <div>
+                    <strong style="color: var(--foreground)"
+                      >Studio Alpha</strong
+                    >
+                    · Instagram Reels
+                  </div>
+                  <span>Amanhã, 14:00</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="state-column">
+              <div class="state-label-bar">
+                <span>Cartão Bloco — Estado Hover Permanente (Sem Mouse)</span>
+                <span class="badge-calc" id="lbl-action-hover-formula"
+                  >⚡ bg-action-hover + shadow-action-hover</span
+                >
+              </div>
+              <div class="action-card is-hover-locked">
+                <div class="action-card-top">
+                  <span class="action-card-title"
+                    >Campanha Dia dos Pais — Reels 01 (Em Hover)</span
+                  >
+                  <span
+                    class="phase-dot-indicator"
+                    style="background-color: var(--phase-doing)"
+                  ></span>
+                </div>
+                <div class="action-card-meta">
+                  <div>
+                    <strong style="color: var(--foreground)"
+                      >Studio Alpha</strong
+                    >
+                    · Instagram Reels
+                  </div>
+                  <span>Amanhã, 14:00</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 1.2 Line Card: Resting vs Hover -->
+          <div class="side-by-side-grid">
+            <div class="state-column">
+              <div class="state-label-bar">
+                <span>Cartão Linha — Estado Original (Repouso)</span>
+                <span class="badge-calc">⚡ bg-action</span>
+              </div>
+              <div class="action-card is-line">
+                <div style="display: flex; align-items: center; gap: 8px">
+                  <span
+                    class="phase-dot-indicator"
+                    style="background-color: var(--phase-do)"
+                  ></span>
+                  <span class="action-card-title" style="font-size: 12.5px"
+                    >Revisão do roteiro institucional</span
+                  >
+                </div>
+                <div class="action-card-meta">
+                  <strong style="color: var(--foreground)">Studio Alpha</strong>
+                  <span>15:30</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="state-column">
+              <div class="state-label-bar">
+                <span>Cartão Linha — Estado Hover Permanente</span>
+                <span class="badge-calc">⚡ bg-action-hover</span>
+              </div>
+              <div class="action-card is-line is-hover-locked">
+                <div style="display: flex; align-items: center; gap: 8px">
+                  <span
+                    class="phase-dot-indicator"
+                    style="background-color: var(--phase-do)"
+                  ></span>
+                  <span class="action-card-title" style="font-size: 12.5px"
+                    >Revisão do roteiro institucional (Hover)</span
+                  >
+                </div>
+                <div class="action-card-meta">
+                  <strong style="color: var(--foreground)">Studio Alpha</strong>
+                  <span>15:30</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 1.3 Late Card (late-surface): Resting vs Hover -->
+          <div class="side-by-side-grid">
+            <div class="state-column">
+              <div class="state-label-bar">
+                <span
+                  >Cartão Atrasado (<code>late-surface</code>) — Repouso</span
+                >
+                <span class="badge-calc"
+                  >⚡ bg-error-background/80 + ring-error/30</span
+                >
+              </div>
+              <div class="action-card is-late">
+                <div class="action-card-top">
+                  <span class="action-card-title"
+                    >Carrossel de Tendências de Outono</span
+                  >
+                  <span style="font-size: 11px; font-weight: 700"
+                    >⚠️ Atrasado</span
+                  >
+                </div>
+                <div class="action-card-meta">
+                  <div><strong>Beta Clinic</strong> · Carrossel</div>
+                  <span>Venceu há 2 dias</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="state-column">
+              <div class="state-label-bar">
+                <span
+                  >Cartão Atrasado (<code>late-surface</code>) — Hover
+                  Permanente</span
+                >
+                <span class="badge-calc"
+                  >⚡ bg-error-background (100%) + Sombra Vermelha</span
+                >
+              </div>
+              <div class="action-card is-late is-hover-locked">
+                <div class="action-card-top">
+                  <span class="action-card-title"
+                    >Carrossel de Tendências de Outono (Hover)</span
+                  >
+                  <span style="font-size: 11px; font-weight: 700"
+                    >⚠️ Atrasado</span
+                  >
+                </div>
+                <div class="action-card-meta">
+                  <div><strong>Beta Clinic</strong> · Carrossel</div>
+                  <span>Venceu há 2 dias</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 2: ALL 6 PHASES SIDE-BY-SIDE (ORIGINAL + SOFT REST + SOFT HOVER + VIVID REST + VIVID HOVER) -->
+        <section class="showcase-section" id="sec-phases">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">
+                2. Os 6 Estágios / Fases da Ação — Cor Original + Suave (Repouso
+                & Hover) + Viva (Repouso & Hover)
+              </h2>
+              <p class="section-desc">
+                Para cada estágio (Ideia, Fazer, Fazendo, Análise, Feito e
+                Concluído), a primeira coluna mostra a
+                <strong>Cor Original Editável</strong> e as 4 colunas seguintes
+                mostram lado a lado os cartões calculados em tempo real para
+                <code>phase-surface</code> (Suave) e <code>phase-vivid</code>
+                (Viva), em repouso e em hover.
+              </p>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap">
+              <div class="control-pill-group">
+                <button
+                  type="button"
+                  class="pill-btn active"
+                  id="btn-vivid-ink-dark"
+                  onclick="setVividInk('dark')"
+                >
+                  Tinta Viva: Escura (L=0.35)
+                </button>
+                <button
+                  type="button"
+                  class="pill-btn"
+                  id="btn-vivid-ink-light"
+                  onclick="setVividInk('light')"
+                >
+                  Tinta Viva: Clara (L=0.98)
+                </button>
+              </div>
+              <div class="control-pill-group">
+                <button
+                  type="button"
+                  class="pill-btn active"
+                  id="btn-vivid-dark-full"
+                  onclick="setVividDark('full')"
+                >
+                  Viva no Escuro: Cheia
+                </button>
+                <button
+                  type="button"
+                  class="pill-btn"
+                  id="btn-vivid-dark-dim"
+                  onclick="setVividDark('dim')"
+                >
+                  Viva no Escuro: Atenuada (L=0.72)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="phases-matrix" id="phases-matrix-container"></div>
+        </section>
+
+        <!-- SECTION 3: PRISM BUTTONS & TOGGLES (REPOUSO | HOVER | FOCO SIDE BY SIDE) -->
+        <section class="showcase-section" id="sec-buttons">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">
+                3. Botões <code>PrismButton</code> e <code>PrismToggle</code> —
+                Repouso, Hover e Foco Lado a Lado
+              </h2>
+              <p class="section-desc">
+                Todas as 7 variantes oficiais de botão exibidas em 3 colunas
+                permanentes: <strong>Original (Repouso)</strong>,
+                <strong>Hover Calculado</strong> (sem precisar passar o mouse) e
+                <strong>Foco Calculado</strong> (<code
+                  >ring-3 ring-ring/30</code
+                >
+                + <code>border-ring/60</code>).
+              </p>
+            </div>
+          </div>
+
+          <div class="btn-matrix" id="btn-matrix-container"></div>
+        </section>
+
+        <!-- SECTION 4: INPUTS, POPOVER & SURFACES -->
+        <section class="showcase-section" id="sec-surfaces">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">
+                4. Campos de Formulário (<code>PrismInput</code>) e Containers
+                Flutuantes (<code>Popover</code>, <code>Card</code>,
+                <code>Overlay</code>)
+              </h2>
+              <p class="section-desc">
+                Comparação direta entre o campo em repouso
+                (<code>bg-input</code>), em foco (<code>--ring</code>) e com
+                erro (<code>aria-invalid</code>), além do menu flutuante com
+                item em repouso e item em hover lado a lado.
+              </p>
+            </div>
+          </div>
+
+          <div class="side-by-side-3">
+            <div class="state-column">
+              <div class="state-label-bar">
+                <span>PrismInput — Repouso</span>
+                <span class="badge-calc">⚡ bg-input (Bg + ΔL)</span>
+              </div>
+              <input
+                type="text"
+                class="prism-input-demo"
+                readonly
+                value="Título da ação em repouso"
+              />
+            </div>
+
+            <div class="state-column">
+              <div class="state-label-bar">
+                <span>PrismInput — Em Foco (Permanente)</span>
+                <span class="badge-calc">⚡ ring-ring/30 + border-ring/60</span>
+              </div>
+              <input
+                type="text"
+                class="prism-input-demo is-focused"
+                readonly
+                value="Campo com foco ativo visível"
+              />
+            </div>
+
+            <div class="state-column">
+              <div class="state-label-bar">
+                <span>PrismInput — Inválido (<code>aria-invalid</code>)</span>
+                <span class="badge-calc">⚡ bg-error-background</span>
+              </div>
+              <input
+                type="text"
+                class="prism-input-demo is-invalid"
+                readonly
+                value="Data de publicação inválida"
+              />
+            </div>
+          </div>
+
+          <div class="side-by-side-grid" style="margin-top: 8px">
+            <div class="state-column">
+              <div class="state-label-bar">
+                <span
+                  >Menu / Popover Flutuante (<code>bg-popover</code> +
+                  <code>shadow-lg</code>)</span
+                >
+                <span class="badge-calc"
+                  >⚡ Item Normal vs. Item Hover (bg-secondary)</span
+                >
+              </div>
+              <div class="popover-demo">
+                <div class="popover-item">
+                  <span>Item de menu em repouso (Original)</span>
+                  <code style="font-size: 11px; opacity: 0.6">⌘D</code>
+                </div>
+                <div class="popover-item is-hover">
+                  <span style="font-weight: 600"
+                    >Item de menu em Hover permanente (bg-secondary)</span
+                  >
+                  <span class="badge-calc">⚡ Hover</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="state-column">
+              <div class="state-label-bar">
+                <span
+                  >Superfície <code>bg-card</code> & Backdrop
+                  <code>bg-overlay</code></span
+                >
+                <span class="badge-calc"
+                  >⚡ Card (Bg + ΔL) | Overlay (30% Shadow Tint)</span
+                >
+              </div>
+              <div
+                style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px"
+              >
+                <div
+                  style="
+                    background-color: var(--card);
+                    border: 1px solid var(--border);
+                    border-radius: 16px;
+                    padding: 14px;
+                  "
+                >
+                  <div style="font-size: 13px; font-weight: 700">
+                    Superfície Card
+                  </div>
+                  <div
+                    style="
+                      font-size: 11.5px;
+                      color: var(--secondary-foreground);
+                      margin-top: 4px;
+                    "
+                  >
+                    Base para alertas e fundos semânticos misturados.
+                  </div>
+                </div>
+                <div
+                  style="
+                    background-color: var(--color-overlay);
+                    border: 1px solid var(--border);
+                    border-radius: 16px;
+                    padding: 14px;
+                  "
+                >
+                  <div style="font-size: 13px; font-weight: 700">
+                    Backdrop Overlay
+                  </div>
+                  <div style="font-size: 11.5px; margin-top: 4px">
+                    Fundo escurecido de Dialog/Sheet (<code>--shadow-tint</code>
+                    a <span id="lbl-overlay-pct">30%</span>).
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 5: SEMANTIC FEEDBACKS & PRIORITIES -->
+        <section class="showcase-section" id="sec-feedback">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">
+                5. Feedbacks Semânticos (<code>PrismAlert</code> &
+                <code>PrismBadge</code>) e Prioridades do Hoje
+              </h2>
+              <p class="section-desc">
+                Cada família semântica exibe sua
+                <strong>Cor Base Editável</strong> ao lado do
+                <strong>Fundo Calculado sobre <code>--card</code></strong> e do
+                <strong>Texto Calculado (<code>*-foreground</code>)</strong>.
+              </p>
+            </div>
+          </div>
+
+          <div class="side-by-side-grid" id="semantic-feedback-showcase"></div>
+
+          <div style="margin-top: 10px">
+            <div class="state-label-bar" style="margin-bottom: 8px">
+              <span
+                >Colunas de Prioridade do Quadro Hoje (Baixa, Média e
+                Alta)</span
+              >
+              <span class="badge-editable">🎨 3 Cores OKLCH Editáveis</span>
+            </div>
+            <div class="side-by-side-3" id="priorities-showcase"></div>
+          </div>
+        </section>
+      </main>
+
+      <!-- RIGHT COLUMN: COMPLETE INTERACTIVE COLOR & FORMULA SIDEBAR -->
+      <aside class="editor-sidebar">
+        <div class="sidebar-header">
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+            "
+          >
+            <span style="font-size: 14px; font-weight: 700"
+              >🎛️ Painel de Edição de Cores (<span id="sidebar-mode-indicator"
+                >Modo Claro</span
+              >)</span
+            >
+            <span class="badge-calc">Tempo Real</span>
+          </div>
+          <div class="sidebar-tabs">
+            <button
+              type="button"
+              class="sidebar-tab active"
+              onclick="filterSidebar('all', this)"
+            >
+              Todas
+            </button>
+            <button
+              type="button"
+              class="sidebar-tab"
+              onclick="filterSidebar('surfaces', this)"
+            >
+              1. Superfícies
+            </button>
+            <button
+              type="button"
+              class="sidebar-tab"
+              onclick="filterSidebar('brand', this)"
+            >
+              2. Marca & Botões
+            </button>
+            <button
+              type="button"
+              class="sidebar-tab"
+              onclick="filterSidebar('phases', this)"
+            >
+              3. Fases (6)
+            </button>
+            <button
+              type="button"
+              class="sidebar-tab"
+              onclick="filterSidebar('feedback', this)"
+            >
+              4. Feedbacks
+            </button>
+            <button
+              type="button"
+              class="sidebar-tab"
+              onclick="filterSidebar('priorities', this)"
+            >
+              5. Prioridades
+            </button>
+          </div>
+        </div>
+
+        <div class="sidebar-body" id="sidebar-controls-container"></div>
+      </aside>
+    </div>
+
+    <!-- MODAL FOR EXPORTING PALETTE TS / CSS -->
+    <div class="export-modal-backdrop" id="export-modal">
+      <div class="export-modal">
+        <div class="export-modal-header">
+          <div>
+            <div style="font-size: 15px; font-weight: 700">
+              Exportar Configuração da Paleta e Variáveis CSS
+            </div>
+            <div style="font-size: 12px; color: var(--secondary-foreground)">
+              Pronto para colar em <code>app/lib/palettes.ts</code> ou
+              <code>app/tailwind.css</code>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px">
+            <button
+              type="button"
+              class="pill-btn active"
+              onclick="copyExportCode()"
+            >
+              📋 Copiar Código
+            </button>
+            <button
+              type="button"
+              class="pill-btn"
+              style="background: var(--secondary); color: var(--foreground)"
+              onclick="closeExportModal()"
+            >
+              ✕ Fechar
+            </button>
+          </div>
+        </div>
+        <pre class="export-pre" id="export-code-output"></pre>
+      </div>
+    </div>
+
+    <script>
+      // ============================================================================
+      // 1. OKLCH <-> HEX MATH UTILITIES (from app/utils/color.ts)
+      // ============================================================================
+      function srgbToLinear(c) {
+        return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+      }
+      function linearToSrgb(c) {
+        return c <= 0.0031308
+          ? c * 12.92
+          : 1.055 * Math.pow(c, 1 / 2.4) - 0.055;
+      }
+      function hexToOklch(hex) {
+        let clean = String(hex || "#000000")
+          .replace("#", "")
+          .trim();
+        if (clean.length === 3) {
+          clean = clean
+            .split("")
+            .map((ch) => ch + ch)
+            .join("");
+        }
+        if (clean.length !== 6) return { l: 0, c: 0, h: 0 };
+        const r = parseInt(clean.slice(0, 2), 16) / 255;
+        const g = parseInt(clean.slice(2, 4), 16) / 255;
+        const b = parseInt(clean.slice(4, 6), 16) / 255;
+        const rL = srgbToLinear(r);
+        const gL = srgbToLinear(g);
+        const bL = srgbToLinear(b);
+        const l_ = 0.4122214708 * rL + 0.5363337775 * gL + 0.0514459954 * bL;
+        const m_ = 0.2119034982 * rL + 0.6806995451 * gL + 0.1073970008 * bL;
+        const s_ = 0.0883024619 * rL + 0.2817188376 * gL + 0.6299787005 * bL;
+        const lL = Math.cbrt(l_);
+        const mL = Math.cbrt(m_);
+        const sL = Math.cbrt(s_);
+        const L = 0.2104542553 * lL + 0.793617785 * mL - 0.0040720468 * sL;
+        const a = 1.9779984951 * lL - 2.428592205 * mL + 0.4505937099 * sL;
+        const bO = 0.0259040371 * lL + 0.7827717662 * mL - 0.808675766 * sL;
+        const C = Math.sqrt(a * a + bO * bO);
+        let H = Math.atan2(bO, a) * (180 / Math.PI);
+        if (H < 0) H += 360;
+        return {
+          l: Math.round(Math.max(0, Math.min(1, L)) * 1000) / 1000,
+          c: Math.round(Math.max(0, C) * 1000) / 1000,
+          h: Math.round(H * 10) / 10,
+        };
+      }
+      function oklchToHex(l, c, h) {
+        const L = Math.max(0, Math.min(1, Number(l) || 0));
+        const C = Math.max(0, Number(c) || 0);
+        const H = ((Number(h) || 0) * Math.PI) / 180;
+        const a = C * Math.cos(H);
+        const b_ = C * Math.sin(H);
+        const lL = L + 0.3963377774 * a + 0.2158037573 * b_;
+        const mL = L - 0.1055613458 * a - 0.0638541728 * b_;
+        const sL = L - 0.0894841775 * a - 1.291485548 * b_;
+        const l_ = lL * lL * lL;
+        const m_ = mL * mL * mL;
+        const s_ = sL * sL * sL;
+        let rL = 4.0767416621 * l_ - 3.3077115913 * m_ + 0.2309699292 * s_;
+        let gL = -1.2684380046 * l_ + 2.6097574011 * m_ - 0.3413193965 * s_;
+        let bL = -0.0041960863 * l_ - 0.7034186148 * m_ + 1.707614701 * s_;
+        rL = Math.max(0, Math.min(1, rL));
+        gL = Math.max(0, Math.min(1, gL));
+        bL = Math.max(0, Math.min(1, bL));
+        const r = Math.round(linearToSrgb(rL) * 255);
+        const g = Math.round(linearToSrgb(gL) * 255);
+        const b = Math.round(linearToSrgb(bL) * 255);
+        const toHex = (n) => n.toString(16).padStart(2, "0");
+        return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
+      }
+      function formatOklch(c) {
+        return `oklch(${Number(c.l).toFixed(2)} ${Number(c.c).toFixed(3)} ${Math.round(c.h)})`;
+      }
+      function clamp01(v) {
+        return Math.max(0, Math.min(1, Math.round(v * 1000) / 1000));
+      }
+
+      // ============================================================================
+      // 2. ALL 11 OFFICIAL UZZINA PALETTES (from app/lib/palettes.ts)
+      // ============================================================================
+      const INITIAL_PALETTES = [
+        {
+          id: "default",
+          label: "Ônix",
+          relief: true,
+          light: {
+            primary: { l: 0, c: 0, h: 0 },
+            primaryFg: { l: 1, c: 0, h: 0 },
+            bg: { l: 0.96, c: 0.002, h: 200 },
+            fg: { l: 0, c: 0, h: 0 },
+            ring: { l: 0, c: 0, h: 0 },
+            shadow: { l: 0.25, c: 0.01, h: 200 },
+            shadowOpacity: 10,
+            cardLDelta: -0.02,
+            popoverLDelta: 0.02,
+            inputLDelta: -0.04,
+            borderLDelta: -0.07,
+            actionLDelta: 0.02,
+            actionHoverLDelta: 0.1,
+          },
+          dark: {
+            primary: { l: 1, c: 0, h: 0 },
+            primaryFg: { l: 0, c: 0, h: 0 },
+            bg: { l: 0.2, c: 0.01, h: 250 },
+            fg: { l: 1, c: 0, h: 0 },
+            ring: { l: 1, c: 0, h: 0 },
+            shadow: { l: 0.1, c: 0.01, h: 200 },
+            shadowOpacity: 50,
+            cardLDelta: 0.05,
+            popoverLDelta: -0.03,
+            inputLDelta: 0.02,
+            borderLDelta: 0.1,
+            actionLDelta: 0.1,
+            actionHoverLDelta: 0.2,
+          },
+        },
+        {
+          id: "carbon",
+          label: "Carbono",
+          relief: false,
+          light: {
+            primary: { l: 0.3, c: 0.02, h: 240 },
+            primaryFg: { l: 1, c: 0, h: 0 },
+            bg: { l: 1, c: 0, h: 0 },
+            fg: { l: 0, c: 0, h: 0 },
+            ring: { l: 0.3, c: 0.02, h: 240 },
+            shadow: { l: 0.25, c: 0, h: 0 },
+            shadowOpacity: 10,
+            cardLDelta: -0.04,
+            popoverLDelta: 0.1,
+            inputLDelta: -0.02,
+            borderLDelta: -0.04,
+            actionLDelta: -0.02,
+            actionHoverLDelta: -0.005,
+          },
+          dark: {
+            primary: { l: 0.99, c: 0.01, h: 240 },
+            primaryFg: { l: 0.3, c: 0.02, h: 240 },
+            bg: { l: 0.25, c: 0.015, h: 240 },
+            fg: { l: 1, c: 0, h: 0 },
+            ring: { l: 0.99, c: 0.01, h: 240 },
+            shadow: { l: 0.1, c: 0, h: 0 },
+            shadowOpacity: 40,
+            cardLDelta: 0.05,
+            popoverLDelta: -0.03,
+            inputLDelta: 0.04,
+            borderLDelta: 0.1,
+            actionLDelta: 0.1,
+            actionHoverLDelta: 0.2,
+          },
+        },
+        {
+          id: "red",
+          label: "Rubi",
+          relief: true,
+          light: {
+            primary: { l: 0.62, c: 0.25, h: 20 },
+            primaryFg: { l: 1, c: 0, h: 0 },
+            bg: { l: 0.98, c: 0, h: 0 },
+            fg: { l: 0, c: 0, h: 0 },
+            ring: { l: 0.62, c: 0.25, h: 20 },
+            shadow: { l: 0.25, c: 0.04, h: 20 },
+            shadowOpacity: 10,
+            cardLDelta: -0.02,
+            popoverLDelta: 0.06,
+            inputLDelta: -0.02,
+            borderLDelta: -0.05,
+            actionLDelta: 0.04,
+            actionHoverLDelta: 0.06,
+          },
+          dark: {
+            primary: { l: 0.68, c: 0.25, h: 20 },
+            primaryFg: { l: 1, c: 0, h: 0 },
+            bg: { l: 0.141, c: 0.005, h: 285 },
+            fg: { l: 1, c: 0, h: 0 },
+            ring: { l: 0.68, c: 0.25, h: 20 },
+            shadow: { l: 0.03, c: 0, h: 0 },
+            shadowOpacity: 70,
+            cardLDelta: 0.05,
+            popoverLDelta: -0.03,
+            inputLDelta: 0.02,
+            borderLDelta: 0.2,
+            actionLDelta: 0.1,
+            actionHoverLDelta: 0.2,
+          },
+        },
+        {
+          id: "orange",
+          label: "Coral",
+          relief: true,
+          light: {
+            primary: { l: 0.65, c: 0.18, h: 25 },
+            primaryFg: { l: 1, c: 0, h: 0 },
+            bg: { l: 0.95, c: 0.01, h: 130 },
+            fg: { l: 0, c: 0, h: 0 },
+            ring: { l: 0.65, c: 0.18, h: 25 },
+            shadow: { l: 0.25, c: 0.05, h: 140 },
+            shadowOpacity: 10,
+            cardLDelta: -0.02,
+            popoverLDelta: 0.03,
+            inputLDelta: -0.02,
+            borderLDelta: -0.05,
+            actionLDelta: 0.02,
+            actionHoverLDelta: 0.12,
+          },
+          dark: {
+            primary: { l: 0.65, c: 0.18, h: 25 },
+            primaryFg: { l: 0.9, c: 0.02, h: 130 },
+            bg: { l: 0.25, c: 0.01, h: 190 },
+            fg: { l: 0.95, c: 0.01, h: 130 },
+            ring: { l: 0.65, c: 0.18, h: 25 },
+            shadow: { l: 0.1, c: 0.03, h: 140 },
+            shadowOpacity: 25,
+            cardLDelta: 0.05,
+            popoverLDelta: -0.03,
+            inputLDelta: -0.02,
+            borderLDelta: 0.1,
+            actionLDelta: 0.07,
+            actionHoverLDelta: 0.2,
+          },
+        },
+        {
+          id: "yellow",
+          label: "Damasco",
+          relief: true,
+          light: {
+            primary: { l: 0.8, c: 0.5, h: 100 },
+            primaryFg: { l: 0, c: 0, h: 0 },
+            bg: { l: 0.98, c: 0, h: 0 },
+            fg: { l: 0, c: 0, h: 0 },
+            ring: { l: 0.8, c: 0.5, h: 100 },
+            shadow: { l: 0.25, c: 0.04, h: 100 },
+            shadowOpacity: 10,
+            cardLDelta: -0.02,
+            popoverLDelta: 0,
+            inputLDelta: -0.02,
+            borderLDelta: -0.05,
+            actionLDelta: 0.02,
+            actionHoverLDelta: 0.04,
+          },
+          dark: {
+            primary: { l: 0.8, c: 0.4, h: 100 },
+            primaryFg: { l: 0, c: 0, h: 0 },
+            bg: { l: 0.141, c: 0.005, h: 285 },
+            fg: { l: 1, c: 0, h: 0 },
+            ring: { l: 0.8, c: 0.4, h: 100 },
+            shadow: { l: 0.03, c: 0, h: 100 },
+            shadowOpacity: 70,
+            cardLDelta: 0.05,
+            popoverLDelta: -0.03,
+            inputLDelta: 0.02,
+            borderLDelta: 0.2,
+            actionLDelta: 0.1,
+            actionHoverLDelta: 0.2,
+          },
+        },
+        {
+          id: "energy",
+          label: "Elétrico",
+          relief: true,
+          light: {
+            primary: { l: 0.94, c: 0.15, h: 120 },
+            primaryFg: { l: 0, c: 0, h: 0 },
+            bg: { l: 0.96, c: 0.004, h: 240 },
+            fg: { l: 0, c: 0, h: 0 },
+            ring: { l: 0.94, c: 0.15, h: 120 },
+            shadow: { l: 0.25, c: 0.04, h: 120 },
+            shadowOpacity: 10,
+            cardLDelta: -0.03,
+            popoverLDelta: 0,
+            inputLDelta: -0.02,
+            borderLDelta: -0.05,
+            actionLDelta: 0.02,
+            actionHoverLDelta: 0.04,
+          },
+          dark: {
+            primary: { l: 0.9, c: 0.18, h: 120 },
+            primaryFg: { l: 0, c: 0, h: 0 },
+            bg: { l: 0.2, c: 0.01, h: 250 },
+            fg: { l: 1, c: 0, h: 0 },
+            ring: { l: 0.9, c: 0.18, h: 120 },
+            shadow: { l: 0.1, c: 0.03, h: 120 },
+            shadowOpacity: 60,
+            cardLDelta: 0.05,
+            popoverLDelta: -0.03,
+            inputLDelta: 0.02,
+            borderLDelta: 0.2,
+            actionLDelta: 0.1,
+            actionHoverLDelta: 0.2,
+          },
+        },
+        {
+          id: "green",
+          label: "Folha",
+          relief: true,
+          light: {
+            primary: { l: 0.7, c: 0.2, h: 130 },
+            primaryFg: { l: 1, c: 0, h: 0 },
+            bg: { l: 0.98, c: 0, h: 0 },
+            fg: { l: 0, c: 0, h: 0 },
+            ring: { l: 0.7, c: 0.2, h: 130 },
+            shadow: { l: 0.25, c: 0.04, h: 130 },
+            shadowOpacity: 10,
+            cardLDelta: -0.02,
+            popoverLDelta: 0,
+            inputLDelta: -0.02,
+            borderLDelta: -0.05,
+            actionLDelta: 0.02,
+            actionHoverLDelta: 0.04,
+          },
+          dark: {
+            primary: { l: 0.65, c: 0.2, h: 130 },
+            primaryFg: { l: 0, c: 0, h: 0 },
+            bg: { l: 0.141, c: 0.005, h: 285 },
+            fg: { l: 1, c: 0, h: 0 },
+            ring: { l: 0.65, c: 0.2, h: 130 },
+            shadow: { l: 0.1, c: 0.03, h: 130 },
+            shadowOpacity: 50,
+            cardLDelta: 0.05,
+            popoverLDelta: -0.03,
+            inputLDelta: 0.02,
+            borderLDelta: 0.2,
+            actionLDelta: 0.1,
+            actionHoverLDelta: 0.2,
+          },
+        },
+        {
+          id: "cyan",
+          label: "Turquesa",
+          relief: true,
+          light: {
+            primary: { l: 0.7, c: 0.2, h: 200 },
+            primaryFg: { l: 1, c: 0, h: 0 },
+            bg: { l: 0.96, c: 0, h: 0 },
+            fg: { l: 0, c: 0, h: 0 },
+            ring: { l: 0.7, c: 0.2, h: 200 },
+            shadow: { l: 0.25, c: 0.04, h: 200 },
+            shadowOpacity: 10,
+            cardLDelta: -0.02,
+            popoverLDelta: 0,
+            inputLDelta: -0.02,
+            borderLDelta: -0.05,
+            actionLDelta: 0.02,
+            actionHoverLDelta: 0.04,
+          },
+          dark: {
+            primary: { l: 0.65, c: 0.2, h: 200 },
+            primaryFg: { l: 0, c: 0, h: 0 },
+            bg: { l: 0.141, c: 0.005, h: 285 },
+            fg: { l: 1, c: 0, h: 0 },
+            ring: { l: 0.65, c: 0.2, h: 200 },
+            shadow: { l: 0.1, c: 0.03, h: 200 },
+            shadowOpacity: 50,
+            cardLDelta: 0.05,
+            popoverLDelta: -0.03,
+            inputLDelta: 0.02,
+            borderLDelta: 0.2,
+            actionLDelta: 0.1,
+            actionHoverLDelta: 0.2,
+          },
+        },
+        {
+          id: "blue",
+          label: "Cobalto",
+          relief: false,
+          light: {
+            primary: { l: 0.45, c: 0.31, h: 264 },
+            primaryFg: { l: 1, c: 0, h: 0 },
+            bg: { l: 1, c: 0, h: 0 },
+            fg: { l: 0, c: 0, h: 0 },
+            ring: { l: 0.45, c: 0.31, h: 264 },
+            shadow: { l: 0.25, c: 0.04, h: 264 },
+            shadowOpacity: 10,
+            cardLDelta: -0.02,
+            popoverLDelta: 0.1,
+            inputLDelta: -0.02,
+            borderLDelta: -0.05,
+            actionLDelta: -0.03,
+            actionHoverLDelta: -0.015,
+          },
+          dark: {
+            primary: { l: 0.58, c: 0.31, h: 264 },
+            primaryFg: { l: 1, c: 0, h: 0 },
+            bg: { l: 0.141, c: 0.005, h: 285 },
+            fg: { l: 1, c: 0, h: 0 },
+            ring: { l: 0.58, c: 0.31, h: 264 },
+            shadow: { l: 0.1, c: 0.03, h: 264 },
+            shadowOpacity: 50,
+            cardLDelta: 0.05,
+            popoverLDelta: 0.05,
+            inputLDelta: 0.1,
+            borderLDelta: 0.2,
+            actionLDelta: 0.1,
+            actionHoverLDelta: 0.2,
+          },
+        },
+        {
+          id: "purple",
+          label: "Violeta",
+          relief: true,
+          light: {
+            primary: { l: 0.54, c: 0.28, h: 290 },
+            primaryFg: { l: 1, c: 0, h: 0 },
+            bg: { l: 1, c: 0, h: 0 },
+            fg: { l: 0, c: 0, h: 0 },
+            ring: { l: 0.54, c: 0.28, h: 290 },
+            shadow: { l: 0.25, c: 0.04, h: 290 },
+            shadowOpacity: 10,
+            cardLDelta: -0.02,
+            popoverLDelta: 0,
+            inputLDelta: -0.02,
+            borderLDelta: -0.1,
+            actionLDelta: 0.02,
+            actionHoverLDelta: 0.04,
+          },
+          dark: {
+            primary: { l: 0.68, c: 0.28, h: 290 },
+            primaryFg: { l: 1, c: 0, h: 0 },
+            bg: { l: 0.141, c: 0.005, h: 285 },
+            fg: { l: 1, c: 0, h: 0 },
+            ring: { l: 0.68, c: 0.28, h: 290 },
+            shadow: { l: 0.1, c: 0.03, h: 290 },
+            shadowOpacity: 50,
+            cardLDelta: 0.05,
+            popoverLDelta: -0.03,
+            inputLDelta: 0.02,
+            borderLDelta: 0.2,
+            actionLDelta: 0.1,
+            actionHoverLDelta: 0.2,
+          },
+        },
+        {
+          id: "magenta",
+          label: "Fúcsia",
+          relief: true,
+          light: {
+            primary: { l: 0.9, c: 0.4, h: 350 },
+            primaryFg: { l: 0, c: 0, h: 0 },
+            bg: { l: 0.98, c: 0.02, h: 320 },
+            fg: { l: 0, c: 0, h: 0 },
+            ring: { l: 0.9, c: 0.4, h: 350 },
+            shadow: { l: 0.25, c: 0.15, h: 350 },
+            shadowOpacity: 10,
+            cardLDelta: -0.02,
+            popoverLDelta: 0,
+            inputLDelta: -0.02,
+            borderLDelta: -0.05,
+            actionLDelta: 0.02,
+            actionHoverLDelta: 0.04,
+          },
+          dark: {
+            primary: { l: 0.8, c: 0.4, h: 350 },
+            primaryFg: { l: 0, c: 0, h: 0 },
+            bg: { l: 0.3, c: 0.1, h: 340 },
+            fg: { l: 1, c: 0, h: 0 },
+            ring: { l: 0.8, c: 0.4, h: 350 },
+            shadow: { l: 0.1, c: 0.1, h: 340 },
+            shadowOpacity: 25,
+            cardLDelta: 0.05,
+            popoverLDelta: -0.03,
+            inputLDelta: 0.02,
+            borderLDelta: 0.2,
+            actionLDelta: 0.1,
+            actionHoverLDelta: 0.2,
+          },
+        },
+      ];
+
+      const DEFAULT_GLOBAL_TOKENS = {
+        light: {
+          secondaryMix: 5,
+          secondaryFgMix: 65,
+          overlayAlpha: 30,
+          actionRingAlpha: 5,
+          accentLDelta: -0.15,
+          btnPrimaryHoverBgMix: 20,
+          btnSecondaryHoverFgMix: 5,
+          phaseMix: 7,
+          phaseMixHover: 12,
+          phaseRingAlpha: 30,
+          error: { l: 0.8, c: 0.22, h: 16.3 },
+          errorFgL: 0.6,
+          errorBgMix: 13,
+          warning: { l: 0.98, c: 0.2, h: 70 },
+          warningFgL: 0.5,
+          warningBgMix: 7,
+          success: { l: 0.508, c: 0.14, h: 163 },
+          successFgL: 0.42,
+          successBgMix: 7,
+          info: { l: 0.84, c: 0.2, h: 250 },
+          infoFgL: 0.5,
+          infoBgMix: 7,
+          successStrong: { l: 0.596, c: 0.145, h: 163.2 },
+          successStrongHoverLDelta: -0.088,
+          priorityLow: { l: 0.7, c: 0.17, h: 150 },
+          priorityMedium: { l: 0.82, c: 0.16, h: 90 },
+          priorityHigh: { l: 0.65, c: 0.22, h: 25 },
+        },
+        dark: {
+          secondaryMix: 10,
+          secondaryFgMix: 65,
+          overlayAlpha: 30,
+          actionRingAlpha: 20,
+          accentLDelta: 0.1,
+          btnPrimaryHoverBgMix: 20,
+          btnSecondaryHoverFgMix: 5,
+          phaseMix: 14,
+          phaseMixHover: 22,
+          phaseRingAlpha: 55,
+          error: { l: 0.861, c: 0.2, h: 16.3 },
+          errorFgL: 0.861,
+          errorBgMix: 14,
+          warning: { l: 0.98, c: 0.2, h: 90 },
+          warningFgL: 0.98,
+          warningBgMix: 14,
+          success: { l: 0.65, c: 0.16, h: 163 },
+          successFgL: 0.65,
+          successBgMix: 14,
+          info: { l: 0.84, c: 0.2, h: 250 },
+          infoFgL: 0.84,
+          infoBgMix: 14,
+          successStrong: { l: 0.596, c: 0.145, h: 163.2 },
+          successStrongHoverLDelta: -0.088,
+          priorityLow: { l: 0.75, c: 0.16, h: 150 },
+          priorityMedium: { l: 0.85, c: 0.15, h: 95 },
+          priorityHigh: { l: 0.7, c: 0.2, h: 25 },
+        },
+        phases: [
+          {
+            slug: "idea",
+            title: "Ideia",
+            shortcut: "I",
+            color: hexToOklch("#fbbf24"),
+          },
+          {
+            slug: "do",
+            title: "Fazer",
+            shortcut: "F",
+            color: hexToOklch("#f97316"),
+          },
+          {
+            slug: "doing",
+            title: "Fazendo",
+            shortcut: "Z",
+            color: hexToOklch("#ec4899"),
+          },
+          {
+            slug: "review",
+            title: "Análise",
+            shortcut: "A",
+            color: hexToOklch("#a855f7"),
+          },
+          {
+            slug: "done",
+            title: "Feito",
+            shortcut: "T",
+            color: hexToOklch("#38bdf8"),
+          },
+          {
+            slug: "finished",
+            title: "Concluído",
+            shortcut: "C",
+            color: hexToOklch("#4ade80"),
+          },
+        ],
+      };
+
+      // State
+      let palettesState = JSON.parse(JSON.stringify(INITIAL_PALETTES));
+      let globalState = JSON.parse(JSON.stringify(DEFAULT_GLOBAL_TOKENS));
+      let currentPaletteIdx = 0;
+      let currentMode = "light";
+      let vividInkMode = "dark"; // 'dark' | 'light'
+      let vividDarkMode = "full"; // 'full' | 'dim'
+      let sidebarCategory = "all";
+
+      // ============================================================================
+      // 3. APPLY CSS VARIABLES & RENDER LIVE SHOWCASE + SIDEBAR
+      // ============================================================================
+      function applyAllTokensToDOM() {
+        const root = document.documentElement;
+        const pal = palettesState[currentPaletteIdx];
+        const m = pal[currentMode];
+        const g = globalState[currentMode];
+        const isDark = currentMode === "dark";
+
+        root.classList.toggle("dark", isDark);
+
+        const bgStr = formatOklch(m.bg);
+        const fgStr = formatOklch(m.fg);
+        const primaryStr = formatOklch(m.primary);
+        const primaryFgStr = formatOklch(m.primaryFg);
+        const ringStr = formatOklch(m.ring);
+        const shadowStr = formatOklch(m.shadow);
+
+        root.style.setProperty("--background", bgStr);
+        root.style.setProperty("--foreground", fgStr);
+        root.style.setProperty("--primary", primaryStr);
+        root.style.setProperty("--primary-foreground", primaryFgStr);
+        root.style.setProperty("--ring", ringStr);
+
+        // Derived surfaces from Background + ΔL
+        const cardColor = {
+          l: clamp01(m.bg.l + m.cardLDelta),
+          c: m.bg.c,
+          h: m.bg.h,
+        };
+        const popoverColor = {
+          l: clamp01(m.bg.l + m.popoverLDelta),
+          c: m.bg.c,
+          h: m.bg.h,
+        };
+        const inputColor = {
+          l: clamp01(m.bg.l + m.inputLDelta),
+          c: m.bg.c,
+          h: m.bg.h,
+        };
+        const borderColor = {
+          l: clamp01(m.bg.l + m.borderLDelta),
+          c: m.bg.c,
+          h: m.bg.h,
+        };
+        const actionColor = {
+          l: clamp01(m.bg.l + m.actionLDelta),
+          c: m.bg.c,
+          h: m.bg.h,
+        };
+        const actionHoverColor = {
+          l: clamp01(m.bg.l + m.actionHoverLDelta),
+          c: m.bg.c,
+          h: m.bg.h,
+        };
+        const accentColor = {
+          l: clamp01(m.primary.l + g.accentLDelta),
+          c: m.primary.c,
+          h: m.primary.h,
+        };
+
+        root.style.setProperty("--card", formatOklch(cardColor));
+        root.style.setProperty("--popover", formatOklch(popoverColor));
+        root.style.setProperty("--input", formatOklch(inputColor));
+        root.style.setProperty("--border", formatOklch(borderColor));
+        root.style.setProperty("--action", formatOklch(actionColor));
+        root.style.setProperty("--action-hover", formatOklch(actionHoverColor));
+        root.style.setProperty("--accent", formatOklch(accentColor));
+
+        // Secondary & Overlay mixes
+        root.style.setProperty(
+          "--secondary",
+          `color-mix(in oklch, ${fgStr} ${g.secondaryMix}%, transparent)`,
+        );
+        root.style.setProperty(
+          "--secondary-foreground",
+          `color-mix(in srgb, ${fgStr} ${g.secondaryFgMix}%, transparent)`,
+        );
+        root.style.setProperty("--shadow-tint", shadowStr);
+        root.style.setProperty("--shadow-alpha", `${m.shadowOpacity}%`);
+        root.style.setProperty(
+          "--color-overlay",
+          `color-mix(in srgb, ${shadowStr} ${g.overlayAlpha}%, transparent)`,
+        );
+
+        // Shadows & Relief
+        const relief = pal.relief !== false;
+        root.style.setProperty("--action-relief", relief ? "1" : "0");
+        root.style.setProperty(
+          "--action-top-border",
+          !relief
+            ? "transparent"
+            : isDark
+              ? "rgba(255, 255, 255, 0.10)"
+              : "#ffffff",
+        );
+        root.style.setProperty(
+          "--action-ring",
+          !relief
+            ? "transparent"
+            : `color-mix(in srgb, ${shadowStr} ${g.actionRingAlpha}%, transparent)`,
+        );
+        root.style.setProperty(
+          "--action-shadow",
+          !relief
+            ? "0 0 #0000"
+            : `0 1px 2px 0 color-mix(in srgb, ${shadowStr} ${isDark ? 35 : 14}%, transparent)`,
+        );
+        root.style.setProperty(
+          "--action-hover-shadow",
+          !relief
+            ? "0 0 #0000"
+            : `0 10px 15px -3px color-mix(in srgb, ${shadowStr} ${isDark ? 50 : 18}%, transparent), 0 4px 6px -4px color-mix(in srgb, ${shadowStr} ${isDark ? 50 : 18}%, transparent)`,
+        );
+        root.style.setProperty(
+          "--shadow-xs",
+          `0 1px 2px 0 color-mix(in srgb, ${shadowStr} ${m.shadowOpacity * 0.6}%, transparent)`,
+        );
+        root.style.setProperty(
+          "--shadow-sm",
+          `0 1px 3px 0 color-mix(in srgb, ${shadowStr} ${m.shadowOpacity * 0.8}%, transparent)`,
+        );
+        root.style.setProperty(
+          "--shadow-lg",
+          `0 10px 15px -3px color-mix(in srgb, ${shadowStr} ${m.shadowOpacity}%, transparent), 0 4px 6px -4px color-mix(in srgb, ${shadowStr} ${m.shadowOpacity}%, transparent)`,
+        );
+        root.style.setProperty(
+          "--shadow-2xl",
+          `0 25px 50px -12px color-mix(in srgb, ${shadowStr} ${Math.min(100, m.shadowOpacity * 2.5)}%, transparent)`,
+        );
+
+        // Semantic feedbacks
+        const errStr = formatOklch(g.error);
+        const errFgStr = formatOklch({
+          l: g.errorFgL,
+          c: g.error.c,
+          h: g.error.h,
+        });
+        const warnStr = formatOklch(g.warning);
+        const warnFgStr = formatOklch({
+          l: g.warningFgL,
+          c: g.warning.c,
+          h: g.warning.h,
+        });
+        const succStr = formatOklch(g.success);
+        const succFgStr = formatOklch({
+          l: g.successFgL,
+          c: g.success.c,
+          h: g.success.h,
+        });
+        const infoStr = formatOklch(g.info);
+        const infoFgStr = formatOklch({
+          l: g.infoFgL,
+          c: g.info.c,
+          h: g.info.h,
+        });
+        const succStrongStr = formatOklch(g.successStrong);
+        const succStrongHoverStr = formatOklch({
+          l: clamp01(g.successStrong.l + g.successStrongHoverLDelta),
+          c: g.successStrong.c,
+          h: g.successStrong.h,
+        });
+
+        root.style.setProperty("--color-error", errStr);
+        root.style.setProperty("--error-foreground", errFgStr);
+        root.style.setProperty(
+          "--color-error-background",
+          `color-mix(in oklch, ${errStr} ${g.errorBgMix}%, var(--card))`,
+        );
+
+        root.style.setProperty("--color-warning", warnStr);
+        root.style.setProperty("--warning-foreground", warnFgStr);
+        root.style.setProperty(
+          "--color-warning-background",
+          `color-mix(in oklch, ${warnStr} ${g.warningBgMix}%, var(--card))`,
+        );
+
+        root.style.setProperty("--color-success", succStr);
+        root.style.setProperty("--success-foreground", succFgStr);
+        root.style.setProperty(
+          "--color-success-background",
+          `color-mix(in oklch, ${succStr} ${g.successBgMix}%, var(--card))`,
+        );
+
+        root.style.setProperty("--color-info", infoStr);
+        root.style.setProperty("--info-foreground", infoFgStr);
+        root.style.setProperty(
+          "--color-info-background",
+          `color-mix(in oklch, ${infoStr} ${g.infoBgMix}%, var(--card))`,
+        );
+
+        root.style.setProperty("--success-strong", succStrongStr);
+        root.style.setProperty("--success-strong-hover", succStrongHoverStr);
+
+        // Late-surface shadows
+        const lateShadowBase = isDark
+          ? formatOklch({ l: 0.45, c: 0.18, h: g.error.h })
+          : errFgStr;
+        root.style.setProperty(
+          "--late-resting-shadow",
+          !relief
+            ? "0 0 #0000"
+            : `0 1px 2px 0 color-mix(in srgb, ${lateShadowBase} ${isDark ? 50 : 25}%, transparent)`,
+        );
+        root.style.setProperty(
+          "--late-hover-shadow",
+          !relief
+            ? "0 0 #0000"
+            : `0 10px 15px -3px color-mix(in srgb, ${lateShadowBase} ${isDark ? 60 : 30}%, transparent), 0 4px 6px -4px color-mix(in srgb, ${lateShadowBase} ${isDark ? 60 : 30}%, transparent)`,
+        );
+
+        // Priorities
+        root.style.setProperty("--priority-low", formatOklch(g.priorityLow));
+        root.style.setProperty(
+          "--priority-medium",
+          formatOklch(g.priorityMedium),
+        );
+        root.style.setProperty("--priority-high", formatOklch(g.priorityHigh));
+
+        // Phases
+        globalState.phases.forEach((ph) => {
+          root.style.setProperty(
+            `--phase-${ph.slug}`,
+            oklchToHex(ph.color.l, ph.color.c, ph.color.h),
+          );
+        });
+
+        // Update Topbar & Labels
+        document.getElementById("active-palette-label").textContent = pal.label;
+        document.getElementById("sidebar-mode-indicator").textContent = isDark
+          ? `Modo Escuro · ${pal.label}`
+          : `Modo Claro · ${pal.label}`;
+        const reliefBtn = document.getElementById("btn-relief-toggle");
+        reliefBtn.textContent = relief
+          ? "✨ Relevo: Ativo"
+          : "◻️ Relevo: Plano";
+        reliefBtn.classList.toggle("active", relief);
+
+        document.getElementById("lbl-action-rest-formula").textContent =
+          `⚡ bg-action (Bg L ${m.actionLDelta >= 0 ? "+" : ""}${m.actionLDelta})`;
+        document.getElementById("lbl-action-hover-formula").textContent =
+          `⚡ bg-action-hover (Bg L ${m.actionHoverLDelta >= 0 ? "+" : ""}${m.actionHoverLDelta})`;
+        document.getElementById("lbl-overlay-pct").textContent =
+          `${g.overlayAlpha}%`;
+
+        renderPaletteDots();
+        renderPhasesShowcase();
+        renderButtonsShowcase();
+        renderSemanticShowcase();
+      }
+
+      function renderPaletteDots() {
+        const container = document.getElementById("palette-dots-container");
+        container.innerHTML = palettesState
+          .map((item, idx) => {
+            const p = item[currentMode].primary;
+            const hex = oklchToHex(p.l, p.c, p.h);
+            return `<button type="button" class="palette-dot ${idx === currentPaletteIdx ? "active" : ""}" style="background-color: ${hex}" title="${item.label}" onclick="selectPalette(${idx})"></button>`;
+          })
+          .join("");
+      }
+
+      // ============================================================================
+      // 4. RENDER LEFT SHOWCASE SECTIONS (SIDE-BY-SIDE STATES WITHOUT HOVER)
+      // ============================================================================
+      function renderPhasesShowcase() {
+        const pal = palettesState[currentPaletteIdx];
+        const m = pal[currentMode];
+        const g = globalState[currentMode];
+        const isDark = currentMode === "dark";
+        const relief = pal.relief !== false;
+
+        const container = document.getElementById("phases-matrix-container");
+        container.innerHTML = globalState.phases
+          .map((ph, idx) => {
+            const baseHex = oklchToHex(ph.color.l, ph.color.c, ph.color.h);
+            const baseOklch = formatOklch(ph.color);
+
+            // Soft formulas (phase-surface)
+            const softFg = formatOklch({
+              l: isDark ? 0.92 : 0.35,
+              c: isDark ? 0.06 : 0.07,
+              h: ph.color.h,
+            });
+            const softRestBg = `color-mix(in oklch, ${baseOklch} ${g.phaseMix}%, var(--action))`;
+            const softHoverBg = `color-mix(in oklch, ${baseOklch} ${g.phaseMixHover}%, var(--action-hover))`;
+            const softRing = !relief
+              ? "transparent"
+              : `color-mix(in srgb, ${baseOklch} ${g.phaseRingAlpha}%, transparent)`;
+            const softShadowColor = formatOklch({
+              l: isDark ? 0.33 : 0.6,
+              c: isDark ? 0.1 : 0.15,
+              h: ph.color.h,
+            });
+            const softHoverShadow = !relief
+              ? "0 0 #0000"
+              : `0 10px 15px -3px color-mix(in srgb, ${softShadowColor} ${isDark ? 20 : 25}%, transparent), 0 4px 6px -4px color-mix(in srgb, ${softShadowColor} ${isDark ? 20 : 25}%, transparent)`;
+
+            // Vivid formulas (phase-vivid)
+            const vividFillObj =
+              isDark && vividDarkMode === "dim"
+                ? { l: 0.72, c: ph.color.c * 0.8, h: ph.color.h }
+                : ph.color;
+            const vividFill = formatOklch(vividFillObj);
+            const vividHoverDl = vividInkMode === "light" ? -0.04 : 0.04;
+            const vividHoverFill = formatOklch({
+              l: clamp01(vividFillObj.l + vividHoverDl),
+              c: vividFillObj.c,
+              h: vividFillObj.h,
+            });
+            const vividInk = formatOklch({
+              l: vividInkMode === "light" ? 0.98 : 0.35,
+              c: vividInkMode === "light" ? 0.025 : 0.07,
+              h: ph.color.h,
+            });
+            const vividEdgeDl = isDark ? 0.14 : 0.06;
+            const vividRing = formatOklch({
+              l: clamp01(vividFillObj.l - vividEdgeDl),
+              c: vividFillObj.c,
+              h: vividFillObj.h,
+            });
+            const topLightPct = isDark ? 25 : 45;
+            const vividTopRest = !relief
+              ? "transparent"
+              : `color-mix(in oklch, white ${topLightPct}%, ${vividFill})`;
+            const vividTopHover = !relief
+              ? "transparent"
+              : `color-mix(in oklch, white ${topLightPct}%, ${vividHoverFill})`;
+            const vividShadowColor = formatOklch({
+              l: 0.55,
+              c: 0.16,
+              h: ph.color.h,
+            });
+            const vividHoverShadow = !relief
+              ? "0 0 #0000"
+              : `0 10px 15px -3px color-mix(in srgb, ${vividShadowColor} 40%, transparent), 0 4px 6px -4px color-mix(in srgb, ${vividShadowColor} 40%, transparent)`;
+
+            return `
+            <div class="phase-row">
+              <!-- Col 1: Original Phase Color -->
+              <div class="phase-origin-cell">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:6px;">
+                  <span class="badge-editable">🎨 Original</span>
+                  <code style="font-size:11px; color:var(--secondary-foreground);">Atalho ${ph.shortcut}</code>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <label class="swatch-btn" style="background-color:${baseHex}; width:36px; height:36px;" title="Clique para mudar a cor base da fase ${ph.title}">
+                    <input type="color" value="${baseHex}" oninput="updatePhaseHex(${idx}, this.value)" />
+                  </label>
+                  <div>
+                    <div style="font-size:14px; font-weight:700;">${idx + 1}. ${ph.title}</div>
+                    <div class="mono" style="font-size:11px; color:var(--secondary-foreground);">${baseHex}</div>
+                  </div>
+                </div>
+                <div class="mono" style="font-size:10px; color:var(--secondary-foreground);">${baseOklch}</div>
+              </div>
+
+              <!-- Col 2: Soft Resting -->
+              <div class="action-card" style="background:${softRestBg}; color:${softFg}; box-shadow: 0 0 0 1px ${softRing}, var(--action-shadow);">
+                <div class="action-card-top">
+                  <span class="badge-calc">⚡ Suave · Repouso (${g.phaseMix}%)</span>
+                  <span class="phase-dot-indicator" style="background:${baseHex};"></span>
+                </div>
+                <div class="action-card-title">${ph.title} — Suave Normal</div>
+                <div class="action-card-meta" style="color:${softFg}; opacity:0.8;">
+                  <span>Texto L=${isDark ? "0.92" : "0.35"}</span>
+                  <span>Anel ${g.phaseRingAlpha}%</span>
+                </div>
+              </div>
+
+              <!-- Col 3: Soft Hover (Permanent) -->
+              <div class="action-card" style="background:${softHoverBg}; color:${softFg}; box-shadow: 0 0 0 1px ${softRing}, ${softHoverShadow};">
+                <div class="action-card-top">
+                  <span class="badge-calc">⚡ Suave · Hover (${g.phaseMixHover}%)</span>
+                  <span class="phase-dot-indicator" style="background:${baseHex};"></span>
+                </div>
+                <div class="action-card-title">${ph.title} — Suave Hover</div>
+                <div class="action-card-meta" style="color:${softFg}; opacity:0.8;">
+                  <span>+ Sombra tingida</span>
+                  <span>Sem mouse</span>
+                </div>
+              </div>
+
+              <!-- Col 4: Vivid Resting -->
+              <div class="action-card" style="background:${vividFill}; color:${vividInk}; border-top-color:${vividTopRest}; box-shadow: 0 0 0 1px ${vividRing}, var(--action-shadow);">
+                <div class="action-card-top">
+                  <span class="badge-calc" style="background:rgba(0,0,0,0.16); color:${vividInk}; border-color:transparent;">⚡ Viva · Repouso</span>
+                  <span class="phase-dot-indicator" style="background:transparent; box-shadow:inset 0 0 0 2px ${vividInk};"></span>
+                </div>
+                <div class="action-card-title">${ph.title} — Viva Normal</div>
+                <div class="action-card-meta" style="color:${vividInk}; opacity:0.85;">
+                  <span>Topo +${topLightPct}% branco</span>
+                  <span>Anel L-${vividEdgeDl}</span>
+                </div>
+              </div>
+
+              <!-- Col 5: Vivid Hover (Permanent) -->
+              <div class="action-card" style="background:${vividHoverFill}; color:${vividInk}; border-top-color:${vividTopHover}; box-shadow: 0 0 0 1px ${vividRing}, ${vividHoverShadow};">
+                <div class="action-card-top">
+                  <span class="badge-calc" style="background:rgba(0,0,0,0.16); color:${vividInk}; border-color:transparent;">⚡ Viva · Hover (L${vividHoverDl > 0 ? "+" : ""}${vividHoverDl})</span>
+                  <span class="phase-dot-indicator" style="background:transparent; box-shadow:inset 0 0 0 2px ${vividInk};"></span>
+                </div>
+                <div class="action-card-title">${ph.title} — Viva Hover</div>
+                <div class="action-card-meta" style="color:${vividInk}; opacity:0.85;">
+                  <span>Sombra Viva 40%</span>
+                  <span>Sem mouse</span>
+                </div>
+              </div>
+            </div>
+          `;
+          })
+          .join("");
+      }
+
+      function renderButtonsShowcase() {
+        const g = globalState[currentMode];
+        const variants = [
+          {
+            id: "default",
+            label: "Default (Primary)",
+            text: "Nova ação +",
+            restStyle: `background: var(--primary); color: var(--primary-foreground); border-color: var(--primary);`,
+            hoverFormula: `color-mix(in oklab, Primary, Background ${g.btnPrimaryHoverBgMix}%)`,
+            hoverStyle: `background: color-mix(in oklab, var(--primary), var(--background) ${g.btnPrimaryHoverBgMix}%); color: var(--primary-foreground); border-color: color-mix(in oklab, var(--primary), var(--background) ${g.btnPrimaryHoverBgMix}%);`,
+          },
+          {
+            id: "secondary",
+            label: "Secondary",
+            text: "Filtrar lista ⚙",
+            restStyle: `background: var(--secondary); color: var(--foreground); border-color: transparent;`,
+            hoverFormula: `color-mix(in oklch, Secondary, Foreground ${g.btnSecondaryHoverFgMix}%)`,
+            hoverStyle: `background: color-mix(in oklch, var(--secondary), var(--foreground) ${g.btnSecondaryHoverFgMix}%); color: var(--foreground); border-color: transparent;`,
+          },
+          {
+            id: "outline",
+            label: "Outline",
+            text: "Duplicar ⧉",
+            restStyle: `background: transparent; color: var(--foreground); border-color: var(--border);`,
+            hoverFormula: `bg-secondary (${g.secondaryMix}% de Foreground)`,
+            hoverStyle: `background: var(--secondary); color: var(--foreground); border-color: var(--border);`,
+          },
+          {
+            id: "ghost",
+            label: "Ghost",
+            text: "Mais opções ⋯",
+            restStyle: `background: transparent; color: var(--foreground); border-color: transparent;`,
+            hoverFormula: `bg-secondary (${g.secondaryMix}% de Foreground)`,
+            hoverStyle: `background: var(--secondary); color: var(--foreground); border-color: transparent;`,
+          },
+          {
+            id: "error",
+            label: "Error",
+            text: "Excluir ação 🗑",
+            restStyle: `background: var(--color-error-background); color: var(--error-foreground); border-color: var(--color-error);`,
+            hoverFormula: `bg-error-background (${g.errorBgMix}% Erro sobre Card)`,
+            hoverStyle: `background: color-mix(in oklch, var(--color-error) ${g.errorBgMix + 5}%, var(--card)); color: var(--error-foreground); border-color: var(--color-error);`,
+          },
+          {
+            id: "ghost-error",
+            label: "Ghost Error",
+            text: "Remover ✕",
+            restStyle: `background: transparent; color: var(--foreground); border-color: transparent;`,
+            hoverFormula: `bg-error-background + border-error + text-error-fg`,
+            hoverStyle: `background: var(--color-error-background); color: var(--error-foreground); border-color: var(--color-error);`,
+          },
+          {
+            id: "success",
+            label: "Success Strong",
+            text: "Publicar agora ➤",
+            restStyle: `background: var(--success-strong); color: #ffffff; border-color: var(--success-strong);`,
+            hoverFormula: `bg-success-strong-hover (L ${g.successStrongHoverLDelta})`,
+            hoverStyle: `background: var(--success-strong-hover); color: #ffffff; border-color: var(--success-strong-hover);`,
+          },
+        ];
+
+        const container = document.getElementById("btn-matrix-container");
+        container.innerHTML = variants
+          .map(
+            (v) => `
+          <div class="btn-matrix-row">
+            <div>
+              <div style="font-size:13px; font-weight:700;">${v.label}</div>
+              <code style="font-size:11px; color:var(--secondary-foreground);">variant="${v.id}"</code>
+            </div>
+            <div class="state-column">
+              <div class="state-label-bar"><span>1. Repouso (Original)</span></div>
+              <button type="button" class="prism-btn" style="${v.restStyle}">${v.text}</button>
+            </div>
+            <div class="state-column">
+              <div class="state-label-bar">
+                <span>2. Hover Permanente</span>
+                <span class="badge-calc">⚡ ${v.hoverFormula}</span>
+              </div>
+              <button type="button" class="prism-btn" style="${v.hoverStyle}">${v.text}</button>
+            </div>
+            <div class="state-column">
+              <div class="state-label-bar">
+                <span>3. Foco Permanente</span>
+                <span class="badge-calc">⚡ ring/30 + border-ring/60</span>
+              </div>
+              <button type="button" class="prism-btn is-focused" style="${v.restStyle}">${v.text}</button>
+            </div>
+          </div>
+        `,
+          )
+          .join("");
+      }
+
+      function renderSemanticShowcase() {
+        const g = globalState[currentMode];
+        const items = [
+          {
+            key: "error",
+            title: "Erro (Error)",
+            status: "Falha ao salvar alterações",
+            desc: "Fundo 100% opaco misturado sobre --card.",
+            base: g.error,
+            mix: g.errorBgMix,
+            bgVar: "var(--color-error-background)",
+            fgVar: "var(--error-foreground)",
+            borderVar: "var(--color-error)",
+          },
+          {
+            key: "warning",
+            title: "Aviso (Warning)",
+            status: "Atenção ao prazo de aprovação",
+            desc: "Revise os horários de publicação antes de concluir.",
+            base: g.warning,
+            mix: g.warningBgMix,
+            bgVar: "var(--color-warning-background)",
+            fgVar: "var(--warning-foreground)",
+            borderVar: "var(--color-warning)",
+          },
+          {
+            key: "success",
+            title: "Sucesso (Success)",
+            status: "Estratégia sincronizada",
+            desc: "Família Emerald unificada com fundo misturado sobre --card.",
+            base: g.success,
+            mix: g.successBgMix,
+            bgVar: "var(--color-success-background)",
+            fgVar: "var(--success-foreground)",
+            borderVar: "var(--color-success)",
+          },
+          {
+            key: "info",
+            title: "Informação (Info)",
+            status: "Nova versão disponível",
+            desc: "Fundo opaco calculado sobre --card.",
+            base: g.info,
+            mix: g.infoBgMix,
+            bgVar: "var(--color-info-background)",
+            fgVar: "var(--info-foreground)",
+            borderVar: "var(--color-info)",
+          },
+        ];
+
+        document.getElementById("semantic-feedback-showcase").innerHTML = items
+          .map((it) => {
+            const hex = oklchToHex(it.base.l, it.base.c, it.base.h);
+            return `
+            <div class="state-column">
+              <div class="state-label-bar">
+                <span style="display:inline-flex; align-items:center; gap:6px;">
+                  <span style="width:12px; height:12px; border-radius:4px; background:${hex}; display:inline-block;"></span>
+                  <strong>${it.title}</strong> (Mãe: <code>${hex}</code>)
+                </span>
+                <span class="badge-calc">⚡ Fundo: ${it.mix}% sobre Card</span>
+              </div>
+              <div class="prism-alert-demo" style="background:${it.bgVar}; color:${it.fgVar}; border-color:${it.borderVar};">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <span style="font-size:15px; font-weight:700;">${it.status}</span>
+                  <span class="prism-badge-demo" style="background:${it.bgVar}; color:${it.fgVar}; border:1px solid ${it.borderVar};">${it.title}</span>
+                </div>
+                <div style="font-size:12.5px; opacity:0.9;">${it.desc}</div>
+              </div>
+            </div>
+          `;
+          })
+          .join("");
+
+        const priorities = [
+          {
+            key: "priorityLow",
+            label: "Prioridade Baixa",
+            color: g.priorityLow,
+            varName: "var(--priority-low)",
+          },
+          {
+            key: "priorityMedium",
+            label: "Prioridade Média",
+            color: g.priorityMedium,
+            varName: "var(--priority-medium)",
+          },
+          {
+            key: "priorityHigh",
+            label: "Prioridade Alta",
+            color: g.priorityHigh,
+            varName: "var(--priority-high)",
+          },
+        ];
+        document.getElementById("priorities-showcase").innerHTML = priorities
+          .map((p) => {
+            const hex = oklchToHex(p.color.l, p.color.c, p.color.h);
+            return `
+            <div class="action-card" style="border-left: 5px solid ${p.varName};">
+              <div class="action-card-top">
+                <span style="font-size:13px; font-weight:700; color:${p.varName};">● ${p.label}</span>
+                <code style="font-size:11px;">${hex}</code>
+              </div>
+              <div class="action-card-meta">
+                <span>Quadro Hoje (Board)</span>
+                <span>${formatOklch(p.color)}</span>
+              </div>
+            </div>
+          `;
+          })
+          .join("");
+      }
+
+      // ============================================================================
+      // 5. RENDER RIGHT SIDEBAR CONTROLS (EDITABLE MOTHER COLORS + LIVE DERIVED TREE)
+      // ============================================================================
+      function renderSidebarControls() {
+        const pal = palettesState[currentPaletteIdx];
+        const m = pal[currentMode];
+        const g = globalState[currentMode];
+        const isDark = currentMode === "dark";
+
+        const bgHex = oklchToHex(m.bg.l, m.bg.c, m.bg.h);
+        const fgHex = oklchToHex(m.fg.l, m.fg.c, m.fg.h);
+        const priHex = oklchToHex(m.primary.l, m.primary.c, m.primary.h);
+        const priFgHex = oklchToHex(
+          m.primaryFg.l,
+          m.primaryFg.c,
+          m.primaryFg.h,
+        );
+        const ringHex = oklchToHex(m.ring.l, m.ring.c, m.ring.h);
+        const shadowHex = oklchToHex(m.shadow.l, m.shadow.c, m.shadow.h);
+
+        // Resolved derived hexes for display in the sidebar
+        const cardHex = oklchToHex(
+          clamp01(m.bg.l + m.cardLDelta),
+          m.bg.c,
+          m.bg.h,
+        );
+        const popoverHex = oklchToHex(
+          clamp01(m.bg.l + m.popoverLDelta),
+          m.bg.c,
+          m.bg.h,
+        );
+        const inputHex = oklchToHex(
+          clamp01(m.bg.l + m.inputLDelta),
+          m.bg.c,
+          m.bg.h,
+        );
+        const borderHex = oklchToHex(
+          clamp01(m.bg.l + m.borderLDelta),
+          m.bg.c,
+          m.bg.h,
+        );
+        const actionHex = oklchToHex(
+          clamp01(m.bg.l + m.actionLDelta),
+          m.bg.c,
+          m.bg.h,
+        );
+        const actionHoverHex = oklchToHex(
+          clamp01(m.bg.l + m.actionHoverLDelta),
+          m.bg.c,
+          m.bg.h,
+        );
+        const accentHex = oklchToHex(
+          clamp01(m.primary.l + g.accentLDelta),
+          m.primary.c,
+          m.primary.h,
+        );
+
+        let html = "";
+
+        // GROUP 1: SURFACES, STRUCTURE & SHADOWS
+        if (sidebarCategory === "all" || sidebarCategory === "surfaces") {
+          html += `
+            <div class="editor-group">
+              <div class="editor-group-title">
+                <span>1. Superfícies, Estrutura e Sombras</span>
+                <span class="badge-editable">Paleta ${pal.label}</span>
+              </div>
+
+              <!-- Mother Color: Background -->
+              <div class="token-editor-block">
+                <div class="token-header">
+                  <div class="token-name-wrap">
+                    <label class="swatch-btn" style="background:${bgHex}">
+                      <input type="color" value="${bgHex}" oninput="updatePaletteHex('bg', this.value)" />
+                    </label>
+                    <div>
+                      <div style="font-size:13px; font-weight:700;">Background (Fundo da Página)</div>
+                      <code style="font-size:11px; color:var(--secondary-foreground);">${bgHex} · ${formatOklch(m.bg)}</code>
+                    </div>
+                  </div>
+                  <span class="badge-editable">🎨 Editável</span>
+                </div>
+                <div class="slider-grid">
+                  <div class="slider-row">
+                    <label>Luma (L)</label>
+                    <input type="range" min="0" max="1" step="0.005" value="${m.bg.l}" oninput="updatePaletteOklch('bg','l',this.value)" />
+                    <span class="slider-val">${m.bg.l}</span>
+                  </div>
+                  <div class="slider-row">
+                    <label>Croma (C)</label>
+                    <input type="range" min="0" max="0.15" step="0.002" value="${m.bg.c}" oninput="updatePaletteOklch('bg','c',this.value)" />
+                    <span class="slider-val">${m.bg.c}</span>
+                  </div>
+                  <div class="slider-row">
+                    <label>Matiz (H)</label>
+                    <input type="range" min="0" max="360" step="1" value="${m.bg.h}" oninput="updatePaletteOklch('bg','h',this.value)" />
+                    <span class="slider-val">${Math.round(m.bg.h)}°</span>
+                  </div>
+                </div>
+
+                <!-- Derived surfaces from Background -->
+                <div class="derived-tree">
+                  <div style="font-size:11px; font-weight:700; color:var(--secondary-foreground);">
+                    ↳ 6 Superfícies Calculadas em Tempo Real a partir de Background:
+                  </div>
+
+                  ${renderDeltaDerivedItem("Card (--card)", "cardLDelta", m.cardLDelta, cardHex, -0.25, 0.25)}
+                  ${renderDeltaDerivedItem("Popover (--popover)", "popoverLDelta", m.popoverLDelta, popoverHex, -0.25, 0.25)}
+                  ${renderDeltaDerivedItem("Input (--input)", "inputLDelta", m.inputLDelta, inputHex, -0.25, 0.25)}
+                  ${renderDeltaDerivedItem("Border (--border)", "borderLDelta", m.borderLDelta, borderHex, -0.25, 0.3)}
+                  ${renderDeltaDerivedItem("Action Repouso (--action)", "actionLDelta", m.actionLDelta, actionHex, -0.15, 0.25)}
+                  ${renderDeltaDerivedItem("Action Hover (--action-hover)", "actionHoverLDelta", m.actionHoverLDelta, actionHoverHex, -0.15, 0.35)}
+                </div>
+              </div>
+
+              <!-- Mother Color: Foreground -->
+              <div class="token-editor-block">
+                <div class="token-header">
+                  <div class="token-name-wrap">
+                    <label class="swatch-btn" style="background:${fgHex}">
+                      <input type="color" value="${fgHex}" oninput="updatePaletteHex('fg', this.value)" />
+                    </label>
+                    <div>
+                      <div style="font-size:13px; font-weight:700;">Foreground (Texto Principal)</div>
+                      <code style="font-size:11px; color:var(--secondary-foreground);">${fgHex} · ${formatOklch(m.fg)}</code>
+                    </div>
+                  </div>
+                  <span class="badge-editable">🎨 Editável</span>
+                </div>
+                <div class="slider-grid">
+                  <div class="slider-row">
+                    <label>Luma (L)</label>
+                    <input type="range" min="0" max="1" step="0.01" value="${m.fg.l}" oninput="updatePaletteOklch('fg','l',this.value)" />
+                    <span class="slider-val">${m.fg.l}</span>
+                  </div>
+                </div>
+
+                <!-- Derived from Foreground -->
+                <div class="derived-tree">
+                  <div class="derived-item">
+                    <div class="derived-item-top">
+                      <div class="derived-swatch-pair">
+                        <span class="mini-swatch" style="background:var(--secondary)"></span>
+                        <div>
+                          <div style="font-size:12px; font-weight:700;">Secondary (--secondary)</div>
+                          <div class="formula-tag">color-mix(Foreground ${g.secondaryMix}%, transparent)</div>
+                        </div>
+                      </div>
+                      <span class="badge-calc">⚡ Calculada</span>
+                    </div>
+                    <div class="slider-row">
+                      <label>Mistura (%)</label>
+                      <input type="range" min="1" max="30" step="1" value="${g.secondaryMix}" oninput="updateGlobalKnob('secondaryMix', this.value)" />
+                      <span class="slider-val">${g.secondaryMix}%</span>
+                    </div>
+                  </div>
+
+                  <div class="derived-item">
+                    <div class="derived-item-top">
+                      <div class="derived-swatch-pair">
+                        <span class="mini-swatch" style="background:var(--secondary-foreground)"></span>
+                        <div>
+                          <div style="font-size:12px; font-weight:700;">Secondary Foreground</div>
+                          <div class="formula-tag">color-mix(Foreground ${g.secondaryFgMix}%, transparent)</div>
+                        </div>
+                      </div>
+                      <span class="badge-calc">⚡ Calculada</span>
+                    </div>
+                    <div class="slider-row">
+                      <label>Opacidade (%)</label>
+                      <input type="range" min="30" max="95" step="1" value="${g.secondaryFgMix}" oninput="updateGlobalKnob('secondaryFgMix', this.value)" />
+                      <span class="slider-val">${g.secondaryFgMix}%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mother Color: Shadow Tint & Alpha -->
+              <div class="token-editor-block">
+                <div class="token-header">
+                  <div class="token-name-wrap">
+                    <label class="swatch-btn" style="background:${shadowHex}">
+                      <input type="color" value="${shadowHex}" oninput="updatePaletteHex('shadow', this.value)" />
+                    </label>
+                    <div>
+                      <div style="font-size:13px; font-weight:700;">Shadow Tint (Cor da Sombra)</div>
+                      <code style="font-size:11px; color:var(--secondary-foreground);">${shadowHex} · Opacidade ${m.shadowOpacity}%</code>
+                    </div>
+                  </div>
+                  <span class="badge-editable">🎨 Editável</span>
+                </div>
+                <div class="slider-grid">
+                  <div class="slider-row">
+                    <label>Opacidade</label>
+                    <input type="range" min="1" max="100" step="1" value="${m.shadowOpacity}" oninput="updatePaletteField('shadowOpacity', this.value)" />
+                    <span class="slider-val">${m.shadowOpacity}%</span>
+                  </div>
+                </div>
+                <div class="derived-tree">
+                  <div class="derived-item">
+                    <div class="derived-item-top">
+                      <div class="derived-swatch-pair">
+                        <span class="mini-swatch" style="background:var(--color-overlay)"></span>
+                        <div>
+                          <div style="font-size:12px; font-weight:700;">Overlay (--color-overlay)</div>
+                          <div class="formula-tag">Shadow Tint a ${g.overlayAlpha}%</div>
+                        </div>
+                      </div>
+                      <span class="badge-calc">⚡ Calculada</span>
+                    </div>
+                    <div class="slider-row">
+                      <label>Transparência</label>
+                      <input type="range" min="5" max="80" step="1" value="${g.overlayAlpha}" oninput="updateGlobalKnob('overlayAlpha', this.value)" />
+                      <span class="slider-val">${g.overlayAlpha}%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        // GROUP 2: BRAND, FOCUS & BUTTONS
+        if (sidebarCategory === "all" || sidebarCategory === "brand") {
+          html += `
+            <div class="editor-group">
+              <div class="editor-group-title">
+                <span>2. Marca, Destaque, Foco e Botões</span>
+                <span class="badge-editable">Primary & Ring</span>
+              </div>
+
+              <!-- Mother Color: Primary -->
+              <div class="token-editor-block">
+                <div class="token-header">
+                  <div class="token-name-wrap">
+                    <label class="swatch-btn" style="background:${priHex}">
+                      <input type="color" value="${priHex}" oninput="updatePaletteHex('primary', this.value)" />
+                    </label>
+                    <div>
+                      <div style="font-size:13px; font-weight:700;">Primary (Cor Principal)</div>
+                      <code style="font-size:11px; color:var(--secondary-foreground);">${priHex} · ${formatOklch(m.primary)}</code>
+                    </div>
+                  </div>
+                  <span class="badge-editable">🎨 Editável</span>
+                </div>
+                <div class="slider-grid">
+                  <div class="slider-row">
+                    <label>Luma (L)</label>
+                    <input type="range" min="0" max="1" step="0.01" value="${m.primary.l}" oninput="updatePaletteOklch('primary','l',this.value)" />
+                    <span class="slider-val">${m.primary.l}</span>
+                  </div>
+                  <div class="slider-row">
+                    <label>Croma (C)</label>
+                    <input type="range" min="0" max="0.45" step="0.005" value="${m.primary.c}" oninput="updatePaletteOklch('primary','c',this.value)" />
+                    <span class="slider-val">${m.primary.c}</span>
+                  </div>
+                  <div class="slider-row">
+                    <label>Matiz (H)</label>
+                    <input type="range" min="0" max="360" step="1" value="${m.primary.h}" oninput="updatePaletteOklch('primary','h',this.value)" />
+                    <span class="slider-val">${Math.round(m.primary.h)}°</span>
+                  </div>
+                </div>
+
+                <!-- Derived from Primary -->
+                <div class="derived-tree">
+                  <div class="derived-item">
+                    <div class="derived-item-top">
+                      <div class="derived-swatch-pair">
+                        <span class="mini-swatch" style="background:color-mix(in oklab, var(--primary), var(--background) ${g.btnPrimaryHoverBgMix}%)"></span>
+                        <div>
+                          <div style="font-size:12px; font-weight:700;">Hover do Botão Default</div>
+                          <div class="formula-tag">color-mix(Primary, Background ${g.btnPrimaryHoverBgMix}%)</div>
+                        </div>
+                      </div>
+                      <span class="badge-calc">⚡ Calculada</span>
+                    </div>
+                    <div class="slider-row">
+                      <label>Mix Bg (%)</label>
+                      <input type="range" min="5" max="45" step="1" value="${g.btnPrimaryHoverBgMix}" oninput="updateGlobalKnob('btnPrimaryHoverBgMix', this.value)" />
+                      <span class="slider-val">${g.btnPrimaryHoverBgMix}%</span>
+                    </div>
+                  </div>
+
+                  <div class="derived-item">
+                    <div class="derived-item-top">
+                      <div class="derived-swatch-pair">
+                        <span class="mini-swatch" style="background:${accentHex}"></span>
+                        <div>
+                          <div style="font-size:12px; font-weight:700;">Accent (--accent) · ${accentHex}</div>
+                          <div class="formula-tag">Primary com ΔL ${g.accentLDelta >= 0 ? "+" : ""}${g.accentLDelta}</div>
+                        </div>
+                      </div>
+                      <span class="badge-calc">⚡ Calculada</span>
+                    </div>
+                    <div class="slider-row">
+                      <label>ΔL Accent</label>
+                      <input type="range" min="-0.3" max="0.3" step="0.01" value="${g.accentLDelta}" oninput="updateGlobalKnob('accentLDelta', this.value)" />
+                      <span class="slider-val">${g.accentLDelta}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Primary Foreground & Ring -->
+              <div class="token-editor-block">
+                <div class="token-header">
+                  <div class="token-name-wrap">
+                    <label class="swatch-btn" style="background:${priFgHex}">
+                      <input type="color" value="${priFgHex}" oninput="updatePaletteHex('primaryFg', this.value)" />
+                    </label>
+                    <div>
+                      <div style="font-size:13px; font-weight:700;">Primary Foreground (Texto no Botão)</div>
+                      <code style="font-size:11px; color:var(--secondary-foreground);">${priFgHex}</code>
+                    </div>
+                  </div>
+                  <span class="badge-editable">🎨 Editável</span>
+                </div>
+              </div>
+
+              <div class="token-editor-block">
+                <div class="token-header">
+                  <div class="token-name-wrap">
+                    <label class="swatch-btn" style="background:${ringHex}">
+                      <input type="color" value="${ringHex}" oninput="updatePaletteHex('ring', this.value)" />
+                    </label>
+                    <div>
+                      <div style="font-size:13px; font-weight:700;">Ring (Cor Base do Foco)</div>
+                      <code style="font-size:11px; color:var(--secondary-foreground);">${ringHex} · Halo 30% + Borda 60%</code>
+                    </div>
+                  </div>
+                  <span class="badge-editable">🎨 Editável</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        // GROUP 3: 6 ACTION PHASES (ORIGINAL + CALCULATED FORMULAS)
+        if (sidebarCategory === "all" || sidebarCategory === "phases") {
+          html += `
+            <div class="editor-group">
+              <div class="editor-group-title">
+                <span>3. Estágios / Fases da Ação (6 Fases)</span>
+                <span class="badge-calc">Suave & Viva</span>
+              </div>
+
+              <div class="derived-item" style="margin-bottom:4px;">
+                <div style="font-size:12px; font-weight:700;">Parâmetros Globais de Cálculo da Fase Suave (phase-surface)</div>
+                <div class="slider-row">
+                  <label>Repouso (%)</label>
+                  <input type="range" min="2" max="35" step="1" value="${g.phaseMix}" oninput="updateGlobalKnob('phaseMix', this.value)" />
+                  <span class="slider-val">${g.phaseMix}%</span>
+                </div>
+                <div class="slider-row">
+                  <label>Hover (%)</label>
+                  <input type="range" min="4" max="45" step="1" value="${g.phaseMixHover}" oninput="updateGlobalKnob('phaseMixHover', this.value)" />
+                  <span class="slider-val">${g.phaseMixHover}%</span>
+                </div>
+                <div class="slider-row">
+                  <label>Anel (%)</label>
+                  <input type="range" min="10" max="80" step="1" value="${g.phaseRingAlpha}" oninput="updateGlobalKnob('phaseRingAlpha', this.value)" />
+                  <span class="slider-val">${g.phaseRingAlpha}%</span>
+                </div>
+              </div>
+
+              ${globalState.phases
+                .map((ph, idx) => {
+                  const hex = oklchToHex(ph.color.l, ph.color.c, ph.color.h);
+                  const softFgHex = oklchToHex(
+                    isDark ? 0.92 : 0.35,
+                    isDark ? 0.06 : 0.07,
+                    ph.color.h,
+                  );
+                  return `
+                  <div class="token-editor-block">
+                    <div class="token-header">
+                      <div class="token-name-wrap">
+                        <label class="swatch-btn" style="background:${hex}">
+                          <input type="color" value="${hex}" oninput="updatePhaseHex(${idx}, this.value)" />
+                        </label>
+                        <div>
+                          <div style="font-size:13px; font-weight:700;">${idx + 1}. Fase ${ph.title} (Original)</div>
+                          <code style="font-size:11px; color:var(--secondary-foreground);">${hex} · ${formatOklch(ph.color)}</code>
+                        </div>
+                      </div>
+                      <span class="badge-editable">🎨 Original</span>
+                    </div>
+                    <div class="slider-grid">
+                      <div class="slider-row">
+                        <label>Luma (L)</label>
+                        <input type="range" min="0.2" max="0.95" step="0.01" value="${ph.color.l}" oninput="updatePhaseOklch(${idx},'l',this.value)" />
+                        <span class="slider-val">${ph.color.l}</span>
+                      </div>
+                      <div class="slider-row">
+                        <label>Croma (C)</label>
+                        <input type="range" min="0.02" max="0.35" step="0.005" value="${ph.color.c}" oninput="updatePhaseOklch(${idx},'c',this.value)" />
+                        <span class="slider-val">${ph.color.c}</span>
+                      </div>
+                      <div class="slider-row">
+                        <label>Matiz (H)</label>
+                        <input type="range" min="0" max="360" step="1" value="${ph.color.h}" oninput="updatePhaseOklch(${idx},'h',this.value)" />
+                        <span class="slider-val">${Math.round(ph.color.h)}°</span>
+                      </div>
+                    </div>
+                    <div class="derived-tree">
+                      <div class="derived-item">
+                        <div class="derived-item-top">
+                          <div class="derived-swatch-pair">
+                            <span class="mini-swatch" style="background:color-mix(in oklch, ${formatOklch(ph.color)} ${g.phaseMix}%, var(--action))"></span>
+                            <span class="mini-swatch" style="background:color-mix(in oklch, ${formatOklch(ph.color)} ${g.phaseMixHover}%, var(--action-hover))"></span>
+                            <span class="mini-swatch" style="background:${softFgHex}"></span>
+                            <div>
+                              <div style="font-size:11.5px; font-weight:700;">Suave: Repouso (${g.phaseMix}%) | Hover (${g.phaseMixHover}%) | Texto (${softFgHex})</div>
+                              <div class="formula-tag">Viva: Repouso + Hover (L±0.04) + Anel</div>
+                            </div>
+                          </div>
+                          <span class="badge-calc">⚡ Auto</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                `;
+                })
+                .join("")}
+            </div>
+          `;
+        }
+
+        // GROUP 4: SEMANTIC FEEDBACKS
+        if (sidebarCategory === "all" || sidebarCategory === "feedback") {
+          const semList = [
+            {
+              key: "error",
+              label: "Erro (--color-error)",
+              mixKey: "errorBgMix",
+              fgKey: "errorFgL",
+            },
+            {
+              key: "warning",
+              label: "Aviso (--color-warning)",
+              mixKey: "warningBgMix",
+              fgKey: "warningFgL",
+            },
+            {
+              key: "success",
+              label: "Sucesso (--color-success)",
+              mixKey: "successBgMix",
+              fgKey: "successFgL",
+            },
+            {
+              key: "info",
+              label: "Informação (--color-info)",
+              mixKey: "infoBgMix",
+              fgKey: "infoFgL",
+            },
+          ];
+          html += `
+            <div class="editor-group">
+              <div class="editor-group-title">
+                <span>4. Feedbacks Semânticos e Atraso</span>
+                <span class="badge-editable">4 + 1 Famílias</span>
+              </div>
+              ${semList
+                .map((sem) => {
+                  const cObj = g[sem.key];
+                  const hex = oklchToHex(cObj.l, cObj.c, cObj.h);
+                  const mixVal = g[sem.mixKey];
+                  const fgLVal = g[sem.fgKey];
+                  const fgHexResolved = oklchToHex(fgLVal, cObj.c, cObj.h);
+                  return `
+                  <div class="token-editor-block">
+                    <div class="token-header">
+                      <div class="token-name-wrap">
+                        <label class="swatch-btn" style="background:${hex}">
+                          <input type="color" value="${hex}" oninput="updateSemanticHex('${sem.key}', this.value)" />
+                        </label>
+                        <div>
+                          <div style="font-size:13px; font-weight:700;">${sem.label}</div>
+                          <code style="font-size:11px; color:var(--secondary-foreground);">${hex} · ${formatOklch(cObj)}</code>
+                        </div>
+                      </div>
+                      <span class="badge-editable">🎨 Mãe</span>
+                    </div>
+                    <div class="slider-grid">
+                      <div class="slider-row">
+                        <label>Luma Base</label>
+                        <input type="range" min="0.3" max="1" step="0.01" value="${cObj.l}" oninput="updateSemanticOklch('${sem.key}','l',this.value)" />
+                        <span class="slider-val">${cObj.l}</span>
+                      </div>
+                      <div class="slider-row">
+                        <label>Croma (C)</label>
+                        <input type="range" min="0.05" max="0.32" step="0.005" value="${cObj.c}" oninput="updateSemanticOklch('${sem.key}','c',this.value)" />
+                        <span class="slider-val">${cObj.c}</span>
+                      </div>
+                      <div class="slider-row">
+                        <label>Matiz (H)</label>
+                        <input type="range" min="0" max="360" step="1" value="${cObj.h}" oninput="updateSemanticOklch('${sem.key}','h',this.value)" />
+                        <span class="slider-val">${Math.round(cObj.h)}°</span>
+                      </div>
+                    </div>
+                    <div class="derived-tree">
+                      <div class="derived-item">
+                        <div class="derived-item-top">
+                          <div class="derived-swatch-pair">
+                            <span class="mini-swatch" style="background:var(--color-${sem.key}-background)"></span>
+                            <div>
+                              <div style="font-size:12px; font-weight:700;">Fundo (${sem.key}-background)</div>
+                              <div class="formula-tag">color-mix(${sem.key} ${mixVal}%, var(--card))</div>
+                            </div>
+                          </div>
+                          <span class="badge-calc">⚡ Calculada</span>
+                        </div>
+                        <div class="slider-row">
+                          <label>Mix Card (%)</label>
+                          <input type="range" min="3" max="35" step="1" value="${mixVal}" oninput="updateGlobalKnob('${sem.mixKey}', this.value)" />
+                          <span class="slider-val">${mixVal}%</span>
+                        </div>
+                      </div>
+                      <div class="derived-item">
+                        <div class="derived-item-top">
+                          <div class="derived-swatch-pair">
+                            <span class="mini-swatch" style="background:${fgHexResolved}"></span>
+                            <div>
+                              <div style="font-size:12px; font-weight:700;">Texto (${sem.key}-foreground · ${fgHexResolved})</div>
+                              <div class="formula-tag">Mesmo H/C da mãe com L=${fgLVal}</div>
+                            </div>
+                          </div>
+                          <span class="badge-calc">⚡ Calculada</span>
+                        </div>
+                        <div class="slider-row">
+                          <label>Luma Texto</label>
+                          <input type="range" min="0.25" max="0.98" step="0.01" value="${fgLVal}" oninput="updateGlobalKnob('${sem.fgKey}', this.value)" />
+                          <span class="slider-val">${fgLVal}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                `;
+                })
+                .join("")}
+            </div>
+          `;
+        }
+
+        // GROUP 5: PRIORITIES
+        if (sidebarCategory === "all" || sidebarCategory === "priorities") {
+          const prioList = [
+            { key: "priorityLow", label: "Prioridade Baixa (--priority-low)" },
+            {
+              key: "priorityMedium",
+              label: "Prioridade Média (--priority-medium)",
+            },
+            {
+              key: "priorityHigh",
+              label: "Prioridade Alta (--priority-high)",
+            },
+          ];
+          html += `
+            <div class="editor-group">
+              <div class="editor-group-title">
+                <span>5. Prioridades do Quadro Hoje</span>
+                <span class="badge-editable">3 Níveis</span>
+              </div>
+              ${prioList
+                .map((pr) => {
+                  const cObj = g[pr.key];
+                  const hex = oklchToHex(cObj.l, cObj.c, cObj.h);
+                  return `
+                  <div class="token-editor-block">
+                    <div class="token-header">
+                      <div class="token-name-wrap">
+                        <label class="swatch-btn" style="background:${hex}">
+                          <input type="color" value="${hex}" oninput="updateSemanticHex('${pr.key}', this.value)" />
+                        </label>
+                        <div>
+                          <div style="font-size:13px; font-weight:700;">${pr.label}</div>
+                          <code style="font-size:11px; color:var(--secondary-foreground);">${hex} · ${formatOklch(cObj)}</code>
+                        </div>
+                      </div>
+                      <span class="badge-editable">🎨 Editável</span>
+                    </div>
+                    <div class="slider-grid">
+                      <div class="slider-row">
+                        <label>Luma (L)</label>
+                        <input type="range" min="0.3" max="0.95" step="0.01" value="${cObj.l}" oninput="updateSemanticOklch('${pr.key}','l',this.value)" />
+                        <span class="slider-val">${cObj.l}</span>
+                      </div>
+                      <div class="slider-row">
+                        <label>Croma (C)</label>
+                        <input type="range" min="0.05" max="0.3" step="0.005" value="${cObj.c}" oninput="updateSemanticOklch('${pr.key}','c',this.value)" />
+                        <span class="slider-val">${cObj.c}</span>
+                      </div>
+                      <div class="slider-row">
+                        <label>Matiz (H)</label>
+                        <input type="range" min="0" max="360" step="1" value="${cObj.h}" oninput="updateSemanticOklch('${pr.key}','h',this.value)" />
+                        <span class="slider-val">${Math.round(cObj.h)}°</span>
+                      </div>
+                    </div>
+                  </div>
+                `;
+                })
+                .join("")}
+            </div>
+          `;
+        }
+
+        document.getElementById("sidebar-controls-container").innerHTML = html;
+      }
+
+      function renderDeltaDerivedItem(label, key, val, resolvedHex, min, max) {
+        const sign = val >= 0 ? "+" : "";
+        return `
+          <div class="derived-item">
+            <div class="derived-item-top">
+              <div class="derived-swatch-pair">
+                <span class="mini-swatch" style="background:${resolvedHex}"></span>
+                <div>
+                  <div style="font-size:12px; font-weight:700;">${label} · <code>${resolvedHex}</code></div>
+                  <div class="formula-tag">oklch(from Background calc(l ${sign} ${val}) c h)</div>
+                </div>
+              </div>
+              <span class="badge-calc">⚡ Calculada</span>
+            </div>
+            <div class="slider-row">
+              <label>Delta ΔL</label>
+              <input type="range" min="${min}" max="${max}" step="0.005" value="${val}" oninput="updatePaletteField('${key}', this.value)" />
+              <span class="slider-val">${sign}${val}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      // ============================================================================
+      // 6. INTERACTIVE EVENT HANDLERS
+      // ============================================================================
+      function setMode(mode) {
+        currentMode = mode;
+        document
+          .getElementById("btn-mode-light")
+          .classList.toggle("active", mode === "light");
+        document
+          .getElementById("btn-mode-dark")
+          .classList.toggle("active", mode === "dark");
+        applyAllTokensToDOM();
+        renderSidebarControls();
+      }
+
+      function selectPalette(idx) {
+        currentPaletteIdx = idx;
+        applyAllTokensToDOM();
+        renderSidebarControls();
+      }
+
+      function toggleRelief() {
+        const pal = palettesState[currentPaletteIdx];
+        pal.relief = pal.relief === false ? true : false;
+        applyAllTokensToDOM();
+      }
+
+      function setVividInk(mode) {
+        vividInkMode = mode;
+        document
+          .getElementById("btn-vivid-ink-dark")
+          .classList.toggle("active", mode === "dark");
+        document
+          .getElementById("btn-vivid-ink-light")
+          .classList.toggle("active", mode === "light");
+        renderPhasesShowcase();
+      }
+
+      function setVividDark(mode) {
+        vividDarkMode = mode;
+        document
+          .getElementById("btn-vivid-dark-full")
+          .classList.toggle("active", mode === "full");
+        document
+          .getElementById("btn-vivid-dark-dim")
+          .classList.toggle("active", mode === "dim");
+        renderPhasesShowcase();
+      }
+
+      function filterSidebar(cat, btn) {
+        sidebarCategory = cat;
+        document
+          .querySelectorAll(".sidebar-tab")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderSidebarControls();
+      }
+
+      function updatePaletteOklch(colorKey, channel, val) {
+        const m = palettesState[currentPaletteIdx][currentMode];
+        m[colorKey][channel] = Number(val);
+        if (colorKey === "primary") {
+          m.ring[channel] = Number(val);
+        }
+        applyAllTokensToDOM();
+        renderSidebarControls();
+      }
+
+      function updatePaletteHex(colorKey, hex) {
+        const m = palettesState[currentPaletteIdx][currentMode];
+        const parsed = hexToOklch(hex);
+        m[colorKey] = parsed;
+        if (colorKey === "primary") {
+          m.ring = { ...parsed };
+        }
+        applyAllTokensToDOM();
+        renderSidebarControls();
+      }
+
+      function updatePaletteField(fieldKey, val) {
+        const m = palettesState[currentPaletteIdx][currentMode];
+        m[fieldKey] = Number(val);
+        applyAllTokensToDOM();
+        renderSidebarControls();
+      }
+
+      function updateGlobalKnob(knobKey, val) {
+        globalState[currentMode][knobKey] = Number(val);
+        applyAllTokensToDOM();
+        renderSidebarControls();
+      }
+
+      function updatePhaseOklch(idx, channel, val) {
+        globalState.phases[idx].color[channel] = Number(val);
+        applyAllTokensToDOM();
+        renderSidebarControls();
+      }
+
+      function updatePhaseHex(idx, hex) {
+        globalState.phases[idx].color = hexToOklch(hex);
+        applyAllTokensToDOM();
+        renderSidebarControls();
+      }
+
+      function updateSemanticOklch(key, channel, val) {
+        globalState[currentMode][key][channel] = Number(val);
+        applyAllTokensToDOM();
+        renderSidebarControls();
+      }
+
+      function updateSemanticHex(key, hex) {
+        globalState[currentMode][key] = hexToOklch(hex);
+        applyAllTokensToDOM();
+        renderSidebarControls();
+      }
+
+      function resetCurrentPalette() {
+        palettesState[currentPaletteIdx] = JSON.parse(
+          JSON.stringify(INITIAL_PALETTES[currentPaletteIdx]),
+        );
+        globalState = JSON.parse(JSON.stringify(DEFAULT_GLOBAL_TOKENS));
+        applyAllTokensToDOM();
+        renderSidebarControls();
+      }
+
+      function openExportModal() {
+        const pal = palettesState[currentPaletteIdx];
+        const exportObj = {
+          palette: pal,
+          globalFormulasAndSemantics: globalState,
+        };
+        document.getElementById("export-code-output").textContent =
+          `// Configuração exportada do Laboratório de Cores UZZINA (DS21)\n` +
+          `// Paleta ativa: ${pal.label} (${pal.id})\n\n` +
+          JSON.stringify(exportObj, null, 2);
+        document.getElementById("export-modal").classList.add("open");
+      }
+
+      function closeExportModal() {
+        document.getElementById("export-modal").classList.remove("open");
+      }
+
+      function copyExportCode() {
+        const text = document.getElementById("export-code-output").textContent;
+        navigator.clipboard?.writeText(text);
+      }
+
+      // Initialize
+      applyAllTokensToDOM();
+      renderSidebarControls();
+    </script>
+  </body>
+</html>

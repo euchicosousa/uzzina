@@ -705,10 +705,10 @@ export const PALLETE: PaletteConfig[] = [
       },
       cardLDelta: 0.05,
       borderLDelta: 0.2,
-      inputLDelta: 0.02,
+      inputLDelta: 0.1,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
-      popoverLDelta: -0.03,
+      popoverLDelta: 0.05,
       ring: {
         h: 264,
         c: 0.31,

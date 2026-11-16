@@ -81,7 +81,7 @@
   --color-error: oklch(0.8 calc(var(--chroma) * 1.1) var(--error-hue));
   --error-foreground: oklch(0.6 calc(var(--chroma) * 1.1) var(--error-hue));
   --color-error-background: color-mix(
-    in srgb,
+    in oklch,
     var(--color-error) 13%,
     var(--card)
   );
@@ -91,7 +91,7 @@
   );
   --warning-foreground: oklch(0.5 var(--chroma) var(--warning-hue));
   --color-warning-background: color-mix(
-    in srgb,
+    in oklch,
     var(--color-warning) 7%,
     var(--card)
   );
@@ -100,7 +100,7 @@
   --color-success: oklch(0.508 0.14 163);
   --color-success-foreground: oklch(0.42 0.14 163);
   --color-success-background: color-mix(
-    in srgb,
+    in oklch,
     var(--color-success) 7%,
     var(--card)
   );
@@ -115,7 +115,7 @@
   );
   --info-foreground: oklch(0.5 var(--chroma) var(--info-hue));
   --color-info-background: color-mix(
-    in srgb,
+    in oklch,
     var(--color-info) 7%,
     var(--card)
   );
@@ -159,7 +159,7 @@
     oklch(var(--dark-primary-fg-l) 0.014 var(--dark-primary-h))
   );
 
-  --secondary: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --secondary: color-mix(in oklch, var(--foreground) 10%, transparent);
   --secondary-foreground: color-mix(
     in srgb,
     var(--foreground) 65%,
@@ -197,7 +197,7 @@
   );
   --error-foreground: var(--color-error);
   --color-error-background: color-mix(
-    in srgb,
+    in oklch,
     var(--color-error) 14%,
     var(--card)
   );
@@ -207,7 +207,7 @@
   );
   --warning-foreground: var(--color-warning);
   --color-warning-background: color-mix(
-    in srgb,
+    in oklch,
     var(--color-warning) 14%,
     var(--card)
   );
@@ -216,7 +216,7 @@
   --color-success: oklch(0.65 0.16 163);
   --color-success-foreground: var(--color-success);
   --color-success-background: color-mix(
-    in srgb,
+    in oklch,
     var(--color-success) 14%,
     var(--card)
   );
@@ -231,7 +231,7 @@
   );
   --info-foreground: var(--color-info);
   --color-info-background: color-mix(
-    in srgb,
+    in oklch,
     var(--color-info) 14%,
     var(--card)
   );
@@ -688,12 +688,12 @@ html {
 
   --foreground: var(--phase-fg);
   --action: color-mix(
-    in srgb,
+    in oklch,
     var(--phase-color) var(--phase-mix),
     var(--action-base)
   );
   --action-hover: color-mix(
-    in srgb,
+    in oklch,
     var(--phase-color) var(--phase-mix-hover),
     var(--action-hover-base)
   );
@@ -756,7 +756,7 @@ html {
   );
   --action-top-border: color-mix(
     in srgb,
-    color-mix(in srgb, white var(--vivid-top-light), var(--action))
+    color-mix(in oklch, white var(--vivid-top-light), var(--action))
       calc(var(--action-relief, 1) * 100%),
     transparent
   );
@@ -768,7 +768,7 @@ html {
   &:hover {
     --action-top-border: color-mix(
       in srgb,
-      color-mix(in srgb, white var(--vivid-top-light), var(--action-hover))
+      color-mix(in oklch, white var(--vivid-top-light), var(--action-hover))
         calc(var(--action-relief, 1) * 100%),
       transparent
     );

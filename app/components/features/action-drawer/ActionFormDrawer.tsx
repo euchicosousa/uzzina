@@ -1161,6 +1161,7 @@ export function ActionFormDrawer({
         )}
 
         <PrismTabs
+          variant="drawer"
           selectedKey={view}
           keyboardActivation="manual"
           onSelectionChange={(key) => {
@@ -1468,7 +1469,10 @@ export function ActionFormDrawer({
                 </span>
               </div>
               {isRecreating && (
-                <PrismBadge variant="outline" className="text-secondary-foreground">
+                <PrismBadge
+                  variant="outline"
+                  className="text-secondary-foreground"
+                >
                   Resultado anterior
                 </PrismBadge>
               )}

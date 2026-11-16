@@ -23,8 +23,7 @@ const buttonSizeClasses = {
 const buttonVariantClasses = {
   default:
     "bg-primary border-primary text-primary-foreground hover:border-[color-mix(in_oklab,var(--primary),var(--background)_20%)] hover:bg-[color-mix(in_oklab,var(--primary),var(--background)_20%)]",
-  outline:
-    "bg-transparent hover:bg-secondary aria-expanded:bg-secondary dark:bg-transparent",
+  outline: "bg-transparent hover:bg-secondary aria-expanded:bg-secondary",
   secondary:
     "bg-secondary text-foreground border-secondary hover:border-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-foreground",
   ghost:
