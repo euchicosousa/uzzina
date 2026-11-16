@@ -1,13 +1,14 @@
 # UZZINA — estado atual
 
-Atualizado em 15/11/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
+Atualizado em 16/11/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
 
-O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso para esse commit. Fila atual: 12 tickets do Planejamento em espera, dois de design system aguardando aceite visual (DS17 e DS18; DS08 encerrado em 13/11 sem implementação) e um de arquitetura (15 no total, conforme o tracker em `.scratch/README.md`). Em 15/11 a `main` está igual a `origin/main` (até `1531a1d`); o deploy Ready desses commits na Vercel não foi conferido. Commits locais ainda não enviados: `git log origin/main..main`. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
+O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso para esse commit. Fila atual: 12 tickets do Planejamento em espera, dois de design system aguardando aceite visual (DS17 e DS18; DS08 encerrado em 13/11 sem implementação), um aberto em 16/11 pronto para execução (DS19; WA01 aberto e encerrado no mesmo dia, sem implementação) e um de arquitetura (16 no total, conforme o tracker em `.scratch/README.md`). Em 15/11 a `main` está igual a `origin/main` (até `1531a1d`); o deploy Ready desses commits na Vercel não foi conferido. Commits locais ainda não enviados: `git log origin/main..main`. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
 
 ## Pendências reais
 
 - **Deploy na Vercel:** DS05, DS11–DS18 já estão no GitHub (`main` = `origin/main` em 15/11); falta confirmar que a versão de `1531a1d` ficou Ready.
 - **Aceite visual do DS17 e do DS18** no app, claro e escuro; no DS17, testar também salvar "Cor viva no escuro" e "Texto na cor viva" em Minha Conta.
+- **DS19 implementado, sem commit** (16/11): migração `20261116120000_phase_color_preference.sql` **aplicada em produção em 16/11**. Falta testar salvar "Cor da fase" em Minha Conta, o aceite visual (claro e escuro), o commit e a publicação.
 - **Sombra colorida da paleta (DS14):** encerrada com aceite do proprietário em 12/11; falta só publicar (a migração `20261112120000` já está aplicada em produção).
 - **Não verificado ainda:** aparência no navegador dos botões do Admin (Novo Usuário, Novo Cliente, Novo Parceiro) e comportamento dos menus Visualizar/Ordenar/Exibir com leitor de tela.
 
@@ -26,6 +27,22 @@ O ticket foi ajustado para encaminhamento. A primeira entrega é o inventário e
 O [ticket de sombra do tema](../../.scratch/design-system-audit/issues/14-global-theme-shadow.md) descreve como concluída uma implementação ausente da `main` local em `19c3585` e do diff do checkout. A revisão documental confirmou que menus, diálogos e outras superfícies listadas ainda usam as sombras atuais. A proposta é coerente como direção. Antes de executar, falta corrigir o status e a sequência de aprovação, delimitar elevações e exceções, separar a cor global da opção de relevo dos cartões e definir o comportamento do tema Personalizado. A bancada anuncia 11 paletas e define seis, com retorno para Ônix nas demais, e mantém sombras neutras nas amostras. O aceite precisa comparar sombras antes e depois em componentes reais, com as duas intensidades propostas e cobertura dos estados e temas relevantes. Referências e diff conferidos em revisão de código e documentação.
 
 ## Registro recente
+
+### DS19: migração da preferência aplicada — 16/11
+
+A migração `20261116120000_phase_color_preference.sql` foi **aplicada em produção em 16/11/2026** (projeto `dfepmjcozszswocwvdpq`, `CREATE OR REPLACE` pela ferramenta de SQL, sem registro no histórico de migrations), com autorização do proprietário. Antes, o corpo da função vigente foi comparado com `20261113120000` e era idêntico. Depois: chave `phaseColor` presente, chaves do DS17 e do DS14 preservadas, `SECURITY DEFINER`, `search_path` vazio, EXECUTE só para `authenticated`, `service_role` e `postgres`, uma única versão da função. A validação dos valores não foi exercitada no banco e salvar pelo app não foi testado. O código do DS19 continua sem commit.
+
+### DS19 implementado na árvore de trabalho — 16/11
+
+"Cor da fase" virou preferência da conta (`phaseColor`, padrão Desligada) em Minha Conta → Aparência; "Cor viva no escuro" e "Texto na cor viva" só aparecem com Viva. Removidos o grupo do menu Visualizar, o botão de paleta do Hoje e a prop `showPhaseColor`: `ActionItem` lê a preferência, então todo cartão (incluindo o Kanban do Hoje) segue a conta. Migração `20261116120000_phase_color_preference.sql` escrita e NÃO aplicada. Verificação: `tsc` limpo, Prettier nos arquivos tocados, `bun test tests/view-options.test.tsx` 10 passam; salvar a preferência e o visual não foram testados. Detalhe no [ticket](../../.scratch/design-system-audit/issues/19-phase-color-to-account.md).
+
+### WA01 encerrado sem implementação e DS19 liberado — 16/11
+
+O proprietário encerrou o [WA01](../../.scratch/whatsapp-approval/issues/01-send-for-approval-button.md) (botão "Enviar para aprovação" no WhatsApp): sem a API, o envio seria manual, praticamente o que ele já faz, e a API não compensa. O botão "ID" do rodapé da gaveta continua como está, pois a remoção fazia parte do ticket encerrado. Registro no [histórico](../../.scratch/archive/resolved-tickets.md). No [DS19](../../.scratch/design-system-audit/issues/19-phase-color-to-account.md), decisões confirmadas (sem botão de paleta no Hoje, cor em todo o app incluindo o Kanban, padrão Desligada) e execução disparada para um subagente Sonnet.
+
+### DS19 e WA01 abertos — 16/11
+
+Dois tickets novos a pedido do proprietário, só com levantamento; nenhum arquivo do app foi alterado. [DS19](../../.scratch/design-system-audit/issues/19-phase-color-to-account.md): tirar "Cor da fase" do menu Visualizar e criar a opção em Minha Conta → Aparência (Desligada padrão / Suave / Viva), com "Cor viva no escuro" e "Texto na cor viva" visíveis só em Viva. Achados: a escolha hoje é por tela e não é salva; o Hoje tem um botão de paleta próprio, fora do menu Visualizar; a preferência nova exige migração de `update_my_preferences`, que recusa chave desconhecida. [WA01](../../.scratch/whatsapp-approval/issues/01-send-for-approval-button.md): excluir o botão "ID" do rodapé da gaveta e pôr no lugar "Enviar para aprovação" no WhatsApp. Achados: link do WhatsApp só leva texto, sem anexo; imagem pede compartilhamento do aparelho ou copiar e colar; parceiros e contas não têm telefone e link não abre grupo; já existe "Compartilhar para Revisão" no menu em lote. Nada testado em aparelho. Ambos aguardam decisões do proprietário antes da execução.
 
 ### DS17: migração das preferências aplicada — 13/11
 
@@ -267,7 +284,7 @@ O proprietário aceitou o DS05 (todo ícone à direita do texto), que saiu da fi
 - **DS05:** decisão do proprietário: todos os ícones ficam à direita do texto. A decisão anterior (ícone à esquerda) e o branch `proposal/ds05-save-icon-first` estão superados. A implementação está em andamento no branch `fix/ds05-icons-right`. O ticket segue aberto.
 - **Planejamento (T01–T11):** adiado pelo proprietário. T02 segue aberto. O proprietário informou que PostgreSQL local não é necessário; a conexão com o Supabase será discutida depois.
 - **DS01 e EST-03:** sem menção do proprietário; mantidos como estão.
-- Fila ativa: 15 tickets.
+- Fila ativa: 16 tickets.
 
 ### Abas underline 1px: contrato atualizado — 06/11
 

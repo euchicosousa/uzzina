@@ -5533,3 +5533,7 @@ Encerrado com aceite do proprietário em 12/11/2026, absorvido pelo DS11. O cart
 ## DS08 — Página inicial institucional da UZZINA
 
 Encerrado pelo proprietário em 13/11/2026 sem implementação: não é uma necessidade agora e as três versões de rascunho não comunicaram bem o app. A rota `/` volta e permanece como estava (três acessos: UZZINA, LINK, CNVT). Os rascunhos ficaram só na branch `proposal/ds08-landing`, sem commit, e foram descartados. Do trabalho ficam o [estudo de levantamento](../../docs/audits/2026-11-13-ds08-landing-study.md) (inclui o achado de que `cnvt.link` abre o site da agência) e o [DS17](../design-system-audit/issues/17-vivid-phase-color-cards.md), aberto para testar o fundo cheio da fase nos cartões. [Ticket](../design-system-audit/issues/08-uzzina-landing-page.md)
+
+## WA01 — Botão "Enviar para aprovação" no WhatsApp
+
+Aberto e encerrado pelo proprietário em 16/11/2026, sem implementação. O estudo mostrou que um link do WhatsApp só leva texto; a imagem exigiria compartilhar pelo aparelho ou copiar e colar (manual, praticamente o que ele já faz) ou a API do WhatsApp Business (número dedicado, modelos aprovados, custo por mensagem, sem grupos). Nenhum dos caminhos compensa agora. O botão "ID" do rodapé da gaveta, cuja remoção fazia parte deste ticket, continua como está. [Ticket com o estudo](../whatsapp-approval/issues/01-send-for-approval-button.md)
