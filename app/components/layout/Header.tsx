@@ -714,7 +714,7 @@ export const HeaderMenu = ({
         {person.admin && (
           <>
             <PrismMenuSeparator />
-            <PrismMenuGroup className="relative -mt-2 bg-secondary p-1">
+            <PrismMenuGroup className="relative -mt-2 bg-secondary/50 p-1">
               <PrismMenuLabel>Admin</PrismMenuLabel>
               <PrismMenuItem
                 onAction={() => onNavigate("/app/admin/partners")}
@@ -767,6 +767,13 @@ export const HeaderMenu = ({
               >
                 <CalendarIcon className="size-4" />
                 Datas Comemorativas
+              </PrismMenuItem>
+              <PrismMenuItem
+                onAction={() => onNavigate("/app/admin/themes")}
+                textValue="Cores dos temas"
+              >
+                <PaletteIcon className="size-4" />
+                Cores dos temas
               </PrismMenuItem>
             </PrismMenuGroup>
           </>

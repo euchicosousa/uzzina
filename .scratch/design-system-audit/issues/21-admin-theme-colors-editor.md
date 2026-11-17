@@ -1,6 +1,6 @@
 # DS21 — Página exclusiva do Admin para edição completa e visualização lado a lado de todas as cores dos temas
 
-**Status.** Estudo completo e protótipo HTML interativo entregues em 16/11/2026 ([relatório completo](../../../docs/audits/2026-11-16-ds21-admin-theme-colors-study.md) | [protótipo HTML interativo](../prototipo-ds21-editor-cores-admin.html)). Aguardando decisão do proprietário sobre as 3 perguntas da seção final antes de implementar a rota no código da aplicação; nenhum arquivo de código do app nem banco de dados foi alterado.
+**Status.** Fase 1 (página `/app/admin/themes` + botão Salvar `.md`) implementada localmente em 16/11/2026, aguardando aceite visual antes da Fase 2 (correção do "Atenção" no escuro e prioridades derivadas). Modelo vigente: [protótipo v2](../prototipo-ds21-v2.html) com a [revisão](../../../docs/audits/2026-11-16-ds21-review.md).
 
 **Bloqueado por.** Nenhum ticket (pode começar o estudo imediatamente).
 
@@ -88,7 +88,7 @@ Como este é o passo de estudo antes da implementação, a primeira entrega é u
 
 - [x] Levantamento completo de todas as cores, deltas de luma, transparências (`color-mix` / `/80`), fases e estados de hover em `palettes.ts`, `palette-vars.ts`, `tailwind.css` e componentes Prism (`docs/audits/2026-11-16-ds21-admin-theme-colors-study.md`).
 - [x] Proposta de layout e maquete interativa da página `/app/admin/themes` (área esquerda com componentes reais e estados lado a lado; barra direita com controles de cor, luma e transparência e amostras originais + calculadas lado a lado em `.scratch/design-system-audit/prototipo-ds21-editor-cores-admin.html`).
-- [ ] Decisões do proprietário registradas no ticket (forma de salvamento/exportação, edição de fórmulas calculadas e visualização Claro/Escuro) antes de escrever código no app.
+- [x] Decisões do proprietário registradas no ticket (forma de salvamento/exportação, edição de fórmulas calculadas e visualização Claro/Escuro) antes de escrever código no app.
 
 ## Modelos sugeridos
 
@@ -105,3 +105,57 @@ Como este é o passo de estudo antes da implementação, a primeira entrega é u
 - **Proposta nova a avaliar:** prioridades derivadas das cores semânticas (Baixa ← sucesso, Média ← atenção, Alta ← erro), como o atraso já deriva do erro. Hoje são valores próprios em `app/tailwind.css` (`--priority-low/medium/high`, matizes 150/90/25), próximos mas não iguais aos semânticos.
 - **Salvar = baixar um arquivo de instruções** (decidido em 16/11). O editor não grava nada no código nem no banco. "Salvar" baixa um arquivo (Markdown com bloco JSON) que o proprietário entrega a uma IA (Claude, GPT etc.) para aplicar. O arquivo precisa ser autoexplicativo: paleta e modo alterados, cada token com valor antigo e novo, onde cada valor mora (`app/lib/palettes.ts`, `app/tailwind.css` ou banco, se algum dia houver) e os passos de aplicação e verificação (typecheck, `/ui`, aceite visual). "Copiar código" pode continuar como atalho. Sem tabela nova e sem escrita em arquivo pelo app.
 - **Prioridades derivadas das semânticas:** aceita como direção (Baixa ← sucesso, Média ← atenção, Alta ← erro); corrigir antes o amarelo de atenção no escuro, que sai quase branco.
+
+## Instruções para a execução (16/11/2026)
+
+Leia antes de escrever código: este ticket, a [revisão](../../../docs/audits/2026-11-16-ds21-review.md), o [protótipo v2](../prototipo-ds21-v2.html) (abra no navegador, em 1440×900), `AGENTS.md` (seção 5, Prism) e `docs/contracts/prism-details.md`. O protótipo v1 (`prototipo-ds21-editor-cores-admin.html`) fica só como exemplo do que **não** fazer.
+
+### O que construir
+
+1. **Rota** `app/routes/app/admin/themes.tsx` (`/app/admin/themes`), dentro de `AdminGuard`, no mesmo padrão de `admin/partners.tsx`, com item "Cores dos temas" no menu de Administração do `Header.tsx`. Só desktop e tablet deitado (≥ 1024px); não criar modo celular.
+2. **Layout igual ao v2:** cabeçalho de uma linha (título, seletor de paleta, Claro/Escuro/Lado a lado, Descartar, Copiar código, Salvar); a página não rola, só as duas colunas (`h-dvh`/altura disponível, `min-h-0`, `overflow-y-auto` em cada coluna; conferir que o último item de cada coluna aparece inteiro). Abre em **Lado a lado**.
+3. **Prévia com componentes reais**, não réplicas: `ActionItem` (variantes e fases suave/viva, atrasado), `PrismButton` em todas as variantes, campos, menus/popover, `PrismAlert`, selos, colunas de prioridade. Estados (repouso, hover, foco, selecionado) lado a lado sem depender do mouse: forçar o estado por atributo/classe na prévia, sem alterar os componentes do app. Se um componente não permitir isso sem mudança, pare e registre a necessidade em vez de duplicar o componente.
+4. **A interface do editor fica fixa em Ônix** (a do app do usuário), e só as prévias recebem a paleta editada. `applyPaletteVars` hoje escreve no `document.documentElement`; crie uma variante que escreva as mesmas variáveis num elemento (sem mudar o comportamento atual). O modo escuro do Tailwind é `&:is(.dark *)` e `.dark` funciona em qualquer elemento; já a prévia **clara** dentro do app em modo escuro precisa redeclarar as variáveis claras no contêiner. Teste as duas prévias com o app em claro **e** em escuro.
+5. **Lista de cores à direita igual ao v2:** dois modos por linha, calculadas recuadas abaixo da cor de origem, cadeado nas regras fixas (não editáveis), contraste nas linhas de texto, +8px entre itens principais, edição inline com Luz/Saturação/Matiz (`PrismSlider`, `PrismColorField`, `UColorPickerDropdown`; nada de controle feito do zero), passar o mouse numa linha contorna onde a cor é usada na prévia.
+6. **Fases e prioridades** são globais (valem para todas as paletas): mostrar o aviso "vale para todas as paletas" e, no arquivo de Salvar, apontar o lugar certo (`PHASES` em `app/lib/CONSTANTS.ts`; `--priority-*` e avisos em `app/tailwind.css`), separado do que é por paleta (`app/lib/palettes.ts`).
+7. **Estado só em memória.** Nada vai para o banco nem para arquivos. Opcional: rascunho no `localStorage` (com `try/catch`). Descartar volta ao valor do código. Avisar ao trocar de paleta com alterações não salvas.
+
+### Salvar (arquivo para IA)
+
+"Salvar" baixa `uzzina-cores-<paleta>-<AAAA-MM-DD>.md`, que o proprietário entrega a uma IA. Conteúdo, em português, autoexplicativo para quem não viu a conversa:
+
+- Cabeçalho: o que é o arquivo, app/repositório (UZZINA), data, paleta, e a frase "Aplique somente estas mudanças; não altere fórmulas nem outros valores".
+- Tabela por mudança: token, modo (claro/escuro/ambos), valor antigo → novo (OKLCH com 3 casas), arquivo e chave exata onde fica (ex.: `app/lib/palettes.ts` → `PALLETE.coral.light.actionHoverLDelta`).
+- Bloco JSON com os mesmos dados (para conferência automática).
+- Passos de aplicação e verificação: editar só as chaves listadas, `bun run typecheck`, Prettier nos arquivos tocados, conferir em `/ui` → Tokens de Design → Cores Semânticas e em `/app/admin/themes`, aceite visual do proprietário em claro e escuro; commit só com autorização dele.
+- Sem mudanças: o botão fica desabilitado. "Copiar código" copia o mesmo conteúdo.
+
+### Ordem e correções de dados
+
+1. Página e Salvar (itens acima). Entregar para aceite visual antes do resto.
+2. **Corrigir o amarelo de "Atenção"** (a fórmula estoura a luz para 1 e sai quase branco no escuro; ver revisão, seção 2): propor o valor, mostrar antes/depois na própria página e aplicar após o "sim" do proprietário.
+3. **Prioridades derivadas** das semânticas (Baixa ← sucesso, Média ← atenção, Alta ← erro), depois do item 2: viram calculadas (recuadas, com cadeado) na lista. Conferir as colunas do Hoje → Prioridade e a galeria `/ui`.
+4. **Não corrigir sem perguntar:** Coral claro `actionHoverLDelta` = +1,00 (provável erro de digitação) e a saturação de Damasco/Fúcsia acima do que a tela mostra. Apontar no relatório final e esperar decisão.
+
+### Regras que o v1 quebrou e não podem se repetir
+
+- Escala de controles 24/32/40/48 (`xs`/`sm`/`default`/`lg`), raios `rounded-2xl squircle` (itens internos `rounded-xl squircle`), tipografia do app (no máximo 3–4 tamanhos na página), ícones Lucide (nunca emoji), ícone de ação à direita do texto.
+- Sem caixas/cartões com borda em volta de seções ou itens da lista; tudo direto sobre o fundo.
+- Nomes técnicos (`--card`, fórmulas) pequenos e secundários; o nome em português ("Cartão", "Fundo") é o principal.
+- Usar tokens (`bg-secondary`, `text-secondary-foreground`, `border-border`), nunca cores fixas na interface do editor.
+
+### Limites de segurança
+
+- `bun run dev` usa o banco de produção: no navegador, só leitura. Esta página não grava nada.
+- Código e comentários em inglês, interface em português; TypeScript estrito, sem `any`. Componente novo reutilizável entra em `/ui`.
+- Preserve mudanças do proprietário no checkout; commit e push só com pedido dele.
+- Ao terminar: atualizar este ticket (status e critérios), `.scratch/README.md` e `docs/audits/CURRENT.md`, com o que foi verificado e o que não foi (ex.: prévia clara com o app em escuro).
+
+### Critérios de aceite da implementação
+
+- [x] `/app/admin/themes` só para admin, abre em Lado a lado, sem rolagem da página, com o último item de cada coluna visível (implementado; conferir no navegador).
+- [x] Prévia com componentes reais e estados lado a lado; editor fixo no tema do usuário; prévias isoladas para claro e escuro (implementado; conferir com app em claro e escuro).
+- [x] Edição inline atualiza prévia e calculadas ao vivo; regras fixas travadas.
+- [ ] Salvar baixa o `.md` no formato acima; uma IA consegue aplicá-lo sem contexto extra (geração implementada; falta testar com uma mudança real e conferir o diff).
+- [ ] Typecheck (`tsc --noEmit`), Prettier e `vite build` ok (passaram em 16/11); falta aceite visual do proprietário.
+- [ ] Depois: Atenção corrigida (com "sim") e prioridades derivadas, cada um com aceite.

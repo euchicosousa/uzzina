@@ -29,6 +29,7 @@ import { Route as DashReviewSlugRouteImport } from './routes/dash/review.$slug'
 import { Route as DashActionIdRouteImport } from './routes/dash/action/$id'
 import { Route as AppPartnerSlugRouteImport } from './routes/app/partner/$slug'
 import { Route as AppAdminUsersRouteImport } from './routes/app/admin/users'
+import { Route as AppAdminThemesRouteImport } from './routes/app/admin/themes'
 import { Route as AppAdminPartnersRouteImport } from './routes/app/admin/partners'
 import { Route as AppAdminClientsRouteImport } from './routes/app/admin/clients'
 import { Route as AppAdminCelebrationsRouteImport } from './routes/app/admin/celebrations'
@@ -136,6 +137,11 @@ const AppAdminUsersRoute = AppAdminUsersRouteImport.update({
   path: '/admin/users',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminThemesRoute = AppAdminThemesRouteImport.update({
+  id: '/admin/themes',
+  path: '/admin/themes',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdminPartnersRoute = AppAdminPartnersRouteImport.update({
   id: '/admin/partners',
   path: '/admin/partners',
@@ -187,6 +193,7 @@ export interface FileRoutesByFullPath {
   '/app/admin/celebrations': typeof AppAdminCelebrationsRoute
   '/app/admin/clients': typeof AppAdminClientsRoute
   '/app/admin/partners': typeof AppAdminPartnersRoute
+  '/app/admin/themes': typeof AppAdminThemesRoute
   '/app/admin/users': typeof AppAdminUsersRoute
   '/app/partner/$slug': typeof AppPartnerSlugRoute
   '/dash/action/$id': typeof DashActionIdRoute
@@ -213,6 +220,7 @@ export interface FileRoutesByTo {
   '/app/admin/celebrations': typeof AppAdminCelebrationsRoute
   '/app/admin/clients': typeof AppAdminClientsRoute
   '/app/admin/partners': typeof AppAdminPartnersRoute
+  '/app/admin/themes': typeof AppAdminThemesRoute
   '/app/admin/users': typeof AppAdminUsersRoute
   '/app/partner/$slug': typeof AppPartnerSlugRoute
   '/dash/action/$id': typeof DashActionIdRoute
@@ -242,6 +250,7 @@ export interface FileRoutesById {
   '/app/admin/celebrations': typeof AppAdminCelebrationsRoute
   '/app/admin/clients': typeof AppAdminClientsRoute
   '/app/admin/partners': typeof AppAdminPartnersRoute
+  '/app/admin/themes': typeof AppAdminThemesRoute
   '/app/admin/users': typeof AppAdminUsersRoute
   '/app/partner/$slug': typeof AppPartnerSlugRoute
   '/dash/action/$id': typeof DashActionIdRoute
@@ -272,6 +281,7 @@ export interface FileRouteTypes {
     | '/app/admin/celebrations'
     | '/app/admin/clients'
     | '/app/admin/partners'
+    | '/app/admin/themes'
     | '/app/admin/users'
     | '/app/partner/$slug'
     | '/dash/action/$id'
@@ -298,6 +308,7 @@ export interface FileRouteTypes {
     | '/app/admin/celebrations'
     | '/app/admin/clients'
     | '/app/admin/partners'
+    | '/app/admin/themes'
     | '/app/admin/users'
     | '/app/partner/$slug'
     | '/dash/action/$id'
@@ -326,6 +337,7 @@ export interface FileRouteTypes {
     | '/app/admin/celebrations'
     | '/app/admin/clients'
     | '/app/admin/partners'
+    | '/app/admin/themes'
     | '/app/admin/users'
     | '/app/partner/$slug'
     | '/dash/action/$id'
@@ -487,6 +499,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminUsersRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/admin/themes': {
+      id: '/app/admin/themes'
+      path: '/admin/themes'
+      fullPath: '/app/admin/themes'
+      preLoaderRoute: typeof AppAdminThemesRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/admin/partners': {
       id: '/app/admin/partners'
       path: '/admin/partners'
@@ -543,6 +562,7 @@ interface AppRouteChildren {
   AppAdminCelebrationsRoute: typeof AppAdminCelebrationsRoute
   AppAdminClientsRoute: typeof AppAdminClientsRoute
   AppAdminPartnersRoute: typeof AppAdminPartnersRoute
+  AppAdminThemesRoute: typeof AppAdminThemesRoute
   AppAdminUsersRoute: typeof AppAdminUsersRoute
   AppPartnerSlugRoute: typeof AppPartnerSlugRoute
   AppAdminClientUserIdRoute: typeof AppAdminClientUserIdRoute
@@ -561,6 +581,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminCelebrationsRoute: AppAdminCelebrationsRoute,
   AppAdminClientsRoute: AppAdminClientsRoute,
   AppAdminPartnersRoute: AppAdminPartnersRoute,
+  AppAdminThemesRoute: AppAdminThemesRoute,
   AppAdminUsersRoute: AppAdminUsersRoute,
   AppPartnerSlugRoute: AppPartnerSlugRoute,
   AppAdminClientUserIdRoute: AppAdminClientUserIdRoute,

@@ -73,7 +73,7 @@ export function hexToOklch(hex: string): OklchColor {
 /**
  * Converte OKLCH para Hexadecimal.
  */
-function oklchToHex(h: number, c: number, l: number): string {
+export function oklchToHex(h: number, c: number, l: number): string {
   const H = (h * Math.PI) / 180;
   const a = c * Math.cos(H);
   const b_ = c * Math.sin(H);
@@ -157,3 +157,72 @@ export function derivePrimaryFg(primaryHex: string): string {
   return oklch.l > 0.62 ? "#000000" : "#FFFFFF";
 }
 export const deriveAccentFg = derivePrimaryFg;
+
+function oklchToLinearRgb(c: OklchColor): [number, number, number] {
+  const rad = (c.h * Math.PI) / 180;
+  const a = c.c * Math.cos(rad);
+  const b = c.c * Math.sin(rad);
+
+  const lL = c.l + 0.3963377774 * a + 0.2158037573 * b;
+  const mL = c.l - 0.1055613458 * a - 0.0638541728 * b;
+  const sL = c.l - 0.0894841775 * a - 1.291485548 * b;
+
+  const l_ = lL * lL * lL;
+  const m_ = mL * mL * mL;
+  const s_ = sL * sL * sL;
+
+  return [
+    4.0767416621 * l_ - 3.3077115913 * m_ + 0.2309699292 * s_,
+    -1.2684380046 * l_ + 2.6097574011 * m_ - 0.3413193965 * s_,
+    -0.0041960863 * l_ - 0.7034186148 * m_ + 1.707614701 * s_,
+  ];
+}
+
+/** Parses an `oklch(L C H)` CSS string into `{ l, c, h }`. */
+export function parseOklchString(value: string): OklchColor | null {
+  const match = value
+    .trim()
+    .match(
+      /^oklch\(\s*([\d.+-]+%?)\s+([\d.+-]+)\s+([\d.+-]+)(?:\s*\/[^)]*)?\)$/i,
+    );
+  if (!match) return null;
+  const rawL = match[1];
+  const l = rawL.endsWith("%") ? parseFloat(rawL) / 100 : parseFloat(rawL);
+  const c = parseFloat(match[2]);
+  const h = parseFloat(match[3]);
+  if (Number.isNaN(l) || Number.isNaN(c) || Number.isNaN(h)) return null;
+  return { l, c, h: ((h % 360) + 360) % 360 };
+}
+
+/** Formats an `OklchColor` as `oklch(L C H)` with 3 decimal places. */
+export function formatOklchString(color: OklchColor): string {
+  return `oklch(${color.l.toFixed(3)} ${color.c.toFixed(3)} ${color.h.toFixed(3)})`;
+}
+
+/** Returns true when the OKLCH color fits inside the standard sRGB gamut. */
+export function isOklchInSrgbGamut(color: OklchColor): boolean {
+  const [r, g, b] = oklchToLinearRgb(color);
+  return (
+    r >= -0.002 &&
+    r <= 1.002 &&
+    g >= -0.002 &&
+    g <= 1.002 &&
+    b >= -0.002 &&
+    b <= 1.002
+  );
+}
+
+/** Computes WCAG 2.1 relative luminance contrast ratio between two OKLCH colors. */
+export function getOklchContrastRatio(a: OklchColor, b: OklchColor): number {
+  const relLum = (color: OklchColor) => {
+    const [r, g, bl] = oklchToLinearRgb(color).map((v) =>
+      Math.max(0, Math.min(1, v)),
+    );
+    return 0.2126 * r + 0.7152 * g + 0.0722 * bl;
+  };
+  const l1 = relLum(a);
+  const l2 = relLum(b);
+  const brighter = Math.max(l1, l2);
+  const darker = Math.min(l1, l2);
+  return (brighter + 0.05) / (darker + 0.05);
+}

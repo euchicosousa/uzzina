@@ -26,9 +26,12 @@ export type PaletteVars = {
   dark: PaletteModeVars;
 };
 
-/** Writes the palette as CSS custom properties on the document root. */
-export function applyPaletteVars(palette: PaletteVars) {
-  const root = document.documentElement;
+/** Writes the palette as CSS custom properties on `target` (defaults to document root). */
+export function applyPaletteVars(
+  palette: PaletteVars,
+  target?: HTMLElement | null,
+) {
+  const root = target ?? document.documentElement;
   const { light, dark } = palette;
 
   // 1. Cor Primária e seu Foreground
