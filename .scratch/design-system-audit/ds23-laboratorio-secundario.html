@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS23 Laboratório da cor secundária</title>
+<style>
+  /* Page chrome only. Theme values live in the CONFIG block of the script. */
+  :root {
+    --chrome-bg: #f3f3f2; --chrome-fg: #1c1c1b; --chrome-muted: #6b6b68; --chrome-line: #dcdcd9;
+    --fs-1: 11px; --fs-2: 12px; --fs-3: 14px; --fs-4: 18px;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-width: 1280px; background: var(--chrome-bg); color: var(--chrome-fg);
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif; font-size: var(--fs-3); }
+  .mono { font-family: ui-monospace, Menlo, monospace; }
+  /* top bar */
+  .bar { position: sticky; top: 0; z-index: 10; background: var(--chrome-bg); border-bottom: 1px solid var(--chrome-line); padding: 8px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .bar-row { display: flex; gap: 24px; align-items: center; }
+  .bar h1 { font-size: var(--fs-4); font-weight: 600; margin: 0; white-space: nowrap; }
+  .group { display: flex; gap: 10px; align-items: center; }
+  .group > b { font-size: var(--fs-2); font-weight: 600; min-width: 40px; }
+  .spacer { flex: 1; }
+  .count { font-size: var(--fs-2); color: var(--chrome-muted); white-space: nowrap; }
+  .copy { height: 32px; padding: 0 14px; border-radius: 16px; corner-shape: squircle; border: 1px solid var(--chrome-line); background: #fff; font: inherit; color: inherit; cursor: pointer; }
+  .copy:hover { background: #ebebe9; }
+  .single { display: flex; gap: 8px; align-items: center; font-size: var(--fs-2); }
+  .implied { font-size: var(--fs-1); color: var(--chrome-muted); line-height: 1.5; }
+  .now { font-size: var(--fs-1); color: var(--chrome-muted); padding: 6px 20px; border-bottom: 1px solid var(--chrome-line); }
+  /* number fields */
+  .fld { display: grid; grid-template-columns: auto 64px auto; gap: 6px; align-items: center; font-size: var(--fs-2); color: inherit; }
+  .fld input[type=text] { width: 64px; height: 24px; padding: 0 6px; border-radius: 8px; border: 1px solid color-mix(in srgb, currentColor 30%, transparent); background: color-mix(in srgb, currentColor 6%, transparent); color: inherit; font-family: ui-monospace, Menlo, monospace; font-size: var(--fs-1); }
+  .fld input.invalid { border-color: #d92d4a; outline: 1px solid #d92d4a; }
+  .fld input:disabled { opacity: .55; }
+  .bar .fld { color: var(--chrome-muted); }
+  .bar .fld input[type=text] { background: #fff; border-color: var(--chrome-line); color: var(--chrome-fg); }
+  /* grid of rows: one row per surface, Claro | Escuro */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; }
+  .colhead { padding: 10px 16px; font-weight: 600; }
+  .cell { padding: 8px 16px; color: var(--fg); min-width: 0; }
+  .surf { border-radius: 16px; corner-shape: squircle; padding: 12px; display: grid; grid-template-columns: 1fr 250px; gap: 16px; }
+  .surf.unused { opacity: .55; grid-template-columns: 1fr; padding: 8px 12px; }
+  .surf.confirmed { outline: 2px solid color-mix(in srgb, currentColor 40%, transparent); outline-offset: -3px; }
+  .sl, .sr { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .name { font-size: var(--fs-3); font-weight: 600; }
+  .use-line { font-size: var(--fs-2); }
+  .evid { font-family: ui-monospace, Menlo, monospace; font-size: var(--fs-1); opacity: .7; user-select: text; line-height: 1.4; }
+  .code, .read, .res, .deriv { font-family: ui-monospace, Menlo, monospace; font-size: var(--fs-1); user-select: text; line-height: 1.45; }
+  .code { opacity: .8; } .read, .res { opacity: .85; } .deriv { font-weight: 600; }
+  .warn { font-weight: 600; }
+  .cap { font-size: var(--fs-1); opacity: .6; }
+  .strip { display: flex; flex-direction: column; gap: 5px; border-left: 1px solid color-mix(in srgb, currentColor 18%, transparent); padding-left: 12px; }
+  .strip-title { font-size: var(--fs-1); font-weight: 600; }
+  .strip-row { display: flex; gap: 14px; font-size: var(--fs-2); }
+  .chk { display: flex; gap: 6px; align-items: center; cursor: pointer; }
+  .chk input { accent-color: currentColor; }
+  .strip .fld { grid-template-columns: 66px 64px auto; }
+  .seg { display: inline-flex; border: 1px solid color-mix(in srgb, currentColor 30%, transparent); border-radius: 8px; overflow: hidden; }
+  .seg button { font: inherit; font-size: var(--fs-1); padding: 2px 6px; border: 0; background: transparent; color: inherit; cursor: pointer; }
+  .seg button[aria-pressed=true] { background: color-mix(in srgb, currentColor 22%, transparent); font-weight: 600; }
+  .seg button:disabled { cursor: default; opacity: .6; }
+  /* simulations (mirror the real components; --secondary is set per cell) */
+  .sims { display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-start; }
+  .simbox { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .btn { height: 32px; padding: 0 12px; border-radius: 16px; corner-shape: squircle; font: inherit; font-size: var(--fs-3); color: var(--btn-fg, var(--fg)); border: 1px solid transparent; cursor: default; white-space: nowrap; }
+  .btn.sm { font-size: var(--fs-2); padding: 0 12px; }
+  .btn.ghost { background: transparent; } .btn.ghost.hover { background: var(--secondary); }
+  .btn.sec { background: var(--secondary); border-color: var(--secondary); }
+  .btn.sec.hover { background: color-mix(in oklch, var(--secondary), var(--btn-fg, var(--fg)) 5%); border-color: color-mix(in oklch, var(--secondary), var(--btn-fg, var(--fg)) 5%); }
+  .ibtn { width: 24px; height: 24px; border-radius: 12px; border: 0; background: transparent; color: inherit; font-size: var(--fs-3); line-height: 1; cursor: default; }
+  .ibtn.hover { background: var(--secondary); }
+  .inp { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 40px; padding: 0 8px 0 12px; font-size: var(--fs-3); min-width: 190px; }
+  .inp span { opacity: .6; }
+  .mlist { display: flex; flex-direction: column; min-width: 190px; }
+  .mi { height: 32px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 12px; border-radius: 12px; corner-shape: squircle; font-size: var(--fs-3); }
+  .mi.focus { background: var(--secondary); }
+  .kbd { height: 20px; padding: 0 6px; border-radius: 999px; background: var(--secondary); font-family: ui-monospace, Menlo, monospace; font-size: var(--fs-1); display: inline-flex; align-items: center; }
+  .mlabel { font-size: var(--fs-1); font-weight: 600; opacity: .7; padding: 4px 12px; }
+  .chips { display: flex; gap: 6px; }
+  .chip { height: 24px; padding: 0 10px; border-radius: 999px; background: var(--secondary); font-size: var(--fs-2); display: inline-flex; align-items: center; }
+  .tog { width: 32px; height: 32px; border-radius: 16px; corner-shape: squircle; border: 1px solid transparent; background: transparent; color: inherit; font-size: var(--fs-3); font-weight: 600; cursor: default; }
+  .tog.hover, .tog.sel { background: var(--secondary); }
+  .togs { display: flex; gap: 4px; }
+  .cardsim { display: flex; flex-direction: column; gap: 6px; min-width: 190px; }
+  .avs { display: flex; padding-left: 8px; }
+  .av { width: 32px; height: 32px; border-radius: 50%; background: var(--secondary); color: color-mix(in srgb, currentColor 65%, transparent); display: grid; place-items: center; font-size: var(--fs-2); margin-left: -8px; box-shadow: 0 0 0 2px var(--surf); }
+  .alertsim { display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: var(--fs-2); }
+  /* study table */
+  .study { padding: 24px 20px 48px; max-width: 1400px; }
+  .study h2 { font-size: var(--fs-4); font-weight: 600; margin: 0 0 4px; }
+  .study p { color: var(--chrome-muted); margin: 0 0 12px; font-size: var(--fs-2); }
+  table { border-collapse: collapse; width: 100%; font-size: var(--fs-2); }
+  th, td { text-align: left; vertical-align: top; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--chrome-line); }
+  th { font-weight: 600; color: var(--chrome-muted); }
+  td.ev { font-family: ui-monospace, Menlo, monospace; font-size: var(--fs-1); user-select: text; }
+  td.no { color: #b3261e; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="bar">
+  <div class="bar-row">
+    <h1>Cor secundária</h1>
+    <div class="group"><b>Claro</b><span id="c-light" style="display:flex;gap:14px"></span></div>
+    <div class="group"><b>Escuro</b><span id="c-dark" style="display:flex;gap:14px"></span></div>
+    <span class="cap" style="color:var(--chrome-muted)">padrão: derivado do fundo da página (ΔL, C)</span>
+    <div class="spacer"></div>
+    <span class="count" id="count"></span>
+    <button class="copy" id="reset" type="button">Restaurar</button>
+    <button class="copy" id="copy" type="button">Copiar valores</button>
+  </div>
+  <div class="bar-row">
+    <label class="single chk"><input type="checkbox" id="single"> Aplicar uma regra só a todas as superfícies (derivada da superfície)</label>
+    <div class="group"><b>Claro</b><span id="r-light" style="display:flex;gap:14px"></span></div>
+    <div class="group"><b>Escuro</b><span id="r-dark" style="display:flex;gap:14px"></span></div>
+  </div>
+  <div class="implied" id="implied"></div>
+</div>
+<div class="now mono" id="now"></div>
+<div class="grid" id="grid"></div>
+<section class="study"><h2>Onde o secundário aparece de verdade</h2>
+  <p>Estudo do código em app/ (16/11/2026): para cada superfície, o que realmente renderiza algo secundário por cima dela.</p>
+  <table id="study"></table></section>
+<script>
+/* ==========================================================================
+   CONFIG — edit numbers here. Nothing is loaded from the app. Ônix only.
+   ========================================================================== */
+const CONFIG = {
+  // Default secondary: opaque, derived from the PAGE background.
+  // L = background L + dL ; C = absolute chroma ; hue = background hue.
+  secondary: {
+    light: { dL: -0.04, C: 0.005 },
+    dark:  { dL:  0.09, C: 0.005 },
+  },
+  // "Single rule" mode: ONE relative rule per mode, computed from EACH surface's own color
+  // (L = surface L + dL ; C absolute ; hue = surface hue).
+  rule: {
+    light: { dL: -0.04, C: 0.005 },
+    dark:  { dL:  0.06, C: 0.005 },
+  },
+  // Palette "default" (Ônix) copied from app/lib/palettes.ts
+  theme: {
+    label: "Ônix",
+    light: {
+      bg: { l: 0.96, c: 0.002, h: 200 }, fg: { l: 0, c: 0, h: 0 },
+      card: -0.02, popover: 0.02, border: -0.07, input: -0.04, action: 0.02, actionHover: 0.1,
+    },
+    dark: {
+      bg: { l: 0.2, c: 0.01, h: 250 }, fg: { l: 1, c: 0, h: 0 },
+      card: 0.05, popover: -0.03, border: 0.1, input: 0.02, action: 0.1, actionHover: 0.2,
+    },
+  },
+  // Alert backgrounds (app/tailwind.css): L/C fixed, hue of the base color.
+  alertBg: { light: { l: 0.93, c: 0.03 }, dark: { l: 0.32, c: 0.03 } },
+  alerts: {
+    light: {
+      error:   { name: "Aviso Erro",       base: { l: 0.65, c: 0.22, h: 16 },  fg: { l: 0.52, c: 0.19, h: 16 } },
+      warning: { name: "Aviso Atenção",    base: { l: 0.82, c: 0.16, h: 80 },  fg: { l: 0.52, c: 0.10, h: 80 } },
+      success: { name: "Aviso Sucesso",    base: { l: 0.65, c: 0.13, h: 163 }, fg: { l: 0.52, c: 0.10, h: 163 } },
+      info:    { name: "Aviso Informação", base: { l: 0.65, c: 0.17, h: 250 }, fg: { l: 0.52, c: 0.13, h: 250 } },
+    },
+    dark: {
+      error:   { name: "Aviso Erro",       base: { l: 0.72, c: 0.16, h: 16 },  fg: null },
+      warning: { name: "Aviso Atenção",    base: { l: 0.84, c: 0.14, h: 80 },  fg: null },
+      success: { name: "Aviso Sucesso",    base: { l: 0.75, c: 0.15, h: 163 }, fg: null },
+      info:    { name: "Aviso Informação", base: { l: 0.75, c: 0.12, h: 250 }, fg: null },
+    },
+  },
+  lateMix: 0.7,   // late-surface: bg-error-background/70 over the page
+  // All 6 phases (app/lib/CONSTANTS.ts)
+  phases: [
+    { name: "Ideia", color: "#fbbf24" }, { name: "Fazer", color: "#f97316" }, { name: "Fazendo", color: "#ec4899" },
+    { name: "Análise", color: "#a855f7" }, { name: "Feito", color: "#38bdf8" }, { name: "Concluído", color: "#4ade80" },
+  ],
+  phaseSoft: {   // phase-surface: action = mix(phase mix%, action base) in oklab
+    light: { mix: 0.07, fg: { l: 0.35, c: 0.07 } },
+    dark:  { mix: 0.14, fg: { l: 0.92, c: 0.06 } },
+  },
+  phaseVivid: { ink: { l: 0.35, c: 0.07 } },
+};
+
+/* Study of real usage (app/, 16/11/2026). used=false means no component puts anything secondary on it. */
+const AVATAR = "Avatar sem foto (UAvatarGroup, fundo bg-secondary) dentro do cartão";
+const AVATAR_EV = "features/ActionItem.tsx:355 > prism/avatar.tsx:46,88";
+const USAGE = {
+  bg: { used: true, sim: "page", what: "Botões ghost/outline (hover = secundário), toggle selecionado, células de calendário com hover",
+    ev: "prism/button.tsx:26,30,44 · features/CalendarDayCell.tsx:69 (hover:bg-secondary/50) · prism/calendar.tsx:349" },
+  card: { used: true, sim: "card", what: "Chips bg-secondary e botão ghost sobre cartões; faixa de cabeçalho bg-secondary dentro do cartão",
+    ev: "planning/PlanningSuggestionsList.tsx:165 (cartão) com :110 (chip bg-secondary) · planning/PlanningCalendarView.tsx:79 (cartão) com :81 e :189 (hover:bg-secondary)" },
+  popover: { used: true, sim: "menu", what: "Itens de menu/comando/select/combobox em foco (bg-secondary), kbd, toggles ghost de barra (AppBar, toolbar e BubbleMenu do Tiptap), botão fechar de Dialog/Sheet. Tooltip: sem uso",
+    ev: "prism/dropdown-menu.tsx:46,94 · prism/command.tsx:51,276 · prism/select.tsx:139,207 · prism/combobox.tsx:141,176 · prism/kbd.tsx:10 · layout/AppBar.tsx:85,90,153 · features/RichTextEditor.tsx:310,651 · prism/dialog.tsx:125,140 · prism/sheet.tsx:76,89 · prism/tooltip.tsx:33 (nada secundário)" },
+  input: { used: true, sim: "input", what: "Botão ghost 24px dentro do campo (input group: limpar, abrir lista); gatilho de select",
+    ev: "prism/input-group.tsx:22 (bg-input), :70,:176 (InputGroupButton ghost) · prism/combobox.tsx:72 · prism/select.tsx:84" },
+  action: { used: true, sim: "avatar", what: AVATAR, ev: AVATAR_EV + " · ActionItem.tsx:152" },
+  actionHover: { used: true, sim: "avatar", what: AVATAR + " (estado hover)", ev: AVATAR_EV + " · ActionItem.tsx:165 (hover:bg-action-hover)" },
+  admin: { used: true, sim: "admin", what: "Itens do menu Admin em foco (focus:bg-secondary) dentro do grupo que já é bg-secondary: empilhamento secundário sobre secundário",
+    ev: "layout/Header.tsx:717 (PrismMenuGroup bg-secondary) + prism/dropdown-menu.tsx:94 (item focus:bg-secondary)" },
+  "alert-error": { used: true, sim: "alert", what: "Botão ghost \"Tentar novamente\" dentro do PrismAlert de erro (único alerta com botão no app; o item Sair do menu usa error-background como próprio fundo de foco)",
+    ev: "routes/app/index.tsx:130-148 · prism/alert.tsx:12 · layout/Header.tsx:704" },
+  "alert-warning": { used: false, what: "PrismAlert só é usado com variant=\"error\" no app; avisos e toasts (sonner) não têm botões secundários",
+    ev: "prism/alert.tsx:14 · prism/sonner.tsx:50-53 (sem botão secundário)" },
+  "alert-success": { used: false, what: "PrismAlert só é usado com variant=\"error\" no app; avisos e toasts (sonner) não têm botões secundários",
+    ev: "prism/alert.tsx:13 · prism/sonner.tsx:50-53" },
+  "alert-info": { used: false, what: "PrismAlert só é usado com variant=\"error\" no app; avisos e toasts (sonner) não têm botões secundários",
+    ev: "prism/alert.tsx:15 · prism/sonner.tsx:50-53" },
+  late: { used: true, sim: "avatar", what: AVATAR + " atrasado (late-surface)", ev: "features/ActionItem.tsx:173 (late-surface bg-error-background/70, hover bg-error-background) · " + AVATAR_EV },
+  soft: { used: true, sim: "avatar", what: AVATAR + " com fase suave (phase-surface)", ev: "tailwind.css:615 (@utility phase-surface) · " + AVATAR_EV },
+  vivid: { used: true, sim: "avatar", what: AVATAR + " com fase viva (phase-vivid)", ev: "tailwind.css:681 (@utility phase-vivid) · " + AVATAR_EV },
+};
+// Rows of the study table below the grid
+const STUDY_ROWS = [
+  ["Fundo da página (bg-background)", "bg"], ["Cartão (bg-card)", "card"], ["Popover, menu, select, combobox, comando, Dialog, Sheet, AppBar, BubbleMenu", "popover"],
+  ["Campo (bg-input)", "input"], ["Cartão de ação, repouso e hover (bg-action)", "action"], ["Seção Admin do menu (bg-secondary)", "admin"],
+  ["Aviso Erro", "alert-error"], ["Aviso Atenção", "alert-warning"], ["Aviso Sucesso", "alert-success"], ["Aviso Informação", "alert-info"],
+  ["Cartão atrasado (late-surface)", "late"], ["Fase suave, 6 fases (phase-surface)", "soft"], ["Fase viva, 6 fases (phase-vivid)", "vivid"],
+];
+
+/* ==========================================================================
+   Color math (OKLCH <-> OKLab <-> sRGB)
+   ========================================================================== */
+const D2R = Math.PI / 180;
+const toLab = ({ l, c, h }) => ({ L: l, a: c * Math.cos(h * D2R), b: c * Math.sin(h * D2R) });
+const toLch = ({ L, a, b }) => {
+  const c = Math.hypot(a, b);
+  let h = Math.atan2(b, a) / D2R; if (h < 0) h += 360;
+  return { l: L, c, h: c < 1e-4 ? 0 : h };
+};
+function labToLinear({ L, a, b }) {
+  const l_ = L + 0.3963377774 * a + 0.2158037573 * b;
+  const m_ = L - 0.1055613458 * a - 0.0638541728 * b;
+  const s_ = L - 0.0894841775 * a - 1.2914855480 * b;
+  const l = l_ ** 3, m = m_ ** 3, s = s_ ** 3;
+  return [
+    +4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+    -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+    -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s,
+  ];
+}
+function linearToLabFixed([r, g, b]) {
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return {
+    L: 0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s,
+    a: 1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s,
+    b: 0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s,
+  };
+}
+const clamp01 = (v) => Math.min(1, Math.max(0, v));
+const enc = (v) => { v = clamp01(v); return v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055; };
+const dec = (v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+const toHex = (lch) => "#" + labToLinear(toLab(lch)).map((v) => Math.round(enc(v) * 255).toString(16).padStart(2, "0")).join("");
+const lumin = (lch) => { const [r, g, b] = labToLinear(toLab(lch)).map(clamp01); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+const contrast = (x, y) => { const a = lumin(x), b = lumin(y); return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05); };
+const fromHex = (hex) => {
+  const n = parseInt(hex.slice(1), 16);
+  return toLch(linearToLabFixed([(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => dec(v / 255))));
+};
+const css = ({ l, c, h }) => `oklch(${l.toFixed(3)} ${c.toFixed(3)} ${h.toFixed(1)})`;
+const mixLab = (x, y, t) => { // t = share of x, in oklab
+  const A = toLab(x), B = toLab(y);
+  return toLch({ L: A.L * t + B.L * (1 - t), a: A.a * t + B.a * (1 - t), b: A.b * t + B.b * (1 - t) });
+};
+const shift = (bg, d) => ({ l: bg.l + d, c: bg.c, h: bg.h });
+
+/* ==========================================================================
+   Build
+   ========================================================================== */
+/* ==========================================================================
+   State (persisted in localStorage) and build
+   Per-surface rule: { own, mode: "L" | "dL", v, C, ok }
+     mode "L"  -> v is the absolute lightness 0..1 (hue from the surface)
+     mode "dL" -> v is the offset added to the surface's own L
+     C is always the absolute chroma 0..0.4
+   ========================================================================== */
+const STORE_KEY = "ds23-lab-secondary-v2";
+const LIMITS = { L: [0, 1], dL: [-1, 1], C: [0, 0.4] };
+const NUDGE = { L: 0.005, dL: 0.005, C: 0.002 };
+const MODES = ["light", "dark"];
+const MODE_LABEL = { light: "Claro", dark: "Escuro" };
+const clone = (o) => JSON.parse(JSON.stringify(o));
+const fmt = (n, d = 3) => (n >= 0 ? "+" : "−") + Math.abs(n).toFixed(d);
+const r4 = (n) => Math.round(n * 10000) / 10000;
+const txt = (n) => String(r4(n));
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+
+const freshState = () => ({ ...clone(CONFIG.secondary), single: false, rule: clone(CONFIG.rule) });
+let state = freshState();
+let surf = {};
+const sk = (id, mode) => `${id}:${mode}`;
+const getS = (id, mode) => (surf[sk(id, mode)] ||= { own: false, mode: "L", v: 0, C: 0, ok: false });
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    if (d && d.state) state = { ...freshState(), ...d.state };
+    if (d && d.surf) surf = d.surf;
+  } catch (_) { /* storage unavailable or corrupt: keep CONFIG */ }
+}
+function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify({ state, surf })); } catch (_) {} }
+
+const usageKey = (id) => id.replace(/\d+$/, "");
+
+// Surfaces of one mode (same ids and order in both). Admin depends on the popover's effective secondary.
+function surfaces(mode) {
+  const t = CONFIG.theme[mode];
+  const bg = t.bg, fg = t.fg;
+  const defSec = { l: bg.l + state[mode].dL, c: state[mode].C, h: bg.h };
+  const actionBase = shift(bg, t.action), actionHoverBase = shift(bg, t.actionHover);
+  const list = [
+    { id: "bg", name: "Fundo da página", token: "--background", color: bg },
+    { id: "card", name: "Cartão", token: "--card", color: shift(bg, t.card) },
+    { id: "popover", name: "Popover / menu / diálogo / gaveta", token: "--popover", color: shift(bg, t.popover) },
+    { id: "input", name: "Campo (input)", token: "--input", color: shift(bg, t.input) },
+    { id: "action", name: "Cartão de ação (repouso)", token: "--action", color: actionBase },
+    { id: "actionHover", name: "Cartão de ação (hover)", token: "--action-hover", color: actionHoverBase },
+    { id: "admin", name: "Seção Admin do menu (PrismMenuGroup)", token: "--secondary", color: null },
+  ];
+  const ab = CONFIG.alertBg[mode];
+  Object.entries(CONFIG.alerts[mode]).forEach(([k, a]) => {
+    list.push({ id: "alert-" + k, name: a.name, token: `--color-${k}-background`, color: { l: ab.l, c: ab.c, h: a.base.h }, text: a.fg || a.base });
+  });
+  const errBg = list.find((s) => s.id === "alert-error");
+  list.push({ id: "late", name: "Cartão atrasado (late-surface)", token: "--color-error-background", color: mixLab(errBg.color, bg, CONFIG.lateMix), text: errBg.text, hoverNote: "hover = Aviso Erro" });
+  const ps = CONFIG.phaseSoft[mode];
+  CONFIG.phases.forEach((p, i) => {
+    const pc = fromHex(p.color);
+    list.push({ id: "soft" + i, name: `Fase suave: ${p.name}`, token: "--action", rule: ".phase-surface", color: mixLab(pc, actionBase, ps.mix), text: { l: ps.fg.l, c: ps.fg.c, h: pc.h } });
+  });
+  CONFIG.phases.forEach((p, i) => {
+    const pc = fromHex(p.color);
+    list.push({ id: "vivid" + i, name: `Fase viva: ${p.name}`, token: "--action", rule: ".phase-vivid", color: pc, text: { l: CONFIG.phaseVivid.ink.l, c: CONFIG.phaseVivid.ink.c, h: pc.h } });
+  });
+  // effective secondary per surface (admin last: its surface is the popover's secondary)
+  const out = {};
+  list.forEach((s) => { if (s.id !== "admin") out[s.id] = effSec(s, mode, defSec); });
+  const admin = list.find((s) => s.id === "admin");
+  admin.color = out.popover;
+  out.admin = effSec(admin, mode, defSec);
+  list.forEach((s) => { s.use = USAGE[usageKey(s.id)]; s.eff = out[s.id]; });
+  return { list, defSec, fg, bg };
+}
+
+function effSec(s, mode, defSec) {
+  const st = getS(s.id, mode);
+  if (st.own) return { l: st.mode === "L" ? st.v : s.color.l + st.v, c: st.C, h: s.color.h };
+  if (state.single) return { l: s.color.l + state.rule[mode].dL, c: state.rule[mode].C, h: s.color.h };
+  return defSec;
+}
+
+/* ---- typed number fields ---- */
+const parseNum = (str) => {
+  const t = String(str).trim().replace(",", ".");
+  if (t === "" || !/^[+-]?(\d+\.?\d*|\.\d+)$/.test(t)) return NaN;
+  return Number(t);
+};
+function makeField(label, { get, set, limits, step }) {
+  const row = document.createElement("label"); row.className = "fld";
+  row.innerHTML = `<span class="fl"></span><input type="text" inputmode="decimal" autocomplete="off" spellcheck="false">`;
+  row.querySelector(".fl").textContent = label;
+  const input = row.querySelector("input");
+  const apply = () => {
+    const v = parseNum(input.value), [lo, hi] = limits();
+    if (Number.isFinite(v) && v >= lo && v <= hi) { input.classList.remove("invalid"); input.removeAttribute("aria-invalid"); set(v); return true; }
+    input.classList.add("invalid"); input.setAttribute("aria-invalid", "true"); return false;
+  };
+  input.addEventListener("input", apply);
+  input.addEventListener("change", apply);
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { apply(); return; }
+    if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+    e.preventDefault();
+    const cur = parseNum(input.value), base = Number.isFinite(cur) ? cur : get(), [lo, hi] = limits();
+    const nv = r4(Math.min(hi, Math.max(lo, base + (e.key === "ArrowUp" ? 1 : -1) * step() * (e.shiftKey ? 5 : 1))));
+    input.value = txt(nv); apply();
+  });
+  input.addEventListener("blur", () => { input.classList.remove("invalid"); input.removeAttribute("aria-invalid"); input.value = txt(get()); });
+  const show = (v, disabled) => { if (document.activeElement !== input) input.value = txt(v); input.disabled = disabled; };
+  return { row, input, show };
+}
+
+/* ---- top bar controls ---- */
+const defCtl = {}, ruleCtl = {};
+function makePair(store, key, host, ctl, prefix) {
+  ctl[key] = {
+    dL: makeField(prefix + " ΔL", { get: () => store()[key].dL, set: (v) => { store()[key].dL = v; update(); save(); }, limits: () => LIMITS.dL, step: () => NUDGE.dL }),
+    C: makeField("C", { get: () => store()[key].C, set: (v) => { store()[key].C = v; update(); save(); }, limits: () => LIMITS.C, step: () => NUDGE.C }),
+  };
+  host.appendChild(ctl[key].dL.row); host.appendChild(ctl[key].C.row);
+}
+MODES.forEach((m) => {
+  makePair(() => state, m, document.getElementById("c-" + m), defCtl, "Padrão");
+  makePair(() => state.rule, m, document.getElementById("r-" + m), ruleCtl, "Regra");
+});
+const singleBox = document.getElementById("single");
+singleBox.addEventListener("change", () => { state.single = singleBox.checked; update(); save(); });
+
+/* ---- simulations (rest | hover side by side) ---- */
+const B = (cls, label, sm) => `<button class="btn ${cls}${sm ? " sm" : ""}" type="button" tabindex="-1">${label}</button>`;
+function simHtml(type, s) {
+  const two = (a, b, la = "Repouso", lb = "Hover") =>
+    `<div class="simbox"><span class="cap">${la}</span>${a}</div><div class="simbox"><span class="cap">${lb}</span>${b}</div>`;
+  switch (type) {
+    case "page":
+      return two(B("ghost", "Transparente") + B("sec", "Secundário"), B("ghost hover", "Transparente") + B("sec hover", "Secundário"));
+    case "card": {
+      const chips = `<div class="chips"><span class="chip">Reels</span><span class="chip">Pendente</span></div>`;
+      return two(`<div class="cardsim">${chips}<div>${B("ghost", "Editar", 1)}</div></div>`, `<div class="cardsim">${chips}<div>${B("ghost hover", "Editar", 1)}</div></div>`);
+    }
+    case "input":
+      return two(`<div class="inp"><span>Buscar ação</span><button class="ibtn" type="button" tabindex="-1">×</button></div>`,
+                 `<div class="inp"><span>Buscar ação</span><button class="ibtn hover" type="button" tabindex="-1">×</button></div>`);
+    case "menu": {
+      const list = (f) => `<div class="mlist"><div class="mi">Perfil</div><div class="mi${f ? " focus" : ""}">Ajuda <span class="kbd">⌘K</span></div><div class="mi">Sair</div></div>`;
+      const tog = (h) => `<div class="togs"><button class="tog${h ? " hover" : ""}" type="button" tabindex="-1">B</button><button class="tog sel" type="button" tabindex="-1">I</button><button class="tog" type="button" tabindex="-1">U</button></div>`;
+      return two(list(false) + tog(false), list(true) + tog(true), "Repouso", "Item focado / toggle hover");
+    }
+    case "admin": {
+      const list = (f) => `<div class="mlist"><div class="mlabel">Admin</div><div class="mi">Parceiros</div><div class="mi${f ? " focus" : ""}">Novo Parceiro</div></div>`;
+      return two(list(false), list(true), "Repouso", "Item focado");
+    }
+    case "alert":
+      return two(`<div class="alertsim"><span>Não foi possível carregar</span>${B("ghost", "Tentar novamente", 1)}</div>`,
+                 `<div class="alertsim"><span>Não foi possível carregar</span>${B("ghost hover", "Tentar novamente", 1)}</div>`);
+    case "avatar":
+      return `<div class="simbox"><span class="cap">Avatares sem foto</span><div class="avs"><span class="av">AB</span><span class="av">CS</span><span class="av">+2</span></div></div>`;
+    default: return "";
+  }
+}
+
+/* ---- grid build (rows aligned: Claro | Escuro) ---- */
+const gridEl = document.getElementById("grid");
+const refs = { light: {}, dark: {} };
+const SURF_IDS = surfaces("light").list.map((s) => ({ id: s.id, name: s.name }));
+gridEl.insertAdjacentHTML("beforeend", MODES.map((m) => `<div class="colhead">Ônix ${MODE_LABEL[m]} <span class="cap" id="sec-${m}"></span></div>`).join(""));
+
+function buildStrip(id, mode, name) {
+  const uid = `${id}-${mode}`;
+  const el = document.createElement("div"); el.className = "strip";
+  el.innerHTML = `<div class="strip-title">Regra desta superfície · ${MODE_LABEL[mode]}</div>
+    <div class="strip-row"><label class="chk"><input type="checkbox" id="use-${uid}"> Usar padrão</label>
+    <label class="chk"><input type="checkbox" id="ok-${uid}"> Confirmado</label></div>`;
+  const st = () => getS(id, mode);
+  const lum = makeField("Luminância", { get: () => st().v, set: (v) => { st().v = v; update(); save(); }, limits: () => LIMITS[st().mode], step: () => NUDGE[st().mode] });
+  const seg = document.createElement("span"); seg.className = "seg"; seg.setAttribute("role", "group"); seg.setAttribute("aria-label", `Modo da luminância: ${name} (${MODE_LABEL[mode]})`);
+  seg.innerHTML = `<button type="button" data-m="dL" title="Desvio em relação à superfície">ΔL</button><button type="button" data-m="L" title="Luminosidade absoluta 0 a 1">L</button>`;
+  lum.row.appendChild(seg);
+  const chroma = makeField("Croma", { get: () => st().C, set: (v) => { st().C = v; update(); save(); }, limits: () => LIMITS.C, step: () => NUDGE.C });
+  const deriv = document.createElement("div"); deriv.className = "deriv";
+  const res = document.createElement("div"); res.className = "res";
+  el.appendChild(lum.row); el.appendChild(chroma.row); el.appendChild(deriv); el.appendChild(res);
+  const use = el.querySelector(`#use-${uid}`), ok = el.querySelector(`#ok-${uid}`);
+  use.setAttribute("aria-label", `Usar padrão: ${name} (${MODE_LABEL[mode]})`);
+  ok.setAttribute("aria-label", `Confirmado: ${name} (${MODE_LABEL[mode]})`);
+  const r = { el, use, ok, lum, chroma, seg, deriv, res };
+  use.addEventListener("change", () => {
+    const s = st();
+    if (!use.checked) { // start from the current effective values so nothing jumps
+      const sf = surfaces(mode).list.find((x) => x.id === id);
+      s.v = r4(s.mode === "L" ? sf.eff.l : sf.eff.l - sf.color.l);
+      s.C = r4(sf.eff.c);
+    }
+    s.own = !use.checked;
+    update(); save();
+  });
+  ok.addEventListener("change", () => { st().ok = ok.checked; update(); save(); });
+  seg.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
+    const s = st(), m = b.dataset.m;
+    if (s.mode === m) return;
+    const refL = surfaces(mode).list.find((x) => x.id === id).color.l;
+    s.v = r4(m === "L" ? s.v + refL : s.v - refL);
+    s.mode = m; update(); save();
+  }));
+  return r;
+}
+
+SURF_IDS.forEach(({ id, name }) => {
+  MODES.forEach((mode) => {
+    const u = USAGE[usageKey(id)];
+    const cell = document.createElement("div"); cell.className = "cell";
+    const el = document.createElement("div"); el.className = "surf" + (u.used ? "" : " unused");
+    const left = document.createElement("div"); left.className = "sl";
+    left.innerHTML = `<div class="name"></div>
+      <div class="use-line">${u.used ? "Usado: " + esc(u.what) : "<b>Sem uso real — não precisa de secundário</b>"}</div>
+      <div class="evid">${esc(u.ev)}</div>
+      <div class="code"></div>
+      ${u.used ? `<div class="sims">${simHtml(u.sim)}</div><div class="read"></div>` : ""}`;
+    left.querySelector(".name").textContent = name;
+    el.appendChild(left);
+    const entry = { cell, el, code: left.querySelector(".code"), read: left.querySelector(".read"), strip: null };
+    if (u.used) { entry.strip = buildStrip(id, mode, name); const right = document.createElement("div"); right.className = "sr"; right.appendChild(entry.strip.el); el.appendChild(right); }
+    cell.appendChild(el);
+    gridEl.appendChild(cell);
+    refs[mode][id] = entry;
+  });
+});
+
+function update() {
+  singleBox.checked = state.single;
+  MODES.forEach((m) => {
+    defCtl[m].dL.show(state[m].dL, false); defCtl[m].C.show(state[m].C, false);
+    ruleCtl[m].dL.show(state.rule[m].dL, !state.single); ruleCtl[m].C.show(state.rule[m].C, !state.single);
+  });
+  let confirmed = 0, total = 0;
+  const impliedParts = [];
+  MODES.forEach((mode) => {
+    const { list, defSec, fg, bg } = surfaces(mode);
+    const dls = [], cs = [];
+    list.forEach((s) => {
+      const R = refs[mode][s.id], st = getS(s.id, mode), eff = s.eff;
+      const text = s.text || fg;
+      const dl = eff.l - s.color.l, cr = contrast(text, eff), invisible = Math.abs(dl) < 0.02;
+      R.cell.style.background = css(bg); R.cell.style.setProperty("--fg", css(fg)); R.cell.style.color = css(fg);
+      const e = R.el;
+      e.style.background = css(s.color); e.style.color = css(text);
+      e.style.setProperty("--btn-fg", css(text)); e.style.setProperty("--fg", css(text));
+      e.style.setProperty("--secondary", css(eff)); e.style.setProperty("--surf", css(s.color));
+      R.code.innerHTML = `${css(s.color)} ${toHex(s.color)}${s.hoverNote ? " · " + s.hoverNote : ""}${s.id === "admin" ? "<br>a superfície é o secundário do popover" : ""}`;
+      if (!s.use.used) return;
+      total++; if (st.ok) confirmed++;
+      dls.push(dl); cs.push(eff.c);
+      e.classList.toggle("confirmed", st.ok);
+      R.read.innerHTML = `secundário ${st.own ? "próprio" : state.single ? "regra única" : "padrão"}: ${css(eff)} ${toHex(eff)}<br>ΔL superfície→secundário ${fmt(dl)} · contraste texto/secundário ${cr.toFixed(2)}:1${invisible ? ' · <span class="warn">quase invisível</span>' : ""}`;
+      // strip
+      const r = R.strip, tok = s.token === "--secondary" ? "var(--secondary)" : `var(${s.token})`;
+      const v = st.own ? st.v : r4(st.mode === "L" ? eff.l : dl);
+      const c = st.own ? st.C : r4(eff.c);
+      r.lum.show(v, !st.own); r.chroma.show(c, !st.own);
+      r.seg.querySelectorAll("button").forEach((b) => { b.setAttribute("aria-pressed", String(b.dataset.m === st.mode)); b.disabled = !st.own; });
+      r.use.checked = !st.own; r.ok.checked = st.ok;
+      r.deriv.textContent = "secundário = " + derivation(s, st, mode);
+      r.res.textContent = `${css(eff)} ${toHex(eff)}`;
+    });
+    document.getElementById("sec-" + mode).textContent = `· secundário padrão ${css(defSec)} ${toHex(defSec)}`;
+    const mn = Math.min(...dls), mx = Math.max(...dls);
+    const common = mx - mn < 0.0015;
+    impliedParts.push(`${MODE_LABEL[mode]}: ΔL efetivo por superfície de ${fmt(mn)} a ${fmt(mx)}, C de ${Math.min(...cs).toFixed(3)} a ${Math.max(...cs).toFixed(3)} → ${common ? `regra única hoje: oklch(from var(--superfície) calc(l ${mn < 0 ? "−" : "+"} ${Math.abs(mn).toFixed(3)}) ${cs[0].toFixed(3)} h)` : "sem regra única (varia entre superfícies)"}`);
+  });
+  document.getElementById("implied").textContent = "Regra implícita (superfícies com uso real) — " + impliedParts.join("  |  ");
+  document.getElementById("count").textContent = `Confirmados: ${confirmed} de ${total}`;
+  const bgL = CONFIG.theme.light.bg, bgD = CONFIG.theme.dark.bg;
+  document.getElementById("now").textContent = `Hoje: texto a 5% (claro) / 10% (escuro) sobre o fundo da página ≈ ΔL −0.04 / +0.09 em relação ao fundo ${css(bgL)} / ${css(bgD)}.`;
+}
+
+// Human-readable derivation (matches the CSS suggestion)
+function derivation(s, st, mode) {
+  const tok = s.token === "--secondary" ? "var(--secondary)" : `var(${s.token})`;
+  const calc = (d) => `calc(l ${d < 0 ? "−" : "+"} ${Math.abs(d).toFixed(3)})`;
+  if (st.own) return `oklch(from ${tok} ${st.mode === "L" ? st.v.toFixed(3) : calc(st.v)} ${st.C.toFixed(3)} h)`;
+  if (state.single) return `oklch(from ${tok} ${calc(state.rule[mode].dL)} ${state.rule[mode].C.toFixed(3)} h)`;
+  return `oklch(from var(--background) ${calc(state[mode].dL)} ${state[mode].C.toFixed(3)} h)  (≈ ΔL ${fmt(s.eff.l - s.color.l)} sobre esta superfície)`;
+}
+
+/* ---- study table ---- */
+document.getElementById("study").innerHTML = "<tr><th>Superfície</th><th>Componentes que põem secundário por cima</th><th>Evidência (app/...)</th></tr>" +
+  STUDY_ROWS.map(([label, key]) => { const u = USAGE[key]; return `<tr><td>${esc(label)}</td>${u.used ? `<td>${esc(u.what)}</td>` : `<td class="no">Sem uso real — não precisa de secundário. ${esc(u.what)}</td>`}<td class="ev">${esc(u.ev)}</td></tr>`; }).join("");
+
+/* ---- export ---- */
+function buildExport() {
+  const L = [];
+  L.push("Secundário (opaco). Padrão derivado do fundo da página:");
+  MODES.forEach((m) => L.push(`  ${MODE_LABEL[m]}: ΔL ${fmt(state[m].dL)} C ${state[m].C.toFixed(3)}`));
+  if (state.single) {
+    L.push("", "REGRA ÚNICA ATIVA (derivada da própria superfície):");
+    MODES.forEach((m) => L.push(`  ${MODE_LABEL[m]}: --secondary: oklch(from var(--superfície) calc(l ${state.rule[m].dL < 0 ? "-" : "+"} ${Math.abs(state.rule[m].dL).toFixed(3)}) ${state.rule[m].C.toFixed(3)} h);`));
+  }
+  let conf = 0, tot = 0;
+  MODES.forEach((m) => surfaces(m).list.forEach((s) => { if (s.use.used) { tot++; if (getS(s.id, m).ok) conf++; } }));
+  L.push("", `Confirmados: ${conf} de ${tot}`, "");
+  MODES.forEach((mode) => {
+    L.push(`=== ÔNIX ${MODE_LABEL[mode].toUpperCase()} ===`);
+    surfaces(mode).list.forEach((s) => {
+      const st = getS(s.id, mode), eff = s.eff;
+      const label = `/* ${s.name} (${MODE_LABEL[mode].toLowerCase()})${s.rule ? " [" + s.rule + "]" : ""} */`;
+      if (!s.use.used) {
+        L.push(`${s.name} (${MODE_LABEL[mode]}): SEM USO REAL — não precisa de secundário`, `  evidência: ${s.use.ev}`);
+        return;
+      }
+      const model = st.own ? `próprio ${st.mode === "L" ? `L ${st.v.toFixed(3)} (absoluto)` : `ΔL ${fmt(st.v)} (relativo à superfície)`} C ${st.C.toFixed(3)}` : state.single ? "regra única" : "padrão";
+      L.push(`${s.name} (${MODE_LABEL[mode]}): ${model}; ${st.ok ? "confirmado" : "pendente"}`);
+      L.push(`  usado: ${s.use.what}`, `  evidência: ${s.use.ev}`);
+      L.push(`  superfície ${css(s.color)} ${toHex(s.color)} -> secundário ${css(eff)} ${toHex(eff)}`);
+      const tok = s.token === "--secondary" ? "var(--secondary)" : `var(${s.token})`;
+      const calc = (d) => `calc(l ${d < 0 ? "-" : "+"} ${Math.abs(d).toFixed(3)})`;
+      let rule;
+      if (st.own) rule = `--secondary: oklch(from ${tok} ${st.mode === "L" ? st.v.toFixed(3) : calc(st.v)} ${st.C.toFixed(3)} h);`;
+      else if (state.single) rule = `--secondary: oklch(from ${tok} ${calc(state.rule[mode].dL)} ${state.rule[mode].C.toFixed(3)} h);`;
+      else rule = `usa o padrão: --secondary: oklch(from var(--background) ${calc(state[mode].dL)} ${state[mode].C.toFixed(3)} h);`;
+      L.push(`  ${label} ${s.id === "admin" ? "(a superfície é o --secondary do popover) " : ""}${rule}`);
+    });
+    L.push("");
+  });
+  return L.join("\n");
+}
+
+document.getElementById("copy").addEventListener("click", async (e) => {
+  const text = buildExport(), btn = e.currentTarget;
+  window.__lastExport = text;
+  try { await navigator.clipboard.writeText(text); btn.textContent = "Copiado"; }
+  catch (_) {
+    const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); btn.textContent = "Copiado"; } catch (__) { btn.textContent = "Falhou"; }
+    ta.remove();
+  }
+  setTimeout(() => (btn.textContent = "Copiar valores"), 1500);
+});
+document.getElementById("reset").addEventListener("click", () => {
+  try { localStorage.removeItem(STORE_KEY); } catch (_) {}
+  state = freshState(); surf = {};
+  update();
+});
+
+load();
+update();
+</script>
+</body>
+</html>

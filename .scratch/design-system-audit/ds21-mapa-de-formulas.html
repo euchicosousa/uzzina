@@ -1,0 +1,1036 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UZZINA - Mapa de fórmulas de cor</title>
+<link rel="stylesheet" href="/app/tailwind.css" id="appcss">
+<style>
+/* ============ Página (neutra, não usa as cores do app) ============ */
+:root{
+  --ui-bg:#f7f7f5; --ui-fg:#1b1b1f; --ui-mut:#6a6a72; --ui-line:rgba(0,0,0,.09);
+  --ui-soft:rgba(0,0,0,.045); --ui-soft2:rgba(0,0,0,.08); --ui-accent:#1b1b1f; --ui-accent-fg:#fff;
+  --ui-warn:#a15c00; --ui-warn-bg:rgba(214,140,0,.13);
+  --r:18px;
+  --f-xs:12px; --f-sm:14px; --f-md:18px; --f-lg:30px;
+  --font:ui-sans-serif,system-ui,-apple-system,"Inter","Segoe UI",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --ui-bg:#121215; --ui-fg:#ececf0; --ui-mut:#9a9aa5; --ui-line:rgba(255,255,255,.1);
+    --ui-soft:rgba(255,255,255,.06); --ui-soft2:rgba(255,255,255,.11); --ui-accent:#ececf0; --ui-accent-fg:#121215;
+    --ui-warn:#f0b24a; --ui-warn-bg:rgba(240,178,74,.14);
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{margin:0;min-width:1024px;background:var(--ui-bg);color:var(--ui-fg);font:400 var(--f-sm)/1.5 var(--font);-webkit-font-smoothing:antialiased}
+@supports (corner-shape:squircle){.sq,.tile,.sw,.seg,.seg label,.pill,select,.fm,.tl{corner-shape:squircle}}
+h1,h2,h3,h4,h5,p{margin:0;font-size:inherit;font-weight:inherit;letter-spacing:normal;line-height:1.3}
+.stage{background:var(--background);color:var(--foreground)}
+code,pre{font-family:var(--mono);font-size:var(--f-xs)}
+a{color:inherit}
+svg{display:block}
+
+/* Cabeçalho fixo */
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:20px;height:56px;padding:0 24px;background:color-mix(in srgb,var(--ui-bg) 88%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--ui-line)}
+.brand{display:flex;align-items:center;gap:8px;font-weight:600;white-space:nowrap}
+.top label.f{display:flex;align-items:center;gap:8px;color:var(--ui-mut);font-size:var(--f-xs);white-space:nowrap}
+select{font:inherit;font-size:var(--f-sm);color:var(--ui-fg);background:var(--ui-soft);border:1px solid var(--ui-line);border-radius:12px;padding:6px 28px 6px 12px;height:34px}
+.seg{display:inline-flex;background:var(--ui-soft);border-radius:14px;padding:3px}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label{padding:5px 12px;border-radius:11px;cursor:pointer;font-size:var(--f-sm);color:var(--ui-mut);white-space:nowrap}
+.seg input:checked+label{background:var(--ui-bg);color:var(--ui-fg);box-shadow:0 1px 3px rgba(0,0,0,.14)}
+.seg input:focus-visible+label,select:focus-visible,.chk input:focus-visible,.phs button:focus-visible{outline:2px solid var(--ui-fg);outline-offset:2px}
+.chk{display:flex;align-items:center;gap:8px;font-size:var(--f-sm);white-space:nowrap;cursor:pointer}
+.phs{display:flex;gap:6px;align-items:center}
+.phs button{width:22px;height:22px;border-radius:50%;border:2px solid transparent;background-clip:padding-box;cursor:pointer;padding:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
+.phs button[aria-pressed=true]{border-color:var(--ui-fg)}
+.spacer{flex:1}
+.stampx{font-size:var(--f-xs);color:var(--ui-mut);white-space:nowrap}
+.warnx{color:var(--ui-warn)}
+
+/* Estrutura */
+.shell{display:grid;grid-template-columns:230px minmax(0,1fr);gap:40px;max-width:1500px;margin:0 auto;padding:0 32px 120px}
+.toc{position:sticky;top:76px;align-self:start;padding-top:28px;max-height:calc(100vh - 80px);overflow:auto}
+.toc h5{margin:0 0 10px;font-size:var(--f-xs);font-weight:600;color:var(--ui-mut);letter-spacing:.04em;text-transform:uppercase}
+.toc a{display:flex;align-items:center;gap:9px;padding:6px 10px;margin-left:-10px;border-radius:10px;text-decoration:none;color:var(--ui-mut)}
+.toc a:hover,.toc a.on{background:var(--ui-soft);color:var(--ui-fg)}
+.toc a.sub{padding-left:30px;font-size:var(--f-xs)}
+.dot{width:9px;height:9px;border-radius:50%;flex:none}
+.d1{background:#4f7cff}.d2{background:#18a999}.d3{background:#e08a1e}.d4{background:#c254c9}.d5{background:#e0525b}.d0{background:var(--ui-mut)}
+main{min-width:0;padding-top:36px}
+section{padding-top:56px}
+section>h2{font-size:var(--f-lg);font-weight:650;letter-spacing:-.01em;line-height:1.15;margin-bottom:10px}
+section>.lead,.lead{font-size:var(--f-sm);line-height:1.5;letter-spacing:normal;font-weight:400;color:var(--ui-mut);max-width:78ch;margin-bottom:22px}
+h3{font-size:var(--f-md);font-weight:600;margin:42px 0 6px}
+.divider{border:0;border-top:1px solid var(--ui-line);margin:0}
+
+/* Introdução */
+.intro-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:28px;margin-top:26px}
+.ic h4{font-size:var(--f-sm);font-weight:600;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.ic p{color:var(--ui-mut);font-size:var(--f-xs);line-height:1.5}
+.mini{height:96px;display:flex;align-items:center;gap:6px;margin-bottom:12px;flex-wrap:nowrap}
+.mini .s{width:34px;height:34px;border-radius:11px;outline:1px solid rgba(128,128,128,.45);outline-offset:-1px;flex:none}
+.mini .op{color:var(--ui-mut);font-size:var(--f-sm)}
+.mini .s.big{width:44px;height:44px;border-radius:14px}
+.mini .cap{font-size:var(--f-xs);color:var(--ui-mut);font-family:var(--mono)}
+.ground{display:flex;border-radius:12px;overflow:hidden;outline:1px solid rgba(128,128,128,.45);outline-offset:-1px}
+.ground i{display:block;width:34px;height:44px}
+
+/* Pontos de atenção */
+.attn{display:grid;gap:0}
+.attn a{display:grid;grid-template-columns:22px 250px minmax(0,1fr) 150px;gap:14px;align-items:baseline;padding:11px 0;border-top:1px solid var(--ui-line);text-decoration:none}
+.attn a:hover .at{text-decoration:underline}
+.attn .at{font-weight:600}
+.attn .ad{color:var(--ui-mut)}
+.attn .st{font-size:var(--f-xs);text-align:right;color:var(--ui-mut)}
+.attn .st.on{color:var(--ui-warn);font-weight:600}
+.wi{color:var(--ui-warn);transform:translateY(3px)}
+
+/* Linhas de token */
+.row{display:grid;grid-template-columns:238px minmax(0,1fr);gap:28px;padding:24px 0;border-top:1px solid var(--ui-line);scroll-margin-top:84px}
+.row:target{background:linear-gradient(90deg,var(--ui-soft),transparent 70%);border-radius:0}
+.meta h4{font-size:var(--f-sm);font-weight:600;margin-bottom:2px}
+.tok{color:var(--ui-mut);word-break:break-all}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0 8px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:2px 10px 2px 8px;border-radius:999px;background:var(--ui-soft);font-size:var(--f-xs);color:var(--ui-fg)}
+.pill.warn{background:var(--ui-warn-bg);color:var(--ui-warn)}
+.inputs{font-size:var(--f-xs);color:var(--ui-mut);margin-top:6px}
+.inputs a{color:var(--ui-fg);text-decoration-color:var(--ui-mut);text-underline-offset:3px}
+.note{font-size:var(--f-xs);color:var(--ui-mut);margin-top:8px}
+.fm{background:var(--ui-soft);border-radius:12px;padding:9px 12px;margin:0 0 10px;white-space:pre-wrap;word-break:break-word;color:var(--ui-fg);line-height:1.55}
+.fshared{margin-bottom:14px}
+.fshared .lab,.lab{display:block;font-size:var(--f-xs);color:var(--ui-mut);margin-bottom:4px}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+body.m-light .modes,body.m-dark .modes{grid-template-columns:1fr}
+body.m-light [data-mode=dark],body.m-light [data-m=dark]{display:none!important}
+body.m-dark [data-mode=light],body.m-dark [data-m=light]{display:none!important}
+.mhead{font-size:var(--f-xs);font-weight:600;color:var(--ui-mut);margin-bottom:8px;display:flex;gap:6px;align-items:center}
+.tiles{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.sub,.res{margin-bottom:8px}
+.sub .val{color:var(--ui-fg)}
+.res .val{font-family:var(--mono);font-size:var(--f-xs);word-break:break-word}
+.na{color:var(--ui-mut);font-size:var(--f-xs);padding:14px 0}
+.big-num{font-size:var(--f-md);font-weight:600}
+.rflags{margin-top:6px;display:grid;gap:6px}
+.fl{display:flex;gap:10px;align-items:flex-start;padding:8px 12px;border-radius:12px;background:var(--ui-warn-bg);color:var(--ui-fg);font-size:var(--f-xs);line-height:1.5}
+.fl svg{color:var(--ui-warn);flex:none;margin-top:1px}
+.fl b{color:var(--ui-warn)}
+
+/* Amostras (usam o CSS real do app dentro de .stage) */
+.tile{position:relative;width:132px;height:64px;border-radius:16px;display:grid;place-items:center;overflow:hidden;outline:1px solid rgba(128,128,128,.45);outline-offset:-1px}
+.tile.tg2::after{content:"";position:absolute;inset:0 0 0 50%;background:color-mix(in srgb,var(--foreground) 45%,var(--background));z-index:0}
+.sw{position:relative;z-index:1;width:72px;height:36px;border-radius:12px;background:transparent;outline:1px solid rgba(128,128,128,.4);outline-offset:-1px}
+.sw.shp{outline:0}
+.sw.bd{width:100%;height:100%;border-radius:0;background:var(--action);border-top:8px solid transparent}
+.sw.shp{width:64px;height:30px;background:var(--card)}
+.ptile{width:56px;height:56px;border-radius:14px;display:grid;place-items:center;outline:1px solid rgba(128,128,128,.45);outline-offset:-1px;overflow:visible;position:relative}
+.ptile.focus{outline:2px solid var(--ui-fg);outline-offset:1px}
+.ptile .pc{width:100%;height:100%;display:grid;place-items:center;border-radius:14px;background:var(--action);overflow:hidden}
+.ptile .pc.bare{background:none}
+.ptile .pc.ov{overflow:visible;background:none}
+.ptile .sw{width:22px;height:22px;border-radius:7px}
+.ptile .pc.bare .sw,.ptile .pc.full .sw{width:100%;height:100%;border-radius:0}
+.ptile .sw.shp{width:26px;height:26px}
+.ptile .pc.bdr{place-items:stretch}
+.ptile .sw.bd{border-radius:0}
+.tl{display:inline-flex}
+
+/* Contraste */
+.ctable{width:100%;border-collapse:collapse;margin-top:14px}
+.ctable th{font-size:var(--f-xs);font-weight:600;color:var(--ui-mut);text-align:left;padding:8px 14px 8px 0;border-bottom:1px solid var(--ui-line)}
+.ctable td{padding:12px 14px 12px 0;border-bottom:1px solid var(--ui-line);vertical-align:middle}
+.cell{display:flex;align-items:center;gap:12px}
+.cs{width:70px;height:46px;border-radius:14px;overflow:hidden;position:relative;outline:1px solid rgba(128,128,128,.45);outline-offset:-1px;flex:none}
+.cs .pc{position:absolute;inset:6px;border-radius:10px;display:grid;place-items:center;font-weight:700;font-size:var(--f-sm);background:var(--action);color:var(--foreground)}
+.cs.stage{padding:0}
+.cr{line-height:1.35}
+.cr b{font-size:var(--f-sm)}
+.cr small{display:block;font-size:var(--f-xs);color:var(--ui-mut)}
+.bad{color:var(--ui-warn)}
+.ok{color:var(--ui-fg)}
+.foot{margin-top:70px;color:var(--ui-mut);font-size:var(--f-xs);max-width:80ch}
+
+</style>
+<style id="palstyle"></style>
+<style id="copybase" media="not all">
+/* ============ CSS REAL DO APP, copiado do tailwind.css ============ */
+/* :root -> .stage ; .dark -> .stage.dark. Os valores da paleta entram por .stage.stage.stage (gerado por JS), como o applyPaletteVars faz no <html>. */
+/* Cópia de 16/11 do tailwind.css; só vale se o CSS real não carregar. */
+:root,[data-theme-preview="light"]{
+  --color-emerald-600: oklch(59.6% 0.145 163.225);
+  --color-emerald-700: oklch(50.8% 0.118 165.612);
+  --color-white:#fff;
+  --background: var(--background-override, oklch(1 0 0));
+  --foreground: var(--foreground-override, oklch(0.141 0.005 285.823));
+  --card-l-delta: -0.02;
+  --card: oklch(from var(--background) calc(l + var(--card-l-delta)) c h);
+  --popover-l-delta: 0;
+  --popover: oklch(from var(--background) calc(l + var(--popover-l-delta)) c h);
+  --primary-h: 0; --primary-c: 0; --primary-l: 0; --primary-fg-l: 0.97;
+  --primary: oklch(var(--primary-l) var(--primary-c) var(--primary-h));
+  --primary-foreground: var(--primary-foreground-override, oklch(var(--primary-fg-l) 0 var(--primary-h)));
+  --secondary: color-mix(in srgb, var(--foreground) 5%, transparent);
+  --secondary-foreground: color-mix(in srgb, var(--foreground) 65%, transparent);
+  --border-l-delta: -0.05;
+  --border: oklch(from var(--background) calc(l + var(--border-l-delta)) c h);
+  --input-l-delta: -0.05;
+  --input: oklch(from var(--background) calc(l + var(--input-l-delta)) c h);
+  --ring: var(--ring-override, oklch(var(--primary-l) var(--primary-c) var(--primary-h)));
+  --accent: oklch(max(0, calc(var(--primary-l) - 0.15)) var(--primary-c) var(--primary-h));
+  --action-l-delta: 0.02;
+  --action-hover-l-delta: 0.04;
+  --action: oklch(from var(--background) calc(l + var(--action-l-delta)) c h);
+  --action-hover: oklch(from var(--background) calc(l + var(--action-hover-l-delta)) c h);
+  --action-base: var(--action);
+  --action-hover-base: var(--action-hover);
+  --shadow-tint: var(--shadow-color-override, #000000);
+  --shadow-alpha: var(--shadow-opacity-override, 10%);
+  --action-shadow-color: var(--action-shadow-color-override, #000000);
+  --action-ring: color-mix(in srgb, var(--action-shadow-color) 5%, transparent);
+  --action-top-border: var(--action-top-border-override, #ffffff);
+  --action-shadow: var(--action-shadow-override, 0 1px 2px 0 color-mix(in srgb, var(--action-shadow-color) 14%, transparent));
+  --action-hover-shadow: var(--action-hover-shadow-override, 0 10px 15px -3px color-mix(in srgb, var(--action-shadow-color) 18%, transparent), 0 4px 6px -4px color-mix(in srgb, var(--action-shadow-color) 18%, transparent));
+  --color-error: oklch(0.65 0.22 16);
+  --error-foreground: oklch(0.52 0.19 16);
+  --color-error-background: oklch(from var(--color-error) 0.93 0.03 h);
+  --color-warning: oklch(0.82 0.16 80);
+  --warning-foreground: oklch(0.52 0.1 80);
+  --color-warning-background: oklch(from var(--color-warning) 0.93 0.03 h);
+  --color-success: oklch(0.65 0.13 163);
+  --color-success-foreground: oklch(0.52 0.1 163);
+  --color-success-background: oklch(from var(--color-success) 0.93 0.03 h);
+  --priority-low: oklch(0.7 0.17 150);
+  --priority-medium: oklch(0.82 0.16 90);
+  --priority-high: oklch(0.65 0.22 25);
+  --color-info: oklch(0.65 0.17 250);
+  --info-foreground: oklch(0.52 0.13 250);
+  --color-info-background: oklch(from var(--color-info) 0.93 0.03 h);
+  --success-strong: var(--color-emerald-600);
+  --success-strong-hover: var(--color-emerald-700);
+  --success-strong-foreground: var(--color-white);
+  /* @theme inline: sombras e overlay */
+  --shadow-2xs: 0 1px color-mix(in srgb, var(--shadow-tint) calc(var(--shadow-alpha) * 0.5), transparent);
+  --shadow-xs: 0 1px 2px 0 color-mix(in srgb, var(--shadow-tint) calc(var(--shadow-alpha) * 0.6), transparent);
+  --shadow-sm: 0 1px 3px 0 color-mix(in srgb, var(--shadow-tint) calc(var(--shadow-alpha) * 0.8), transparent), 0 1px 2px -1px color-mix(in srgb, var(--shadow-tint) calc(var(--shadow-alpha) * 0.8), transparent);
+  --shadow-md: 0 4px 6px -1px color-mix(in srgb, var(--shadow-tint) calc(var(--shadow-alpha) * 1), transparent), 0 2px 4px -2px color-mix(in srgb, var(--shadow-tint) calc(var(--shadow-alpha) * 1), transparent);
+  --shadow-lg: 0 10px 15px -3px color-mix(in srgb, var(--shadow-tint) calc(var(--shadow-alpha) * 1), transparent), 0 4px 6px -4px color-mix(in srgb, var(--shadow-tint) calc(var(--shadow-alpha) * 1), transparent);
+  --shadow-xl: 0 20px 25px -5px color-mix(in srgb, var(--shadow-tint) calc(var(--shadow-alpha) * 1), transparent), 0 8px 10px -6px color-mix(in srgb, var(--shadow-tint) calc(var(--shadow-alpha) * 1), transparent);
+  --shadow-2xl: 0 25px 50px -12px color-mix(in srgb, var(--shadow-tint) min(100%, calc(var(--shadow-alpha) * 2.5)), transparent);
+  --color-overlay: color-mix(in srgb, var(--shadow-tint) 30%, transparent);
+}
+.dark,:root[class~="dark"]{
+  --background: var(--dark-background-override, oklch(0.4 0.01 285.823));
+  --foreground: var(--dark-foreground-override, oklch(0.985 0 0));
+  --dark-card-l-delta: 0.05;
+  --card: oklch(from var(--background) calc(l + var(--dark-card-l-delta)) c h);
+  --dark-popover-l-delta: -0.03;
+  --popover: oklch(from var(--background) calc(l + var(--dark-popover-l-delta)) c h);
+  --dark-primary-h: 0; --dark-primary-c: 0; --dark-primary-l: 0.35; --dark-primary-fg-l: 0.97;
+  --primary: oklch(var(--dark-primary-l) var(--dark-primary-c) var(--dark-primary-h));
+  --primary-foreground: var(--dark-primary-foreground-override, oklch(var(--dark-primary-fg-l) 0.014 var(--dark-primary-h)));
+  --secondary: color-mix(in oklch, var(--foreground) 10%, transparent);
+  --secondary-foreground: color-mix(in srgb, var(--foreground) 65%, transparent);
+  --dark-border-l-delta: 0.2;
+  --border: oklch(from var(--background) calc(l + var(--dark-border-l-delta)) c h);
+  --dark-input-l-delta: 0.05;
+  --input: oklch(from var(--background) calc(l + var(--dark-input-l-delta)) c h);
+  --ring: var(--dark-ring-override, oklch(var(--dark-primary-l) var(--dark-primary-c) var(--dark-primary-h)));
+  --accent: oklch(min(1, calc(var(--dark-primary-l) + 0.1)) var(--dark-primary-c) var(--dark-primary-h));
+  --color-error: oklch(0.72 0.16 16);
+  --error-foreground: var(--color-error);
+  --color-error-background: oklch(from var(--color-error) 0.32 0.03 h);
+  --color-warning: oklch(0.84 0.14 80);
+  --warning-foreground: var(--color-warning);
+  --color-warning-background: oklch(from var(--color-warning) 0.32 0.03 h);
+  --color-success: oklch(0.75 0.15 163);
+  --color-success-foreground: var(--color-success);
+  --color-success-background: oklch(from var(--color-success) 0.32 0.03 h);
+  --priority-low: oklch(0.75 0.16 150);
+  --priority-medium: oklch(0.85 0.15 95);
+  --priority-high: oklch(0.7 0.2 25);
+  --color-info: oklch(0.75 0.12 250);
+  --info-foreground: var(--color-info);
+  --color-info-background: oklch(from var(--color-info) 0.32 0.03 h);
+  --dark-action-l-delta: 0.1;
+  --dark-action-hover-l-delta: 0.2;
+  --action: oklch(from var(--background) calc(l + var(--dark-action-l-delta)) c h);
+  --action-hover: oklch(from var(--background) calc(l + var(--dark-action-hover-l-delta)) c h);
+  --action-base: var(--action);
+  --action-hover-base: var(--action-hover);
+  --shadow-tint: var(--dark-shadow-color-override, var(--shadow-color-override, #000000));
+  --shadow-alpha: var(--dark-shadow-opacity-override, 25%);
+  --action-shadow-color: var(--dark-action-shadow-color-override, var(--action-shadow-color-override, #000000));
+  --action-ring: color-mix(in srgb, var(--action-shadow-color) 20%, transparent);
+  --action-top-border: var(--dark-action-top-border-override, var(--action-top-border-override, rgba(255, 255, 255, 0.1)));
+  --action-shadow: var(--dark-action-shadow-override, var(--action-shadow-override, 0 1px 2px 0 color-mix(in srgb, var(--action-shadow-color) 35%, transparent)));
+  --action-hover-shadow: var(--dark-action-hover-shadow-override, var(--action-hover-shadow-override, 0 10px 15px -3px color-mix(in srgb, var(--action-shadow-color) 50%, transparent), 0 4px 6px -4px color-mix(in srgb, var(--action-shadow-color) 50%, transparent)));
+}
+</style>
+<style id="copyutil" media="not all">
+/* @utility phase-surface (claro e escuro) */
+.phase-surface{
+  --phase-mix: 7%; --phase-mix-hover: 12%; --phase-ring-alpha: 30%;
+  --phase-fg: oklch(from var(--phase-color) 0.35 0.07 h);
+  --phase-shadow: oklch(from var(--phase-color) 0.6 0.15 h);
+  --phase-shadow-alpha: 25%; --phase-diffuse: transparent;
+  --foreground: var(--phase-fg);
+  --action: color-mix(in oklab, var(--phase-color) var(--phase-mix), var(--action-base));
+  --action-hover: color-mix(in oklab, var(--phase-color) var(--phase-mix-hover), var(--action-hover-base));
+  --action-ring: color-mix(in srgb, var(--phase-color) calc(var(--phase-ring-alpha) * var(--action-relief, 1)), transparent);
+  --action-hover-shadow: var(--action-hover-shadow-override, 0 10px 15px -3px color-mix(in srgb, var(--phase-shadow) var(--phase-shadow-alpha), transparent), 0 4px 6px -4px color-mix(in srgb, var(--phase-shadow) var(--phase-shadow-alpha), transparent), 0 14px 30px -4px var(--phase-diffuse));
+}
+.dark .phase-surface{
+  --phase-mix: 14%; --phase-mix-hover: 22%; --phase-ring-alpha: 55%;
+  --phase-fg: oklch(from var(--phase-color) 0.92 0.06 h);
+  --phase-shadow: oklch(from var(--phase-color) 0.33 0.1 h);
+  --phase-shadow-alpha: 20%;
+  --phase-diffuse: color-mix(in srgb, oklch(from var(--phase-color) 0.2 0.15 h) 63%, transparent);
+}
+/* @utility phase-vivid ("Viva") */
+.phase-vivid{
+  --vivid-fill: var(--phase-color);
+  --vivid-ink: oklch(from var(--phase-color) 0.35 0.07 h);
+  --vivid-hover-dl: 0.04; --vivid-edge-dl: 0.06; --vivid-top-light: 45%;
+  --vivid-shadow: oklch(from var(--phase-color) 0.55 0.16 h);
+  --foreground: var(--vivid-ink);
+  --action: var(--vivid-fill);
+  --action-hover: oklch(from var(--vivid-fill) calc(l + var(--vivid-hover-dl)) c h);
+  --action-ring: oklch(from var(--vivid-fill) calc(l - var(--vivid-edge-dl)) c h);
+  --action-top-border: color-mix(in srgb, color-mix(in oklab, white var(--vivid-top-light), var(--action)) calc(var(--action-relief, 1) * 100%), transparent);
+  --action-hover-shadow: var(--action-hover-shadow-override, 0 10px 15px -3px color-mix(in srgb, var(--vivid-shadow) 40%, transparent), 0 4px 6px -4px color-mix(in srgb, var(--vivid-shadow) 40%, transparent));
+}
+.dark .phase-vivid{--vivid-edge-dl:0.14; --vivid-top-light:25%}
+.dark[data-vivid-dark="dim"] .phase-vivid{--vivid-fill: oklch(from var(--phase-color) 0.72 calc(c * 0.8) h)}
+/* @utility late-surface */
+.late-surface{
+  --action-shadow: var(--action-shadow-override, 0 1px 2px 0 color-mix(in srgb, var(--error-foreground) 25%, transparent));
+  --action-hover-shadow: var(--action-hover-shadow-override, 0 10px 15px -3px color-mix(in srgb, var(--error-foreground) 30%, transparent), 0 4px 6px -4px color-mix(in srgb, var(--error-foreground) 30%, transparent));
+}
+.dark .late-surface{
+  --late-shadow: oklch(from var(--color-error) 0.45 0.18 h);
+  --action-shadow: var(--action-shadow-override, 0 1px 2px 0 color-mix(in srgb, var(--late-shadow) 50%, transparent));
+  --action-hover-shadow: var(--action-hover-shadow-override, 0 10px 15px -3px color-mix(in srgb, var(--late-shadow) 60%, transparent), 0 4px 6px -4px color-mix(in srgb, var(--late-shadow) 60%, transparent));
+}
+</style>
+</head>
+<body class="m-both">
+
+<header class="top">
+  <div class="brand">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r="1.5"/><circle cx="17.5" cy="10.5" r="1.5"/><circle cx="8.5" cy="7.5" r="1.5"/><circle cx="6.5" cy="12.5" r="1.5"/><path d="M12 22a10 10 0 1 1 10-10c0 2.8-2 4-4.5 4H15a2 2 0 0 0-1.4 3.4c.5.5.5 1.2.2 1.8-.4.5-1 .8-1.8.8z"/></svg>
+    <span>Mapa de fórmulas de cor</span>
+  </div>
+  <label class="f">Paleta <select id="selPal" aria-label="Paleta"></select></label>
+  <div class="seg" role="radiogroup" aria-label="Modo">
+    <input type="radio" name="mode" id="mLight" value="light"><label for="mLight">Claro</label>
+    <input type="radio" name="mode" id="mDark" value="dark"><label for="mDark">Escuro</label>
+    <input type="radio" name="mode" id="mBoth" value="both" checked><label for="mBoth">Lado a lado</label>
+  </div>
+  <label class="chk"><input type="checkbox" id="chkDim"> Viva no escuro: atenuada</label>
+  <div class="spacer"></div>
+  <span id="cssnote" class="stampx warnx"></span><span id="stamp" class="stampx"></span>
+  <div class="phs" id="phChips" role="group" aria-label="Fase em foco"></div>
+</header>
+
+<div class="shell">
+<nav class="toc" aria-label="Índice">
+  <h5>Índice</h5>
+  <a href="#intro"><span class="dot d0"></span>Como ler</a>
+  <a href="#atencao"><span class="dot d0"></span>Pontos de atenção</a>
+  <a href="#cat1"><span class="dot d1"></span>1. Definidas diretamente</a>
+  <a href="#cat2"><span class="dot d2"></span>2. Deslocamento de luz</a>
+  <a href="#cat3"><span class="dot d3"></span>3. Conta na própria cor</a>
+  <a href="#cat4"><span class="dot d4"></span>4. Misturas</a>
+  <a class="sub" href="#transp">Transparências</a>
+  <a href="#cat5"><span class="dot d5"></span>5. Estados</a>
+  <a href="#contraste"><span class="dot d0"></span>Contraste das fases</a>
+</nav>
+
+<main>
+<section id="intro" style="padding-top:0">
+  <h2>Como cada cor do UZZINA nasce</h2>
+  <p class="lead">Cada cor do app vem de uma fórmula escrita no CSS. Esta página mostra todas, com o número de cada conta e o resultado calculado agora pelo seu navegador, para a paleta e o modo que você escolher no topo. As amostras são desenhadas com o CSS real do app; o texto &ldquo;com os números&rdquo; é uma segunda conta feita em JavaScript, só para você conferir.</p>
+  <div class="intro-grid">
+    <div class="ic">
+      <div class="mini"><div class="s big" style="background:oklch(0.96 0.002 200)"></div><span class="cap">oklch(0.96 0.002 200)</span></div>
+      <h4><span class="dot d1"></span>Definida diretamente</h4>
+      <p>Alguém escolheu o valor e escreveu como está. Não há conta: a cor é essa.</p>
+    </div>
+    <div class="ic">
+      <div class="mini"><div class="s big" style="background:oklch(0.96 0.03 250)"></div><span class="op">&rarr;</span><div class="s big" style="background:oklch(0.9 0.03 250)"></div><span class="cap">L &minus; 0,06</span></div>
+      <h4><span class="dot d2"></span>Deslocamento de luz</h4>
+      <p>É a mesma cor da origem, só um pouco mais clara ou mais escura. Matiz e intensidade ficam iguais. Não é mistura.</p>
+    </div>
+    <div class="ic">
+      <div class="mini"><div class="s big" style="background:oklch(0.65 0.17 250)"></div><span class="op">&rarr;</span><span class="cap">L 0,93 C 0,03</span><div class="s big" style="background:oklch(from oklch(0.65 0.17 250) 0.93 0.03 h)"></div></div>
+      <h4><span class="dot d3"></span>Conta na própria cor</h4>
+      <p>A cor sai de uma conta sobre outra cor: guarda o matiz da origem e fixa luminosidade e croma. Ninguém escreveu o valor final.</p>
+    </div>
+    <div class="ic">
+      <div class="mini"><div class="s" style="background:oklch(0.7 0.2 250)"></div><span class="op">+</span><div class="s" style="background:oklch(0.97 0 0)"></div><span class="op">=</span><div class="s big" style="background:color-mix(in oklab,oklch(0.7 0.2 250) 14%,oklch(0.97 0 0))"></div></div>
+      <h4><span class="dot d4"></span>Mistura</h4>
+      <p>Uma cor misturada com outra (o fundo, o cartão). Subgrupo Transparências: misturada com &ldquo;nada&rdquo;, então o resultado depende do que está atrás.</p>
+      <div class="mini" style="height:auto;margin:10px 0 0"><div class="ground"><i style="background:#f4f4f4"></i><i style="background:#8a8a8a"></i></div></div>
+    </div>
+    <div class="ic">
+      <div class="mini"><div class="s big" style="background:oklch(0.9 0.03 250)"></div><span class="op">&rarr;</span><div class="s big" style="background:oklch(0.82 0.06 250)"></div><span class="cap">hover</span></div>
+      <h4><span class="dot d5"></span>Estado</h4>
+      <p>Só aparece quando o mouse passa ou o campo ganha foco: cor do hover, sombra do hover, sombra do atraso.</p>
+    </div>
+  </div>
+</section>
+
+<section id="atencao">
+  <h2>Pontos de atenção</h2>
+  <p class="lead">Coisas que parecem erro ou escolha sem explicação. Cada linha leva até o token. O status à direita muda com a paleta e o modo escolhidos.</p>
+  <div class="attn" id="attn"></div>
+</section>
+
+<div id="cats"></div>
+
+<section id="contraste">
+  <h2>Contraste do texto das fases</h2>
+  <p class="lead">O texto do cartão de fase usa luminosidade fixa (0,35 no claro, 0,92 no escuro) sobre um fundo que muda com a cor da fase e da paleta. A razão é a medida WCAG calculada com as cores que o navegador resolveu agora. 4,5 ou mais passa para texto normal; entre 3 e 4,5 só serve para texto grande; abaixo de 3 reprova.</p>
+  <table class="ctable" id="ctable"></table>
+</section>
+
+<p class="foot">Fontes: tailwind.css (blocos :root e .dark, phase-surface, phase-vivid, late-surface), palettes.ts, palette-vars.ts, CONSTANTS.ts e button.tsx. Os valores de cada paleta entram do mesmo jeito que o applyPaletteVars aplica no app. As cores fora da gama sRGB aparecem recortadas no código hexadecimal.</p>
+</main>
+</div>
+
+<div id="probes" aria-hidden="true" style="position:absolute;left:-9999px;top:0;width:10px;height:10px;overflow:hidden">
+<div class="stage" data-theme-preview="light" id="pl"><div class="phase-surface" style="--phase-color:#fbbf24"></div><div class="phase-vivid" style="--phase-color:#fbbf24"></div></div>
+<div class="stage dark" id="pd"><div class="phase-surface" style="--phase-color:#fbbf24"></div><div class="phase-vivid" style="--phase-color:#fbbf24"></div></div>
+</div>
+<script>
+window.__PALS=[{"id":"default","label":"Ônix","relief":true,"light":{"shadowColor":"oklch(0.25 0.01 200)","shadowOpacity":10,"primary":{"h":0,"c":0,"l":0},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":200,"c":0.002,"l":0.96},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.07,"inputLDelta":-0.04,"actionLDelta":0.02,"actionHoverLDelta":0.1,"popoverLDelta":0.02,"ring":{"h":0,"c":0,"l":0}},"dark":{"shadowColor":"oklch(0.1 0.01 200)","shadowOpacity":50,"primary":{"h":0,"c":0,"l":1},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":250,"c":0.01,"l":0.2},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.1,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":0,"c":0,"l":1}}},{"id":"carbon","label":"Carbono","relief":false,"light":{"shadowColor":"oklch(0.25 0 0)","shadowOpacity":10,"primary":{"h":240,"c":0.02,"l":0.3},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":1},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.04,"borderLDelta":-0.04,"inputLDelta":-0.02,"actionLDelta":-0.02,"actionHoverLDelta":-0.005,"popoverLDelta":0.1,"ring":{"h":240,"c":0.02,"l":0.3}},"dark":{"shadowColor":"oklch(0.1 0 0)","shadowOpacity":40,"primary":{"h":240,"c":0.01,"l":0.99},"primaryFg":{"h":240,"c":0.02,"l":0.3},"bg":{"h":240,"c":0.015,"l":0.25},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.1,"inputLDelta":0.04,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":240,"c":0.01,"l":0.99}}},{"id":"red","label":"Rubi","light":{"shadowColor":"oklch(0.25 0.04 20)","shadowOpacity":10,"primary":{"h":20,"c":0.25,"l":0.62},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":0.98},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":0.04,"actionHoverLDelta":0.06,"popoverLDelta":0.06,"ring":{"h":20,"c":0.25,"l":0.62}},"dark":{"shadowColor":"oklch(0.03 0 0)","shadowOpacity":70,"primary":{"h":20,"c":0.25,"l":0.68},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":20,"c":0.25,"l":0.68}}},{"id":"orange","label":"Coral","light":{"shadowColor":"oklch(0.25 0.05 140)","shadowOpacity":10,"primary":{"h":25,"c":0.18,"l":0.65},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":130,"c":0.01,"l":0.95},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":0.02,"actionHoverLDelta":1,"popoverLDelta":0.03,"ring":{"h":25,"c":0.18,"l":0.65}},"dark":{"shadowColor":"oklch(0.1 0.03 140)","shadowOpacity":25,"primary":{"h":25,"c":0.18,"l":0.65},"primaryFg":{"h":130,"c":0.02,"l":0.9},"bg":{"h":190,"c":0.01,"l":0.25},"fg":{"h":130,"c":0.01,"l":0.95},"cardLDelta":0.05,"borderLDelta":0.1,"inputLDelta":-0.02,"actionLDelta":0.07,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":25,"c":0.18,"l":0.65}}},{"id":"yellow","label":"Damasco","light":{"shadowColor":"oklch(0.25 0.04 100)","shadowOpacity":10,"primary":{"h":100,"c":0.5,"l":0.8},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":0,"c":0,"l":0.98},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":0.02,"actionHoverLDelta":0.04,"popoverLDelta":0,"ring":{"h":100,"c":0.5,"l":0.8}},"dark":{"shadowColor":"oklch(0.03 0 100)","shadowOpacity":70,"primary":{"h":100,"c":0.4,"l":0.8},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":100,"c":0.4,"l":0.8}}},{"id":"energy","label":"Elétrico","light":{"shadowColor":"oklch(0.25 0.04 120)","shadowOpacity":10,"primary":{"h":120,"c":0.15,"l":0.94},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":240,"c":0.004,"l":0.96},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.03,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":0.02,"actionHoverLDelta":0.04,"popoverLDelta":0,"ring":{"h":120,"c":0.15,"l":0.94}},"dark":{"shadowColor":"oklch(0.1 0.03 120)","shadowOpacity":60,"primary":{"h":120,"c":0.18,"l":0.9},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":250,"c":0.01,"l":0.2},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":120,"c":0.18,"l":0.9}}},{"id":"green","label":"Folha","light":{"shadowColor":"oklch(0.25 0.04 130)","shadowOpacity":10,"primary":{"h":130,"c":0.2,"l":0.7},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":0.98},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":0.02,"actionHoverLDelta":0.04,"popoverLDelta":0,"ring":{"h":130,"c":0.2,"l":0.7}},"dark":{"shadowColor":"oklch(0.1 0.03 130)","shadowOpacity":50,"primary":{"h":130,"c":0.2,"l":0.65},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":130,"c":0.2,"l":0.65}}},{"id":"cyan","label":"Turquesa","light":{"shadowColor":"oklch(0.25 0.04 200)","shadowOpacity":10,"primary":{"h":200,"c":0.2,"l":0.7},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":0.96},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":0.02,"actionHoverLDelta":0.04,"popoverLDelta":0,"ring":{"h":200,"c":0.2,"l":0.7}},"dark":{"shadowColor":"oklch(0.1 0.03 200)","shadowOpacity":50,"primary":{"h":200,"c":0.2,"l":0.65},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":200,"c":0.2,"l":0.65}}},{"id":"blue","label":"Cobalto","relief":false,"light":{"shadowColor":"oklch(0.25 0.04 264)","shadowOpacity":10,"primary":{"h":264,"c":0.31,"l":0.45},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":1},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":-0.03,"actionHoverLDelta":-0.015,"popoverLDelta":0.1,"ring":{"h":264,"c":0.31,"l":0.45}},"dark":{"shadowColor":"oklch(0.1 0.03 264)","shadowOpacity":50,"primary":{"h":264,"c":0.31,"l":0.58},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.1,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":0.05,"ring":{"h":264,"c":0.31,"l":0.58}}},{"id":"purple","label":"Violeta","light":{"shadowColor":"oklch(0.25 0.04 290)","shadowOpacity":10,"primary":{"h":290,"c":0.28,"l":0.54},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":1},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.1,"inputLDelta":-0.02,"actionLDelta":0.02,"actionHoverLDelta":0.04,"popoverLDelta":0,"ring":{"h":290,"c":0.28,"l":0.54}},"dark":{"shadowColor":"oklch(0.1 0.03 290)","shadowOpacity":50,"primary":{"h":290,"c":0.28,"l":0.68},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":290,"c":0.28,"l":0.68}}},{"id":"magenta","label":"Fúcsia","light":{"shadowColor":"oklch(0.25 0.15 350)","shadowOpacity":10,"primary":{"h":350,"c":0.4,"l":0.9},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":320,"c":0.02,"l":0.98},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":0.02,"actionHoverLDelta":0.04,"popoverLDelta":0,"ring":{"h":350,"c":0.4,"l":0.9}},"dark":{"shadowColor":"oklch(0.1 0.1 340)","shadowOpacity":25,"primary":{"h":350,"c":0.4,"l":0.8},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":340,"c":0.1,"l":0.3},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":350,"c":0.4,"l":0.8}}}];
+</script>
+<script>
+"use strict";
+const PALS = window.__PALS;
+const PHASES = [
+  {s:'idea',t:'Ideia',hex:'#fbbf24'},{s:'do',t:'Fazer',hex:'#f97316'},{s:'doing',t:'Fazendo',hex:'#ec4899'},
+  {s:'review',t:'Análise',hex:'#a855f7'},{s:'done',t:'Feito',hex:'#38bdf8'},{s:'finished',t:'Concluído',hex:'#4ade80'}
+];
+const CATN={1:'Cores definidas diretamente',2:'Deslocamento de luz',3:'Conta na própria cor',4:'Misturas',5:'Estados'};
+const MN={light:'Claro',dark:'Escuro'};
+const state={pal:'default',mode:'both',dim:false,ph:'idea'};
+
+/* ---------- matemática de cor ---------- */
+const f3=n=>(Math.round(n*1000)/1000).toFixed(3);
+const sg=d=>d<0?'− '+f3(-d):'+ '+f3(d);
+const clamp01=v=>Math.max(0,Math.min(1,v));
+const g2lin=v=>v<=0.04045?v/12.92:Math.pow((v+0.055)/1.055,2.4);
+const lin2g=v=>{v=clamp01(v);return v<=0.0031308?12.92*v:1.055*Math.pow(v,1/2.4)-0.055};
+function oklab2lin(L,a,b){
+  const l_=L+0.3963377774*a+0.2158037573*b, m_=L-0.1055613458*a-0.0638541728*b, s_=L-0.0894841775*a-1.2914855480*b;
+  const l=l_**3,m=m_**3,s=s_**3;
+  return [4.0767416621*l-3.3077115913*m+0.2309699292*s,-1.2684380046*l+2.6097574011*m-0.3413193965*s,-0.0041960863*l-0.7034186147*m+1.7076147010*s];
+}
+function lin2oklab(r,g,b){
+  const l=Math.cbrt(0.4122214708*r+0.5363325363*g+0.0514459929*b), m=Math.cbrt(0.2119034982*r+0.6806995451*g+0.1073969566*b), s=Math.cbrt(0.0883024619*r+0.2817188376*g+0.6299787005*b);
+  return [0.2104542553*l+0.7936177850*m-0.0040720468*s,1.9779984951*l-2.4285922050*m+0.4505937099*s,0.0259040371*l+0.7827717662*m-0.8086757660*s];
+}
+function labToLCH(L,a,b){const C=Math.hypot(a,b);let H=Math.atan2(b,a)*180/Math.PI;if(H<0)H+=360;return {L,C,H:C<1e-4?0:H}}
+const hex2=v=>Math.round(lin2g(v)*255).toString(16).padStart(2,'0');
+const toHex=lin=>'#'+lin.map(hex2).join('');
+const hexToLin=h=>[1,3,5].map(i=>g2lin(parseInt(h.slice(i,i+2),16)/255));
+const inGamut=lin=>lin.every(v=>v>=-0.0008&&v<=1.0008);
+function mk(lin,a,lch){const o=lch||labToLCH(...lin2oklab(...lin));return {lin,a,L:o.L,C:o.C,H:o.H,hex:toHex(lin),gamut:inGamut(lin)}}
+const cv=document.createElement('canvas');cv.width=cv.height=1;const cx=cv.getContext('2d',{willReadFrequently:true});
+function pnum(x,pctScale){x=x.trim();if(x==='none')return 0;if(x.endsWith('%'))return parseFloat(x)/100*pctScale;return parseFloat(x)}
+function parseColor(str){
+  const s=str.trim();let m;
+  const al=a=>a==null?1:(a.endsWith('%')?parseFloat(a)/100:parseFloat(a));
+  if((m=s.match(/^oklch\(\s*(\S+)\s+(\S+)\s+(\S+?)(?:deg)?(?:\s*\/\s*(\S+))?\s*\)$/))){
+    const L=pnum(m[1],1),C=pnum(m[2],0.4),H=m[3]==='none'?0:parseFloat(m[3]);
+    return mk(oklab2lin(L,C*Math.cos(H*Math.PI/180),C*Math.sin(H*Math.PI/180)),al(m[4]),{L,C,H});
+  }
+  if((m=s.match(/^oklab\(\s*(\S+)\s+(\S+)\s+(\S+)(?:\s*\/\s*(\S+))?\s*\)$/))){
+    const L=pnum(m[1],1),a=pnum(m[2],0.4),b=pnum(m[3],0.4);
+    return mk(oklab2lin(L,a,b),al(m[4]),labToLCH(L,a,b));
+  }
+  if((m=s.match(/^color\(srgb\s+(\S+)\s+(\S+)\s+(\S+)(?:\s*\/\s*(\S+))?\s*\)$/))){
+    return mk([m[1],m[2],m[3]].map(x=>g2lin(pnum(x,1))),al(m[4]));
+  }
+  if((m=s.match(/^rgba?\(([^)]+)\)$/))){
+    const p=m[1].split(/[\s,\/]+/).filter(Boolean);
+    return mk(p.slice(0,3).map(x=>g2lin((x.endsWith('%')?parseFloat(x)*2.55:parseFloat(x))/255)),p[3]==null?1:al(p[3]));
+  }
+  cx.clearRect(0,0,1,1);cx.fillStyle='#000';cx.fillStyle=s;cx.fillRect(0,0,1,1);
+  const d=cx.getImageData(0,0,1,1).data;
+  return mk([d[0],d[1],d[2]].map(x=>g2lin(x/255)),d[3]/255);
+}
+const over=(c,g)=>{const e=i=>lin2g(c.lin[i])*c.a+lin2g(g.lin[i])*(1-c.a);return '#'+[0,1,2].map(i=>Math.round(e(i)*255).toString(16).padStart(2,'0')).join('')};
+const relLum=lin=>{const c=lin.map(v=>g2lin(lin2g(v)));return .2126*c[0]+.7152*c[1]+.0722*c[2]};
+const ratio=(a,b)=>{const x=relLum(a.lin),y=relLum(b.lin);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
+PHASES.forEach(p=>{const c=mk(hexToLin(p.hex),1);p.L=c.L;p.C=c.C;p.H=c.H});
+const phOf=s=>PHASES.find(p=>p.s===s);
+
+/* ---------- paleta -> variáveis CSS (espelho do applyPaletteVars) ---------- */
+function paletteProps(pal){
+  const o={},{light,dark}=pal,ok=c=>`oklch(${c.l} ${c.c} ${c.h})`;
+  o['--primary-h']=light.primary.h;o['--primary-c']=light.primary.c;o['--primary-l']=light.primary.l;
+  o['--dark-primary-h']=dark.primary.h;o['--dark-primary-c']=dark.primary.c;o['--dark-primary-l']=dark.primary.l;
+  if(light.primaryFg)o['--primary-foreground-override']=ok(light.primaryFg);
+  if(dark.primaryFg)o['--dark-primary-foreground-override']=ok(dark.primaryFg);
+  if(light.bg)o['--background-override']=ok(light.bg);
+  if(light.fg)o['--foreground-override']=ok(light.fg);
+  if(dark.bg)o['--dark-background-override']=ok(dark.bg);
+  if(dark.fg)o['--dark-foreground-override']=ok(dark.fg);
+  if(light.ring)o['--ring-override']=ok(light.ring);
+  if(dark.ring)o['--dark-ring-override']=ok(dark.ring);
+  const d=(k,v)=>{if(v!==undefined)o[k]=v};
+  d('--border-l-delta',light.borderLDelta);d('--input-l-delta',light.inputLDelta);d('--action-l-delta',light.actionLDelta);
+  d('--action-hover-l-delta',light.actionHoverLDelta);d('--popover-l-delta',light.popoverLDelta);d('--card-l-delta',light.cardLDelta);
+  d('--dark-border-l-delta',dark.borderLDelta);d('--dark-input-l-delta',dark.inputLDelta);d('--dark-action-l-delta',dark.actionLDelta);
+  d('--dark-action-hover-l-delta',dark.actionHoverLDelta);d('--dark-popover-l-delta',dark.popoverLDelta);d('--dark-card-l-delta',dark.cardLDelta);
+  const ls=light.shadowColor||pal.shadowColor, ds=dark.shadowColor||pal.shadowColor;
+  d('--shadow-color-override',ls);d('--dark-shadow-color-override',ds);
+  if(light.shadowOpacity!==undefined)o['--shadow-opacity-override']=light.shadowOpacity+'%';
+  if(dark.shadowOpacity!==undefined)o['--dark-shadow-opacity-override']=dark.shadowOpacity+'%';
+  if(pal.relief===false){
+    o['--action-relief']='0';o['--action-top-border-override']='transparent';
+    o['--action-shadow-override']='0 0 #0000';o['--action-hover-shadow-override']='0 0 #0000';
+  }else{
+    d('--action-shadow-color-override',ls);d('--dark-action-shadow-color-override',ds);
+    const lt=light.topBorderColor||pal.topBorderColor,dt=dark.topBorderColor||pal.topBorderColor;
+    d('--action-top-border-override',lt);d('--dark-action-top-border-override',dt);
+  }
+  return o;
+}
+function writePalette(){
+  const pal=PALS.find(p=>p.id===state.pal),o=paletteProps(pal);
+  document.getElementById('palstyle').textContent='.stage.stage.stage{'+Object.entries(o).map(([k,v])=>k+':'+v).join(';')+'}';
+  document.querySelectorAll('.stage').forEach(e=>{if(state.dim)e.setAttribute('data-vivid-dark','dim');else e.removeAttribute('data-vivid-dark')});
+}
+
+/* ---------- textos de substituição ---------- */
+const okl=o=>`oklch(${f3(o.l)} ${f3(o.c)} ${f3(o.h)})`;
+const flatOf=c=>c.pal.relief===false;
+const DNAME={cardLDelta:'card',popoverLDelta:'popover',borderLDelta:'border',inputLDelta:'input',actionLDelta:'action',actionHoverLDelta:'action-hover'};
+const deltaSub=key=>c=>{
+  const b=c.R('background'),d=c.v(`--${c.m==='dark'?'dark-':''}${DNAME[key]}-l-delta`,'',c.P[key]),raw=b.L+d,L=clamp01(raw);
+  return `fundo L ${f3(b.L)} ${sg(d)} = ${f3(raw)}${raw!==L?` → limitado a ${f3(L)}`:''}; C ${f3(b.C)} e H ${f3(b.H)} iguais ao fundo`;
+};
+const direct=key=>c=>`paleta ${c.pal.label}, ${MN[c.m].toLowerCase()}: ${okl(c.P[key])}`;
+const mixSub=(a,b,pa,pb,sp)=>`${pa}% de ${a} + ${pb}% de ${b}${sp?` (${sp})`:''}`;
+const shadowSub=(mult,max)=>c=>{const a=c.P.shadowOpacity,v=max?Math.min(100,a*mult):a*mult;return `opacidade da paleta ${a}% × ${mult} = ${f3(v).replace(/\.?0+$/,'')}% da cor da sombra (${c.P.shadowColor}); o resto é transparente`};
+const SH=(m)=>`color-mix(in srgb, var(--shadow-tint) calc(var(--shadow-alpha) * ${m}), transparent)`;
+
+/* ---------- avisos ---------- */
+const FLAGS={
+  'succ-strong':{short:'Família diferente',get:c=>{const a=c.R('success'),b=c.R('success-strong');if(!a||!b)return null;const dh=Math.abs(((a.H-b.H+540)%360)-180);
+    return dh>10?`O sucesso forte (${b.hex}) tem matiz diferente do Sucesso (${a.hex}): são dois verdes de famílias diferentes.`:null}},
+  'sec-space':{short:'srgb x oklch',get:c=>{const a=fstr('secondary','light',RE_SP,'?'),b=fstr('secondary','dark',RE_SP,'?');return a!==b?`A cor secundária mistura em ${a} no claro e em ${b} no escuro: dois espaços de cor para a mesma ideia.`:null}},
+  'coral':{short:'Luz do hover alta',get:c=>{const d=c.v(`--${c.m==='dark'?'dark-':''}action-hover-l-delta`,'',c.P.actionHoverLDelta);return d>=0.5?`Esta paleta soma +${f3(d)} de luz no hover do ${MN[c.m].toLowerCase()} (o normal é perto de +0,04); L passa de 1 e o hover vira branco puro.`:null}},
+  'gamut':{short:'Fora da gama',get:c=>{const r=c.R('primary');return r&&!r.gamut?`A primária desta paleta (croma ${f3(r.C)}) cai fora da gama sRGB da tela; o navegador recorta e o valor escrito não é o que aparece.`:null}},
+  'phase-contrast':{short:'Contraste baixo',get:(c,kind)=>{const x=CONTR[c.m]&&CONTR[c.m][kind];return x&&x.min<4.5?`Com luminosidade fixa, o texto de ${x.who} tem contraste ${x.min.toFixed(1)} neste modo (abaixo de 4,5).`:null}}
+};
+
+/* ---------- tokens ---------- */
+const same=(s)=>({light:s,dark:s});
+const T=[];
+const add=o=>T.push(o);
+
+/* 1. Definidas diretamente */
+add({id:'background',n:'Fundo da página',tok:'--background',cat:1,note:'Em todas as paletas o valor vem da própria paleta; o número do CSS só vale se a paleta não definir.',
+  f:{light:'var(--background-override, oklch(1 0 0))',dark:'var(--dark-background-override, oklch(0.4 0.01 285.823))'},sub:direct('bg')});
+add({id:'foreground',n:'Texto principal',tok:'--foreground',cat:1,
+  f:{light:'var(--foreground-override, oklch(0.141 0.005 285.823))',dark:'var(--dark-foreground-override, oklch(0.985 0 0))'},sub:direct('fg')});
+add({id:'primary',n:'Cor primária',tok:'--primary',cat:1,fl:['gamut'],
+  f:{light:'oklch(var(--primary-l) var(--primary-c) var(--primary-h))',dark:'oklch(var(--dark-primary-l) var(--dark-primary-c) var(--dark-primary-h))'},sub:direct('primary')});
+add({id:'shadow-tint',n:'Cor da sombra',tok:'--shadow-tint',cat:1,
+  f:{light:'var(--shadow-color-override, #000000)',dark:'var(--dark-shadow-color-override, var(--shadow-color-override, #000000))'},sub:c=>`paleta: ${c.P.shadowColor}`});
+add({id:'shadow-alpha',n:'Opacidade da sombra',tok:'--shadow-alpha',cat:1,kind:'num',
+  f:{light:'var(--shadow-opacity-override, 10%)',dark:'var(--dark-shadow-opacity-override, 25%)'},sub:c=>`paleta: ${c.P.shadowOpacity}%`});
+add({id:'action-shadow-color',n:'Cor da sombra do cartão de ação',tok:'--action-shadow-color',cat:1,note:'Paletas planas (Carbono, Cobalto) não definem esta cor e ficam com preto.',
+  f:{light:'var(--action-shadow-color-override, #000000)',dark:'var(--dark-action-shadow-color-override, var(--action-shadow-color-override, #000000))'},
+  sub:c=>flatOf(c)?'paleta plana (sem relevo): não define, vale o padrão #000000':`paleta: ${c.P.shadowColor}`});
+add({id:'action-top-border',n:'Brilho da borda superior do cartão',tok:'--action-top-border',cat:1,
+  f:{light:'var(--action-top-border-override, #ffffff)',dark:'var(--dark-action-top-border-override, var(--action-top-border-override, rgba(255, 255, 255, 0.1)))'},
+  sub:c=>flatOf(c)?'paleta plana: transparent':((c.P.topBorderColor||c.pal.topBorderColor)?`paleta: ${c.P.topBorderColor||c.pal.topBorderColor}`:`nenhuma paleta define; vale o padrão ${c.m==='light'?'#ffffff':'rgba(255, 255, 255, 0.1)'}`)});
+add({id:'priority-low',n:'Prioridade baixa',tok:'--priority-low',cat:1,f:{light:'oklch(0.7 0.17 150)',dark:'oklch(0.75 0.16 150)'},sub:()=>'valor escrito no CSS'});
+add({id:'priority-medium',n:'Prioridade média',tok:'--priority-medium',cat:1,f:{light:'oklch(0.82 0.16 90)',dark:'oklch(0.85 0.15 95)'},sub:()=>'valor escrito no CSS'});
+add({id:'priority-high',n:'Prioridade alta',tok:'--priority-high',cat:1,f:{light:'oklch(0.65 0.22 25)',dark:'oklch(0.7 0.2 25)'},sub:()=>'valor escrito no CSS'});
+add({id:'error',n:'Erro (base)',tok:'--color-error',cat:1,f:{light:'oklch(0.65 0.22 16)',dark:'oklch(0.72 0.16 16)'},sub:()=>'valor escrito no CSS'});
+add({id:'error-foreground',n:'Erro (texto)',tok:'--error-foreground',cat:1,in:['error'],f:{light:'oklch(0.52 0.19 16)',dark:'var(--color-error)'},sub:()=>'valor escrito no CSS'});
+add({id:'warning',n:'Atenção (base)',tok:'--color-warning',cat:1,f:{light:'oklch(0.82 0.16 80)',dark:'oklch(0.84 0.14 80)'},sub:()=>'valor escrito no CSS'});
+add({id:'warning-foreground',n:'Atenção (texto)',tok:'--warning-foreground',cat:1,in:['warning'],f:{light:'oklch(0.52 0.1 80)',dark:'var(--color-warning)'},sub:()=>'valor escrito no CSS'});
+add({id:'info',n:'Informação (base)',tok:'--color-info',cat:1,f:{light:'oklch(0.65 0.17 250)',dark:'oklch(0.75 0.12 250)'},sub:()=>'valor escrito no CSS'});
+add({id:'info-foreground',n:'Informação (texto)',tok:'--info-foreground',cat:1,in:['info'],f:{light:'oklch(0.52 0.13 250)',dark:'var(--color-info)'},sub:()=>'valor escrito no CSS'});
+add({id:'success',n:'Sucesso (base)',tok:'--color-success',cat:1,f:{light:'oklch(0.65 0.13 163)',dark:'oklch(0.75 0.15 163)'},sub:()=>'valor escrito no CSS'});
+add({id:'success-foreground',n:'Sucesso (texto)',tok:'--color-success-foreground',cat:1,f:{light:'oklch(0.52 0.1 163)',dark:'var(--color-success)'},in:['success'],
+  sub:c=>c.m==='light'?'valor escrito no CSS':`igual à base do sucesso: ${c.R('success').hex}`});
+add({id:'success-strong',n:'Sucesso forte (botão de concluir)',tok:'--success-strong',cat:1,fl:['succ-strong'],f:same('var(--color-emerald-600)'),sub:()=>'emerald-600 do Tailwind, igual nos dois modos'});
+add({id:'success-strong-foreground',n:'Texto do sucesso forte',tok:'--success-strong-foreground',cat:1,f:same('var(--color-white)'),sub:()=>'branco do Tailwind: #ffffff'});
+add({id:'phase-hex',n:'Cores das fases',tok:'PHASES.*.color',cat:1,ctx:'phase',full:true,
+  f:same('Ideia #fbbf24 · Fazer #f97316 · Fazendo #ec4899\nAnálise #a855f7 · Feito #38bdf8 · Concluído #4ade80'),fp:(m,ph)=>ph.hex,
+  sub:c=>`${c.ph.t}: ${c.ph.hex} = oklch(${f3(c.ph.L)} ${f3(c.ph.C)} ${f3(c.ph.H)}); igual nos dois modos`,note:'Escolha a fase em foco nos círculos do topo.'});
+
+/* 2. Deslocamento de luz */
+const dl=(id,n,tok,key,defL,defD,extra={})=>add(Object.assign({id,n,tok,cat:2,in:['background'],
+  f:{light:`oklch(from var(--background) calc(l + var(--${key[0]}-l-delta)) c h)`,dark:`oklch(from var(--background) calc(l + var(--dark-${key[0]}-l-delta)) c h)`},
+  sub:deltaSub(key[1]),note:`Padrão do CSS se a paleta não definir: ${defL} (claro) e ${defD} (escuro).`},extra));
+dl('card','Cartão','--card',['card','cardLDelta'],'−0.02','+0.05');
+dl('popover','Popover e menus','--popover',['popover','popoverLDelta'],'0','−0.03');
+dl('border','Borda','--border',['border','borderLDelta'],'−0.05','+0.20');
+dl('input','Campo de formulário','--input',['input','inputLDelta'],'−0.05','+0.05');
+dl('action','Cartão de ação (base)','--action',['action','actionLDelta'],'+0.02','+0.10',{note:'Padrão do CSS: +0.02 (claro) e +0.10 (escuro). Depois vira --action-base, que as fases tingem.'});
+add({id:'accent',n:'Destaque (accent)',tok:'--accent',cat:2,in:['primary'],fl:['gamut'],note:'Mesma cor da primária, só mais escura no claro e mais clara no escuro.',
+  f:{light:'oklch(max(0, calc(var(--primary-l) - 0.15)) var(--primary-c) var(--primary-h))',dark:'oklch(min(1, calc(var(--dark-primary-l) + 0.1)) var(--dark-primary-c) var(--dark-primary-h))'},
+  sub:c=>{const p=c.P.primary;return c.m==='light'?`primária L ${f3(p.l)} − 0.150 = ${f3(Math.max(0,p.l-.15))} (piso 0); C ${f3(p.c)} e H ${f3(p.h)} iguais`:`primária L ${f3(p.l)} + 0.100 = ${f3(Math.min(1,p.l+.1))} (teto 1); C ${f3(p.c)} e H ${f3(p.h)} iguais`}});
+add({id:'vivid-ring',n:'Aro do cartão de fase Viva',tok:'--action-ring (phase-vivid)',cat:2,ctx:'vivid',full:false,in:['vivid-fill'],
+  f:same('oklch(from var(--vivid-fill) calc(l - var(--vivid-edge-dl)) c h)'),sub:c=>{const e=c.v('--vivid-edge-dl','pv',c.m==='light'?.06:.14),f=c.R('vivid-fill',c.ph.s);return `preenchimento L ${f3(f.L)} − ${f3(e)} = ${f3(f.L-e)}; C e H iguais`},note:'Cartão de fase Viva: o aro é o preenchimento um pouco mais escuro.'});
+
+/* 3. Conta na própria cor */
+add({id:'error-bg',n:'Fundo de erro',tok:'--color-error-background',cat:3,in:['error'],note:'Pega só o matiz da cor base; luminosidade e croma são números fixos. Não é deslocamento de luz (o croma também muda) nem mistura (nada é misturado).',f:{light:'oklch(from var(--color-error) 0.93 0.03 h)',dark:'oklch(from var(--color-error) 0.32 0.03 h)'},sub:c=>`L fixo ${c.m==='light'?'0.93':'0.32'} · C fixo 0.03 · H da base`});
+add({id:'warning-bg',n:'Fundo de atenção',tok:'--color-warning-background',cat:3,in:['warning'],note:'Pega só o matiz da cor base; luminosidade e croma são números fixos. Não é deslocamento de luz (o croma também muda) nem mistura (nada é misturado).',f:{light:'oklch(from var(--color-warning) 0.93 0.03 h)',dark:'oklch(from var(--color-warning) 0.32 0.03 h)'},sub:c=>`L fixo ${c.m==='light'?'0.93':'0.32'} · C fixo 0.03 · H da base`});
+add({id:'success-bg',n:'Fundo de sucesso',tok:'--color-success-background',cat:3,in:['success'],note:'Pega só o matiz da cor base; luminosidade e croma são números fixos. Não é deslocamento de luz (o croma também muda) nem mistura (nada é misturado).',f:{light:'oklch(from var(--color-success) 0.93 0.03 h)',dark:'oklch(from var(--color-success) 0.32 0.03 h)'},sub:c=>`L fixo ${c.m==='light'?'0.93':'0.32'} · C fixo 0.03 · H da base`});
+add({id:'info-bg',n:'Fundo de informação',tok:'--color-info-background',cat:3,in:['info'],note:'Pega só o matiz da cor base; luminosidade e croma são números fixos. Não é deslocamento de luz (o croma também muda) nem mistura (nada é misturado).',f:{light:'oklch(from var(--color-info) 0.93 0.03 h)',dark:'oklch(from var(--color-info) 0.32 0.03 h)'},sub:c=>`L fixo ${c.m==='light'?'0.93':'0.32'} · C fixo 0.03 · H da base`});
+add({id:'primary-foreground',n:'Texto sobre a primária',tok:'--primary-foreground',cat:3,in:['primary'],
+  note:'As 11 paletas definem este valor direto; a conta só vale como reserva.',
+  f:{light:'var(--primary-foreground-override, oklch(var(--primary-fg-l) 0 var(--primary-h)))',dark:'var(--dark-primary-foreground-override, oklch(var(--dark-primary-fg-l) 0.014 var(--dark-primary-h)))'},
+  sub:c=>{const p=c.P.primary;return `paleta define: ${c.P.primaryFg?okl(c.P.primaryFg):'(nada)'}. Reserva: oklch(${c.m==='light'?0.97:0.97} ${c.m==='light'?0:0.014} ${f3(p.h)})`}});
+add({id:'ring',n:'Anel de foco',tok:'--ring',cat:3,in:['primary'],fl:['gamut'],note:'Nas 11 paletas o anel definido é igual à primária, então a reserva nunca é usada.',
+  f:{light:'var(--ring-override, oklch(var(--primary-l) var(--primary-c) var(--primary-h)))',dark:'var(--dark-ring-override, oklch(var(--dark-primary-l) var(--dark-primary-c) var(--dark-primary-h)))'},
+  sub:c=>`paleta define: ${c.P.ring?okl(c.P.ring):'(nada)'}. Reserva: a primária ${okl(c.P.primary)}`});
+add({id:'phase-fg',n:'Texto do cartão de fase (Suave)',tok:'--phase-fg',cat:3,ctx:'phase',full:false,in:['phase-hex'],fl:['phase-contrast:suave'],
+  f:{light:'oklch(from var(--phase-color) 0.35 0.07 h)',dark:'oklch(from var(--phase-color) 0.92 0.06 h)'},
+  sub:c=>`L fixo ${c.m==='light'?'0.350':'0.920'} · C ${c.m==='light'?'0.070':'0.060'} · H ${f3(c.ph.H)} (da fase ${c.ph.t}, ${c.ph.hex})`,note:'O cartão sobre o qual o texto aparece está no fundo de cada amostra.'});
+add({id:'phase-shadow',n:'Cor-base da sombra da fase (Suave)',tok:'--phase-shadow',cat:3,ctx:'phase',full:false,in:['phase-hex'],
+  f:{light:'oklch(from var(--phase-color) 0.6 0.15 h)',dark:'oklch(from var(--phase-color) 0.33 0.1 h)'},
+  sub:c=>`L fixo ${c.m==='light'?'0.600':'0.330'} · C ${c.m==='light'?'0.150':'0.100'} · H ${f3(c.ph.H)} (${c.ph.t})`});
+add({id:'vivid-ink',n:'Tinta do cartão de fase Viva',tok:'--vivid-ink',cat:3,ctx:'vivid',full:false,in:['phase-hex'],fl:['phase-contrast:viva'],
+  f:same('oklch(from var(--phase-color) 0.35 0.07 h)'),sub:c=>`L fixo 0.350 · C 0.070 · H ${f3(c.ph.H)} (${c.ph.t}). Com a opção de tinta clara: 0.98 · 0.025`});
+add({id:'vivid-fill',n:'Preenchimento do cartão de fase Viva',tok:'--vivid-fill',cat:3,ctx:'vivid',full:true,in:['phase-hex'],
+  note:'Sem atenuação, o preenchimento é a cor direta da fase. A atenuação só existe no escuro (caixa no topo).',
+  f:{light:'var(--phase-color)',dark:'var(--phase-color)'},fdyn:(m)=>m==='dark'&&state.dim?'oklch(from var(--phase-color) 0.72 calc(c * 0.8) h)':'var(--phase-color)',
+  sub:c=>c.m==='dark'&&state.dim?`L fixo 0.720 · C ${f3(c.ph.C)} × 0.8 = ${f3(c.ph.C*.8)} · H ${f3(c.ph.H)}`:`cor da fase direta: ${c.ph.hex}`});
+add({id:'vivid-shadow',n:'Cor-base da sombra da fase Viva',tok:'--vivid-shadow',cat:3,ctx:'vivid',full:false,in:['phase-hex'],
+  f:same('oklch(from var(--phase-color) 0.55 0.16 h)'),sub:c=>`L fixo 0.550 · C 0.160 · H ${f3(c.ph.H)} (${c.ph.t})`});
+
+/* 4. Misturas */
+add({id:'phase-fill',n:'Cartão de fase Suave (fundo)',tok:'--action (phase-surface)',cat:4,ctx:'phase',full:true,in:['phase-hex','action'],
+  f:same('color-mix(in oklab, var(--phase-color) var(--phase-mix), var(--action-base))'),
+  sub:c=>{const p=c.v('--phase-mix','ps',c.m==='light'?7:14);return mixSub(`${c.ph.hex} (${c.ph.t})`,`${c.R('action').hex} (cartão base)`,p,100-p,'em oklab')},note:'--phase-mix é lido ao vivo do CSS (hoje 7% no claro e 14% no escuro).'});
+add({id:'vivid-top',n:'Brilho do topo do cartão Viva',tok:'--action-top-border (phase-vivid)',cat:4,ctx:'vivid',kind:'border',in:['vivid-fill'],
+  f:same('color-mix(in srgb,\n  color-mix(in oklab, white var(--vivid-top-light), var(--action))\n    calc(var(--action-relief, 1) * 100%),\n  transparent)'),
+  sub:c=>{const t=c.v('--vivid-top-light','pv',c.m==='light'?45:25);return mixSub('branco',`${c.R('vivid-fill',c.ph.s).hex} (preenchimento)`,t,100-t,'em oklab')+`; depois multiplica a opacidade por ${flatOf(c)?0:100}% (paleta ${flatOf(c)?'plana: some':'com relevo'})`},note:'A faixa de cima de cada amostra é o brilho; o corpo é o preenchimento.'});
+
+/* 4b. Transparências */
+add({id:'secondary',n:'Cor secundária (hover discreto)',tok:'--secondary',cat:4,sub_:true,ground:'transp',fl:['sec-space'],in:['foreground'],
+  f:{light:'color-mix(in srgb, var(--foreground) 5%, transparent)',dark:'color-mix(in oklch, var(--foreground) 10%, transparent)'},
+  sub:c=>`${fnum('secondary',c.m,RE_PCT,c.m==='light'?5:10)}% de ${c.R('foreground').hex} (texto) em ${fstr('secondary',c.m,RE_SP,c.m==='light'?'srgb':'oklch')}; o resto é transparente`});
+add({id:'secondary-foreground',n:'Texto secundário',tok:'--secondary-foreground',cat:4,sub_:true,ground:'transp',in:['foreground'],
+  f:same('color-mix(in srgb, var(--foreground) 65%, transparent)'),sub:c=>`${fnum('secondary-foreground',c.m,RE_PCT,65)}% de ${c.R('foreground').hex} (texto) em ${fstr('secondary-foreground',c.m,RE_SP,'srgb')}; o resto é transparente`});
+add({id:'overlay',n:'Fundo escurecido de janelas',tok:'--color-overlay',cat:4,sub_:true,ground:'transp',in:['shadow-tint'],
+  f:same('color-mix(in srgb, var(--shadow-tint) 30%, transparent)'),sub:c=>`${fnum('overlay',c.m,RE_PCT,30)}% de ${c.R('shadow-tint').hex} (cor da sombra); o resto é transparente`});
+add({id:'action-ring',n:'Aro do cartão de ação',tok:'--action-ring',cat:4,sub_:true,ground:'transp',in:['action-shadow-color'],
+  f:{light:'color-mix(in srgb, var(--action-shadow-color) 5%, transparent)',dark:'color-mix(in srgb, var(--action-shadow-color) 20%, transparent)'},
+  sub:c=>`${fnum('action-ring',c.m,RE_PCT,c.m==='light'?5:20)}% de ${c.R('action-shadow-color').hex} (sombra do cartão); o resto é transparente`});
+add({id:'phase-ring',n:'Aro do cartão de fase Suave',tok:'--action-ring (phase-surface)',cat:4,sub_:true,ground:'transp',ctx:'phase',full:true,in:['phase-hex'],
+  f:same('color-mix(in srgb, var(--phase-color) calc(var(--phase-ring-alpha) * var(--action-relief, 1)), transparent)'),
+  sub:c=>{const b=c.v('--phase-ring-alpha','ps',c.m==='light'?30:55),a=b*(flatOf(c)?0:1);return `${a}% de ${c.ph.hex} (${c.ph.t}) em srgb (${b}% × relevo ${flatOf(c)?0:1}); o resto é transparente`}});
+const SHD=[['2xs','0 1px '+SH(.5),.5,0],['xs','0 1px 2px 0 '+SH(.6),.6,0],['sm','0 1px 3px 0 '+SH(.8)+',\n0 1px 2px -1px '+SH(.8),.8,0],
+  ['md','0 4px 6px -1px '+SH(1)+',\n0 2px 4px -2px '+SH(1),1,0],['lg','0 10px 15px -3px '+SH(1)+',\n0 4px 6px -4px '+SH(1),1,0],
+  ['xl','0 20px 25px -5px '+SH(1)+',\n0 8px 10px -6px '+SH(1),1,0],
+  ['2xl','0 25px 50px -12px color-mix(in srgb, var(--shadow-tint) min(100%, calc(var(--shadow-alpha) * 2.5)), transparent)',2.5,1]];
+SHD.forEach(([k,f,m,mx])=>add({id:'shadow-'+k,n:'Sombra '+k,tok:'--shadow-'+k,cat:4,sub_:true,ground:'transp',kind:'shadow',in:['shadow-tint','shadow-alpha'],f:same(f),sub:shadowSub(m,mx)}));
+add({id:'action-shadow',n:'Sombra do cartão de ação (em repouso)',tok:'--action-shadow',cat:4,sub_:true,ground:'transp',kind:'shadow',in:['action-shadow-color'],
+  f:{light:'var(--action-shadow-override, 0 1px 2px 0 color-mix(in srgb, var(--action-shadow-color) 14%, transparent))',dark:'var(--dark-action-shadow-override, var(--action-shadow-override, 0 1px 2px 0 color-mix(in srgb, var(--action-shadow-color) 35%, transparent)))'},
+  sub:c=>flatOf(c)?'paleta plana: 0 0 #0000 (sem sombra)':`${fnum('action-shadow',c.m,RE_PCT,c.m==='light'?14:35)}% de ${c.R('action-shadow-color').hex}; o resto é transparente`});
+
+/* 5. Estados */
+add({id:'action-hover',n:'Cartão de ação no hover (base)',tok:'--action-hover',cat:5,in:['background'],fl:['coral'],
+  f:{light:'oklch(from var(--background) calc(l + var(--action-hover-l-delta)) c h)',dark:'oklch(from var(--background) calc(l + var(--dark-action-hover-l-delta)) c h)'},sub:deltaSub('actionHoverLDelta'),
+  note:'É um deslocamento de luz, mas só aparece no hover.'});
+add({id:'phase-fill-hover',n:'Cartão Suave no hover',tok:'--action-hover (phase-surface)',cat:5,ctx:'phase',full:true,in:['phase-hex','action-hover'],
+  f:same('color-mix(in oklab, var(--phase-color) var(--phase-mix-hover), var(--action-hover-base))'),
+  sub:c=>{const p=c.v('--phase-mix-hover','ps',c.m==='light'?12:22);return mixSub(`${c.ph.hex} (${c.ph.t})`,`${c.R('action-hover').hex} (hover base)`,p,100-p,'em oklab')}});
+add({id:'vivid-hover',n:'Cartão Viva no hover',tok:'--action-hover (phase-vivid)',cat:5,ctx:'vivid',full:true,in:['vivid-fill'],
+  f:same('oklch(from var(--vivid-fill) calc(l + var(--vivid-hover-dl)) c h)'),sub:c=>{const f=c.R('vivid-fill',c.ph.s);return `preenchimento L ${f3(f.L)} + ${f3(c.v('--vivid-hover-dl','pv',.04))} = ${f3(f.L+c.v('--vivid-hover-dl','pv',.04))}; C e H iguais (com tinta clara o passo é − 0.040)`}});
+add({id:'vivid-top-hover',n:'Brilho do topo Viva no hover',tok:'--action-top-border (phase-vivid:hover)',cat:5,ctx:'vivid',kind:'border',in:['vivid-hover'],
+  f:same('color-mix(in srgb,\n  color-mix(in oklab, white var(--vivid-top-light), var(--action-hover))\n    calc(var(--action-relief, 1) * 100%),\n  transparent)'),
+  sub:c=>{const t=c.v('--vivid-top-light','pv',c.m==='light'?45:25);return mixSub('branco',`${c.R('vivid-hover',c.ph.s).hex} (hover)`,t,100-t,'em oklab')+`; × ${flatOf(c)?0:100}% de relevo`}});
+add({id:'btn-primary-hover',n:'Botão primário no hover',tok:'hover:bg-[color-mix(...)] em button.tsx',cat:5,in:['primary','background'],
+  f:same('color-mix(in oklab, var(--primary), var(--background) 20%)'),sub:c=>mixSub(c.R('primary').hex+' (primária)',c.R('background').hex+' (fundo)',80,20,'em oklab'),
+  note:'Hoje o botão não usa opacidade /80: ele mistura 20% do fundo na primária.'});
+add({id:'btn-secondary-hover',n:'Botão secundário no hover',tok:'hover:bg-[color-mix(...)] em button.tsx',cat:5,ground:'transp',in:['secondary','foreground'],
+  f:same('color-mix(in oklch, var(--secondary), var(--foreground) 5%)'),sub:c=>mixSub('cor secundária',c.R('foreground').hex+' (texto)',95,5,'em oklch')+'; continua translúcido'});
+add({id:'success-strong-hover',n:'Sucesso forte no hover',tok:'--success-strong-hover',cat:5,fl:['succ-strong'],f:same('var(--color-emerald-700)'),sub:()=>'emerald-700 do Tailwind: oklch(0.508 0.118 165.612)'});
+add({id:'action-hover-shadow',n:'Sombra do cartão no hover',tok:'--action-hover-shadow',cat:5,ground:'transp',kind:'shadow',in:['action-shadow-color'],
+  f:{light:'var(--action-hover-shadow-override,\n  0 10px 15px -3px color-mix(in srgb, var(--action-shadow-color) 18%, transparent),\n  0 4px 6px -4px color-mix(in srgb, var(--action-shadow-color) 18%, transparent))',
+     dark:'var(--dark-action-hover-shadow-override, var(--action-hover-shadow-override,\n  0 10px 15px -3px color-mix(in srgb, var(--action-shadow-color) 50%, transparent),\n  0 4px 6px -4px color-mix(in srgb, var(--action-shadow-color) 50%, transparent)))'},
+  sub:c=>flatOf(c)?'paleta plana: 0 0 #0000 (sem sombra)':`${fnum('action-hover-shadow',c.m,RE_PCT,c.m==='light'?18:50)}% de ${c.R('action-shadow-color').hex}; o resto é transparente`});
+add({id:'phase-hover-shadow',n:'Sombra da fase Suave no hover',tok:'--action-hover-shadow (phase-surface)',cat:5,ground:'transp',kind:'shadow',ctx:'phase',full:false,in:['phase-shadow'],
+  f:same('var(--action-hover-shadow-override,\n  0 10px 15px -3px color-mix(in srgb, var(--phase-shadow) var(--phase-shadow-alpha), transparent),\n  0 4px 6px -4px color-mix(in srgb, var(--phase-shadow) var(--phase-shadow-alpha), transparent),\n  0 14px 30px -4px var(--phase-diffuse))'),
+  sub:c=>flatOf(c)?'paleta plana: 0 0 #0000 (sem sombra)':`${c.v('--phase-shadow-alpha','ps',c.m==='light'?25:20)}% de ${c.R('phase-shadow',c.ph.s).hex} (cor-base da sombra); luz difusa ${c.m==='light'?'transparente':'63% de oklch(0.2 0.15 H da fase)'}`});
+add({id:'vivid-hover-shadow',n:'Sombra da fase Viva no hover',tok:'--action-hover-shadow (phase-vivid)',cat:5,ground:'transp',kind:'shadow',ctx:'vivid',full:false,in:['vivid-shadow'],
+  f:same('var(--action-hover-shadow-override,\n  0 10px 15px -3px color-mix(in srgb, var(--vivid-shadow) 40%, transparent),\n  0 4px 6px -4px color-mix(in srgb, var(--vivid-shadow) 40%, transparent))'),
+  sub:c=>flatOf(c)?'paleta plana: 0 0 #0000 (sem sombra)':`40% de ${c.R('vivid-shadow',c.ph.s).hex} (cor-base); o resto é transparente`});
+add({id:'late-shadow',n:'Cor-base da sombra de ação atrasada',tok:'--late-shadow',cat:5,in:['error'],
+  f:{light:null,dark:'oklch(from var(--color-error) 0.45 0.18 h)'},sub:()=>'L fixo 0.450 · C 0.180 · H do erro (16.339)',note:'No claro não existe: a sombra usa direto o texto de erro.'});
+add({id:'late-rest',n:'Sombra da ação atrasada (repouso)',tok:'--action-shadow (late-surface)',cat:5,ground:'transp',kind:'shadow',ctx:'late',in:['error-foreground'],
+  f:{light:'var(--action-shadow-override, 0 1px 2px 0 color-mix(in srgb, var(--error-foreground) 25%, transparent))',dark:'var(--action-shadow-override, 0 1px 2px 0 color-mix(in srgb, var(--late-shadow) 50%, transparent))'},
+  sub:c=>flatOf(c)?'paleta plana: 0 0 #0000 (sem sombra)':c.m==='light'?`25% de ${c.R('error-foreground').hex} (texto de erro)`:`50% de ${c.R('late-shadow').hex} (vermelho profundo)`});
+add({id:'late-hover',n:'Sombra da ação atrasada (hover)',tok:'--action-hover-shadow (late-surface)',cat:5,ground:'transp',kind:'shadow',ctx:'late',in:['error-foreground'],
+  f:{light:'var(--action-hover-shadow-override,\n  0 10px 15px -3px color-mix(in srgb, var(--error-foreground) 30%, transparent),\n  0 4px 6px -4px color-mix(in srgb, var(--error-foreground) 30%, transparent))',
+     dark:'var(--action-hover-shadow-override,\n  0 10px 15px -3px color-mix(in srgb, var(--late-shadow) 60%, transparent),\n  0 4px 6px -4px color-mix(in srgb, var(--late-shadow) 60%, transparent))'},
+  sub:c=>flatOf(c)?'paleta plana: 0 0 #0000 (sem sombra)':c.m==='light'?`30% de ${c.R('error-foreground').hex} (texto de erro)`:`60% de ${c.R('late-shadow').hex} (vermelho profundo)`});
+
+const LK={'phase-fg':['.phase-surface','--phase-fg'],'phase-shadow':['.phase-surface','--phase-shadow'],'vivid-ink':['.phase-vivid','--vivid-ink'],'vivid-fill':['.phase-vivid','--vivid-fill'],'vivid-shadow':['.phase-vivid','--vivid-shadow'],
+ 'vivid-ring':['.phase-vivid','--action-ring'],'phase-fill':['.phase-surface','--action'],'phase-ring':['.phase-surface','--action-ring'],'phase-fill-hover':['.phase-surface','--action-hover'],'vivid-hover':['.phase-vivid','--action-hover'],
+ 'vivid-top':['.phase-vivid','--action-top-border'],'vivid-top-hover':['.phase-vivid','--action-top-border','hover'],'phase-hover-shadow':['.phase-surface','--action-hover-shadow'],'vivid-hover-shadow':['.phase-vivid','--action-hover-shadow'],
+ 'late-shadow':['.late-surface','--late-shadow'],'late-rest':['.late-surface','--action-shadow'],'late-hover':['.late-surface','--action-hover-shadow']};
+T.forEach(t=>{if(LK[t.id])t.lk=LK[t.id]});
+const TID=Object.fromEntries(T.map(t=>[t.id,t]));
+const $=id=>document.getElementById(id);
+let LIVE={light:{},dark:{}},USING_APP=false;
+const LIVE_OK=/^--[\w-]+$/;
+let U={};
+const UC=['.phase-surface','.phase-vivid','.late-surface'];
+function utilText(t,m){const [cls,prop,kind]=t.lk,u=U[cls];if(!u)return null;
+  if(kind==='hover')return u.hover[prop]!=null?u.hover[prop]:null;
+  let v=u.base[prop];if(m==='dark'){if(u.dark[prop]!=null)v=u.dark[prop];if(state.dim&&u.dim[prop]!=null)v=u.dim[prop]}
+  return v!=null?v:null}
+function liveText(t,m){if(!USING_APP||t.f[m]==null)return null;
+  if(t.lk)return utilText(t,m);
+  if(LIVE_OK.test(t.tok)){const v=LIVE[m][t.tok];return v?v:null}
+  return null}
+const isLive=(t,m)=>liveText(t,m)!=null;
+const fOf=(t,m)=>{const lt=liveText(t,m);if(lt!=null)return lt;if(t.fdyn)return t.fdyn(m);return t.f[m]};
+function walkRules(rules,fn){for(const r of rules){if(r.selectorText!==undefined&&r.style)fn(r);else if(r.cssRules)walkRules(r.cssRules,fn)}}
+function collect(rule,out){
+  if(rule.style)for(const p of rule.style)if(p.startsWith('--'))out[p]=rule.style.getPropertyValue(p).trim();
+  if(rule.cssRules)for(const r of rule.cssRules){if(r.selectorText!==undefined&&r.style)continue;collect(r,out)}
+}
+const classify=sfx=>{sfx=sfx.trim();if(sfx==='')return 'base';if(sfx.includes('data-vivid-dark'))return 'dim';if(sfx.includes('.dark'))return 'dark';if(sfx.includes(':hover'))return 'hover';return null};
+function buildLive(){
+  const L={light:{},dark:{}};U={};UC.forEach(c=>U[c]={base:{},dark:{},dim:{},hover:{}});
+  for(const sh of document.styleSheets){
+    if(sh.ownerNode&&['palstyle','copybase','copyutil'].includes(sh.ownerNode.id))continue;
+    let rules;try{rules=sh.cssRules}catch(e){continue}
+    walkRules(rules,r=>{
+      const parts=r.selectorText.split(',').map(x=>x.trim());
+      const m=parts.some(p=>/^\[data-theme-preview=("?)light\1\]$/.test(p))?'light':(parts[0]==='.dark'?'dark':null);
+      if(m)collect(r,L[m]);
+      for(const cls of UC)for(const p of parts){
+        if(p===cls||p.startsWith(cls+':')){
+          const k=classify(p.slice(cls.length));if(k)collect(r,U[cls][k]);
+          if(r.cssRules)for(const n of r.cssRules)if(n.selectorText!==undefined&&n.style){const k2=classify(n.selectorText.replace(/&/g,''));if(k2)collect(n,U[cls][k2])}
+        }
+      }
+    });
+  }
+  return L;
+}
+/* ---- explicador genérico: lê o texto vivo, resolve var() e calc() ---- */
+const f3n=n=>f3(n);
+function splitTop(s,sep){const out=[];let d=0,cur='';for(const ch of s){if(ch==='(')d++;if(ch===')')d--;if(d===0&&(sep===','?ch===',':/\s/.test(ch))){if(cur.trim())out.push(cur.trim());cur='';continue}cur+=ch}if(cur.trim())out.push(cur.trim());return out}
+function inner(s){const st=s.indexOf('(');let d=0;for(let i=st;i<s.length;i++){if(s[i]==='(')d++;else if(s[i]===')'){d--;if(d===0)return {body:s.slice(st+1,i),end:i+1}}}return null}
+function evalExpr(src,syms){
+  const t=src.match(/\d*\.?\d+(?:e[+-]?\d+)?%?|[a-z]+|[()+\-*/,]/gi)||[];let i=0;
+  const prim=()=>{const k=t[i++];if(k===undefined)throw 0;
+    if(k==='('){const v=sum();if(t[i++]!==')')throw 0;return v}
+    if(k==='-')return -prim();if(k==='+')return prim();
+    if(/^[a-z]+$/i.test(k)){
+      if(t[i]==='('){i++;const a=[sum()];while(t[i]===','){i++;a.push(sum())}if(t[i++]!==')')throw 0;
+        if(k==='max')return Math.max(...a);if(k==='min')return Math.min(...a);if(k==='calc')return a[0];throw 0}
+      if(k in syms)return syms[k];throw 0}
+    return parseFloat(k)};
+  const prod=()=>{let v=prim();while(t[i]==='*'||t[i]==='/'){const o=t[i++],r=prim();v=o==='*'?v*r:v/r}return v};
+  const sum=()=>{let v=prod();while(t[i]==='+'||t[i]==='-'){const o=t[i++],r=prod();v=o==='+'?v+r:v-r}return v};
+  const v=sum();if(i<t.length)throw 0;return v}
+function substNum(s,el){const cs=getComputedStyle(el);
+  for(let k=0;k<12;k++){const n=s.replace(/var\(\s*(--[\w-]+)\s*(?:,((?:[^()]|\([^()]*\))*))?\)/g,(m,name,fb)=>{const v=cs.getPropertyValue(name).trim();if(/^-?[\d.]+(%|deg)?$/.test(v))return v.replace('deg','');if(v===''&&fb!=null)return fb.trim();return m});if(n===s)break;s=n}
+  return s}
+function stripOuter(t){while(t[0]==='('&&t[t.length-1]===')'){let d=0,ok=true;for(let i=0;i<t.length-1;i++){if(t[i]==='(')d++;else if(t[i]===')'){d--;if(d===0){ok=false;break}}}if(!ok)break;t=t.slice(1,-1).trim()}return t}
+function fmtExpr(raw,el,syms){
+  const s=substNum(raw,el).trim(),v=evalExpr(s,syms);
+  if(/^-?[\d.]+%?$/.test(s))return s;
+  let t=s.replace(/calc\(/g,'(').replace(/\*/g,'×').replace(/\b([lch])\b/g,x=>x in syms?f3(syms[x]):x);
+  t=stripOuter(t);return t===f3(v)?t:`${t} = ${f3(v)}`}
+function colTxt(c){const o=`oklch(${f3(c.L)} ${f3(c.C)} ${f3(c.H)})`;return c.a===0?'transparente':c.a<1?`${o} com opacidade ${Math.round(c.a*1000)/10}%`:`${o} ${c.hex}`}
+function colorOfExpr(expr,el){const p=document.createElement('span');p.style.backgroundColor=expr;el.appendChild(p);let r=null;try{if(p.style.backgroundColor!=='')r=parseColor(getComputedStyle(p).backgroundColor)}finally{p.remove()}return r}
+function oklchRaw(F){F=(F||'').trim();if(!F.startsWith('oklch('))return null;const tk=splitTop(inner(F).body,' ');return tk[0]==='from'||tk.length<3?null:tk}
+function explainRaw(F,el){
+  if(F.startsWith('oklch(')){
+    const tk=splitTop(inner(F).body,' ');
+    if(tk[0]==='from'){const src=colorOfExpr(tk[1],el);if(!src)return null;const syms={l:src.L,c:src.C,h:src.H},ch=tk.slice(2);if(ch.length<3)return null;
+      const nm=tk[1].startsWith('var(')?tk[1].replace(/var\((--[\w-]+).*\)/,'$1')+' = ':'';
+      return `origem ${nm}${colTxt(src)} → L ${fmtExpr(ch[0],el,syms)} · C ${fmtExpr(ch[1],el,syms)} · H ${fmtExpr(ch[2],el,syms)}`}
+    if(tk.length<3)return null;
+    return `L ${fmtExpr(tk[0],el,{})} · C ${fmtExpr(tk[1],el,{})} · H ${fmtExpr(tk[2],el,{})}`}
+  if(F.startsWith('color-mix(')){
+    const a=splitTop(inner(F).body,','),space=a[0].replace(/^in\s+/,'');
+    const items=a.slice(1).map(x=>{const tk=splitTop(substNum(x,el),' ');let pct=null;const last=tk[tk.length-1];
+      if(tk.length>1&&(/%$/.test(last)||/^(calc|min|max)\(/.test(last))){pct=evalExpr(last,{});tk.pop()}return {col:tk.join(' '),pct}});
+    if(items.length<2)return null;
+    let [p1,p2]=[items[0].pct,items[1].pct];if(p1==null&&p2==null)p1=p2=50;else if(p1==null)p1=100-p2;else if(p2==null)p2=100-p1;
+    const c1=colorOfExpr(items[0].col,el),c2=colorOfExpr(items[1].col,el);if(!c1||!c2)return null;
+    const n=x=>String(Math.round(x*100)/100);
+    return `${n(p1)}% de ${colTxt(c1)} + ${n(p2)}% de ${colTxt(c2)}, em ${space}`}
+  if(F.startsWith('var(')){
+    const b=inner(F).body,parts=splitTop(b,','),name=parts[0].trim(),fb=parts.slice(1).join(',').trim();
+    const v=getComputedStyle(el).getPropertyValue(name).trim();
+    if(v){const c=colorOfExpr(`var(${name})`,el);return `valor definido em ${name}: ${c?colTxt(c):v}`}
+    return fb?(explainRaw(fb,el)||fb):null}
+  if(/^-?[\d.]+%?$/.test(F))return 'valor escrito: '+F;
+  if(F.includes('color-mix(')){
+    const seen=[];let idx=0;
+    while((idx=F.indexOf('color-mix(',idx))>=0){const sub=F.slice(idx),b=inner(sub);if(!b)break;const e=explainRaw(sub.slice(0,b.end),el);if(e&&!seen.includes(e))seen.push(e);idx+=b.end}
+    return seen.length?seen.join('  ·  '):null}
+  if(/^#|^rgba?\(|^[a-z]+$/i.test(F)){const c=colorOfExpr(F,el);return c?'valor escrito: '+colTxt(c):null}
+  return null}
+function explain(F,el){try{return explainRaw((F||'').trim(),el)}catch(e){return null}}
+function cssState(){
+  const base=$('copybase'),util=$('copyutil');base.media='not all';util.media='not all';
+  const pl=$('pl'),ok=!!getComputedStyle(pl).getPropertyValue('--priority-low').trim();
+  const uok=!!getComputedStyle(pl.querySelector('.phase-surface')).getPropertyValue('--phase-mix').trim()&&!!getComputedStyle(pl.querySelector('.phase-vivid')).getPropertyValue('--vivid-top-light').trim();
+  if(!ok)base.media='all';
+  if(!uok)util.media='all';
+  USING_APP=ok;LIVE=ok?buildLive():{light:{},dark:{}};
+  $('cssnote').textContent=!ok?'CSS do app indisponível — usando cópia':(!uok?'Utilitários de fase fora do CSS do app — usando cópia deles':'');
+}
+const vnum=(m,name,kind,fb)=>{const root=$(m==='dark'?'pd':'pl');const el=kind==='ps'?root.querySelector('.phase-surface'):kind==='pv'?root.querySelector('.phase-vivid'):root;const x=parseFloat(getComputedStyle(el).getPropertyValue(name));return isNaN(x)?fb:x};
+const fnum=(id,m,re,fb)=>{const x=re.exec(fOf(TID[id],m)||'');return x?parseFloat(x[1]):fb};
+const fstr=(id,m,re,fb)=>{const x=re.exec(fOf(TID[id],m)||'');return x?x[1]:fb};
+const RE_MUL=/\*\s*([\d.]+)/, RE_L=/oklch\(\s*([\d.]+)/, RE_PCT=/(\d+(?:\.\d+)?)%/, RE_SP=/in (\w+),/;
+
+/* ---------- construção do HTML ---------- */
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const warnIcon='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>';
+const REG={};
+function tileHTML(t,m,ph){
+  const sc=extra=>m==='dark'?`class="stage dark ${extra}"`:`class="stage ${extra}" data-theme-preview="light"`;
+  if(t.kind==='num')return '';
+  const g=t.ground==='transp'?' tg2':'';
+  const prop=t.kind==='border'?'bd':t.kind==='shadow'?'shp':'';
+  const sw=`<div class="sw ${prop}" data-sw></div>`;
+  if(t.ctx==='phase'||t.ctx==='vivid'){
+    const cls=t.ctx==='phase'?'phase-surface':'phase-vivid';
+    const inner=t.kind==='shadow'?'ov':(t.kind==='border'?'bdr':(t.full?'bare':''));
+    return `<div ${sc('ptile'+g)} data-ph="${ph.s}" title="${ph.t}"><div class="${cls} pc ${inner}" style="--phase-color:${ph.hex}">${sw}</div></div>`;
+  }
+  if(t.ctx==='late')return `<div ${sc('tile'+g)}><div class="late-surface">${sw}</div></div>`;
+  return `<div ${sc('tile'+g)}>${sw}</div>`;
+}
+function rowHTML(t){
+  const ins=(t.in||[]).map(i=>`<a href="#t-${i}">${esc(TID[i]?TID[i].n:i)}</a>`).join(', ');
+  const phaseTile=t.ctx==='phase'||t.ctx==='vivid';
+  const panel=m=>`<div class="mode" data-mode="${m}"><div class="mhead">${MN[m]}</div>
+    <div class="tiles">${t.kind==='num'?'<span class="big-num" data-num></span>':(phaseTile?PHASES.map(p=>tileHTML(t,m,p)).join(''):tileHTML(t,m))}</div>
+    <div data-fm-wrap><span class="lab" data-flab></span><pre class="fm" data-fm></pre></div>
+    <div class="na" data-na hidden>Não existe neste modo.</div>
+    <div class="sub"><span class="lab">Com os números${phaseTile?' (fase em foco)':''}</span><div class="val" data-sub></div></div>
+    <div class="res"><span class="lab">Resultado calculado pelo navegador${phaseTile?' (fase em foco)':''}</span><div class="val" data-res></div></div></div>`;
+  return `<article class="row" id="t-${t.id}" data-t="${t.id}">
+    <div class="meta"><h4>${esc(t.n)}</h4><code class="tok">${esc(t.tok)}</code>
+      <div class="chips"><span class="pill"><span class="dot d${t.cat}"></span>${CATN[t.cat]}${t.sub_?' &middot; Transparência':''}</span><span data-flagchips></span></div>
+      ${ins?`<div class="inputs">Vem de: ${ins}</div>`:''}${t.note?`<p class="note">${esc(t.note)}</p>`:''}</div>
+    <div class="body"><div class="fshared" data-shared hidden><span class="lab" data-sharedlab></span><pre class="fm" data-sharedfm></pre></div>
+      <div class="modes">${panel('light')}${panel('dark')}</div><div class="rflags" data-rflags></div></div></article>`;
+}
+function build(){
+  const secs=[
+    [1,'cat1','Cores definidas diretamente','Valores escritos como estão, sem conta. Na maior parte vêm direto da paleta escolhida; o CSS só guarda um valor de reserva.'],
+    [2,'cat2','Deslocamento de luz','A mesma cor da origem, só mais clara ou mais escura. O número que muda é a luminosidade (L); o matiz e a intensidade ficam iguais aos da origem. Não é mistura.'],
+    [3,'cat3','Conta na própria cor','A cor não é escrita: ela nasce de uma conta. Hoje são os fundos de erro, atenção, sucesso e informação (guardam só o matiz da cor base e fixam luminosidade e croma), mais textos e tintas das fases e fallbacks.'],
+    [4,'cat4','Misturas','Uma cor misturada com outra (o fundo, o cartão) pelo color-mix. O espaço de cor da mistura (oklab, oklch ou srgb) está escrito em cada fórmula.'],
+    [5,'cat5','Estados','Cores que só valem enquanto o mouse está em cima ou o campo está em foco, e a sombra dos cartões atrasados.']];
+  let h='';
+  secs.forEach(([c,id,title,lead],i)=>{
+    const rows=T.filter(t=>t.cat===c&&!t.sub_);
+    h+=`<section id="${id}"><h2>${c}. ${title}</h2><p class="lead">${lead}</p>${rows.map(rowHTML).join('')}`;
+    if(c===4){
+      h+=`<h3 id="transp">Transparências</h3><p class="lead" style="margin-bottom:6px">Misturas com &ldquo;transparente&rdquo;. O resultado não é uma cor fixa: ele depende do que estiver atrás. Cada amostra aparece sobre o fundo (metade esquerda) e sobre um cinza médio (metade direita).</p>${T.filter(t=>t.sub_).map(rowHTML).join('')}`;
+    }
+    h+='</section>';
+  });
+  document.getElementById('cats').innerHTML=h;
+  T.forEach(t=>{
+    const el=document.getElementById('t-'+t.id);
+    const r={t,el,shared:el.querySelector('[data-shared]'),sharedlab:el.querySelector('[data-sharedlab]'),sharedfm:el.querySelector('[data-sharedfm]'),rflags:el.querySelector('[data-rflags]'),chips:el.querySelector('[data-flagchips]'),modes:{}};
+    ['light','dark'].forEach(m=>{
+      const p=el.querySelector(`.mode[data-mode=${m}]`);
+      r.modes[m]={p,fm:p.querySelector('[data-fm]'),fmw:p.querySelector('[data-fm-wrap]'),flab:p.querySelector('[data-flab]'),na:p.querySelector('[data-na]'),sub:p.querySelector('[data-sub]'),res:p.querySelector('[data-res]'),num:p.querySelector('[data-num]'),
+        sws:[...p.querySelectorAll('[data-sw]')].map(e=>({el:e,ph:(e.closest('[data-ph]')||{dataset:{}}).dataset.ph||'',tile:e.closest('.ptile')}))};
+    });
+    REG[t.id]=r;
+  });
+  // contraste
+  let ct='<thead><tr><th>Fase</th><th data-m="light">Suave, claro</th><th data-m="dark">Suave, escuro</th><th data-m="light">Viva, claro</th><th data-m="dark">Viva, escuro</th></tr></thead><tbody>';
+  PHASES.forEach(p=>{
+    ct+=`<tr><td><b>${p.t}</b><br><code class="tok">${p.hex}</code></td>`;
+    [['phase-surface','suave','light'],['phase-surface','suave','dark'],['phase-vivid','viva','light'],['phase-vivid','viva','dark']].forEach(([cl,k,m])=>{
+      ct+=`<td data-m="${m}"><div class="cell"><div ${m==='dark'?'class="stage dark cs"':'class="stage cs" data-theme-preview="light"'}><div class="${cl} pc" style="--phase-color:${p.hex}" data-c="${k}|${m}|${p.s}">Aa</div></div><div class="cr"><b data-cr></b><small data-cd></small></div></div></td>`;
+    });
+    ct+='</tr>';
+  });
+  document.getElementById('ctable').innerHTML=ct+'</tbody>';
+  document.querySelectorAll('[data-c]').forEach(e=>{e._k=e.dataset.c.split('|')});
+  // aviso, seletores
+  const ph=document.getElementById('phChips');
+  ph.innerHTML=PHASES.map(p=>`<button type="button" aria-label="Fase em foco: ${p.t}" title="${p.t}" data-p="${p.s}" style="background:${p.hex}" aria-pressed="${p.s===state.ph}"></button>`).join('');
+  document.getElementById('selPal').innerHTML=PALS.map(p=>`<option value="${p.id}">${p.label}</option>`).join('');
+}
+
+/* ---------- atualização ---------- */
+const RES={light:{},dark:{}};
+let CONTR={light:{},dark:{}},ACT={};
+function readSw(sw,t,stage){
+  const cs=getComputedStyle(sw);
+  let s;
+  if(t.kind==='border')s=cs.borderTopColor;
+  else if(t.kind==='shadow'){const b=cs.boxShadow;if(!b||b==='none')return mk([0,0,0],0);const mm=b.match(/(oklch|oklab|color|rgba?|lab|lch)\([^)]*\)/);s=mm?mm[0]:'rgba(0,0,0,0)'}
+  else s=cs.backgroundColor;
+  return parseColor(s);
+}
+function stageBg(el){const st=el.closest('.stage');return parseColor(getComputedStyle(st).backgroundColor)}
+function refresh(){
+  cssState();
+  writePalette();
+  $('stamp').textContent='Atualizado às '+new Date().toLocaleTimeString('pt-BR');
+  const pal=PALS.find(p=>p.id===state.pal);
+  // 1. aplica fórmulas e lê
+  for(const m of ['light','dark']){RES[m]={}}
+  T.forEach(t=>{
+    const r=REG[t.id];
+    ['light','dark'].forEach(m=>{
+      const mp=r.modes[m],F=fOf(t,m);
+      mp.fm.textContent=F==null?'':(t.id==='phase-hex'?F:F);
+      mp.fmw.hidden=F==null;mp.na.hidden=F!=null;
+      RES[m][t.id]={};
+      mp.sws.forEach(s=>{
+        const ph=s.ph?phOf(s.ph):null;
+        const val=F==null?'':(t.fp?t.fp(m,ph):F);
+        const st=s.el.style;
+        st.backgroundColor='';st.borderTopColor='';st.boxShadow='';
+        if(F==null)return;
+        if(t.kind==='border'){st.borderTopColor=val}
+        else if(t.kind==='shadow'){st.boxShadow=val}
+        else if(t.kind!=='num'){st.backgroundColor=val}
+        if(s.tile)s.tile.classList.toggle('focus',s.ph===state.ph);
+      });
+    });
+    // fórmula compartilhada
+    const lv=m=>isLive(t,m),LBL=v=>v?'Fórmula no CSS (ao vivo)':'Fórmula (cópia de 16/11)';
+    const eq=fOf(t,'light')!=null&&fOf(t,'light')===fOf(t,'dark')&&lv('light')===lv('dark');
+    r.shared.hidden=!eq;if(eq){r.sharedfm.textContent=fOf(t,'light');r.sharedlab.textContent=LBL(lv('light'))+', igual nos dois modos'}
+    ['light','dark'].forEach(m=>{r.modes[m].fmw.hidden=eq||fOf(t,m)==null;r.modes[m].flab.textContent=LBL(lv(m))});
+  });
+  T.forEach(t=>{
+    ['light','dark'].forEach(m=>{
+      const mp=REG[t.id].modes[m];
+      if(fOf(t,m)==null)return;
+      if(t.kind==='num'){
+        const stg=$(m==='dark'?'pd':'pl');
+        const v=getComputedStyle(stg).getPropertyValue(t.tok).trim();
+        RES[m][t.id]['']={text:v};return;
+      }
+      mp.sws.forEach(s=>{
+        const c=readSw(s.el,t);c.ground=stageBg(s.el);RES[m][t.id][s.ph]=c;
+      });
+    });
+  });
+  // contraste
+  CONTR={light:{},dark:{}};
+  const cells={};
+  document.querySelectorAll('[data-c]').forEach(e=>{
+    const [k,m,ps]=e._k,cs=getComputedStyle(e);
+    const fg=parseColor(cs.color),bg=parseColor(cs.backgroundColor),rt=ratio(fg,bg);
+    (cells[k+m]=cells[k+m]||[]).push({ps,rt,fg,bg});
+    const td=e.closest('td'),verdict=rt>=7?'AAA':rt>=4.5?'AA':rt>=3?'só texto grande':'reprova';
+    td.querySelector('[data-cr]').textContent=rt.toFixed(1)+' : 1';
+    td.querySelector('[data-cr]').className=rt>=4.5?'ok':'bad';
+    td.querySelector('[data-cd]').textContent=`${verdict} · texto ${fg.hex}, fundo ${bg.hex}`;
+  });
+  ['light','dark'].forEach(m=>['suave','viva'].forEach(k=>{
+    const a=cells[k+m],mn=a.reduce((x,y)=>y.rt<x.rt?y:x);
+    CONTR[m][k]={min:mn.rt,who:`${phOf(mn.ps).t} (${k==='suave'?'Suave':'Viva'})`};
+  }));
+  // 2. textos
+  ACT={};
+  T.forEach(t=>{
+    const r=REG[t.id],rf={};
+    ['light','dark'].forEach(m=>{
+      const mp=r.modes[m],P=pal[m],F=fOf(t,m);
+      const c={m,P,pal,ph:phOf(state.ph),v:(n,k,fb)=>vnum(m,n,k,fb),sw:id=>{const x=REG[id].modes[m].sws;return x[0]?x[0].el:$(m==='dark'?'pd':'pl')},R:(id,ps)=>{const x=RES[m][id];return x?(x[ps===undefined?(TID[id]&&TID[id].ctx?state.ph:''):ps]||x['']||null):null}};
+      c.R=(id,ps)=>{const x=RES[m][id];if(!x)return null;const tt=TID[id];const key=ps!==undefined?ps:(tt&&(tt.ctx==='phase'||tt.ctx==='vivid')?state.ph:'');return x[key]||x['']||null};
+      if(F==null){mp.sub.textContent='';mp.res.textContent='';return}
+      const s0=mp.sws.find(x=>x.ph===state.ph)||mp.sws[0],el=s0?s0.el:$(m==='dark'?'pd':'pl');
+      mp.sub.textContent=explain(F,el)||t.sub(c);
+      const key=(t.ctx==='phase'||t.ctx==='vivid')?state.ph:'';
+      const x=RES[m][t.id][key];
+      if(t.kind==='num'){mp.num.textContent=x.text;mp.res.textContent=`valor computado: ${x.text}`}
+      else{
+        let s=`oklch(${f3(x.L)} ${f3(x.C)} ${f3(x.H)}) · ${x.hex}`;
+        if(x.a<1){s=x.a===0?'transparente (sem cor)':`oklch(${f3(x.L)} ${f3(x.C)} ${f3(x.H)}) · opacidade ${Math.round(x.a*1000)/10}% · sobre o fundo ≈ ${over(x,x.ground)}`}
+        if(!x.gamut)s+=' · fora da gama sRGB (hex recortado)';
+        mp.res.textContent=s;
+      }
+      // avisos
+      (t.fl||[]).forEach(raw=>{
+        const [a,mode]=raw.split('@');const [id,kind]=a.split(':');
+        if(mode&&mode!==m)return;
+        const g=FLAGS[id].get(c,kind);
+        if(g)(rf[id]=rf[id]||{g,ms:[]}).ms.push(m);
+      });
+    });
+    Object.entries(rf).forEach(([id,o])=>{const a=ACT[id]=ACT[id]||{text:o.g,ms:new Set(),tok:t.id};o.ms.forEach(x=>a.ms.add(x))});
+    r.rflags.innerHTML=Object.entries(rf).map(([id,o])=>`<div class="fl">${warnIcon}<div><b>${FLAGS[id].short}.</b> ${esc(o.g)}${o.ms.length===1?` <span style="opacity:.7">(só no ${MN[o.ms[0]].toLowerCase()})</span>`:''}</div></div>`).join('');
+    r.chips.innerHTML=Object.keys(rf).map(id=>`<span class="pill warn">${FLAGS[id].short}</span>`).join('');
+  });
+  renderAttn(pal);
+}
+const ATTN=[
+  ['succ-strong','Sucesso forte sem relação com Sucesso','success-strong','Dois verdes de famílias diferentes.'],
+  ['sec-space','Secundária em dois espaços de cor','secondary','Espaço de cor diferente entre claro e escuro.'],
+  ['coral','Luz do hover do cartão acima de 1','action-hover','Paleta que soma luz demais no hover.'],
+  ['gamut','Primária fora da gama da tela','primary','Croma maior que o sRGB mostra.'],
+  ['phase-contrast','Texto das fases com contraste baixo','phase-fg','Veja a tabela de contraste no fim da página.']
+];
+function renderAttn(pal){
+  document.getElementById('attn').innerHTML=ATTN.map(([id,t,tok,d])=>{const a=ACT[id];const on=!!a;const tk=a?a.tok:tok;
+    return `<a href="#t-${tk}"><span class="wi">${warnIcon}</span><span class="at">${esc(t)}</span><span class="ad">${esc(on?a.text:d+' Não ocorre com o CSS atual.')}</span><span class="st ${on?'on':''}">${on?'ativo ('+[...a.ms].map(m=>MN[m].toLowerCase()).join(' e ')+')':'não ativo agora'}</span></a>`}).join('');
+}
+
+/* ---------- controles ---------- */
+function setMode(m){state.mode=m;document.body.className='m-'+m}
+function init(){
+  build();
+  const sel=document.getElementById('selPal');sel.value=state.pal;
+  sel.addEventListener('change',()=>{state.pal=sel.value;refresh()});
+  document.querySelectorAll('input[name=mode]').forEach(i=>i.addEventListener('change',()=>setMode(i.value)));
+  document.getElementById('chkDim').addEventListener('change',e=>{state.dim=e.target.checked;refresh()});
+  document.getElementById('phChips').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;state.ph=b.dataset.p;document.querySelectorAll('#phChips button').forEach(x=>x.setAttribute('aria-pressed',x===b));refresh()});
+  setMode('both');
+  refresh();
+  const links=[...document.querySelectorAll('.toc a')];
+  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.toggle('on',l.getAttribute('href')==='#'+e.target.id))}})},{rootMargin:'-90px 0px -70% 0px'});
+  document.querySelectorAll('main section').forEach(s=>io.observe(s));
+  window.__ready=true;
+}
+function start(){
+  init();
+  let tm=0;const skip=new Set(['palstyle','copybase','copyutil','stamp','cssnote']);
+  const rel=ms=>ms.some(m=>{
+    const t=m.target,el=t.nodeType===1?t:t.parentElement;
+    if(el&&el.closest&&el.closest('#palstyle,#copybase,#copyutil'))return false;
+    if(m.type==='childList'&&t===document.head){const ns=[...m.addedNodes,...m.removedNodes];if(ns.length&&ns.every(n=>skip.has(n.id)))return false}
+    return true;
+  });
+  const sched=()=>{clearTimeout(tm);tm=setTimeout(()=>run(0),150)};
+  const run=n=>{const pend=[...document.querySelectorAll('link[rel=stylesheet]')].some(l=>!l.sheet);if(pend&&n<30){tm=setTimeout(()=>run(n+1),100);return}refresh()};
+  const hook=l=>{if(!l._h){l._h=1;l.addEventListener('load',sched)}};
+  new MutationObserver(ms=>{ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.tagName==='LINK')hook(n)}));if(!rel(ms))return;sched()}).observe(document.head,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['href','media','disabled']});
+  document.querySelectorAll('link[rel=stylesheet]').forEach(hook);
+}
+if(document.readyState==='complete')start();else window.addEventListener('load',start);
+</script>
+</body>
+</html>

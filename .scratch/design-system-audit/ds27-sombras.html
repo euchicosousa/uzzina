@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS27 Sombras</title>
+<style>
+  /* Page chrome only. Values live in the CONFIG block of the script. */
+  :root { --chrome-bg: #f3f3f2; --chrome-fg: #1c1c1b; --chrome-muted: #6b6b68; --chrome-line: #dcdcd9;
+    --fs-1: 11px; --fs-2: 12px; --fs-3: 14px; --fs-4: 18px; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-width: 1200px; background: var(--chrome-bg); color: var(--chrome-fg);
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif; font-size: var(--fs-3); }
+  code, .mono { font-family: ui-monospace, Menlo, monospace; }
+  .top { padding: 14px 20px 8px; display: flex; align-items: center; gap: 16px; }
+  .top h1 { font-size: var(--fs-4); font-weight: 600; margin: 0; }
+  .top p { margin: 0; font-size: var(--fs-2); color: var(--chrome-muted); flex: 1; }
+  .btn { height: 32px; padding: 0 14px; border-radius: 16px; corner-shape: squircle; border: 1px solid var(--chrome-line); background: #fff; font: inherit; color: inherit; cursor: pointer; }
+  .btn:hover { background: #ebebe9; }
+  button:focus-visible, input:focus-visible { outline: 2px solid #3b6fd6; outline-offset: 2px; }
+  /* global fields (no boxes around them) */
+  .glob { padding: 6px 20px 0; display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: flex-end; }
+  .count { margin-left: auto; font-size: var(--fs-2); color: var(--chrome-muted); align-self: center; }
+  .formula { margin: 0; padding: 12px 20px 16px; font-size: var(--fs-2); color: var(--chrome-muted); line-height: 1.6; }
+  .formula .new { display: block; margin-bottom: 6px; color: var(--chrome-fg); }
+  .formula code { color: var(--chrome-fg); font-size: var(--fs-1); }
+  .fld { display: flex; flex-direction: column; gap: 4px; font-size: var(--fs-1); color: var(--chrome-muted); min-width: 0; }
+  .fld input { width: 96px; height: 28px; padding: 0 8px; border-radius: 10px; border: 1px solid var(--chrome-line); background: #fff; color: var(--chrome-fg); font-family: ui-monospace, Menlo, monospace; font-size: var(--fs-2); }
+  .fld input::placeholder { color: var(--chrome-muted); }
+  .fld input.invalid { border-color: #d92d4a; outline: 1px solid #d92d4a; }
+  .seg { display: flex; gap: 6px; }
+  /* grid: one row per palette */
+  .grid { padding: 0 20px 24px; }
+  .hdr, .prow { display: grid; grid-template-columns: 170px minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+  .hdr { font-size: var(--fs-1); font-weight: 600; color: var(--chrome-muted); padding: 8px 0; border-bottom: 1px solid var(--chrome-line); }
+  .prow { padding: 14px 0; border-bottom: 1px solid var(--chrome-line); align-items: start; }
+  .pname b { display: block; font-size: var(--fs-3); font-weight: 600; }
+  .pname span { display: block; font-size: var(--fs-1); color: var(--chrome-muted); font-family: ui-monospace, Menlo, monospace; }
+  .prs { display: flex; gap: 6px; margin-top: 8px; }
+  .pr { display: inline-block; width: 22px; height: 22px; border-radius: 11px; border: 1px solid var(--chrome-line); }
+  .mode { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 14px; align-items: start; min-width: 0; }
+  .tag { font-size: var(--fs-1); font-weight: 600; color: var(--chrome-muted); margin-bottom: 6px; }
+  /* sample: palette background with a popover and a small action card */
+  .sample { position: relative; height: 190px; border-radius: 16px; corner-shape: squircle; background: var(--bg); color: var(--fg); }
+  .pop { position: absolute; left: 16px; top: 16px; width: 150px; background: var(--pop); color: var(--fg);
+    border: 1px solid var(--cbd); border-radius: 16px; corner-shape: squircle; padding: 4px;
+    box-shadow: 0 10px 15px -3px var(--sc), 0 4px 6px -4px var(--sc); }
+  .mi { height: 28px; display: flex; align-items: center; padding: 0 10px; border-radius: 12px; corner-shape: squircle; font-size: var(--fs-2); }
+  .mi.hv { background: var(--hv); }
+  .card { position: absolute; right: 16px; bottom: 16px; width: 118px; background: var(--act); color: var(--fg);
+    border: 1px solid var(--cbd); border-radius: 16px; corner-shape: squircle; padding: 8px 10px;
+    box-shadow: 0 1px 3px 0 var(--sc), 0 1px 2px -1px var(--sc); }
+  .card b { display: block; font-size: var(--fs-2); font-weight: 600; }
+  .card small { color: var(--sfg); font-size: var(--fs-1); }
+  /* controls next to each sample: no boxes around fields */
+  .info { display: flex; flex-direction: column; gap: 8px; min-width: 0; font-size: var(--fs-2); }
+  .res { font-family: ui-monospace, Menlo, monospace; font-size: var(--fs-1); line-height: 1.6; color: var(--chrome-fg); word-break: break-all; }
+  .tg { height: 28px; padding: 0 12px; border-radius: 14px; corner-shape: squircle; border: 1px solid var(--chrome-line); background: #fff; color: inherit; font: inherit; font-size: var(--fs-2); cursor: pointer; align-self: flex-start; }
+  .tg:hover { background: #ebebe9; }
+  .tg[aria-pressed="true"] { background: var(--chrome-fg); color: #fff; border-color: var(--chrome-fg); }
+  .ok { display: flex; align-items: center; gap: 6px; font-size: var(--fs-2); cursor: pointer; }
+  .ok input { width: 16px; height: 16px; margin: 0; accent-color: var(--chrome-fg); }
+  details { padding: 0 20px 30px; font-size: var(--fs-2); color: var(--chrome-muted); }
+  details summary { cursor: pointer; margin-bottom: 8px; }
+  details pre { white-space: pre-wrap; background: #fff; border: 1px solid var(--chrome-line); border-radius: 16px; corner-shape: squircle; padding: 12px; font-size: var(--fs-1); color: var(--chrome-fg); }
+</style>
+</head>
+<body>
+<div class="top"><h1>DS27 Sombras</h1>
+  <p>A cor da sombra vem da primária de cada paleta, misturada com o fundo (<code>--background</code>). Todos os valores são globais; nenhuma paleta tem ajuste próprio.</p>
+  <button class="btn" id="reset" type="button">Restaurar</button><button class="btn" id="copy" type="button">Copiar valores</button></div>
+<p class="formula">
+  <span class="new">Fórmula nova: <code>--shadow-color: oklch(from color-mix(in oklab, var(--background), var(--primary) var(--shadow-mix)) var(--shadow-l) c h);</code></span>
+  <code>--shadow-mix</code> é a mistura com a primária (global, claro e escuro, 20% no início). O matiz e o croma saem da mistura; a luminosidade é <code>--shadow-l</code> (central). Alfa: <code>--shadow-alpha</code> (10% claro, 70% escuro).
+  As duas bolinhas ao lado do nome da paleta são a primária no claro e no escuro (a cor que entra na mistura). Campos aceitam vírgula ou ponto. Setas ↑ ↓ ajustam o valor.
+</p>
+<div class="glob" id="central"></div>
+<div class="grid">
+  <div class="hdr"><span>Paleta</span><span>Claro</span><span>Escuro</span></div>
+  <div id="rows"></div>
+</div>
+<details>
+  <summary>Texto copiado (prévia)</summary>
+  <pre id="out"></pre>
+</details>
+<script>
+/* ==========================================================================
+   CONFIG: edit values here. Palette data read from app/lib/palettes.ts.
+   primary and bg: [l, c, h] per mode. today: shadowColor and shadowOpacity now.
+   ========================================================================== */
+const CONFIG = {
+  palettes: [
+    { id: "default",  label: "Ônix",
+      primary: { light: [0, 0, 0], dark: [1, 0, 0] },
+      bg: { light: [0.96, 0.002, 200], dark: [0.2, 0.01, 250] },
+      today: { light: ["oklch(0.25 0.01 200)", 10], dark: ["oklch(0.1 0.01 200)", 50] } },
+    { id: "carbon",   label: "Carbono",
+      primary: { light: [0.3, 0.02, 240], dark: [0.99, 0.01, 240] },
+      bg: { light: [1, 0, 0], dark: [0.25, 0.015, 240] },
+      today: { light: ["oklch(0.25 0 0)", 10], dark: ["oklch(0.1 0 0)", 40] } },
+    { id: "red",      label: "Rubi",
+      primary: { light: [0.62, 0.25, 20], dark: [0.68, 0.25, 20] },
+      bg: { light: [0.98, 0, 0], dark: [0.141, 0.005, 285] },
+      today: { light: ["oklch(0.25 0.04 20)", 10], dark: ["oklch(0.03 0 0)", 70] } },
+    { id: "orange",   label: "Coral",
+      primary: { light: [0.65, 0.18, 25], dark: [0.65, 0.18, 25] },
+      bg: { light: [0.95, 0.01, 130], dark: [0.25, 0.01, 190] },
+      today: { light: ["oklch(0.25 0.05 140)", 10], dark: ["oklch(0.1 0.03 140)", 25] } },
+    { id: "yellow",   label: "Damasco",
+      primary: { light: [0.8, 0.5, 100], dark: [0.8, 0.4, 100] },
+      bg: { light: [0.98, 0, 0], dark: [0.141, 0.005, 285] },
+      today: { light: ["oklch(0.25 0.04 100)", 10], dark: ["oklch(0.03 0 100)", 70] } },
+    { id: "energy",   label: "Elétrico",
+      primary: { light: [0.94, 0.15, 120], dark: [0.9, 0.18, 120] },
+      bg: { light: [0.96, 0.004, 240], dark: [0.2, 0.01, 250] },
+      today: { light: ["oklch(0.25 0.04 120)", 10], dark: ["oklch(0.1 0.03 120)", 60] } },
+    { id: "green",    label: "Folha",
+      primary: { light: [0.7, 0.2, 130], dark: [0.65, 0.2, 130] },
+      bg: { light: [0.98, 0, 0], dark: [0.141, 0.005, 285] },
+      today: { light: ["oklch(0.25 0.04 130)", 10], dark: ["oklch(0.1 0.03 130)", 50] } },
+    { id: "cyan",     label: "Turquesa",
+      primary: { light: [0.7, 0.2, 200], dark: [0.65, 0.2, 200] },
+      bg: { light: [0.96, 0, 0], dark: [0.141, 0.005, 285] },
+      today: { light: ["oklch(0.25 0.04 200)", 10], dark: ["oklch(0.1 0.03 200)", 50] } },
+    { id: "blue",     label: "Cobalto",
+      primary: { light: [0.45, 0.31, 264], dark: [0.58, 0.31, 264] },
+      bg: { light: [1, 0, 0], dark: [0.141, 0.005, 285] },
+      today: { light: ["oklch(0.25 0.04 264)", 10], dark: ["oklch(0.1 0.03 264)", 50] } },
+    { id: "purple",   label: "Violeta",
+      primary: { light: [0.54, 0.28, 290], dark: [0.68, 0.28, 290] },
+      bg: { light: [1, 0, 0], dark: [0.141, 0.005, 285] },
+      today: { light: ["oklch(0.25 0.04 290)", 10], dark: ["oklch(0.1 0.03 290)", 50] } },
+    { id: "magenta",  label: "Fúcsia",
+      primary: { light: [0.9, 0.4, 350], dark: [0.8, 0.4, 350] },
+      bg: { light: [0.98, 0.02, 320], dark: [0.3, 0.1, 340] },
+      today: { light: ["oklch(0.25 0.15 350)", 10], dark: ["oklch(0.1 0.1 340)", 25] } },
+  ],
+  // Central values (one each per mode, shared by all palettes)
+  // Owner decision 17/11: mix 30% light / 20% dark, L 0.15, alpha 10% / 70%. No per-palette values.
+  central: { mix: { light: 30, dark: 20 }, alpha: { light: 10, dark: 70 }, l: { light: 0.15, dark: 0.15 } },
+  // Derived colors, same rules as ds24: text, popover, action card (relative to the background)
+  text: { light: { dL: -0.96, dC: -0.002 }, dark: { dL: 0.8, dC: -0.01 } },
+  popover: { light: 0.02, dark: -0.03 },
+  action: { light: 0.02, dark: 0.1 },
+};
+
+/* ==========================================================================
+   Color math (OKLCH <-> OKLab, mix, OKLCH to sRGB hex)
+   ========================================================================== */
+const D2R = Math.PI / 180;
+const clamp01 = (v) => Math.min(1, Math.max(0, v));
+const toObj = ([l, c, h]) => ({ l, c, h });
+const css = (c) => `oklch(${c.l.toFixed(3)} ${c.c.toFixed(3)} ${c.h.toFixed(1)})`;
+// Same as color-mix(in oklab, bg, primary w%): linear mix in OKLab, then back to OKLCH.
+function mixOklch(bg, pr, w) {
+  const a0 = bg.c * Math.cos(bg.h * D2R), b0 = bg.c * Math.sin(bg.h * D2R);
+  const a1 = pr.c * Math.cos(pr.h * D2R), b1 = pr.c * Math.sin(pr.h * D2R);
+  const L = bg.l + (pr.l - bg.l) * w, a = a0 + (a1 - a0) * w, b = b0 + (b1 - b0) * w;
+  let h = Math.atan2(b, a) / D2R; if (h < 0) h += 360;
+  return { l: L, c: Math.hypot(a, b), h };
+}
+function oklchToHex(c) {
+  const a = c.c * Math.cos(c.h * D2R), b = c.c * Math.sin(c.h * D2R);
+  const l_ = c.l + 0.3963377774 * a + 0.2158037573 * b;
+  const m_ = c.l - 0.1055613458 * a - 0.0638541728 * b;
+  const s_ = c.l - 0.0894841775 * a - 1.2914855480 * b;
+  const L = l_ ** 3, M = m_ ** 3, S = s_ ** 3;
+  const lin = [
+    +4.0767416621 * L - 3.3077115913 * M + 0.2309699292 * S,
+    -1.2684380046 * L + 2.6097574011 * M - 0.3413193965 * S,
+    -0.0041960863 * L - 0.7034186147 * M + 1.7076147010 * S,
+  ];
+  const enc = (v) => { v = clamp01(v); return v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055; };
+  return "#" + lin.map((v) => Math.round(clamp01(enc(v)) * 255).toString(16).padStart(2, "0")).join("");
+}
+
+/* ==========================================================================
+   State, fields, storage
+   ========================================================================== */
+const KEY = "ds27-sombras-v2"; // v2: chroma fields start empty (old v1 values are ignored)
+const MODES = ["light", "dark"];
+const MODE_LABEL = { light: "Claro", dark: "Escuro" };
+const TOTAL = CONFIG.palettes.length * MODES.length;
+const r4 = (n) => Math.round(n * 10000) / 10000;
+const num = (n) => String(r4(n));
+const fmt = (v) => (v === null || v === undefined ? "" : num(v));
+const view = { compare: "mix" }; // "mix" | "old": view only, not stored
+const fresh = () => ({
+  central: { mix: { ...CONFIG.central.mix }, alpha: { ...CONFIG.central.alpha }, l: { ...CONFIG.central.l } },
+  c: Object.fromEntries(CONFIG.palettes.flatMap((p) => MODES.map((m) => [`${p.id}:${m}`, null]))),
+  approved: Object.fromEntries(CONFIG.palettes.flatMap((p) => MODES.map((m) => [`${p.id}:${m}`, false]))),
+});
+let state = fresh();
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (d && d.central && d.c && d.approved) {
+      const f = fresh();
+      state = {
+        central: {
+          mix: { ...f.central.mix, ...d.central.mix },
+          alpha: { ...f.central.alpha, ...d.central.alpha },
+          l: { ...f.central.l, ...d.central.l },
+        },
+        c: Object.fromEntries(Object.keys(f.c).map((k) => [k, typeof d.c[k] === "number" && Number.isFinite(d.c[k]) ? d.c[k] : null])),
+        approved: { ...f.approved, ...d.approved },
+      };
+    }
+  } catch (_) { /* storage unavailable: use CONFIG */ }
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (_) {} }
+
+const parseNum = (s) => {
+  const t = String(s).trim().replace(",", ".");
+  return t === "" || !/^[+-]?(\d+\.?\d*|\.\d+)$/.test(t) ? NaN : Number(t);
+};
+const fields = []; // { show() } to refresh values (skips the focused field)
+function makeField(label, { get, set, lo, hi, step, optional = false, placeholder = "" }) {
+  const w = document.createElement("label"); w.className = "fld";
+  w.innerHTML = `<span></span><input type="text" inputmode="decimal" autocomplete="off" spellcheck="false">`;
+  w.firstChild.textContent = label;
+  const input = w.querySelector("input");
+  input.setAttribute("aria-label", label);
+  if (placeholder) input.placeholder = placeholder;
+  const mark = (ok) => {
+    input.classList.toggle("invalid", !ok);
+    if (ok) input.removeAttribute("aria-invalid"); else input.setAttribute("aria-invalid", "true");
+  };
+  const apply = () => {
+    const raw = input.value.trim();
+    if (optional && raw === "") { mark(true); set(null); return true; }
+    const v = parseNum(raw);
+    if (Number.isFinite(v) && v >= lo && v <= hi) { mark(true); set(v); return true; }
+    mark(false); return false;
+  };
+  input.addEventListener("input", apply);
+  input.addEventListener("change", apply);
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { apply(); return; }
+    if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+    e.preventDefault();
+    const cur = parseNum(input.value), base = Number.isFinite(cur) ? cur : (get() ?? 0);
+    const next = Math.min(hi, Math.max(lo, base + (e.key === "ArrowUp" ? 1 : -1) * step * (e.shiftKey ? 5 : 1)));
+    input.value = num(next); apply();
+  });
+  input.addEventListener("blur", () => { mark(true); input.value = fmt(get()); });
+  const f = { el: w, show: () => { if (document.activeElement !== input) input.value = fmt(get()); } };
+  fields.push(f);
+  return f;
+}
+const onChange = () => { render(); save(); };
+
+/* ==========================================================================
+   Build: central fields, comparison switch, palette rows
+   ========================================================================== */
+const central = document.getElementById("central");
+[
+  ["Mistura com a primária claro (%)", () => state.central.mix.light, (v) => { state.central.mix.light = v; }, 0, 100, 1],
+  ["Mistura com a primária escuro (%)", () => state.central.mix.dark, (v) => { state.central.mix.dark = v; }, 0, 100, 1],
+  ["Transparência claro (%)", () => state.central.alpha.light, (v) => { state.central.alpha.light = v; }, 0, 100, 1],
+  ["Transparência escuro (%)", () => state.central.alpha.dark, (v) => { state.central.alpha.dark = v; }, 0, 100, 1],
+  ["L da sombra claro", () => state.central.l.light, (v) => { state.central.l.light = v; }, 0, 1, 0.005],
+  ["L da sombra escuro", () => state.central.l.dark, (v) => { state.central.l.dark = v; }, 0, 1, 0.005],
+].forEach(([label, get, set, lo, hi, step]) => {
+  central.appendChild(makeField(label, { get, set: (v) => { set(v); onChange(); }, lo, hi, step }).el);
+});
+const cmp = document.createElement("div"); cmp.className = "fld";
+cmp.innerHTML = `<span>Comparar</span><div class="seg" role="group" aria-label="Comparar regra da sombra">
+  <button type="button" class="tg" data-cmp="old" aria-pressed="false">sem mistura (regra anterior)</button>
+  <button type="button" class="tg" data-cmp="mix" aria-pressed="true">com mistura</button></div>`;
+cmp.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
+  view.compare = b.dataset.cmp;
+  cmp.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  render();
+}));
+central.appendChild(cmp);
+const countEl = document.createElement("div"); countEl.className = "count"; countEl.id = "count";
+central.appendChild(countEl);
+
+const cells = {};
+const rows = document.getElementById("rows");
+CONFIG.palettes.forEach((p) => {
+  const row = document.createElement("div"); row.className = "prow";
+  row.innerHTML = `<div class="pname"><b>${p.label}</b><span>${p.id}</span>
+    <div class="prs"><i class="pr" style="background:${css(toObj(p.primary.light))}" title="Primária claro"></i>
+    <i class="pr" style="background:${css(toObj(p.primary.dark))}" title="Primária escuro"></i></div></div>`;
+  MODES.forEach((m) => {
+    const key = `${p.id}:${m}`;
+    const mode = document.createElement("div"); mode.className = "mode";
+    const left = document.createElement("div");
+    const tag = document.createElement("div"); tag.className = "tag"; tag.textContent = `${MODE_LABEL[m]} · ${p.label}`;
+    const sample = document.createElement("div"); sample.className = "sample";
+    sample.innerHTML = `<div class="pop"><div class="mi">Perfil</div><div class="mi hv">Ajuda</div></div>
+      <div class="card"><b>Cartão de ação</b><small>Feito hoje</small></div>`;
+    left.appendChild(tag); left.appendChild(sample);
+
+    const info = document.createElement("div"); info.className = "info";
+    const res = document.createElement("div"); res.className = "res";
+    const tg = document.createElement("button"); tg.type = "button"; tg.className = "tg"; tg.textContent = "Ver como é hoje"; tg.setAttribute("aria-pressed", "false");
+    const ok = document.createElement("label"); ok.className = "ok";
+    const chk = document.createElement("input"); chk.type = "checkbox";
+    ok.appendChild(chk); ok.appendChild(document.createTextNode(" Aprovado"));
+    info.appendChild(res); info.appendChild(tg); info.appendChild(ok);
+    mode.appendChild(left); mode.appendChild(info);
+    row.appendChild(mode);
+
+    const cell = { sample, res, tg, chk, showToday: false };
+    cells[key] = cell;
+    tg.addEventListener("click", () => {
+      cell.showToday = !cell.showToday;
+      tg.setAttribute("aria-pressed", String(cell.showToday));
+      render();
+    });
+    chk.addEventListener("change", () => { state.approved[key] = chk.checked; save(); render(); });
+  });
+  rows.appendChild(row);
+});
+
+/* ==========================================================================
+   Render
+   ========================================================================== */
+const out = document.getElementById("out");
+function render() {
+  fields.forEach((f) => f.show());
+  let approved = 0;
+  const useMix = view.compare === "mix";
+  CONFIG.palettes.forEach((p) => MODES.forEach((m) => {
+    const key = `${p.id}:${m}`, cell = cells[key];
+    const bg = toObj(p.bg[m]), pr = toObj(p.primary[m]);
+    const T = CONFIG.text[m];
+    const fg = { l: clamp01(bg.l + T.dL), c: Math.max(0, bg.c + T.dC), h: bg.h };
+    const pop = { l: clamp01(bg.l + CONFIG.popover[m]), c: bg.c, h: bg.h };
+    const act = { l: clamp01(bg.l + CONFIG.action[m]), c: bg.c, h: bg.h };
+    const borderAlpha = m === "light" ? 5 : 10;
+    const L = state.central.l[m], A = state.central.alpha[m], mixPct = state.central.mix[m], W = mixPct / 100;
+    const Cov = null; // per-palette chroma removed (owner decision 17/11): mix is global
+    const mixed = mixOklch(bg, pr, W);
+    const oldC = bg.c > 0.005 ? bg.c : 0; // previous rule: chroma of the background, or 0
+    const cUsed = Cov ?? mixed.c;
+    const shadow = useMix ? { l: L, c: cUsed, h: mixed.h } : { l: L, c: oldC, h: bg.h };
+    // The sample uses the real CSS formula, so the browser shows what the export will do.
+    const mixCss = `color-mix(in oklab, ${css(bg)}, ${css(pr)} ${mixPct}%)`;
+    const sc = useMix
+      ? `oklch(from ${mixCss} ${L} ${Cov === null ? "c" : Cov.toFixed(3)} h / ${A}%)`
+      : `oklch(from ${css(bg)} ${L} ${oldC.toFixed(3)} h / ${A}%)`;
+    const [todayColor, todayOpacity] = p.today[m];
+    const today = todayColor.replace(/\)$/, ` / ${todayOpacity}%)`);
+    const s = cell.sample.style;
+    s.setProperty("--bg", css(bg));
+    s.setProperty("--fg", css(fg));
+    s.setProperty("--pop", css(pop));
+    s.setProperty("--act", css(act));
+    s.setProperty("--cbd", `oklch(${fg.l.toFixed(3)} ${fg.c.toFixed(3)} ${fg.h.toFixed(1)} / ${borderAlpha}%)`);
+    s.setProperty("--hv", `oklch(${fg.l.toFixed(3)} ${fg.c.toFixed(3)} ${fg.h.toFixed(1)} / 6%)`);
+    s.setProperty("--sfg", `oklch(${fg.l.toFixed(3)} ${fg.c.toFixed(3)} ${fg.h.toFixed(1)} / 65%)`);
+    s.setProperty("--sc", cell.showToday ? today : sc);
+    const cLine = useMix
+      ? `Mistura ${mixPct}%: croma ${mixed.c.toFixed(3)} · matiz ${mixed.h.toFixed(1)}° · ${css(mixed)} · ${oklchToHex(mixed)}`
+        + (Cov === null ? "" : `<br>Croma ajustado: ${Cov.toFixed(3)} (substitui ${mixed.c.toFixed(3)})`)
+      : `Regra anterior (sem mistura): croma ${oldC.toFixed(3)} · matiz ${bg.h.toFixed(1)}°`;
+    cell.res.innerHTML = `${cLine}<br>Sombra: ${css(shadow)} · ${oklchToHex(shadow)} · alfa ${A}%<br>Hoje: ${todayColor} · alfa ${todayOpacity}%`;
+    cell.chk.checked = !!state.approved[key];
+    if (state.approved[key]) approved++;
+  }));
+  countEl.textContent = `Aprovados ${approved} de ${TOTAL}`;
+  out.textContent = buildExport();
+}
+
+/* ==========================================================================
+   Export
+   ========================================================================== */
+const FORMULA = "oklch(from color-mix(in oklab, var(--background), var(--primary) var(--shadow-mix)) var(--shadow-l) c h)";
+function buildExport() {
+  const L = [];
+  L.push("/* DS27 sombras v2: a cor da sombra vem da mistura do fundo (--background) com a primária da paleta. */");
+  MODES.forEach((m) => {
+    L.push(m === "light" ? ":root {" : ".dark {");
+    L.push(`  --shadow-mix: ${num(state.central.mix[m])}%;`);
+    L.push(`  --shadow-l: ${num(state.central.l[m])};`);
+    L.push(`  --shadow-alpha: ${num(state.central.alpha[m])}%;`);
+    L.push(`  --shadow-color: ${FORMULA};`);
+    L.push("}");
+  });
+  L.push("/* Alfa: aplicar sobre --shadow-color com --shadow-alpha. */");
+  L.push("/* palettes.ts: shadowColor e shadowOpacity deixam de existir; a sombra só depende do fundo e da primária. */");
+  const ok = CONFIG.palettes.flatMap((p) => MODES.filter((m) => state.approved[`${p.id}:${m}`]).map((m) => `${p.label} ${MODE_LABEL[m].toLowerCase()}`));
+  L.push(`/* Aprovados (${ok.length} de ${TOTAL}): ${ok.join(", ") || "nenhum"} */`);
+  return L.join("\n");
+}
+document.getElementById("copy").addEventListener("click", async (e) => {
+  const text = buildExport(), btn = e.currentTarget;
+  window.__lastExport = text; out.textContent = text;
+  try { await navigator.clipboard.writeText(text); btn.textContent = "Copiado"; }
+  catch (_) {
+    const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); btn.textContent = "Copiado"; } catch (__) { btn.textContent = "Falhou"; }
+    ta.remove();
+  }
+  setTimeout(() => (btn.textContent = "Copiar valores"), 1500);
+});
+document.getElementById("reset").addEventListener("click", () => {
+  try { localStorage.removeItem(KEY); } catch (_) {}
+  state = fresh(); render();
+});
+
+load();
+render();
+</script>
+</body>
+</html>

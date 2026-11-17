@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UZZINA - DS23 Superfícies</title>
+<link rel="stylesheet" href="/app/tailwind.css" id="appcss">
+<style>
+/* ============ Page chrome (neutral, does not use app colors) ============ */
+:root{
+  --ui-bg:#f7f7f5; --ui-fg:#1b1b1f; --ui-mut:#6a6a72; --ui-line:rgba(0,0,0,.09);
+  --r:18px;
+  --font:ui-sans-serif,system-ui,-apple-system,"Inter","Segoe UI",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;min-width:1100px;background:var(--ui-bg);color:var(--ui-fg);font:400 14px/1.5 var(--font);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1200px;margin:0 auto;padding:40px 32px 96px}
+h1{font-size:28px;font-weight:650;letter-spacing:-.01em;line-height:1.2;margin:0 0 10px}
+h2{font-size:18px;font-weight:600;margin:48px 0 6px}
+p{margin:0}
+.lead{color:var(--ui-mut);max-width:86ch}
+.note{color:var(--ui-mut);font-size:12px}
+code{font-family:var(--mono);font-size:12px}
+.fallback{margin-top:16px;padding:10px 14px;border-radius:12px;background:rgba(214,140,0,.13);color:#a15c00}
+.rule{margin-top:20px;padding:14px 18px;border-radius:var(--r);background:rgba(0,0,0,.045);display:grid;gap:6px}
+.rule code{white-space:pre-wrap;word-break:break-word}
+
+/* ============ Stages (real app tokens come from tailwind.css) ============ */
+.stage{background:var(--background);color:var(--foreground);border-radius:var(--r);padding:28px 32px;--ui-mut:#6a6a72}
+.stage.dark{--ui-mut:#9a9aa5;--admin-bg:oklch(0.32 0.07 262)}
+.stage:not(.dark){--admin-bg:oklch(0.93 0.05 262)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.colhead{font-size:13px;font-weight:600;margin:0 0 4px}
+.colsub{font-size:12px;color:var(--ui-mut);margin-bottom:16px}
+
+/* ============ Surfaces (sample containers) ============ */
+.surf{display:flex;flex-direction:column;align-items:stretch;gap:8px;margin-bottom:14px;color:var(--foreground);border-radius:var(--r);padding:16px;corner-shape:squircle}
+.surf .lbl{font-size:12px;opacity:.7;color:var(--ui-mut)}
+.surf.page{padding:6px 0 10px;background:transparent}
+.surf.card{background:var(--card)}
+.surf.pop{background:var(--popover);padding:6px;box-shadow:0 10px 15px -3px rgb(0 0 0/.14),0 4px 6px -4px rgb(0 0 0/.12);outline:1px solid rgb(128 128 128/.2);outline-offset:-1px}
+.surf.pop .lbl{padding:4px 8px 2px}
+.surf.admin{background:var(--admin-bg)}
+.surf.acard{background:var(--action);box-shadow:var(--action-shadow)}
+.surf.acard .lbl{opacity:.75}
+
+/* ============ Pieces (same markup in both columns) ============ */
+.pc-item{display:flex;align-items:center;height:32px;padding:0 12px;border-radius:12px;color:var(--foreground);font-size:14px;corner-shape:squircle}
+.pc-item.hov{background:var(--secondary)}
+.pc-btn{height:32px;padding:0 14px;border:0;border-radius:14px;background:var(--secondary);color:var(--foreground);font:500 14px var(--font);corner-shape:squircle;text-align:center}
+.pc-sec{color:var(--secondary-foreground);font-size:13px}
+.ratio{font-size:11px;color:var(--ui-mut);font-family:var(--mono)}
+.surf.acard .ratio{color:inherit;opacity:.75}
+.surf.page .pc-item{padding-left:0}
+
+@supports (corner-shape:squircle){ .surf,.pc-item,.pc-btn{corner-shape:squircle} }
+
+/* ============ Proposal (opaque, per-surface) ============
+   Each surface declares --surface. The secondary tokens are then re-declared
+   on that same element, so they mix with the surface they actually sit on.
+   Demo only: tailwind.css is not changed by this study. */
+.sf-page{--surface:var(--background)}
+.sf-card{--surface:var(--card)}
+.sf-pop{--surface:var(--popover)}
+.sf-admin{--surface:var(--admin-bg)}
+.sf-action{--surface:var(--action)}
+.sf-all{
+  --secondary:color-mix(in oklab, var(--foreground) 5%, var(--surface));
+  --secondary-foreground:color-mix(in oklab, var(--foreground) 65%, var(--surface));
+}
+.dark .sf-all{--secondary:color-mix(in oklab, var(--foreground) 10%, var(--surface))}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Superfícies: hoje (transparente) x proposta (opaca)</h1>
+  <p class="lead">Mesmas peças nos dois lados: item de menu em repouso e em foco, botão secundário e texto secundário. A coluna da esquerda usa o app como está hoje. A da direita declara a cor da superfície em que cada peça fica. O número abaixo de cada texto é o contraste medido nesta tela.</p>
+  <p class="note">Demonstração para desktop. Abra pelo servidor local: http://127.0.0.1:5176/.scratch/design-system-audit/ds23-superficies.html</p>
+  <p id="fallback" class="fallback" hidden>Não foi possível carregar o CSS do app (/app/tailwind.css). As cores das superfícies e as porcentagens não aparecem corretamente. Abra esta página pelo servidor local (http://127.0.0.1:5176/) com o servidor de desenvolvimento rodando.</p>
+
+  <div class="rule">
+    <p><strong>Regra proposta (sem alterar o app)</strong></p>
+    <code>claro: --secondary = color-mix(in oklab, var(--foreground) 5%, var(--surface))
+escuro: --secondary = color-mix(in oklab, var(--foreground) 10%, var(--surface))
+texto secundário (claro e escuro): color-mix(in oklab, var(--foreground) 65%, var(--surface))</code>
+    <p class="note">Cada superfície (página, cartão, menu, seção colorida, cartão de ação) declara --surface e refaz as duas variáveis no próprio elemento.</p>
+  </div>
+
+  <h2>Claro</h2>
+  <div class="stage" data-theme-preview="light" id="stage-light"><div class="cols" data-cols></div></div>
+
+  <h2>Escuro</h2>
+  <div class="stage dark" id="stage-dark"><div class="cols" data-cols></div></div>
+</main>
+
+<script>
+/* Surfaces shown in both columns. `wrap` is applied only to the proposal column. */
+const SURFACES = [
+  { t: 'Fundo da página', cls: 'page', wrap: 'sf-page' },
+  { t: 'Cartão', cls: 'card', wrap: 'sf-card' },
+  { t: 'Menu (popover)', cls: 'pop', wrap: 'sf-pop' },
+  { t: 'Seção colorida (admin)', cls: 'admin', wrap: 'sf-admin' },
+  { t: 'Cartão de ação, fase suave', cls: 'acard phase-surface', wrap: 'sf-action', style: '--phase-color:#e0a526' },
+  { t: 'Cartão de ação, fase viva', cls: 'acard phase-vivid', wrap: 'sf-action', style: '--phase-color:#2f6fe4' },
+];
+
+function pieces() {
+  return '<div class="pc-item">Item de menu em repouso</div>'
+    + '<div class="pc-item hov">Item de menu em foco</div>'
+    + '<button class="pc-btn" type="button">Botão secundário</button>'
+    + '<p class="pc-sec">Texto secundário de exemplo</p>'
+    + '<small class="ratio"></small>';
+}
+
+function block(s, proposal) {
+  const cls = ['surf', s.cls, proposal ? s.wrap + ' sf-all' : ''].join(' ');
+  const style = s.style || '';
+  return '<div class="' + cls + '" style="' + style + '"><span class="lbl">' + s.t + '</span>' + pieces() + '</div>';
+}
+
+function column(title, sub, proposal) {
+  return '<div><p class="colhead">' + title + '</p><p class="colsub">' + sub + '</p>'
+    + SURFACES.map(s => block(s, proposal)).join('') + '</div>';
+}
+
+document.querySelectorAll('[data-cols]').forEach(el => {
+  el.innerHTML = column('Hoje (transparente)', 'Secundário = texto a 5% (claro) ou 10% (escuro), sem cor de fundo própria.', false)
+    + column('Proposta (opaca)', 'Secundário = mistura opaca com a cor da superfície onde a peça está.', true);
+});
+
+/* ---------- Contrast readout (measured in the browser) ---------- */
+const CTX = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+
+function rgba(el, prop) {
+  CTX.clearRect(0, 0, 1, 1);
+  CTX.fillStyle = 'rgba(0, 0, 0, 0)';
+  CTX.fillRect(0, 0, 1, 1);
+  CTX.fillStyle = getComputedStyle(el)[prop];
+  CTX.fillRect(0, 0, 1, 1);
+  const d = CTX.getImageData(0, 0, 1, 1).data;
+  return { r: d[0], g: d[1], b: d[2], a: d[3] / 255 };
+}
+
+/* Effective background behind an element: composite translucent layers over the first opaque one. */
+function effectiveBg(el) {
+  const layers = [];
+  let n = el.parentElement;
+  while (n) {
+    const c = rgba(n, 'backgroundColor');
+    if (c.a > 0) { layers.push(c); if (c.a >= 1) break; }
+    n = n.parentElement;
+  }
+  let i = layers.length - 1;
+  let out = [255, 255, 255];
+  if (i >= 0 && layers[i].a >= 1) { out = [layers[i].r, layers[i].g, layers[i].b]; i--; }
+  for (; i >= 0; i--) {
+    const L = layers[i];
+    out = [L.r, L.g, L.b].map((v, k) => v * L.a + out[k] * (1 - L.a));
+  }
+  return out;
+}
+
+function lum(c) {
+  const lin = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+  return 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2]);
+}
+
+function ratioFor(el) {
+  const bg = effectiveBg(el);
+  const t = rgba(el, 'color');
+  const fg = [t.r, t.g, t.b].map((v, k) => v * t.a + bg[k] * (1 - t.a));
+  const a = lum(fg), b = lum(bg);
+  const x = (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+  return x.toFixed(1).replace('.', ',') + ':1';
+}
+
+function measure() {
+  document.querySelectorAll('.pc-sec').forEach(p => {
+    const label = p.nextElementSibling;
+    if (label && label.classList.contains('ratio')) label.textContent = 'contraste ' + ratioFor(p);
+  });
+}
+
+/* Fallback when the app stylesheet did not load (no --secondary token defined). */
+const probe = getComputedStyle(document.getElementById('stage-light')).getPropertyValue('--secondary').trim();
+if (!probe) document.getElementById('fallback').hidden = false;
+
+measure();
+document.fonts && document.fonts.ready.then(measure);
+window.addEventListener('load', measure);
+</script>
+</body>
+</html>

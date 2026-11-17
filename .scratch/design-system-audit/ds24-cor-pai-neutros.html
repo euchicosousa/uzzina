@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS24 Cor pai e neutros</title>
+<style>
+  /* Page chrome only. All values live in the CONFIG block of the script. */
+  :root { --chrome-bg: #f3f3f2; --chrome-fg: #1c1c1b; --chrome-muted: #6b6b68; --chrome-line: #dcdcd9;
+    --fs-1: 11px; --fs-2: 12px; --fs-3: 14px; --fs-4: 18px; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-width: 1440px; background: var(--chrome-bg); color: var(--chrome-fg);
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif; font-size: var(--fs-3); }
+  .mono { font-family: ui-monospace, Menlo, monospace; }
+  .top { padding: 14px 20px 8px; display: flex; align-items: center; gap: 16px; }
+  .top h1 { font-size: var(--fs-4); font-weight: 600; margin: 0; }
+  .top p { margin: 0; font-size: var(--fs-2); color: var(--chrome-muted); flex: 1; }
+  .btn { height: 32px; padding: 0 14px; border-radius: 16px; corner-shape: squircle; border: 1px solid var(--chrome-line); background: #fff; font: inherit; color: inherit; cursor: pointer; }
+  .btn:hover { background: #ebebe9; }
+  /* delta table */
+  .rules { padding: 0 20px 12px; }
+  table { border-collapse: collapse; }
+  .rules table { width: 100%; }
+  .rules th, .rules td { text-align: left; padding: 3px 14px 3px 0; font-size: var(--fs-2); vertical-align: middle; white-space: nowrap; }
+  .rules th { color: var(--chrome-muted); font-weight: 600; border-bottom: 1px solid var(--chrome-line); padding-bottom: 6px; }
+  .rules td.tk { font-weight: 600; font-size: var(--fs-2); }
+  .rules td.tk small { display: block; font-weight: 400; color: var(--chrome-muted); font-size: var(--fs-1); font-family: ui-monospace, Menlo, monospace; }
+  .today { font-family: ui-monospace, Menlo, monospace; font-size: var(--fs-1); color: var(--chrome-muted); }
+  .grp td { border-top: 1px solid var(--chrome-line); }
+  .flds { display: flex; gap: 6px; }
+  .fld { display: flex; align-items: center; gap: 3px; font-size: var(--fs-1); color: var(--chrome-muted); }
+  .fld input { width: 58px; height: 24px; padding: 0 6px; border-radius: 8px; border: 1px solid var(--chrome-line); background: #fff; color: var(--chrome-fg); font-family: ui-monospace, Menlo, monospace; font-size: var(--fs-1); }
+  .fld input.invalid { border-color: #d92d4a; outline: 1px solid #d92d4a; }
+  /* columns */
+  .cols { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .chead { position: sticky; top: 0; z-index: 5; padding: 8px 14px; display: flex; flex-direction: column; gap: 4px; border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent); }
+  .chead b { font-size: var(--fs-3); }
+  .chead .fld { color: inherit; opacity: .9; }
+  .chead .fld input { background: color-mix(in srgb, currentColor 8%, transparent); color: inherit; border-color: color-mix(in srgb, currentColor 30%, transparent); width: 56px; }
+  .pcol { padding: 14px; display: flex; flex-direction: column; gap: 12px; background: var(--bg); color: var(--fg); min-width: 0; }
+  .cap { font-size: var(--fs-1); opacity: .6; }
+  .h { font-size: var(--fs-4); font-weight: 600; margin: 0; }
+  .sec-txt { color: var(--secondary-fg); font-size: var(--fs-3); margin: 0; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .b { height: 32px; padding: 0 12px; border-radius: 16px; corner-shape: squircle; font: inherit; font-size: var(--fs-3); color: var(--fg); border: 1px solid transparent; cursor: default; }
+  .b.ghost { background: transparent; } .b.ghost.hv { background: var(--secondary); }
+  .b.sec { background: var(--secondary); border-color: var(--secondary); }
+  .b.sec.hv { background: var(--secondary-hover); border-color: var(--secondary-hover); }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; corner-shape: squircle; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .inp { background: var(--input); border: 1px solid transparent; border-radius: 16px; corner-shape: squircle; height: 40px; padding: 0 8px 0 12px; display: flex; align-items: center; justify-content: space-between; font-size: var(--fs-3); }
+  .inp span { color: var(--soft); }
+  .ib { width: 24px; height: 24px; border-radius: 12px; border: 0; background: transparent; color: var(--fg); font-size: var(--fs-3); line-height: 1; cursor: default; }
+  .ib.hv { background: var(--secondary); }
+  .pop { background: var(--popover); border: 1px solid var(--cborder); border-radius: 16px; corner-shape: squircle; padding: 4px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 4px 12px rgb(0 0 0 / .08); }
+  .mi { height: 32px; display: flex; align-items: center; padding: 0 12px; border-radius: 12px; corner-shape: squircle; font-size: var(--fs-3); }
+  .mi.hv { background: var(--secondary); }
+  .admin { background: var(--secondary); border-radius: 12px; corner-shape: squircle; padding: 4px; }
+  .admin .lbl { font-size: var(--fs-1); font-weight: 600; color: var(--secondary-fg); padding: 4px 12px; }
+  .admin .mi.hv { background: var(--secondary-hover); }
+  .pop .pad { padding: 4px 8px 8px; display: flex; flex-direction: column; gap: 6px; }
+  .acts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .act { background: var(--action); border-top: 1px solid color-mix(in srgb, #fff 70%, transparent); box-shadow: 0 0 0 1px var(--cborder), 0 1px 2px rgb(0 0 0 / .1); border-radius: 12px; corner-shape: squircle; padding: 10px; display: flex; flex-direction: column; gap: 2px; font-size: var(--fs-3); }
+  .act.hv { background: var(--action-hover); box-shadow: 0 0 0 1px var(--cborder), 0 8px 14px -4px rgb(0 0 0 / .18); }
+  .act small { color: var(--secondary-fg); font-size: var(--fs-2); }
+  /* token list under each column */
+  .tl { display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--border); padding-top: 10px; }
+  .tkn { display: grid; grid-template-columns: 16px 1fr; gap: 2px 8px; align-items: center; font-size: var(--fs-1); }
+  .sw { width: 16px; height: 16px; border-radius: 4px; border: 1px solid color-mix(in srgb, var(--fg) 25%, transparent); grid-row: span 3; align-self: start; }
+  .tkn .nm { font-weight: 600; font-size: var(--fs-2); }
+  .tkn .cd { font-family: ui-monospace, Menlo, monospace; user-select: text; opacity: .85; }
+  .tkn .ct { opacity: .85; }
+  .flag { font-weight: 700; color: #d92d4a; }
+  :root.dk-flag .flag { color: #ff7a8c; }
+</style>
+</head>
+<body>
+<div class="top"><h1>Cor pai e neutros</h1>
+  <p>Cada neutro é derivado do fundo (pai) só por ΔL, ΔC e ΔH: <span class="mono">oklch(from var(--background) calc(l + ΔL) max(0, calc(c + ΔC)) calc(h + ΔH))</span>. Uma regra por token e por modo, igual para Ônix e Carbono.</p>
+  <button class="btn" id="reset" type="button">Restaurar</button><button class="btn" id="copy" type="button">Copiar valores</button></div>
+<div class="rules"><table id="rules"></table></div>
+<div class="cols" id="cols"></div>
+<script>
+/* ==========================================================================
+   CONFIG — edit numbers here. Nothing is loaded from the app.
+   ========================================================================== */
+const CONFIG = {
+  // Parents (page backgrounds) copied from app/lib/palettes.ts: { l, c, h }
+  themes: [
+    { key: "default", label: "Ônix",    parents: { light: { l: 0.96, c: 0.002, h: 200 }, dark: { l: 0.2,  c: 0.01,  h: 250 } } },
+    { key: "carbon",  label: "Carbono", parents: { light: { l: 1,    c: 0,     h: 0 },   dark: { l: 0.25, c: 0.015, h: 240 } } },
+  ],
+  // One rule per token and per mode (shared by both themes): dL, dC, dH relative to the parent.
+  // Initial values reproduce today's Ônix (see notes). Hue delta 0 keeps the parent's hue.
+  deltas: {
+    light: {
+      foreground:      { dL: -0.96,  dC: -0.002, dH: 0 },  // Ônix fg = black
+      secondaryFg:     { dL: -0.512, dC: -0.001, dH: 0 },  // foreground 65% over background
+      textSoft:        { dL: -0.303, dC: -0.001, dH: 0 },  // foreground 40% (placeholder, text-foreground/40)
+      card:            { dL: -0.02,  dC: 0, dH: 0 },
+      popover:         { dL: 0.02,   dC: 0, dH: 0 },
+      input:           { dL: -0.04,  dC: 0, dH: 0 },
+      border:          { dL: -0.07,  dC: 0, dH: 0 },
+      containerBorder: { dL: -0.036, dC: 0, dH: 0 },       // border-foreground/5 on containers
+      action:          { dL: 0.02,   dC: 0, dH: 0 },
+      actionHover:     { dL: 0.1,    dC: 0, dH: 0 },
+      secondary:       { dL: -0.036, dC: 0, dH: 0 },       // foreground 5% over background
+      secondaryHover:  { dL: -0.083, dC: 0, dH: 0 },       // today's resolved result (button.tsx), now a direct derivation of the parent
+    },
+    dark: {
+      foreground:      { dL: 0.8,    dC: -0.01,  dH: 0 },  // Ônix fg = white
+      secondaryFg:     { dL: 0.549,  dC: -0.007, dH: 0 },
+      textSoft:        { dL: 0.356,  dC: -0.005, dH: 0 },
+      card:            { dL: 0.05,   dC: 0, dH: 0 },
+      popover:         { dL: -0.03,  dC: 0, dH: 0 },
+      input:           { dL: 0.02,   dC: 0, dH: 0 },
+      border:          { dL: 0.1,    dC: 0, dH: 0 },
+      containerBorder: { dL: 0.098,  dC: -0.002, dH: 0 },  // border-foreground/10
+      action:          { dL: 0.1,    dC: 0, dH: 0 },
+      actionHover:     { dL: 0.2,    dC: 0, dH: 0 },
+      secondary:       { dL: 0.098,  dC: -0.002, dH: 0 },  // foreground 10% over background
+      secondaryHover:  { dL: 0.133,  dC: -0.002, dH: 0 },
+    },
+  },
+  // What Carbono's own palette/formulas produce today, as deltas from ITS parent (information only).
+  carbonToday: {
+    light: {
+      foreground: [-1, 0, 0], secondaryFg: [-0.535, 0, 0], textSoft: [-0.317, 0, 0], card: [-0.04, 0, 0], popover: [0.1, 0, 0],
+      input: [-0.02, 0, 0], border: [-0.04, 0, 0], containerBorder: [-0.038, 0, 0], action: [-0.02, 0, 0], actionHover: [-0.005, 0, 0],
+      secondary: [-0.038, 0, 0], secondaryHover: [-0.086, 0, 0],
+    },
+    dark: {
+      foreground: [0.75, -0.015, 0], secondaryFg: [0.512, -0.011, "~"], textSoft: [0.33, -0.008, "~"], card: [0.05, 0, 0], popover: [-0.03, 0, 0],
+      input: [0.04, 0, 0], border: [0.1, 0, 0], containerBorder: [0.089, -0.002, "~"], action: [0.1, 0, 0], actionHover: [0.2, 0, 0],
+      secondary: [0.089, -0.002, "~"], secondaryHover: [0.122, -0.003, "~"],
+    },
+  },
+  // Token catalogue: key, label, CSS name, group, what it is
+  tokens: [
+    ["foreground", "Texto principal", "--foreground", "text", "palettes.ts fg"],
+    ["secondaryFg", "Texto secundário", "--secondary-foreground", "text", "foreground a 65%"],
+    ["textSoft", "Texto suave", "--text-soft", "text", "text-foreground/40: placeholder, ícones apagados"],
+    ["card", "Cartão", "--card", "surface", "bg-card"],
+    ["popover", "Popover", "--popover", "surface", "bg-popover"],
+    ["input", "Campo", "--input", "surface", "bg-input"],
+    ["border", "Borda", "--border", "line", "border-border"],
+    ["containerBorder", "Borda de container", "--border-container", "line", "border-foreground/5 (claro) e /10 (escuro)"],
+    ["action", "Cartão de ação", "--action", "surface", "bg-action"],
+    ["actionHover", "Cartão de ação (hover)", "--action-hover", "surface", "hover:bg-action-hover"],
+    ["secondary", "Secundário", "--secondary", "surface", "bg-secondary"],
+    ["secondaryHover", "Hover do secundário", "--secondary-hover", "surface", "hover de botão secundário e de item em grupo secundário; derivado do pai, como os demais"],
+  ],
+  // Which surface each token sits on (for the "quase invisível" check): token -> [labels, keys]; "bg" is the parent
+  sitsOn: {
+    card: ["bg"], popover: ["bg"], input: ["bg", "card"], border: ["bg", "card"], containerBorder: ["popover"], action: ["bg"],
+    actionHover: ["action"], secondary: ["bg", "card", "popover"], secondaryHover: ["secondary"],
+  },
+};
+// Other neutrals found and NOT modelled here: action-top-border (#fff), action-ring (black 5%), shadows (excluded),
+// scrollbar thumb (foreground/10, /20), editor caret/selection (foreground/50) in app/tailwind.css:476,487,587.
+
+/* ==========================================================================
+   Color math (OKLCH <-> OKLab <-> sRGB)
+   ========================================================================== */
+const D2R = Math.PI / 180;
+const toLab = ({ l, c, h }) => ({ L: l, a: c * Math.cos(h * D2R), b: c * Math.sin(h * D2R) });
+const toLch = ({ L, a, b }) => {
+  const c = Math.hypot(a, b);
+  let h = Math.atan2(b, a) / D2R; if (h < 0) h += 360;
+  return { l: L, c, h: c < 1e-4 ? 0 : h };
+};
+function labToLinear({ L, a, b }) {
+  const l_ = L + 0.3963377774 * a + 0.2158037573 * b;
+  const m_ = L - 0.1055613458 * a - 0.0638541728 * b;
+  const s_ = L - 0.0894841775 * a - 1.2914855480 * b;
+  const l = l_ ** 3, m = m_ ** 3, s = s_ ** 3;
+  return [
+    +4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+    -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+    -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s,
+  ];
+}
+function linearToLabFixed([r, g, b]) {
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return {
+    L: 0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s,
+    a: 1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s,
+    b: 0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s,
+  };
+}
+const clamp01 = (v) => Math.min(1, Math.max(0, v));
+const enc = (v) => { v = clamp01(v); return v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055; };
+const dec = (v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+const toHex = (lch) => "#" + labToLinear(toLab(lch)).map((v) => Math.round(enc(v) * 255).toString(16).padStart(2, "0")).join("");
+const lumin = (lch) => { const [r, g, b] = labToLinear(toLab(lch)).map(clamp01); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+const contrast = (x, y) => { const a = lumin(x), b = lumin(y); return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05); };
+const fromHex = (hex) => {
+  const n = parseInt(hex.slice(1), 16);
+  return toLch(linearToLabFixed([(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => dec(v / 255))));
+};
+const css = ({ l, c, h }) => `oklch(${l.toFixed(3)} ${c.toFixed(3)} ${h.toFixed(1)})`;
+const mixLab = (x, y, t) => { // t = share of x, in oklab
+  const A = toLab(x), B = toLab(y);
+  return toLch({ L: A.L * t + B.L * (1 - t), a: A.a * t + B.a * (1 - t), b: A.b * t + B.b * (1 - t) });
+};
+const shift = (bg, d) => ({ l: bg.l + d, c: bg.c, h: bg.h });
+
+/* ==========================================================================
+   Build
+   ========================================================================== */
+/* ==========================================================================
+   State, fields, rendering
+   ========================================================================== */
+const STORE_KEY = "ds24-cor-pai-v1";
+const MODES = ["light", "dark"];
+const MODE_LABEL = { light: "Claro", dark: "Escuro" };
+const clone = (o) => JSON.parse(JSON.stringify(o));
+const r4 = (n) => Math.round(n * 10000) / 10000;
+const txt = (n) => String(r4(n));
+const sgn = (n, d = 3) => (n >= 0 ? "+" : "−") + Math.abs(n).toFixed(d);
+const wrapH = (h) => ((h % 360) + 360) % 360;
+
+const fresh = () => ({
+  parents: Object.fromEntries(CONFIG.themes.flatMap((t) => MODES.map((m) => [`${t.key}:${m}`, clone(t.parents[m])]))),
+  deltas: clone(CONFIG.deltas),
+});
+let state = fresh();
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
+    if (d && d.parents && d.deltas) { const f = fresh(); state = { parents: { ...f.parents, ...d.parents }, deltas: { light: { ...f.deltas.light, ...d.deltas.light }, dark: { ...f.deltas.dark, ...d.deltas.dark } } }; }
+  } catch (_) { /* storage unavailable: use CONFIG */ }
+}
+function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (_) {} }
+
+// token color from the parent: only deltas (L clamped to 0..1, C floored at 0, H wrapped)
+const derive = (p, d) => ({ l: Math.min(1, Math.max(0, p.l + d.dL)), c: Math.max(0, p.c + d.dC), h: wrapH(p.h + d.dH) });
+
+const parseNum = (s) => { const t = String(s).trim().replace(",", "."); return t === "" || !/^[+-]?(\d+\.?\d*|\.\d+)$/.test(t) ? NaN : Number(t); };
+function makeField(label, { get, set, lo, hi, step }) {
+  const w = document.createElement("label"); w.className = "fld";
+  w.innerHTML = `<span></span><input type="text" inputmode="decimal" autocomplete="off" spellcheck="false">`;
+  w.firstChild.textContent = label;
+  const input = w.querySelector("input");
+  input.setAttribute("aria-label", label);
+  const apply = () => {
+    const v = parseNum(input.value);
+    if (Number.isFinite(v) && v >= lo && v <= hi) { input.classList.remove("invalid"); input.removeAttribute("aria-invalid"); set(v); return true; }
+    input.classList.add("invalid"); input.setAttribute("aria-invalid", "true"); return false;
+  };
+  input.addEventListener("input", apply);
+  input.addEventListener("change", apply);
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { apply(); return; }
+    if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+    e.preventDefault();
+    const cur = parseNum(input.value), base = Number.isFinite(cur) ? cur : get();
+    input.value = txt(Math.min(hi, Math.max(lo, base + (e.key === "ArrowUp" ? 1 : -1) * step * (e.shiftKey ? 5 : 1)))); apply();
+  });
+  input.addEventListener("blur", () => { input.classList.remove("invalid"); input.removeAttribute("aria-invalid"); input.value = txt(get()); });
+  return { el: w, show: (v) => { if (document.activeElement !== input) input.value = txt(v); } };
+}
+const fieldSets = []; // { show() } to refresh
+const onChange = () => { render(); save(); };
+
+/* ---- delta table ---- */
+const tbl = document.getElementById("rules");
+tbl.innerHTML = `<tr><th>Token</th><th colspan="2">Claro: ΔL ΔC ΔH</th><th colspan="2">Escuro: ΔL ΔC ΔH</th></tr>
+  <tr><th></th><th>regra única</th><th>Carbono hoje (própria paleta)</th><th>regra única</th><th>Carbono hoje (própria paleta)</th></tr>`;
+const FIELD_DEF = [["ΔL", "dL", -1, 1, 0.005], ["ΔC", "dC", -0.4, 0.4, 0.002], ["ΔH", "dH", -360, 360, 1]];
+CONFIG.tokens.forEach(([key, label, css_, group, note], i) => {
+  const tr = document.createElement("tr"); if (i === 0 || CONFIG.tokens[i - 1][3] !== group) tr.className = "grp";
+  const td0 = document.createElement("td"); td0.className = "tk"; td0.innerHTML = `${label}<small>${css_} · ${note}</small>`; tr.appendChild(td0);
+  MODES.forEach((m) => {
+    const td = document.createElement("td"), box = document.createElement("div"); box.className = "flds";
+    FIELD_DEF.forEach(([lab, k, lo, hi, step]) => {
+      const f = makeField(lab, { get: () => state.deltas[m][key][k], set: (v) => { state.deltas[m][key][k] = v; onChange(); }, lo, hi, step });
+      fieldSets.push({ show: () => f.show(state.deltas[m][key][k]) }); box.appendChild(f.el);
+    });
+    td.appendChild(box); tr.appendChild(td);
+    const tc = document.createElement("td"); tc.className = "today";
+    const [a, b, c] = CONFIG.carbonToday[m][key]; tc.textContent = `ΔL ${sgn(a)} ΔC ${sgn(b)} ΔH ${c === "~" ? "~ (acromático)" : sgn(c, 0)}`; tr.appendChild(tc);
+  });
+  tbl.appendChild(tr);
+});
+
+/* ---- columns ---- */
+const colsEl = document.getElementById("cols");
+const COLS = [];
+CONFIG.themes.forEach((t) => MODES.forEach((m) => COLS.push({ t, m, key: `${t.key}:${m}` })));
+const BTN = (cls, label) => `<button class="b ${cls}" type="button" tabindex="-1">${label}</button>`;
+const btnRows = () => `<div class="row">${BTN("ghost", "Transparente")}${BTN("ghost hv", "Transparente")}</div><div class="row">${BTN("sec", "Secundário")}${BTN("sec hv", "Secundário")}</div>`;
+COLS.forEach((c) => {
+  const head = document.createElement("div"); head.className = "chead";
+  head.innerHTML = `<b>${c.t.label} ${MODE_LABEL[c.m]}</b><span class="cap">Pai: fundo da página (L C H)</span><div class="flds"></div>`;
+  [["L", "l", 0, 1, 0.005], ["C", "c", 0, 0.4, 0.002], ["H", "h", 0, 360, 1]].forEach(([lab, k, lo, hi, step]) => {
+    const f = makeField(lab, { get: () => state.parents[c.key][k], set: (v) => { state.parents[c.key][k] = v; onChange(); }, lo, hi, step });
+    fieldSets.push({ show: () => f.show(state.parents[c.key][k]) }); head.querySelector(".flds").appendChild(f.el);
+  });
+  const body = document.createElement("div"); body.className = "pcol";
+  body.innerHTML = `
+    <h2 class="h">Título da página</h2><p class="sec-txt">Texto secundário com a cor de secondary-foreground.</p>
+    <span class="cap">Botões na página (repouso | hover forçado)</span>${btnRows()}
+    <span class="cap">Cartão</span>
+    <div class="card"><b>Cartão com título</b><span class="sec-txt">Texto secundário e borda do cartão.</span>${btnRows()}</div>
+    <span class="cap">Campo com botão ghost (repouso | hover)</span>
+    <div class="inp"><span>Buscar ação</span><span class="row" style="gap:4px"><button class="ib" type="button" tabindex="-1">×</button><button class="ib hv" type="button" tabindex="-1">×</button></span></div>
+    <span class="cap">Popover com item em hover e grupo Admin (secundário)</span>
+    <div class="pop"><div><div class="mi">Perfil</div><div class="mi hv">Ajuda</div></div>
+      <div class="admin"><div class="lbl">Admin</div><div class="mi">Parceiros</div><div class="mi hv">Novo Parceiro</div></div>
+      <div class="pad"><div class="row">${BTN("ghost", "Cancelar")}${BTN("ghost hv", "Cancelar")}</div><div class="row">${BTN("sec", "Salvar")}${BTN("sec hv", "Salvar")}</div></div></div>
+    <span class="cap">Cartão de ação (repouso | hover)</span>
+    <div class="acts"><div class="act"><b>Ação</b><small>Feito hoje</small></div><div class="act hv"><b>Ação</b><small>Feito hoje</small></div></div>
+    <div class="tl"></div>`;
+  const wrap = document.createElement("div"); wrap.appendChild(head); wrap.appendChild(body);
+  colsEl.appendChild(wrap);
+  c.head = head; c.body = body; c.tl = body.querySelector(".tl");
+});
+
+function render() {
+  fieldSets.forEach((f) => f.show());
+  COLS.forEach((c) => {
+    const p = state.parents[c.key], d = state.deltas[c.m];
+    const col = {}; CONFIG.tokens.forEach(([k]) => (col[k] = derive(p, d[k])));
+    col.bg = { l: Math.min(1, Math.max(0, p.l)), c: p.c, h: p.h };
+    const set = (n, v) => c.body.style.setProperty(n, css(v));
+    set("--bg", col.bg); set("--fg", col.foreground); set("--secondary-fg", col.secondaryFg); set("--soft", col.textSoft);
+    set("--card", col.card); set("--popover", col.popover); set("--input", col.input); set("--border", col.border); set("--cborder", col.containerBorder);
+    set("--action", col.action); set("--action-hover", col.actionHover); set("--secondary", col.secondary); set("--secondary-hover", col.secondaryHover);
+    c.body.style.background = css(col.bg); c.body.style.color = css(col.foreground);
+    c.head.style.background = css(col.bg); c.head.style.color = css(col.foreground);
+    // token list
+    const dlTo = (x, ref) => Math.abs(x.l - ref.l);
+    c.tl.innerHTML = CONFIG.tokens.map(([k, label, css_, group]) => {
+      const x = col[k], lines = [];
+      const ctPar = contrast(x, col.bg);
+      let ct = `vs pai ${ctPar.toFixed(2)}:1`;
+      let flags = "";
+      if (group === "text") {
+        const ctCard = contrast(x, col.card);
+        ct += ` · vs cartão ${ctCard.toFixed(2)}:1`;
+        if (k !== "textSoft" && (ctPar < 4.5 || ctCard < 4.5)) flags += ' <span class="flag">contraste baixo (&lt; 4,5)</span>';
+        if (k === "textSoft" && (ctPar < 3 || ctCard < 3)) flags += ' <span class="flag">contraste baixo (&lt; 3)</span>';
+      } else if (CONFIG.sitsOn[k]) {
+        const parts = CONFIG.sitsOn[k].map((on) => ({ on, dl: x.l - col[on].l }));
+        ct += " · ΔL " + parts.map((q) => `${sgn(q.dl)} sobre ${q.on === "bg" ? "pai" : q.on}`).join(", ");
+        if (parts.some((q) => Math.abs(q.dl) < 0.02)) flags += ' <span class="flag">quase invisível</span>';
+      }
+      return `<div class="tkn"><span class="sw" style="background:${css(x)}"></span><span class="nm">${label} <span class="cap mono">${css_}</span></span><span class="cd">${css(x)} ${toHex(x)}</span><span class="ct">${ct}${flags}</span></div>`;
+    }).join("");
+  });
+}
+
+/* ---- export ---- */
+const calcStr = (d) => `oklch(from var(--background) calc(l ${d.dL < 0 ? "-" : "+"} ${Math.abs(d.dL).toFixed(3)}) max(0, calc(c ${d.dC < 0 ? "-" : "+"} ${Math.abs(d.dC).toFixed(3)})) calc(h ${d.dH < 0 ? "-" : "+"} ${Math.abs(d.dH).toFixed(1)}))`;
+function buildExport() {
+  const L = ["/* Cor pai e neutros. Pais (fundo da página) usados: */"];
+  CONFIG.themes.forEach((t) => MODES.forEach((m) => { const p = state.parents[`${t.key}:${m}`]; L.push(`/* ${t.label} ${MODE_LABEL[m]}: --background: oklch(${p.l.toFixed(3)} ${p.c.toFixed(3)} ${p.h.toFixed(1)}) ${toHex(p)} */`); }));
+  L.push("");
+  MODES.forEach((m) => {
+    L.push(m === "light" ? ":root {" : ".dark {");
+    CONFIG.tokens.forEach(([k, label, css_]) => L.push(`  ${css_}: ${calcStr(state.deltas[m][k])}; /* ${label} */`));
+    L.push("}", "");
+  });
+  L.push("/* Resultado por coluna */");
+  COLS.forEach((c) => { const p = state.parents[c.key]; L.push(`/* ${c.t.label} ${MODE_LABEL[c.m]} */`); CONFIG.tokens.forEach(([k, label, css_]) => { const x = derive(p, state.deltas[c.m][k]); L.push(`/*   ${css_}: ${css(x)} ${toHex(x)} */`); }); });
+  return L.join("\n");
+}
+document.getElementById("copy").addEventListener("click", async (e) => {
+  const text = buildExport(), btn = e.currentTarget; window.__lastExport = text;
+  try { await navigator.clipboard.writeText(text); btn.textContent = "Copiado"; }
+  catch (_) { const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); btn.textContent = "Copiado"; } catch (__) { btn.textContent = "Falhou"; } ta.remove(); }
+  setTimeout(() => (btn.textContent = "Copiar valores"), 1500);
+});
+document.getElementById("reset").addEventListener("click", () => { try { localStorage.removeItem(STORE_KEY); } catch (_) {} state = fresh(); render(); });
+
+load();
+render();
+</script>
+</body>
+</html>

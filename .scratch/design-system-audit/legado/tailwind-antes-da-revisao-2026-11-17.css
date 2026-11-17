@@ -1,0 +1,934 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *):not([data-theme-preview="light"], [data-theme-preview="light"] *));
+
+:root,
+[data-theme-preview="light"] {
+  --radius: 0.65rem;
+  --background: var(--background-override, oklch(1 0 0));
+  --foreground: var(--foreground-override, oklch(0.141 0.005 285.823));
+
+  --card-l-delta: -0.02;
+  --card: oklch(from var(--background) calc(l + var(--card-l-delta)) c h);
+
+  --popover-l-delta: 0;
+  --popover: oklch(from var(--background) calc(l + var(--popover-l-delta)) c h);
+
+  /* Primary color knobs — overrideable by JS for theme color picker */
+  --primary-h: 0; /* hue: 0–360 */
+  --primary-c: 0; /* chroma / saturation */
+  --primary-l: 0; /* lightness: darker in light mode for contrast on white */
+  --primary-fg-l: 0.97; /* foreground lightness: bright text over dark primary */
+
+  --primary: oklch(var(--primary-l) var(--primary-c) var(--primary-h));
+  --primary-foreground: var(
+    --primary-foreground-override,
+    oklch(var(--primary-fg-l) 0 var(--primary-h))
+  );
+
+  --secondary: color-mix(in srgb, var(--foreground) 5%, transparent);
+  --secondary-foreground: color-mix(
+    in srgb,
+    var(--foreground) 65%,
+    transparent
+  );
+
+  --border-l-delta: -0.05;
+  --border: oklch(from var(--background) calc(l + var(--border-l-delta)) c h);
+
+  --input-l-delta: -0.05;
+  --input: oklch(from var(--background) calc(l + var(--input-l-delta)) c h);
+
+  --ring: var(
+    --ring-override,
+    oklch(var(--primary-l) var(--primary-c) var(--primary-h))
+  );
+  --accent: oklch(
+    max(0, calc(var(--primary-l) - 0.15)) var(--primary-c) var(--primary-h)
+  );
+
+  --action-l-delta: 0.02;
+  --action-hover-l-delta: 0.04;
+  --action: oklch(from var(--background) calc(l + var(--action-l-delta)) c h);
+  --action-hover: oklch(
+    from var(--background) calc(l + var(--action-hover-l-delta)) c h
+  );
+  /* Palette surfaces kept apart so phase-surface can tint them (DS11). */
+  --action-base: var(--action);
+  --action-hover-base: var(--action-hover);
+  --shadow-tint: var(--shadow-color-override, #000000);
+  --shadow-alpha: var(--shadow-opacity-override, 10%);
+  --action-shadow-color: var(--action-shadow-color-override, #000000);
+  --action-ring: color-mix(in srgb, var(--action-shadow-color) 5%, transparent);
+  --action-top-border: var(--action-top-border-override, #ffffff);
+  --action-shadow: var(
+    --action-shadow-override,
+    0 1px 2px 0 color-mix(in srgb, var(--action-shadow-color) 14%, transparent)
+  );
+  --action-hover-shadow: var(
+    --action-hover-shadow-override,
+    0 10px 15px -3px
+      color-mix(in srgb, var(--action-shadow-color) 18%, transparent),
+    0 4px 6px -4px
+      color-mix(in srgb, var(--action-shadow-color) 18%, transparent)
+  );
+
+  /* Semantic colors (DS25): one fixed value each, inside the sRGB gamut.
+     Text is set on its own (own chroma), because a darker tone keeps the
+     base chroma outside sRGB. Background = semantic color mixed with the page
+     background, 10% in light (one value for every palette). */
+  --color-error: oklch(0.65 0.22 16);
+  --error-foreground: oklch(0.52 0.205 16);
+  --color-error-background: color-mix(
+    in oklab,
+    var(--color-error) 10%,
+    var(--background)
+  );
+
+  --color-warning: oklch(0.82 0.16 80);
+  --warning-foreground: oklch(0.51 0.1 80);
+  --color-warning-background: color-mix(
+    in oklab,
+    var(--color-warning) 10%,
+    var(--background)
+  );
+
+  --color-success: oklch(0.65 0.13 163);
+  --color-success-foreground: oklch(0.495 0.1 163);
+  --color-success-background: color-mix(
+    in oklab,
+    var(--color-success) 10%,
+    var(--background)
+  );
+
+  --color-info: oklch(0.65 0.17 250);
+  --info-foreground: oklch(0.505 0.14 250);
+  --color-info-background: color-mix(
+    in oklab,
+    var(--color-info) 10%,
+    var(--background)
+  );
+
+  /* Priorities derive from the semantic colors (low = success, medium = warning, high = error). */
+  --priority-low: var(--color-success);
+  --priority-medium: var(--color-warning);
+  --priority-high: var(--color-error);
+
+  /* Strong success derives from success: same hue, fixed lightness and chroma (white text 5:1). */
+  --success-strong: oklch(from var(--color-success) 0.53 0.105 h);
+  --success-strong-hover: oklch(from var(--color-success) 0.47 0.095 h);
+  --success-strong-foreground: var(--color-white);
+
+  --font-heading: var(--font-sans);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+.dark,
+:root[class~="dark"] {
+  --background: var(--dark-background-override, oklch(0.4 0.01 285.823));
+  --foreground: var(--dark-foreground-override, oklch(0.985 0 0));
+
+  --dark-card-l-delta: 0.05;
+  --card: oklch(from var(--background) calc(l + var(--dark-card-l-delta)) c h);
+
+  --dark-popover-l-delta: -0.03;
+  --popover: oklch(
+    from var(--background) calc(l + var(--dark-popover-l-delta)) c h
+  );
+
+  /* Dark mode variables injected by JS */
+  /* Fallback values — preto/branco base */
+  --dark-primary-h: 0;
+  --dark-primary-c: 0;
+  --dark-primary-l: 0.35;
+  --dark-primary-fg-l: 0.97;
+
+  --primary: oklch(
+    var(--dark-primary-l) var(--dark-primary-c) var(--dark-primary-h)
+  );
+  --primary-foreground: var(
+    --dark-primary-foreground-override,
+    oklch(var(--dark-primary-fg-l) 0.014 var(--dark-primary-h))
+  );
+
+  --secondary: color-mix(in oklch, var(--foreground) 10%, transparent);
+  --secondary-foreground: color-mix(
+    in srgb,
+    var(--foreground) 65%,
+    transparent
+  );
+
+  --dark-border-l-delta: 0.2;
+  --border: oklch(
+    from var(--background) calc(l + var(--dark-border-l-delta)) c h
+  );
+
+  --dark-input-l-delta: 0.05;
+  --input: oklch(
+    from var(--background) calc(l + var(--dark-input-l-delta)) c h
+  );
+
+  --ring: var(
+    --dark-ring-override,
+    oklch(var(--dark-primary-l) var(--dark-primary-c) var(--dark-primary-h))
+  );
+  --accent: oklch(
+    min(1, calc(var(--dark-primary-l) + 0.1)) var(--dark-primary-c)
+      var(--dark-primary-h)
+  );
+
+  /* Semantic colors: fixed values inside the sRGB gamut (DS21). */
+  /* Dark: same fixed semantic values; text is the semantic color itself;
+     background = semantic color mixed with the page background, 20% in dark. */
+  --color-error: oklch(0.72 0.16 16);
+  --error-foreground: var(--color-error);
+  --color-error-background: color-mix(
+    in oklab,
+    var(--color-error) 20%,
+    var(--background)
+  );
+
+  --color-warning: oklch(0.84 0.14 80);
+  --warning-foreground: var(--color-warning);
+  --color-warning-background: color-mix(
+    in oklab,
+    var(--color-warning) 20%,
+    var(--background)
+  );
+
+  --color-success: oklch(0.75 0.15 163);
+  --color-success-foreground: var(--color-success);
+  --color-success-background: color-mix(
+    in oklab,
+    var(--color-success) 20%,
+    var(--background)
+  );
+
+  --color-info: oklch(0.75 0.12 250);
+  --info-foreground: var(--color-info);
+  --color-info-background: color-mix(
+    in oklab,
+    var(--color-info) 20%,
+    var(--background)
+  );
+
+  /* Priorities derive from the semantic colors (same rule as light). */
+  --priority-low: var(--color-success);
+  --priority-medium: var(--color-warning);
+  --priority-high: var(--color-error);
+
+  /* Fixed-palette semantic tokens: same value in light and dark themes. */
+  --success-strong: oklch(from var(--color-success) 0.53 0.105 h);
+  --success-strong-hover: oklch(from var(--color-success) 0.47 0.095 h);
+  --success-strong-foreground: var(--color-white);
+
+  --dark-action-l-delta: 0.1;
+  --dark-action-hover-l-delta: 0.2;
+  --action: oklch(
+    from var(--background) calc(l + var(--dark-action-l-delta)) c h
+  );
+  --action-hover: oklch(
+    from var(--background) calc(l + var(--dark-action-hover-l-delta)) c h
+  );
+  --action-base: var(--action);
+  --action-hover-base: var(--action-hover);
+  --shadow-tint: var(
+    --dark-shadow-color-override,
+    var(--shadow-color-override, #000000)
+  );
+  --shadow-alpha: var(--dark-shadow-opacity-override, 25%);
+  --action-shadow-color: var(
+    --dark-action-shadow-color-override,
+    var(--action-shadow-color-override, #000000)
+  );
+  --action-ring: color-mix(
+    in srgb,
+    var(--action-shadow-color) 20%,
+    transparent
+  );
+  --action-top-border: var(
+    --dark-action-top-border-override,
+    var(--action-top-border-override, rgba(255, 255, 255, 0.1))
+  );
+  --action-shadow: var(
+    --dark-action-shadow-override,
+    var(
+      --action-shadow-override,
+      0 1px 2px 0
+        color-mix(in srgb, var(--action-shadow-color) 35%, transparent)
+    )
+  );
+  --action-hover-shadow: var(
+    --dark-action-hover-shadow-override,
+    var(
+      --action-hover-shadow-override,
+      0 10px 15px -3px
+        color-mix(in srgb, var(--action-shadow-color) 50%, transparent),
+      0 4px 6px -4px
+        color-mix(in srgb, var(--action-shadow-color) 50%, transparent)
+    )
+  );
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* Motion tokens: duration-motion-* and ease-motion-* utilities. */
+  --transition-duration-motion-fast: 150ms;
+  --transition-duration-motion-base: 200ms;
+  --transition-duration-motion-slow: 300ms;
+  --ease-motion-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-motion-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+
+  --color-popover: var(--popover);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-border: var(--border);
+
+  --color-input: var(--input);
+
+  --color-ring: var(--ring);
+  --color-accent: var(--accent);
+
+  /* VARIÁVEIS DA UZZINA  */
+
+  --font-sans:
+    /* "PP Object Sans", */
+    ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+
+  /* Elevation shadows tinted by the palette (color + opacity per mode). */
+  --shadow-2xs: 0 1px
+    color-mix(
+      in srgb,
+      var(--shadow-tint) calc(var(--shadow-alpha) * 0.5),
+      transparent
+    );
+  --shadow-xs: 0 1px 2px 0
+    color-mix(
+      in srgb,
+      var(--shadow-tint) calc(var(--shadow-alpha) * 0.6),
+      transparent
+    );
+  --shadow-sm:
+    0 1px 3px 0
+      color-mix(
+        in srgb,
+        var(--shadow-tint) calc(var(--shadow-alpha) * 0.8),
+        transparent
+      ),
+    0 1px 2px -1px
+      color-mix(
+        in srgb,
+        var(--shadow-tint) calc(var(--shadow-alpha) * 0.8),
+        transparent
+      );
+  --shadow-md:
+    0 4px 6px -1px
+      color-mix(
+        in srgb,
+        var(--shadow-tint) calc(var(--shadow-alpha) * 1),
+        transparent
+      ),
+    0 2px 4px -2px
+      color-mix(
+        in srgb,
+        var(--shadow-tint) calc(var(--shadow-alpha) * 1),
+        transparent
+      );
+  --shadow-lg:
+    0 10px 15px -3px
+      color-mix(
+        in srgb,
+        var(--shadow-tint) calc(var(--shadow-alpha) * 1),
+        transparent
+      ),
+    0 4px 6px -4px
+      color-mix(
+        in srgb,
+        var(--shadow-tint) calc(var(--shadow-alpha) * 1),
+        transparent
+      );
+  --shadow-xl:
+    0 20px 25px -5px
+      color-mix(
+        in srgb,
+        var(--shadow-tint) calc(var(--shadow-alpha) * 1),
+        transparent
+      ),
+    0 8px 10px -6px
+      color-mix(
+        in srgb,
+        var(--shadow-tint) calc(var(--shadow-alpha) * 1),
+        transparent
+      );
+  --shadow-2xl: 0 25px 50px -12px
+    color-mix(
+      in srgb,
+      var(--shadow-tint) min(100%, calc(var(--shadow-alpha) * 2.5)),
+      transparent
+    );
+  --shadow-toast: 0 12px 24px -6px
+    color-mix(
+      in srgb,
+      var(--shadow-tint) calc(var(--shadow-alpha) * 1),
+      transparent
+    );
+
+  /* Backdrop of dialogs and sheets: the palette shadow tint at 30%. */
+  --color-overlay: color-mix(in srgb, var(--shadow-tint) 30%, transparent);
+
+  --color-action: var(--action);
+  --color-action-hover: var(--action-hover);
+  --color-action-top-border: var(--action-top-border);
+  --color-action-ring: var(--action-ring);
+  --shadow-action: var(--action-shadow);
+  --shadow-action-hover: var(--action-hover-shadow);
+
+  --color-error: var(--color-error);
+  --color-error-foreground: var(--error-foreground);
+  --color-error-background: var(--color-error-background);
+  --color-warning: var(--color-warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-background: var(--color-warning-background);
+  --color-success: var(--color-success);
+  --color-success-foreground: var(--color-success-foreground);
+  --color-success-background: var(--color-success-background);
+  --color-priority-low: var(--priority-low);
+  --color-priority-medium: var(--priority-medium);
+  --color-priority-high: var(--priority-high);
+  --color-info: var(--color-info);
+  --color-info-foreground: var(--info-foreground);
+  --color-info-background: var(--color-info-background);
+
+  --color-success-strong: var(--success-strong);
+  --color-success-strong-hover: var(--success-strong-hover);
+  --color-success-strong-foreground: var(--success-strong-foreground);
+}
+
+html[data-dragging-item],
+html[data-dragging-item] * {
+  cursor: grabbing !important;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/30;
+  }
+
+  :focus-visible {
+    outline-style: solid;
+    outline-width: 3px;
+    outline-offset: 0;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  html {
+    @apply font-sans;
+  }
+}
+
+@layer components {
+  h1 {
+    @apply text-5xl leading-none font-bold tracking-tighter;
+  }
+
+  h2 {
+    @apply text-4xl leading-none font-bold tracking-tighter;
+  }
+
+  h3 {
+    @apply text-3xl leading-none font-semibold tracking-tighter;
+  }
+
+  h4 {
+    @apply text-2xl leading-none font-semibold tracking-tight;
+  }
+
+  h5 {
+    @apply text-xl leading-none font-medium tracking-tight;
+  }
+
+  .lead {
+    @apply text-xl leading-normal tracking-tight;
+  }
+}
+
+:root,
+html {
+  scroll-behavior: smooth;
+}
+
+:root {
+  /* AppBar is 66px tall with a 16px offset below it; keep the same 16px above it */
+  --app-bar-space: 98px;
+}
+
+.page-height {
+  @apply h-[calc(100vh-68px)];
+}
+
+.border_after {
+  @apply relative after:absolute after:bottom-0 after:left-1/2 after:h-px after:w-screen after:-translate-x-1/2 after:bg-border;
+}
+
+.border_before {
+  @apply relative before:absolute before:top-0 before:left-1/2 before:h-px before:w-screen before:-translate-x-1/2 before:bg-border;
+}
+
+::-webkit-scrollbar {
+  @apply h-2 w-2 appearance-none;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply rounded-full border-2 border-background bg-foreground/10;
+}
+
+.tiptap::-webkit-scrollbar {
+  @apply w-1;
+}
+.tiptap::-webkit-scrollbar-thumb {
+  @apply border-0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-foreground/20;
+}
+
+/* DEBUG */
+
+.debug-1 {
+  @apply border border-red-500;
+}
+
+.debug-2 {
+  @apply border border-yellow-500;
+}
+
+.debug-3 {
+  @apply border border-green-500;
+}
+
+.debug-4 {
+  @apply border border-blue-500;
+}
+
+.debug-5 {
+  @apply border border-indigo-500;
+}
+
+.debug-6 {
+  @apply border border-purple-500;
+}
+
+.tiptap.ProseMirror {
+  @apply h-full overflow-y-auto p-4 text-base outline-none;
+}
+
+/* Espaçamento de parágrafos (corrige percepção do Enter) */
+.tiptap.ProseMirror p {
+  @apply my-1.5 leading-normal;
+}
+
+/* Listas */
+.tiptap.ProseMirror ul {
+  list-style-type: disc;
+  @apply my-2 space-y-1 pl-6;
+}
+
+.tiptap.ProseMirror ol {
+  list-style-type: decimal;
+  @apply my-2 space-y-1 pl-6;
+}
+
+.tiptap.ProseMirror li {
+  @apply list-item;
+}
+
+/* Citações */
+.tiptap.ProseMirror blockquote {
+  @apply my-3 border-l-4 border-primary/30 pl-4 text-secondary-foreground italic;
+}
+
+/* Títulos básicos */
+.tiptap.ProseMirror h1 {
+  @apply mt-8 mb-4 p-0 text-3xl font-normal;
+}
+
+.tiptap.ProseMirror h2 {
+  @apply mt-6 mb-3 p-0 text-2xl font-normal;
+}
+
+.tiptap.ProseMirror h3 {
+  @apply mt-4 mb-2 p-0 text-xl font-normal tracking-wider uppercase;
+}
+
+.tiptap.ProseMirror hr {
+  @apply my-8 border-border;
+}
+
+/* Links */
+.tiptap.ProseMirror a {
+  @apply cursor-pointer text-primary underline decoration-primary/40 underline-offset-4 transition-colors hover:decoration-primary;
+}
+
+/* Highlights */
+.tiptap.ProseMirror mark {
+  @apply rounded bg-amber-200 px-0.5 text-inherit squircle dark:bg-amber-500/30;
+}
+
+/* Tabelas */
+.tiptap.ProseMirror table {
+  @apply my-4 w-full table-fixed border-collapse overflow-hidden rounded-xl border border-border squircle;
+}
+
+.tiptap.ProseMirror th,
+.tiptap.ProseMirror td {
+  @apply relative min-w-48 border border-border p-2 text-left align-top text-sm;
+}
+
+.tiptap.ProseMirror th {
+  @apply bg-secondary font-semibold;
+}
+
+.tiptap.ProseMirror p.is-editor-empty:first-child::before {
+  @apply pointer-events-none float-left h-0 text-foreground/50;
+  content: attr(data-placeholder);
+}
+
+@utility squircle {
+  corner-shape: superellipse(1.5);
+}
+
+@utility no-squircle {
+  corner-shape: initial;
+}
+
+/* Icon over an image or thumbnail (IA-M08): white, no background, with a
+   shadow that follows the icon's own shape (drop-shadow, not a box shadow). */
+@utility image-icon {
+  color: white;
+  & svg {
+    color: white;
+    filter: drop-shadow(0 0 1px rgb(0 0 0 / 0.7))
+      drop-shadow(0 1px 2px rgb(0 0 0 / 0.55));
+  }
+}
+
+/* Action card tinted by its phase (DS11). The card sets --phase-color inline.
+   Each mode sets only the knobs; the formulas below are shared. Resting shadow
+   stays the app's shadow-action. Flat palettes (--action-relief: 0, set by
+   palette-vars) drop the phase ring and, through the override, the hover
+   shadow, like a regular flat card. */
+@utility phase-surface {
+  --phase-mix: 7%;
+  --phase-mix-hover: 12%;
+  --phase-ring-alpha: 30%;
+  --phase-fg: oklch(from var(--phase-color) 0.35 0.07 h);
+  --phase-shadow: oklch(from var(--phase-color) 0.6 0.15 h);
+  --phase-shadow-alpha: 25%;
+  --phase-diffuse: transparent;
+  &:is(.dark *):not(
+      [data-theme-preview="light"],
+      [data-theme-preview="light"] *
+    ) {
+    --phase-mix: 14%;
+    --phase-mix-hover: 22%;
+    --phase-ring-alpha: 55%;
+    --phase-fg: oklch(from var(--phase-color) 0.92 0.06 h);
+    --phase-shadow: oklch(from var(--phase-color) 0.33 0.1 h);
+    --phase-shadow-alpha: 20%;
+    --phase-diffuse: color-mix(
+      in srgb,
+      oklch(from var(--phase-color) 0.2 0.15 h) 63%,
+      transparent
+    );
+  }
+
+  --foreground: var(--phase-fg);
+  --action: color-mix(
+    in oklab,
+    var(--phase-color) var(--phase-mix),
+    var(--action-base)
+  );
+  --action-hover: color-mix(
+    in oklab,
+    var(--phase-color) var(--phase-mix-hover),
+    var(--action-hover-base)
+  );
+  --action-ring: color-mix(
+    in srgb,
+    var(--phase-color) calc(var(--phase-ring-alpha) * var(--action-relief, 1)),
+    transparent
+  );
+  --action-hover-shadow: var(
+    --action-hover-shadow-override,
+    0 10px 15px -3px
+      color-mix(
+        in srgb,
+        var(--phase-shadow) var(--phase-shadow-alpha),
+        transparent
+      ),
+    0 4px 6px -4px
+      color-mix(
+        in srgb,
+        var(--phase-shadow) var(--phase-shadow-alpha),
+        transparent
+      ),
+    0 14px 30px -4px var(--phase-diffuse)
+  );
+}
+
+/* Action card filled with its full phase color (DS17, "Viva"). The card sets
+   --phase-color inline. Preferences arrive as data attributes on <html>:
+   data-vivid-text="light" (light ink) and data-vivid-dark="dim" (dimmed fill in
+   dark mode only). Reading adjustments are always on: date at 85% of the ink,
+   phase dot drawn as a ring, priority/category icons and phase check in the
+   ink. The top highlight is the fill mixed with white, follows the hover fill
+   and goes transparent in flat palettes (--action-relief: 0). */
+@utility phase-vivid {
+  --vivid-fill: var(--phase-color);
+  --vivid-ink: oklch(from var(--phase-color) 0.35 0.07 h);
+  --vivid-hover-dl: 0.04;
+  --vivid-edge-dl: 0.06;
+  --vivid-top-light: 45%;
+  --vivid-shadow: oklch(from var(--phase-color) 0.55 0.16 h);
+  &:is([data-vivid-text="light"] *) {
+    --vivid-ink: oklch(from var(--phase-color) 0.98 0.025 h);
+    --vivid-hover-dl: -0.04;
+  }
+  &:is(.dark *):not(
+      [data-theme-preview="light"],
+      [data-theme-preview="light"] *
+    ) {
+    --vivid-edge-dl: 0.14;
+    --vivid-top-light: 25%;
+  }
+  &:is(.dark[data-vivid-dark="dim"] *):not(
+      [data-theme-preview="light"],
+      [data-theme-preview="light"] *
+    ) {
+    --vivid-fill: oklch(from var(--phase-color) 0.72 calc(c* 0.8) h);
+  }
+
+  --foreground: var(--vivid-ink);
+  --action: var(--vivid-fill);
+  --action-hover: oklch(
+    from var(--vivid-fill) calc(l + var(--vivid-hover-dl)) c h
+  );
+  --action-ring: oklch(
+    from var(--vivid-fill) calc(l - var(--vivid-edge-dl)) c h
+  );
+  --action-top-border: color-mix(
+    in srgb,
+    color-mix(in oklab, white var(--vivid-top-light), var(--action))
+      calc(var(--action-relief, 1) * 100%),
+    transparent
+  );
+  --action-hover-shadow: var(
+    --action-hover-shadow-override,
+    0 10px 15px -3px color-mix(in srgb, var(--vivid-shadow) 40%, transparent),
+    0 4px 6px -4px color-mix(in srgb, var(--vivid-shadow) 40%, transparent)
+  );
+  &:hover {
+    --action-top-border: color-mix(
+      in srgb,
+      color-mix(in oklab, white var(--vivid-top-light), var(--action-hover))
+        calc(var(--action-relief, 1) * 100%),
+      transparent
+    );
+  }
+
+  & .action-date {
+    opacity: 0.85;
+  }
+  & .vivid-ink {
+    color: var(--vivid-ink) !important;
+  }
+  & .phase-dot {
+    background-color: transparent !important;
+    box-shadow: inset 0 0 0 2px var(--vivid-ink);
+  }
+  & .phase-ring {
+    color: var(--vivid-ink) !important;
+  }
+  & .phase-check {
+    background-color: var(--vivid-ink) !important;
+  }
+  & .phase-check-icon {
+    color: var(--vivid-fill) !important;
+  }
+}
+
+/* Late action card: red resting and hover shadow. Flat palettes keep none
+   through the same overrides as the regular card. */
+@utility late-surface {
+  --action-shadow: var(
+    --action-shadow-override,
+    0 1px 2px 0 color-mix(in srgb, var(--error-foreground) 25%, transparent)
+  );
+  --action-hover-shadow: var(
+    --action-hover-shadow-override,
+    0 10px 15px -3px
+      color-mix(in srgb, var(--error-foreground) 30%, transparent),
+    0 4px 6px -4px color-mix(in srgb, var(--error-foreground) 30%, transparent)
+  );
+  &:is(.dark *) {
+    /* A deep red: the dark error tone is too light to read as a shadow. */
+    --late-shadow: oklch(from var(--color-error) 0.45 0.18 h);
+    --action-shadow: var(
+      --action-shadow-override,
+      0 1px 2px 0 color-mix(in srgb, var(--late-shadow) 50%, transparent)
+    );
+    --action-hover-shadow: var(
+      --action-hover-shadow-override,
+      0 10px 15px -3px color-mix(in srgb, var(--late-shadow) 60%, transparent),
+      0 4px 6px -4px color-mix(in srgb, var(--late-shadow) 60%, transparent)
+    );
+  }
+}
+
+@utility animate-spin-gradient {
+  animation: spin-gradient 3s linear infinite;
+}
+
+/* Animated gradient angle for the AI button border */
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes spin-gradient {
+  to {
+    --gradient-angle: 360deg;
+  }
+}
+
+/* Ensure Cloudinary widget is clickable even when Radix Dialog locks the body */
+iframe[data-test="uw-iframe"] {
+  pointer-events: auto;
+}
+
+/* Overlay motion: CSS animations (React Aria waits for them on exit). */
+@keyframes overlay-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes overlay-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes overlay-pop-in {
+  from {
+    opacity: 0;
+    scale: 0.96;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes overlay-pop-out {
+  from {
+    opacity: 1;
+    scale: 1;
+  }
+  to {
+    opacity: 0;
+    scale: 0.96;
+  }
+}
+
+@utility animate-overlay-fade-in {
+  animation: overlay-fade-in var(--transition-duration-motion-base, 200ms)
+    var(--ease-motion-standard, cubic-bezier(0.2, 0, 0, 1)) both;
+}
+
+@utility animate-overlay-fade-out {
+  animation: overlay-fade-out var(--transition-duration-motion-fast, 150ms)
+    var(--ease-motion-exit, cubic-bezier(0.4, 0, 1, 1)) both;
+}
+
+@utility animate-overlay-pop-in {
+  animation: overlay-pop-in var(--transition-duration-motion-base, 200ms)
+    var(--ease-motion-standard, cubic-bezier(0.2, 0, 0, 1)) both;
+}
+
+@utility animate-overlay-pop-out {
+  animation: overlay-pop-out var(--transition-duration-motion-fast, 150ms)
+    var(--ease-motion-exit, cubic-bezier(0.4, 0, 1, 1)) both;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.3);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@utility animate-pop {
+  animation: pop 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.mention {
+  @apply font-semibold underline underline-offset-4;
+}
+
+@keyframes scaledown {
+  0% {
+    transform: scale(1.2);
+    opacity: 0.1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.2;
+  }
+}
+
+@utility scale-down {
+  animation: scaledown 1s cubic-bezier(0, 0.65, 0.13, 1);
+}

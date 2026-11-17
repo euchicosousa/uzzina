@@ -1,0 +1,42 @@
+/* Valores exportados pelo proprietário do laboratório ds24-cor-pai-neutros.html em 16/11/2026. */
+/* Cor pai e neutros. Pais (fundo da página) usados: */
+/* Ônix Claro: --background: oklch(0.960 0.002 200.0) #f0f2f2 */
+/* Ônix Escuro: --background: oklch(0.200 0.010 250.0) #13161a */
+/* Carbono Claro: --background: oklch(1.000 0.000 240.0) #ffffff */
+/* Carbono Escuro: --background: oklch(0.250 0.015 240.0) #1b2328 */
+
+:root {
+  --foreground: oklch(from var(--background) calc(l - 0.960) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Texto principal */
+  --secondary-foreground: oklch(from var(--background) calc(l - 0.600) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Texto secundário */
+  --text-soft: oklch(from var(--background) calc(l - 0.400) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Texto suave */
+  --card: oklch(from var(--background) calc(l - 0.020) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Cartão */
+  --popover: oklch(from var(--background) calc(l + 0.020) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Popover */
+  --input: oklch(from var(--background) calc(l - 0.040) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Campo */
+  --border: oklch(from var(--background) calc(l - 0.070) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Borda */
+  --border-container: oklch(from var(--background) calc(l - 0.036) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Borda de container */
+  --action: oklch(from var(--background) calc(l + 0.020) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Cartão de ação */
+  --action-hover: oklch(from var(--background) calc(l + 0.100) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Cartão de ação (hover) */
+  --secondary: oklch(from var(--background) calc(l - 0.036) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Secundário */
+  --secondary-hover: oklch(from var(--background) calc(l - 0.083) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Hover do secundário */
+}
+
+.dark {
+  --foreground: oklch(from var(--background) calc(l + 0.800) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Texto principal */
+  --secondary-foreground: oklch(from var(--background) calc(l + 0.500) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Texto secundário */
+  --text-soft: oklch(from var(--background) calc(l + 0.300) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Texto suave */
+  --card: oklch(from var(--background) calc(l + 0.050) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Cartão */
+  --popover: oklch(from var(--background) calc(l - 0.030) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Popover */
+  --input: oklch(from var(--background) calc(l - 0.080) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Campo */
+  --border: oklch(from var(--background) calc(l + 0.100) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Borda */
+  --border-container: oklch(from var(--background) calc(l + 0.100) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Borda de container */
+  --action: oklch(from var(--background) calc(l + 0.100) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Cartão de ação */
+  --action-hover: oklch(from var(--background) calc(l + 0.200) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Cartão de ação (hover) */
+  --secondary: oklch(from var(--background) calc(l + 0.100) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Secundário */
+  --secondary-hover: oklch(from var(--background) calc(l + 0.200) max(0, calc(c + 0.000)) calc(h + 0.0)); /* Hover do secundário */
+}
+
+/* Resultado por coluna */
+/* Ônix Claro: fg 0.000 #000000 | sec-fg 0.360 #3c3d3d | soft 0.560 #737575 | card 0.940 #eaebec | popover 0.980 #f7f9f9 | input 0.920 #e3e5e5 | border 0.890 #d9dbdb | border-container 0.924 #e4e6e6 | action 0.980 #f7f9f9 | action-hover 1.000 #feffff | secondary 0.924 #e4e6e6 | secondary-hover 0.877 #d5d7d7 */
+/* Ônix Escuro: fg 1.000 #faffff | sec-fg 0.700 #9a9fa5 | soft 0.500 #5f6469 | card 0.250 #1e2226 | popover 0.170 #0c1014 | input 0.120 #040609 | border 0.300 #2a2e33 | border-container 0.300 #2a2e33 | action 0.300 #2a2e33 | action-hover 0.400 #44484d | secondary 0.300 #2a2e33 | secondary-hover 0.400 #44484d */
+/* Carbono Claro: fg 0.040 #000000 | sec-fg 0.400 #484848 | soft 0.600 #808080 | card 0.980 #f8f8f8 | popover 1.000 #ffffff | input 0.960 #f2f2f2 | border 0.930 #e8e8e8 | border-container 0.964 #f3f3f3 | action 1.000 #ffffff | action-hover 1.000 #ffffff | secondary 0.964 #f3f3f3 | secondary-hover 0.917 #e3e3e3 */
+/* Carbono Escuro: fg 1.000 #f7ffff | sec-fg 0.750 #a6afb7 | soft 0.550 #6a737a | card 0.300 #272f35 | popover 0.220 #141c21 | input 0.170 #091015 | border 0.350 #343c42 | border-container 0.350 #343c42 | action 0.350 #343c42 | action-hover 0.450 #4e575d | secondary 0.350 #343c42 | secondary-hover 0.450 #4e575d */
