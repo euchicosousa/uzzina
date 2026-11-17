@@ -575,7 +575,7 @@ export const PALLETE: PaletteConfig[] = [
       shadowOpacity: 10,
       primary: {
         h: 200,
-        c: 0.2,
+        c: 0.12,
         l: 0.7,
       },
       primaryFg: {
@@ -584,9 +584,9 @@ export const PALLETE: PaletteConfig[] = [
         l: 1,
       },
       bg: {
-        h: 0,
-        c: 0,
-        l: 0.96,
+        h: 260,
+        c: 0.005,
+        l: 0.98,
       },
       fg: {
         h: 0,
@@ -598,7 +598,7 @@ export const PALLETE: PaletteConfig[] = [
       inputLDelta: -0.02,
       actionLDelta: 0.02,
       actionHoverLDelta: 0.04,
-      popoverLDelta: 0,
+      popoverLDelta: 0.2,
       ring: {
         h: 200,
         c: 0.2,
@@ -610,18 +610,18 @@ export const PALLETE: PaletteConfig[] = [
       shadowOpacity: 50,
       primary: {
         h: 200,
-        c: 0.2,
-        l: 0.65,
+        c: 0.15,
+        l: 0.6,
       },
       primaryFg: {
-        h: 0,
-        c: 0,
-        l: 0,
+        h: 200,
+        c: 0.02,
+        l: 0.9,
       },
       bg: {
-        h: 285,
-        c: 0.005,
-        l: 0.141,
+        h: 290,
+        c: 0.05,
+        l: 0.2,
       },
       fg: {
         h: 0,
