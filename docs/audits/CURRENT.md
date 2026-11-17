@@ -58,6 +58,11 @@ O [ticket de sombra do tema](../../.scratch/design-system-audit/issues/14-global
 - Neutros não aplicados: hoje cada paleta grava seus próprios deltas em `palette-vars.ts`; trocar pelo rascunho mudaria as 11 paletas, e só Ônix e Carbono foram validados. Migração depende de deltas por paleta em `palettes.ts` (e de novos deltas para secundário, texto suave e borda de container).
 - Verificação: Prettier e `tsc --noEmit` sem erro. Sem conferência visual no app. Mudanças do Gemini em `tailwind.css` (variante escura e escopo `data-theme-preview`) foram junto no commit; o restante do DS21 (página de Admin, `palette-vars.ts`, `color.ts`, `Header.tsx`, `routeTree.gen.ts`) segue sem commit. Sem push; publicação não feita.
 
+### Commits e próximos passos do modelo cor pai — 17/11
+
+- Commitado a pedido do proprietário (sem push): `46a92ce` página "Cores dos temas" do DS21 fase 1, feita pelo Gemini, como estava (será refeita no DS32); `f31c102` valores do Turquesa (mudança do próprio proprietário); `6b677b4` DS28; `e49214e` tickets DS29–DS34. `tsc --noEmit` sem erro antes dos commits. `main` 6 commits à frente de `origin/main`.
+- Plano de execução por outros agentes, com textos prontos e as decisões D1–D5 que faltam para DS29+DS30: [proximos-passos-cor-pai.md](../../.scratch/design-system-audit/proximos-passos-cor-pai.md). O Claude Code só confere cada etapa.
+
 ### Levantamento pós-cor pai: tickets DS28 a DS34 — 17/11
 
 A pedido do proprietário, tudo o que ficou dependente do modelo antigo virou ticket (`.scratch/design-system-audit/issues/28` a `34`, listados no tracker). Só documentação; nada no app.
