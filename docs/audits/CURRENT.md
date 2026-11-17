@@ -58,6 +58,31 @@ O [ticket de sombra do tema](../../.scratch/design-system-audit/issues/14-global
 - Neutros não aplicados: hoje cada paleta grava seus próprios deltas em `palette-vars.ts`; trocar pelo rascunho mudaria as 11 paletas, e só Ônix e Carbono foram validados. Migração depende de deltas por paleta em `palettes.ts` (e de novos deltas para secundário, texto suave e borda de container).
 - Verificação: Prettier e `tsc --noEmit` sem erro. Sem conferência visual no app. Mudanças do Gemini em `tailwind.css` (variante escura e escopo `data-theme-preview`) foram junto no commit; o restante do DS21 (página de Admin, `palette-vars.ts`, `color.ts`, `Header.tsx`, `routeTree.gen.ts`) segue sem commit. Sem push; publicação não feita.
 
+### Levantamento pós-cor pai: tickets DS28 a DS34 — 17/11
+
+A pedido do proprietário, tudo o que ficou dependente do modelo antigo virou ticket (`.scratch/design-system-audit/issues/28` a `34`, listados no tracker). Só documentação; nada no app.
+
+- **Ordem sugerida:** DS28 (aceite) → decidir o destino do trabalho do Gemini no DS21 (sem commit em `palettes.ts`, `palette-vars.ts`, `color.ts`, `Header.tsx` e na página do Admin), porque DS29, DS30 e DS32 mexem nesses arquivos → DS29 (sombra) e DS30 (limpar paletas) → DS31 (Personalizado) e DS32 (editor do Admin) → DS33 (transparências e secundário) → DS34 (Cloudinary).
+- **Proposta:** encerrar o DS23 como substituído por DS28 + DS33 (aguarda o proprietário).
+- **Fora dos tickets:** push dos 2 commits locais (`8465aee`, `5e34a02`); aceite visual do DS25 no app (alertas, fases com hover, atraso no escuro, realce, sucesso forte); a frase da seção DS20/HOJE/TOP-01/DS22 que diz "sem push" está desatualizada (estão em `origin` desde `246f1dc`).
+
+### DS28: neutros novos aplicados no app (sem commit) — 17/11
+
+- **Aceito pelo proprietário em 17/11.** Falta o commit.
+
+- O proprietário conferiu os 11 temas no laboratório e mandou aplicar. `app/tailwind.css`: cartão, menu, campo, borda, ação, hover da ação, secundário (agora opaco), hover do secundário (novo, `bg-secondary-hover`) e texto secundário saem do fundo com um delta fixo de L, igual para todas as paletas (valores de `novo/tailwind-novo.css`). Os ajustes por paleta (`*-l-delta` gravados por `palette-vars.ts`) deixaram de ser lidos.
+- Texto principal: continua com a cor da paleta ou do tema Personalizado (preto ou branco). A regra derivada do fundo só vale quando não há cor própria. O CSS não separa paleta de Personalizado, então tirar o `fg` de cada paleta fica para a limpeza de `palettes.ts`.
+- Os controles de ajuste de luz do editor de temas do Admin (DS21, do Gemini, sem commit) não têm mais efeito; revisar junto com o DS21. Texto suave e borda de container não viraram token (seguem as classes de transparência atuais).
+- Galeria `/ui` (cores) e a tabela de tokens do AGENTS atualizadas.
+- Verificação: Prettier; no app (dados de produção, só leitura) a tela Hoje no claro e no escuro, com os valores calculados conferidos contra as fórmulas e sem erro de console. Não conferidos: gaveta, menus, Kanban e Minha Conta. Sem commit nem push.
+
+### DS28: laboratório de conferência dos neutros novos — 17/11
+
+- `.scratch/design-system-audit/ds28-conferencia-neutros.html` (feito por subagente Haiku): seletor com as 11 paletas, claro e escuro lado a lado, e todos os neutros do rascunho `novo/tailwind-novo.css` aplicados sobre o fundo de cada paleta. Componentes em vários estados: amostras de tokens, texto, botões (6 variantes e ícones), campos, abas e grupos, cartões e listas, menu, dica, diálogo, selos, alertas, as 6 fases e o cartão atrasado, kanban, calendário e cabeçalho. O rodapé traz a regra de cada cor.
+- O hover e o pressionado do botão primário (88% e 76%) e o pressionado dos secundários são suposições do laboratório; o app não as define assim.
+- Verificação: aberto no navegador, sem erro de console, sem rolagem horizontal; troca de tema conferida (Ônix e Fúcsia). Aguarda a conferência do proprietário. Nada no app; sem commit.
+- `app/lib/palettes.ts` mudou no disco durante a sessão (Turquesa claro: primária e anel), fora deste trabalho; não mexido.
+
 ### DS25: seções A, B e C do laboratório — 17/11
 
 - Decisões finais do proprietário: A8 mantém texto branco sobre o erro (contraste 3,50:1 no claro e 2,64:1 no escuro, abaixo de 4,5:1; aceito conscientemente, sem mudança no app). A4: atenção base com texto escuro. B1 vira referência (já decidido na etapa de fases). B2 mantido. B3 e B4: cinza padrão #999, só para ações novas (decisão de 17/11): troca de `DEFAULT_ACTION_COLOR` no código, sem atualizar as ações antigas nem o banco. C10: barra de rolagem como está hoje (texto principal a 10% e 20%).
