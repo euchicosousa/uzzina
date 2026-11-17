@@ -61,12 +61,12 @@ const COLOR_FORMATS: readonly ColorFormat[] = [
 ] as const;
 
 function getParsedColor(hexStr?: string | null): Color {
-  if (!hexStr) return parseColor("#666666");
+  if (!hexStr) return parseColor("#999999");
   try {
     const normalized = safeColor(hexStr);
     return parseColor(normalized);
   } catch {
-    return parseColor("#666666");
+    return parseColor("#999999");
   }
 }
 

@@ -12,8 +12,10 @@ O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso pa
 - **DS20, HOJE-01, HOJE-02, HOJE-03, TOP-01 e DS22 aceitos pelo proprietário em 16/11 e commitados localmente, sem push** (detalhes no [histórico](../../.scratch/archive/resolved-tickets.md)). O app publicado não tem essas mudanças até o push e o deploy Ready; o banco de produção já tem a migration e a carga do TOP-01 (colunas novas opcionais, compatíveis com o app publicado). Pendência técnica: 4 testes de `drawer-component` procuram o botão "Ver ID da ação" removido no HOJE-03.
 - **Ações sem responsável:** 5 em produção (3 ativas, marcadas para 19/11); o banco e a gaveta permitem lista vazia. Só registrado; impedir isso não tem ticket.
 - **UP01 (estudo do envio próprio de arquivos):** preparado em 16/11 e em espera por decisão do proprietário; desenho e decisões no ticket (janela "Arquivos", prévia do Instagram, avatar com recorte próprio, portal depois).
-- **DS21 com estudo e esboço interativo entregues em 16/11** (página exclusiva do Admin para edição completa e visualização lado a lado de todas as cores dos temas): [relatório completo](2026-11-16-ds21-admin-theme-colors-study.md), [esboço HTML interativo](../../.scratch/design-system-audit/prototipo-ds21-editor-cores-admin.html) e [ticket](../../.scratch/design-system-audit/issues/21-admin-theme-colors-editor.md), sem alteração no código do app nem no banco; aguarda avaliação do esboço e três decisões do proprietário antes de implementar.
+- **DS21 (Fase 1: página `/app/admin/themes` e Salvar) implementado localmente em 16/11, aguardando aceite visual:** rota exclusiva de Admin dentro de `AdminGuard` e item "Cores dos temas" no menu de Administração; prévia Claro/Escuro lado a lado com componentes reais (`ActionItem`, `PrismButton`, `PrismInput`, `PrismBadge`, `PrismAlert`, prioridades), editor fixo no tema do usuário (`applyPaletteVars` com suporte a elemento alvo e `[data-theme-preview="light"|"dark"]`), lista à direita com edição inline OKLCH/deltas/sombra/relevo/fases/prioridades, destaque tracejado ao passar o mouse e botão Salvar (`.md` + JSON) + Copiar código. Verificado: `tsc --noEmit`, Prettier e `vite build` passam; não verificado no navegador (Chrome DevTools indisponível) nem testado o `.md` gerado em aplicação real. Pendente para depois do aceite visual desta fase: corrigir o amarelo de "Atenção" no escuro, derivar prioridades das semânticas e decidir sobre Coral (`+1.00`) e saturação de Damasco/Fúcsia. [Ticket](../../.scratch/design-system-audit/issues/21-admin-theme-colors-editor.md)
 - **Sombra colorida da paleta (DS14):** encerrada com aceite do proprietário em 12/11; falta só publicar (a migração `20261112120000` já está aplicada em produção).
+- **DS24 (cor pai e neutros por fórmula, estudo em 16/11):** relatório entregue com a análise dos 12 tokens do laboratório e dos 11 temas; sem mudança no app. Recomendação: transparência 50% para texto suave e manter a borda de container translúcida; exceção pequena para o cartão de ação de Carbono e Cobalto. Aguarda decisões D1 a D7 do proprietário ([relatório](../../docs/audits/2026-11-16-ds24-cor-pai-analise.md)).
+- **DS23 (superfícies opacas, estudo em 16/11):** relatório e demonstração entregues; sem mudança no app. Aguarda decisões D1 a D5 do proprietário ([relatório](../../docs/audits/2026-11-16-ds23-surfaces-study.md)).
 - **Não verificado ainda:** aparência no navegador dos botões do Admin (Novo Usuário, Novo Cliente, Novo Parceiro) e comportamento dos menus Visualizar/Ordenar/Exibir com leitor de tela.
 
 ### Sombra colorida da paleta (DS14) — encerrada em 12/11
@@ -31,6 +33,37 @@ O ticket foi ajustado para encaminhamento. A primeira entrega é o inventário e
 O [ticket de sombra do tema](../../.scratch/design-system-audit/issues/14-global-theme-shadow.md) descreve como concluída uma implementação ausente da `main` local em `19c3585` e do diff do checkout. A revisão documental confirmou que menus, diálogos e outras superfícies listadas ainda usam as sombras atuais. A proposta é coerente como direção. Antes de executar, falta corrigir o status e a sequência de aprovação, delimitar elevações e exceções, separar a cor global da opção de relevo dos cartões e definir o comportamento do tema Personalizado. A bancada anuncia 11 paletas e define seis, com retorno para Ônix nas demais, e mantém sombras neutras nas amostras. O aceite precisa comparar sombras antes e depois em componentes reais, com as duas intensidades propostas e cobertura dos estados e temas relevantes. Referências e diff conferidos em revisão de código e documentação.
 
 ## Registro recente
+
+### DS25 e rascunho novo de neutros e semânticas — 17/11
+
+- **Semânticas (etapa 1 do laboratório `ds25-cores-semanticas.html`) concluídas pelo proprietário em 17/11.** Valores fixos por modo (erro, atenção, sucesso, informação), texto com L e C próprios, fundo como mistura de 10% (claro) e 30% (escuro) com o fundo da página, prioridades derivadas das semânticas e sucesso forte derivado do sucesso (L 0,53 e 0,40 no hover).
+- **Rascunho novo em `.scratch/design-system-audit/novo/tailwind-novo.css`** com neutros, transparências (texto suave 40%, borda de container 5% claro e 10% escuro), semânticas e sucesso forte. Ainda não está em `app/tailwind.css`; o app segue como antes. Cópia do estado anterior em `legado/tailwind-antes-da-revisao-2026-11-17.css`.
+- **Laboratório de fases e atraso:** agora mostra as seis fases (Ideia, Fazer, Fazendo, Análise, Feito, Concluído), com hover nos cartões suave e vivo e no cartão atrasado. Seletor de tema (Ônix, Carbono, Violeta) com claro e escuro lado a lado, no lugar da comparação de quatro colunas.
+- **Verificação:** o laboratório foi aberto no navegador com o servidor estático de `.scratch/design-system-audit` (porta 5190), sem erro de console; seletor e contagem de cartões conferidos. Não há alteração no app nem commit.
+- **Pendências:** decidir se o aviso de contraste dos ícones sai do laboratório; aplicar o rascunho no app (aguarda ok); retirar `shadowColor` e `shadowOpacity` de `app/lib/palettes.ts`; revisar o editor do DS21 sem sobrescrever o trabalho do Gemini; valores de fase do rascunho ainda do laboratório (% de repouso e hover de claro e escuro).
+
+### DS25: cores fixas (seção A) decididas em parte — 17/11
+
+- Decididos pelo proprietário: A1 e A2 fixos; A3 película da sombra; A5 fixo; A6 texto secundário; A7 ligado aos neutros (a criar depois); A9 seleção com primária a 25%. A semântica e o sucesso forte estão concluídos.
+- A4 decidido: realce com atenção base e texto escuro (9,09:1 no claro e 6,06:1 no escuro). A8 aberto: o par bg-error com texto text-error-background dá 2,82:1 no claro e 4,26:1 no escuro (reprova). O par do alerta (fundo de erro com texto de erro) dá 4,97:1 no claro e 4,22:1 no escuro, o que mostra que o escuro do alerta também fica abaixo de 4,5:1. Aguarda escolha do proprietário.
+- Laboratório apenas. Nada no app; sem commit.
+
+### DS25: hover das fases vivas e cartão atrasado como no app — 17/11
+
+- Laboratório: as cores vivas em repouso são as do app e não mudam. O hover recebe campos de ΔL e ΔC ("Fases: viva, hover"), sem mistura. O cartão atrasado foi refeito com o desenho de `ActionItem` (fundo de erro a 70%, anel de erro, sombra de repouso 25% e de hover 30%). Verificado no navegador no claro; escuro não conferido. Fases atenuadas seguem com a mistura aprovada. Nada no app; sem commit.
+
+### DS25: primeira aplicação no app (commit local, sem push) — 17/11
+
+- `app/tailwind.css`: semânticas com os valores aprovados (fundo 10% claro, 30% escuro; texto próprio no escuro; sucesso forte hover L 0,40); fase suave misturada com o fundo (15/30 claro, 40/70 escuro); hover da fase viva com ΔL +0,1 e ΔC −0,01 (também na variante de texto claro, por decisão do proprietário); realce do editor com a cor de atenção e texto escuro; seleção com a primária a 25%. Rodapé com `text-secondary-foreground`. Cinza padrão `#999999` para ações novas (`DEFAULT_ACTION_COLOR`, validação, seletor de cor e gaveta; `#666666` antigo continua reconhecido como padrão).
+- Neutros não aplicados: hoje cada paleta grava seus próprios deltas em `palette-vars.ts`; trocar pelo rascunho mudaria as 11 paletas, e só Ônix e Carbono foram validados. Migração depende de deltas por paleta em `palettes.ts` (e de novos deltas para secundário, texto suave e borda de container).
+- Verificação: Prettier e `tsc --noEmit` sem erro. Sem conferência visual no app. Mudanças do Gemini em `tailwind.css` (variante escura e escopo `data-theme-preview`) foram junto no commit; o restante do DS21 (página de Admin, `palette-vars.ts`, `color.ts`, `Header.tsx`, `routeTree.gen.ts`) segue sem commit. Sem push; publicação não feita.
+
+### DS25: seções A, B e C do laboratório — 17/11
+
+- Decisões finais do proprietário: A8 mantém texto branco sobre o erro (contraste 3,50:1 no claro e 2,64:1 no escuro, abaixo de 4,5:1; aceito conscientemente, sem mudança no app). A4: atenção base com texto escuro. B1 vira referência (já decidido na etapa de fases). B2 mantido. B3 e B4: cinza padrão #999, só para ações novas (decisão de 17/11): troca de `DEFAULT_ACTION_COLOR` no código, sem atualizar as ações antigas nem o banco. C10: barra de rolagem como está hoje (texto principal a 10% e 20%).
+- C11 (placeholder): decidido em 17/11, mantém texto principal a 50%. Itens C conferidos pelo proprietário (12 de 12). Laboratório DS25 fechado em 17/11.
+- Pendente para depois, no app: aplicar o rascunho de neutros e semânticas; cinza #999 em ação sem cor e parceiro sem cor; widget de upload ligado aos neutros (A7); remover shadowColor e shadowOpacity da paleta; revisar o editor do DS21.
+- Laboratório apenas. Nada no app; sem commit.
 
 ### TOP-01: carga dos tópicos aplicada — 16/11
 

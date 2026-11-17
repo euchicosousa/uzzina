@@ -129,7 +129,7 @@ export const ActionCreateSchema = z.object({
   sprints: nullableArrayOrCommaString.default(null),
   instagram_caption: nullableOptionalString.default(null),
   content_description: nullableOptionalString.default(null),
-  color: z.string().nullable().optional().default("#666666"),
+  color: z.string().nullable().optional().default("#999999"),
   topic_id: z.string().uuid().nullable().optional(),
   phase: z.string().optional().default("idea"),
   strategies: z.unknown().optional().nullable(),

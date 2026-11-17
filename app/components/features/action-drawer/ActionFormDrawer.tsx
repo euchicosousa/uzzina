@@ -1022,11 +1022,14 @@ export function ActionFormDrawer({
       prevPrimaryPartnerRef.current = currentPrimarySlug;
       const primaryPartner = currentPartners[0];
       if (primaryPartner) {
-        const newColor = primaryPartner.colors?.[0] || "#666666";
+        const newColor = primaryPartner.colors?.[0] || "#999999";
         setRawAction((prev) => ({
           ...prev,
           color:
-            !prev.color || prev.color === "#666666" || prev.color === "#666"
+            !prev.color ||
+            prev.color === "#999999" ||
+            prev.color === "#666666" ||
+            prev.color === "#666"
               ? newColor
               : prev.color,
           responsibles:

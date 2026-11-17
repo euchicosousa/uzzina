@@ -43,7 +43,7 @@ export const normalizeHexColor = (color: string) => {
  * Cor padrão aplicada quando action.color é nulo, vazio ou inválido.
  * Corresponde ao cinza neutro já usado implicitamente em normalizeHexColor.
  */
-export const DEFAULT_ACTION_COLOR = "#666666";
+export const DEFAULT_ACTION_COLOR = "#999999";
 
 export function toHex(raw: string): string {
   try {

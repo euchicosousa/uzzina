@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is(.dark *):not([data-theme-preview="light"], [data-theme-preview="light"] *));
 
-:root {
+:root,
+[data-theme-preview="light"] {
   --radius: 0.65rem;
   --background: var(--background-override, oklch(1 0 0));
   --foreground: var(--foreground-override, oklch(0.141 0.005 285.823));
@@ -72,57 +73,50 @@
       color-mix(in srgb, var(--action-shadow-color) 18%, transparent)
   );
 
-  --error-hue: 16.339;
-  --warning-hue: 70;
-  --info-hue: 250;
-  --luminosity: 0.7;
-  --chroma: 0.2;
-
-  --color-error: oklch(0.8 calc(var(--chroma) * 1.1) var(--error-hue));
-  --error-foreground: oklch(0.6 calc(var(--chroma) * 1.1) var(--error-hue));
+  /* Semantic colors (DS25): one fixed value each, inside the sRGB gamut.
+     Text is set on its own (own chroma), because a darker tone keeps the
+     base chroma outside sRGB. Background = semantic color mixed with the page
+     background, 10% in light (one value for every palette). */
+  --color-error: oklch(0.65 0.16 16);
+  --error-foreground: oklch(0.52 0.205 16);
   --color-error-background: color-mix(
     in oklab,
-    var(--color-error) 13%,
-    var(--card)
+    var(--color-error) 10%,
+    var(--background)
   );
 
-  --color-warning: oklch(
-    calc(var(--luminosity) * 1.56) var(--chroma) var(--warning-hue)
-  );
-  --warning-foreground: oklch(0.5 var(--chroma) var(--warning-hue));
+  --color-warning: oklch(0.82 0.12 80);
+  --warning-foreground: oklch(0.51 0.1 80);
   --color-warning-background: color-mix(
     in oklab,
-    var(--color-warning) 7%,
-    var(--card)
+    var(--color-warning) 10%,
+    var(--background)
   );
 
-  /* Success unificado na família Emerald de success-strong */
-  --color-success: oklch(0.508 0.14 163);
-  --color-success-foreground: oklch(0.42 0.14 163);
+  --color-success: oklch(0.65 0.11 163);
+  --color-success-foreground: oklch(0.495 0.1 163);
   --color-success-background: color-mix(
     in oklab,
-    var(--color-success) 7%,
-    var(--card)
+    var(--color-success) 10%,
+    var(--background)
   );
 
-  /* Priority colors (Today priority board): green, yellow and red. */
-  --priority-low: oklch(0.7 0.17 150);
-  --priority-medium: oklch(0.82 0.16 90);
-  --priority-high: oklch(0.65 0.22 25);
-
-  --color-info: oklch(
-    calc(var(--luminosity) * 1.2) var(--chroma) var(--info-hue)
-  );
-  --info-foreground: oklch(0.5 var(--chroma) var(--info-hue));
+  --color-info: oklch(0.65 0.12 250);
+  --info-foreground: oklch(0.505 0.14 250);
   --color-info-background: color-mix(
     in oklab,
-    var(--color-info) 7%,
-    var(--card)
+    var(--color-info) 10%,
+    var(--background)
   );
 
-  /* Fixed-palette semantic tokens: same value in light and dark themes. */
-  --success-strong: var(--color-emerald-600);
-  --success-strong-hover: var(--color-emerald-700);
+  /* Priorities derive from the semantic colors (low = success, medium = warning, high = error). */
+  --priority-low: var(--color-success);
+  --priority-medium: var(--color-warning);
+  --priority-high: var(--color-error);
+
+  /* Strong success derives from success: same hue, fixed lightness and chroma (white text 5:1). */
+  --success-strong: oklch(from var(--color-success) 0.53 0.105 h);
+  --success-strong-hover: oklch(from var(--color-success) 0.4 0.09 h);
   --success-strong-foreground: var(--color-white);
 
   --font-heading: var(--font-sans);
@@ -185,60 +179,49 @@
       var(--dark-primary-h)
   );
 
-  --error-hue: 16.339;
-  --warning-hue: 90;
-  --info-hue: 250;
-
-  --luminosity: 0.7;
-  --chroma: 0.2;
-
-  --color-error: oklch(
-    calc(var(--luminosity) * 1.2305) var(--chroma) var(--error-hue)
-  );
-  --error-foreground: var(--color-error);
+  /* Semantic colors: fixed values inside the sRGB gamut (DS21). */
+  /* Dark: same fixed semantic values; text is the semantic color itself;
+     background = semantic color mixed with the page background, 30% in dark. */
+  --color-error: oklch(0.72 0.14 16);
+  --error-foreground: oklch(0.72 0.16 16);
   --color-error-background: color-mix(
     in oklab,
-    var(--color-error) 14%,
-    var(--card)
+    var(--color-error) 30%,
+    var(--background)
   );
 
-  --color-warning: oklch(
-    calc(var(--luminosity) * 1.56) var(--chroma) var(--warning-hue)
-  );
-  --warning-foreground: var(--color-warning);
+  --color-warning: oklch(0.84 0.12 80);
+  --warning-foreground: oklch(0.84 0.14 80);
   --color-warning-background: color-mix(
     in oklab,
-    var(--color-warning) 14%,
-    var(--card)
+    var(--color-warning) 30%,
+    var(--background)
   );
 
-  /* Success unificado na família Emerald de success-strong */
-  --color-success: oklch(0.65 0.16 163);
-  --color-success-foreground: var(--color-success);
+  --color-success: oklch(0.75 0.1 163);
+  --color-success-foreground: oklch(0.75 0.15 163);
   --color-success-background: color-mix(
     in oklab,
-    var(--color-success) 14%,
-    var(--card)
+    var(--color-success) 30%,
+    var(--background)
   );
 
-  /* Priority colors (Today priority board): green, yellow and red. */
-  --priority-low: oklch(0.75 0.16 150);
-  --priority-medium: oklch(0.85 0.15 95);
-  --priority-high: oklch(0.7 0.2 25);
-
-  --color-info: oklch(
-    calc(var(--luminosity) * 1.2) var(--chroma) var(--info-hue)
-  );
-  --info-foreground: var(--color-info);
+  --color-info: oklch(0.75 0.12 250);
+  --info-foreground: oklch(0.75 0.12 250);
   --color-info-background: color-mix(
     in oklab,
-    var(--color-info) 14%,
-    var(--card)
+    var(--color-info) 30%,
+    var(--background)
   );
 
+  /* Priorities derive from the semantic colors (same rule as light). */
+  --priority-low: var(--color-success);
+  --priority-medium: var(--color-warning);
+  --priority-high: var(--color-error);
+
   /* Fixed-palette semantic tokens: same value in light and dark themes. */
-  --success-strong: var(--color-emerald-600);
-  --success-strong-hover: var(--color-emerald-700);
+  --success-strong: oklch(from var(--color-success) 0.53 0.105 h);
+  --success-strong-hover: oklch(from var(--color-success) 0.4 0.09 h);
   --success-strong-foreground: var(--color-white);
 
   --dark-action-l-delta: 0.1;
@@ -611,6 +594,11 @@ html {
   @apply my-8 border-border;
 }
 
+/* Text selection: primary at 25% */
+::selection {
+  background-color: color-mix(in oklab, var(--primary) 25%, transparent);
+}
+
 /* Links */
 .tiptap.ProseMirror a {
   @apply cursor-pointer text-primary underline decoration-primary/40 underline-offset-4 transition-colors hover:decoration-primary;
@@ -618,7 +606,9 @@ html {
 
 /* Highlights */
 .tiptap.ProseMirror mark {
-  @apply rounded bg-amber-200 px-0.5 text-inherit squircle dark:bg-amber-500/30;
+  @apply rounded px-0.5 squircle;
+  background-color: var(--color-warning);
+  color: oklch(0.25 0.03 80);
 }
 
 /* Tabelas */
@@ -665,16 +655,19 @@ html {
    palette-vars) drop the phase ring and, through the override, the hover
    shadow, like a regular flat card. */
 @utility phase-surface {
-  --phase-mix: 7%;
-  --phase-mix-hover: 12%;
+  --phase-mix: 15%;
+  --phase-mix-hover: 30%;
   --phase-ring-alpha: 30%;
   --phase-fg: oklch(from var(--phase-color) 0.35 0.07 h);
   --phase-shadow: oklch(from var(--phase-color) 0.6 0.15 h);
   --phase-shadow-alpha: 25%;
   --phase-diffuse: transparent;
-  &:is(.dark *) {
-    --phase-mix: 14%;
-    --phase-mix-hover: 22%;
+  &:is(.dark *):not(
+      [data-theme-preview="light"],
+      [data-theme-preview="light"] *
+    ) {
+    --phase-mix: 40%;
+    --phase-mix-hover: 70%;
     --phase-ring-alpha: 55%;
     --phase-fg: oklch(from var(--phase-color) 0.92 0.06 h);
     --phase-shadow: oklch(from var(--phase-color) 0.33 0.1 h);
@@ -690,12 +683,12 @@ html {
   --action: color-mix(
     in oklab,
     var(--phase-color) var(--phase-mix),
-    var(--action-base)
+    var(--background)
   );
   --action-hover: color-mix(
     in oklab,
     var(--phase-color) var(--phase-mix-hover),
-    var(--action-hover-base)
+    var(--background)
   );
   --action-ring: color-mix(
     in srgb,
@@ -730,26 +723,32 @@ html {
 @utility phase-vivid {
   --vivid-fill: var(--phase-color);
   --vivid-ink: oklch(from var(--phase-color) 0.35 0.07 h);
-  --vivid-hover-dl: 0.04;
+  --vivid-hover-dl: 0.1;
   --vivid-edge-dl: 0.06;
   --vivid-top-light: 45%;
   --vivid-shadow: oklch(from var(--phase-color) 0.55 0.16 h);
   &:is([data-vivid-text="light"] *) {
     --vivid-ink: oklch(from var(--phase-color) 0.98 0.025 h);
-    --vivid-hover-dl: -0.04;
   }
-  &:is(.dark *) {
+  &:is(.dark *):not(
+      [data-theme-preview="light"],
+      [data-theme-preview="light"] *
+    ) {
     --vivid-edge-dl: 0.14;
     --vivid-top-light: 25%;
   }
-  &:is(.dark[data-vivid-dark="dim"] *) {
+  &:is(.dark[data-vivid-dark="dim"] *):not(
+      [data-theme-preview="light"],
+      [data-theme-preview="light"] *
+    ) {
     --vivid-fill: oklch(from var(--phase-color) 0.72 calc(c* 0.8) h);
   }
 
   --foreground: var(--vivid-ink);
   --action: var(--vivid-fill);
   --action-hover: oklch(
-    from var(--vivid-fill) calc(l + var(--vivid-hover-dl)) c h
+    from var(--vivid-fill) calc(l + var(--vivid-hover-dl))
+      max(0, calc(c - 0.01)) h
   );
   --action-ring: oklch(
     from var(--vivid-fill) calc(l - var(--vivid-edge-dl)) c h

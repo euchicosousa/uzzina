@@ -116,7 +116,10 @@ export function ActionFormFooter({
               if (
                 !RawAction.id &&
                 first?.colors?.length &&
-                (!color || color === "#666666" || color === "#666")
+                (!color ||
+                  color === "#999999" ||
+                  color === "#666666" ||
+                  color === "#666")
               ) {
                 color = first.colors[0];
               }
