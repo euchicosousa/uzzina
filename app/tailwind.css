@@ -6,13 +6,17 @@
 [data-theme-preview="light"] {
   --radius: 0.65rem;
   --background: var(--background-override, oklch(1 0 0));
-  --foreground: var(--foreground-override, oklch(0.141 0.005 285.823));
+  /* Neutrals (DS28): every neutral derives from the background (parent color)
+     with one fixed L delta for all palettes. Per-palette *-l-delta values
+     written by palette-vars are no longer read. Text keeps the palette or
+     custom-theme override; the derived value is the fallback. */
+  --foreground: var(
+    --foreground-override,
+    oklch(from var(--background) calc(l - 0.96) max(0, calc(c - 0.002)) h)
+  );
 
-  --card-l-delta: -0.02;
-  --card: oklch(from var(--background) calc(l + var(--card-l-delta)) c h);
-
-  --popover-l-delta: 0;
-  --popover: oklch(from var(--background) calc(l + var(--popover-l-delta)) c h);
+  --card: oklch(from var(--background) calc(l - 0.02) c h);
+  --popover: oklch(from var(--background) calc(l + 0.02) c h);
 
   /* Primary color knobs — overrideable by JS for theme color picker */
   --primary-h: 0; /* hue: 0–360 */
@@ -26,18 +30,14 @@
     oklch(var(--primary-fg-l) 0 var(--primary-h))
   );
 
-  --secondary: color-mix(in srgb, var(--foreground) 5%, transparent);
-  --secondary-foreground: color-mix(
-    in srgb,
-    var(--foreground) 65%,
-    transparent
+  --secondary: oklch(from var(--background) calc(l - 0.036) c h);
+  --secondary-hover: oklch(from var(--background) calc(l - 0.083) c h);
+  --secondary-foreground: oklch(
+    from var(--background) calc(l - 0.512) max(0, calc(c - 0.001)) h
   );
 
-  --border-l-delta: -0.05;
-  --border: oklch(from var(--background) calc(l + var(--border-l-delta)) c h);
-
-  --input-l-delta: -0.05;
-  --input: oklch(from var(--background) calc(l + var(--input-l-delta)) c h);
+  --border: oklch(from var(--background) calc(l - 0.07) c h);
+  --input: oklch(from var(--background) calc(l - 0.04) c h);
 
   --ring: var(
     --ring-override,
@@ -47,12 +47,8 @@
     max(0, calc(var(--primary-l) - 0.15)) var(--primary-c) var(--primary-h)
   );
 
-  --action-l-delta: 0.02;
-  --action-hover-l-delta: 0.04;
-  --action: oklch(from var(--background) calc(l + var(--action-l-delta)) c h);
-  --action-hover: oklch(
-    from var(--background) calc(l + var(--action-hover-l-delta)) c h
-  );
+  --action: oklch(from var(--background) calc(l + 0.02) c h);
+  --action-hover: oklch(from var(--background) calc(l + 0.1) c h);
   /* Palette surfaces kept apart so phase-surface can tint them (DS11). */
   --action-base: var(--action);
   --action-hover-base: var(--action-hover);
@@ -128,15 +124,14 @@
 .dark,
 :root[class~="dark"] {
   --background: var(--dark-background-override, oklch(0.4 0.01 285.823));
-  --foreground: var(--dark-foreground-override, oklch(0.985 0 0));
-
-  --dark-card-l-delta: 0.05;
-  --card: oklch(from var(--background) calc(l + var(--dark-card-l-delta)) c h);
-
-  --dark-popover-l-delta: -0.03;
-  --popover: oklch(
-    from var(--background) calc(l + var(--dark-popover-l-delta)) c h
+  /* Neutrals (DS28): fixed L deltas over the dark background. */
+  --foreground: var(
+    --dark-foreground-override,
+    oklch(from var(--background) calc(l + 0.8) max(0, calc(c - 0.01)) h)
   );
+
+  --card: oklch(from var(--background) calc(l + 0.05) c h);
+  --popover: oklch(from var(--background) calc(l - 0.03) c h);
 
   /* Dark mode variables injected by JS */
   /* Fallback values — preto/branco base */
@@ -153,22 +148,18 @@
     oklch(var(--dark-primary-fg-l) 0.014 var(--dark-primary-h))
   );
 
-  --secondary: color-mix(in oklch, var(--foreground) 10%, transparent);
-  --secondary-foreground: color-mix(
-    in srgb,
-    var(--foreground) 65%,
-    transparent
+  --secondary: oklch(
+    from var(--background) calc(l + 0.098) max(0, calc(c - 0.002)) h
+  );
+  --secondary-hover: oklch(
+    from var(--background) calc(l + 0.133) max(0, calc(c - 0.002)) h
+  );
+  --secondary-foreground: oklch(
+    from var(--background) calc(l + 0.549) max(0, calc(c - 0.007)) h
   );
 
-  --dark-border-l-delta: 0.2;
-  --border: oklch(
-    from var(--background) calc(l + var(--dark-border-l-delta)) c h
-  );
-
-  --dark-input-l-delta: 0.05;
-  --input: oklch(
-    from var(--background) calc(l + var(--dark-input-l-delta)) c h
-  );
+  --border: oklch(from var(--background) calc(l + 0.1) c h);
+  --input: oklch(from var(--background) calc(l + 0.02) c h);
 
   --ring: var(
     --dark-ring-override,
@@ -224,14 +215,8 @@
   --success-strong-hover: oklch(from var(--color-success) 0.4 0.09 h);
   --success-strong-foreground: var(--color-white);
 
-  --dark-action-l-delta: 0.1;
-  --dark-action-hover-l-delta: 0.2;
-  --action: oklch(
-    from var(--background) calc(l + var(--dark-action-l-delta)) c h
-  );
-  --action-hover: oklch(
-    from var(--background) calc(l + var(--dark-action-hover-l-delta)) c h
-  );
+  --action: oklch(from var(--background) calc(l + 0.1) c h);
+  --action-hover: oklch(from var(--background) calc(l + 0.2) c h);
   --action-base: var(--action);
   --action-hover-base: var(--action-hover);
   --shadow-tint: var(
@@ -296,6 +281,7 @@
   --color-primary-foreground: var(--primary-foreground);
 
   --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
   --color-secondary-foreground: var(--secondary-foreground);
 
   --color-border: var(--border);

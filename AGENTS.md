@@ -106,8 +106,8 @@ Preserve o estilo próprio, temas e paletas OKLCH da UZZINA. Novos primitivos fi
 | Token                                       | Uso                                                                     |
 | ------------------------------------------- | ----------------------------------------------------------------------- |
 | bg-background / bg-card / bg-input          | Página, painéis e campos                                                |
-| bg-secondary                                | Superfícies neutras e fundos de hover/foco (5% no claro, 10% no escuro) |
-| text-foreground / text-secondary-foreground | Texto principal e secundário (65% nos dois modos)                       |
+| bg-secondary / bg-secondary-hover           | Superfícies neutras e fundos de hover/foco (opacos, derivados do fundo) |
+| text-foreground / text-secondary-foreground | Texto principal e secundário (secundário derivado do fundo)             |
 | border-border / border-input                | Bordas                                                                  |
 | bg-primary / text-primary-foreground        | Ação principal                                                          |
 | border-ring / ring-ring/30                  | Foco                                                                    |

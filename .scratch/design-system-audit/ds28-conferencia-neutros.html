@@ -1,0 +1,795 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS28 Conferência dos neutros</title>
+<style>
+  /* Page chrome only (neutral, not part of the theme under review). */
+  :root {
+    --chrome-bg: #f3f3f2; --chrome-fg: #1c1c1b; --chrome-muted: #6b6b68; --chrome-line: #dcdcd9;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--chrome-bg); color: var(--chrome-fg);
+    font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+
+  /* Sticky top bar */
+  .top {
+    position: sticky; top: 0; z-index: 10; background: var(--chrome-bg);
+    border-bottom: 1px solid var(--chrome-line); padding: 12px 16px;
+    display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center;
+  }
+  .top h1 { font-size: 18px; font-weight: 600; margin: 0; flex: 1 1 auto; min-width: 0; }
+  .top label { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--chrome-muted); }
+  .top select {
+    height: 32px; border-radius: 16px; border: 1px solid var(--chrome-line); background: #fff;
+    padding: 0 10px; font: inherit; color: var(--chrome-fg); min-width: 0;
+  }
+  .top p { margin: 0; flex: 1 1 100%; font-size: 12px; color: var(--chrome-muted); }
+
+  /* Two side-by-side modes; stacked under 900px */
+  .cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; padding: 16px; }
+  @media (max-width: 899px) { .cols { grid-template-columns: minmax(0, 1fr); } }
+
+  /* Each column is a theme surface. Its --background is set by JS (per palette). */
+  .mode-light { --background: oklch(0.96 0.002 200); --shadow-pop: 0 10px 30px rgb(0 0 0 / 0.12);
+    --phase-mix: 15%; --phase-mix-hover: 30%; }
+  .mode-dark { --background: oklch(0.2 0.01 250); --shadow-pop: 0 10px 30px rgb(0 0 0 / 0.4);
+    --phase-mix: 40%; --phase-mix-hover: 70%; }
+  .col {
+    background: var(--background); color: var(--foreground); padding: 24px; min-width: 0;
+    container-type: inline-size; border-radius: 16px; box-shadow: inset 0 0 0 1px var(--border-container);
+  }
+  .col-title {
+    font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--secondary-foreground); margin: 0 0 4px;
+  }
+
+  /* Neutral tokens, light mode: copied from novo/tailwind-novo.css (:root block). */
+  .mode-light {
+    --foreground: oklch(from var(--background) calc(l - 0.96) max(0, calc(c - 0.002)) h);
+    --secondary-foreground: oklch(from var(--background) calc(l - 0.512) max(0, calc(c - 0.001)) h);
+    --card: oklch(from var(--background) calc(l - 0.02) c h);
+    --popover: oklch(from var(--background) calc(l + 0.02) c h);
+    --input: oklch(from var(--background) calc(l - 0.04) c h);
+    --border: oklch(from var(--background) calc(l - 0.07) c h);
+    --action: oklch(from var(--background) calc(l + 0.02) c h);
+    --action-hover: oklch(from var(--background) calc(l + 0.1) c h);
+    --secondary: oklch(from var(--background) calc(l - 0.036) c h);
+    --secondary-hover: oklch(from var(--background) calc(l - 0.083) c h);
+
+    --text-soft: oklch(from var(--foreground) l c h / 0.4);
+    --border-container: oklch(from var(--foreground) l c h / 0.05);
+
+    --color-white: oklch(1 0 0);
+    --color-error: oklch(0.65 0.16 16);
+    --error-foreground: oklch(0.52 0.205 16);
+    --color-error-background: color-mix(in oklab, var(--color-error) 10%, var(--background));
+
+    --color-warning: oklch(0.82 0.12 80);
+    --warning-foreground: oklch(0.51 0.1 80);
+    --color-warning-background: color-mix(in oklab, var(--color-warning) 10%, var(--background));
+
+    --color-success: oklch(0.65 0.11 163);
+    --color-success-foreground: oklch(0.495 0.1 163);
+    --color-success-background: color-mix(in oklab, var(--color-success) 10%, var(--background));
+
+    --color-info: oklch(0.65 0.12 250);
+    --info-foreground: oklch(0.505 0.14 250);
+    --color-info-background: color-mix(in oklab, var(--color-info) 10%, var(--background));
+
+    --priority-low: var(--color-success);
+    --priority-medium: var(--color-warning);
+    --priority-high: var(--color-error);
+
+    --success-strong: oklch(from var(--color-success) 0.53 0.105 h);
+    --success-strong-hover: oklch(from var(--color-success) 0.4 0.09 h);
+    --success-strong-foreground: var(--color-white);
+  }
+
+  /* Neutral tokens, dark mode: copied from novo/tailwind-novo.css (.dark block). */
+  .mode-dark {
+    --foreground: oklch(from var(--background) calc(l + 0.8) max(0, calc(c - 0.01)) h);
+    --secondary-foreground: oklch(from var(--background) calc(l + 0.549) max(0, calc(c - 0.007)) h);
+    --card: oklch(from var(--background) calc(l + 0.05) c h);
+    --popover: oklch(from var(--background) calc(l - 0.03) c h);
+    --input: oklch(from var(--background) calc(l + 0.02) c h);
+    --border: oklch(from var(--background) calc(l + 0.1) c h);
+    --action: oklch(from var(--background) calc(l + 0.1) c h);
+    --action-hover: oklch(from var(--background) calc(l + 0.2) c h);
+    --secondary: oklch(from var(--background) calc(l + 0.098) max(0, calc(c - 0.002)) h);
+    --secondary-hover: oklch(from var(--background) calc(l + 0.133) max(0, calc(c - 0.002)) h);
+
+    --text-soft: oklch(from var(--foreground) l c h / 0.4);
+    --border-container: oklch(from var(--foreground) l c h / 0.1);
+
+    --color-white: oklch(1 0 0);
+    --color-error: oklch(0.72 0.14 16);
+    --error-foreground: oklch(0.72 0.16 16);
+    --color-error-background: color-mix(in oklab, var(--color-error) 30%, var(--background));
+
+    --color-warning: oklch(0.84 0.12 80);
+    --warning-foreground: oklch(0.84 0.14 80);
+    --color-warning-background: color-mix(in oklab, var(--color-warning) 30%, var(--background));
+
+    --color-success: oklch(0.75 0.1 163);
+    --color-success-foreground: oklch(0.75 0.15 163);
+    --color-success-background: color-mix(in oklab, var(--color-success) 30%, var(--background));
+
+    --color-info: oklch(0.75 0.12 250);
+    --info-foreground: oklch(0.75 0.12 250);
+    --color-info-background: color-mix(in oklab, var(--color-info) 30%, var(--background));
+
+    --priority-low: var(--color-success);
+    --priority-medium: var(--color-warning);
+    --priority-high: var(--color-error);
+
+    --success-strong: oklch(from var(--color-success) 0.53 0.105 h);
+    --success-strong-hover: oklch(from var(--color-success) 0.4 0.09 h);
+    --success-strong-foreground: var(--color-white);
+  }
+
+  /* Section scaffolding */
+  .blk { margin-bottom: 8px; min-width: 0; }
+  .sec {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--secondary-foreground); margin: 32px 0 12px; padding-top: 16px;
+    border-top: 1px solid var(--border-container);
+  }
+  .col .blk:first-of-type .sec { margin-top: 0; padding-top: 0; border-top: 0; }
+  .cap { display: block; font-size: 11px; color: var(--secondary-foreground); margin-bottom: 4px; }
+  .lbl { display: block; font-size: 12px; font-weight: 500; color: var(--secondary-foreground); margin-bottom: 6px; }
+  .srow { margin-bottom: 14px; min-width: 0; }
+  .slabel { font-size: 12px; font-weight: 500; color: var(--secondary-foreground); margin-bottom: 6px; }
+  .states { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: flex-end; }
+  .st { min-width: 0; }
+  .grid { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); min-width: 0; }
+  .grid.g4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  @container (max-width: 420px) { .grid.g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @container (max-width: 360px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+  .sample { min-width: 0; }
+
+  .t-h { font-size: 18px; font-weight: 600; margin: 0 0 6px; color: var(--foreground); }
+  .t-p { margin: 0 0 6px; color: var(--foreground); }
+  .t-s { margin: 0 0 6px; color: var(--secondary-foreground); }
+  .t-x { margin: 0; color: var(--text-soft); }
+  .lnk { color: var(--primary); text-decoration: underline; text-underline-offset: 3px; }
+
+  /* Swatches */
+  .swatch { min-width: 0; }
+  .chip {
+    height: 44px; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--border); margin-bottom: 6px;
+  }
+  .swatch code { font: 11px/1.3 ui-monospace, Menlo, monospace; color: var(--secondary-foreground); overflow-wrap: anywhere; }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px;
+    padding: 0 12px; border-radius: 16px; corner-shape: squircle; border: 1px solid transparent;
+    background: transparent; color: var(--foreground); font: 500 14px/1 system-ui, sans-serif;
+    white-space: nowrap; cursor: pointer; outline: none;
+  }
+  .btn:focus-visible { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 30%, transparent); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn svg { flex: none; }
+  .btn-icon { width: 32px; padding: 0; }
+  .btn-round { width: 32px; padding: 0; border-radius: 999px; corner-shape: round; }
+
+  .btn-primary { background: var(--primary); color: var(--primary-foreground); }
+  .btn-primary.is-hover { background: color-mix(in oklab, var(--primary) 88%, transparent); }
+  .btn-primary.is-pressed { background: color-mix(in oklab, var(--primary) 76%, transparent); }
+
+  .btn-secondary { background: var(--secondary); color: var(--foreground); }
+  .btn-secondary.is-hover { background: var(--secondary-hover); }
+  .btn-secondary.is-pressed { background: color-mix(in oklab, var(--secondary-hover) 70%, var(--foreground)); }
+
+  .btn-ghost { background: transparent; color: var(--foreground); }
+  .btn-ghost.is-hover { background: var(--secondary); }
+  .btn-ghost.is-pressed { background: var(--secondary-hover); }
+
+  .btn-outline { background: transparent; border-color: var(--border); color: var(--foreground); }
+  .btn-outline.is-hover { background: var(--secondary); }
+  .btn-outline.is-pressed { background: var(--secondary-hover); }
+
+  .btn-destructive { background: var(--color-error); color: var(--color-white); }
+  .btn-destructive.is-hover { background: color-mix(in oklab, var(--color-error) 88%, #000); }
+  .btn-destructive.is-pressed { background: color-mix(in oklab, var(--color-error) 76%, #000); }
+
+  .btn-success { background: var(--success-strong); color: var(--success-strong-foreground); }
+  .btn-success.is-hover { background: var(--success-strong-hover); }
+  .btn-success.is-pressed { background: color-mix(in oklab, var(--success-strong-hover) 80%, #000); }
+
+  /* Fields */
+  .field {
+    display: block; box-sizing: border-box; width: 100%; min-width: 0; height: 36px; padding: 0 12px;
+    border: 1px solid var(--border); border-radius: 16px; corner-shape: squircle;
+    background: var(--input); color: var(--foreground); font: inherit; font-size: 14px; outline: none;
+  }
+  .field::placeholder { color: color-mix(in oklab, var(--foreground) 50%, transparent); }
+  .field:disabled { opacity: 0.5; }
+  .field.is-focus { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 30%, transparent); }
+  .field.is-error { border-color: var(--color-error); }
+  textarea.field { height: 72px; padding: 10px 12px; resize: none; }
+  .select-like { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--foreground); cursor: default; }
+  .select-like svg { color: var(--secondary-foreground); flex: none; }
+  .search { position: relative; min-width: 0; }
+  .search > svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--secondary-foreground); }
+  .search .field { padding-left: 36px; border-radius: 999px; }
+  .err { margin: 6px 0 0; font-size: 12px; color: var(--error-foreground); }
+  .hint { margin: 6px 0 0; font-size: 12px; color: var(--secondary-foreground); }
+
+  .ctl { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--foreground); margin-bottom: 8px; }
+  .cb {
+    width: 16px; height: 16px; flex: none; border-radius: 5px; border: 1px solid var(--border);
+    background: var(--input); display: inline-grid; place-items: center; color: var(--primary-foreground);
+  }
+  .cb.on { background: var(--primary); border-color: var(--primary); }
+  .rd {
+    width: 16px; height: 16px; flex: none; border-radius: 50%; border: 1px solid var(--border); background: var(--input);
+    display: inline-grid; place-items: center;
+  }
+  .rd.on { border-color: var(--primary); }
+  .rd.on::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--primary); }
+  .tgl {
+    position: relative; flex: none; width: 36px; height: 20px; border-radius: 999px;
+    background: var(--secondary-hover);
+  }
+  .tgl::after {
+    content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%;
+    background: var(--background); box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+  }
+  .tgl.on { background: var(--primary); }
+  .tgl.on::after { left: 18px; background: var(--primary-foreground); }
+
+  /* Tabs, segmented, button group */
+  .tabs { display: flex; gap: 18px; border-bottom: 1px solid var(--border-container); flex-wrap: wrap; }
+  .tab {
+    padding: 8px 2px; font-size: 14px; color: var(--secondary-foreground);
+    border-bottom: 2px solid transparent; margin-bottom: -1px;
+  }
+  .tab.on { color: var(--foreground); border-bottom-color: var(--foreground); font-weight: 500; }
+  .seg {
+    display: inline-flex; gap: 2px; padding: 3px; border-radius: 16px; background: var(--secondary); max-width: 100%;
+  }
+  .seg span {
+    height: 30px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 13px;
+    font-size: 14px; color: var(--secondary-foreground);
+  }
+  .seg span.on { background: var(--card); color: var(--foreground); box-shadow: 0 1px 2px rgb(0 0 0 / 0.08); font-weight: 500; }
+  .bgroup {
+    display: inline-flex; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; max-width: 100%;
+  }
+  .bgroup .btn { border: 0; border-radius: 0; }
+  .bgroup .btn + .btn { border-left: 1px solid var(--border-container); }
+
+  /* Cards and panels */
+  .card {
+    background: var(--card); border: 1px solid var(--border-container); border-radius: 16px; padding: 16px;
+    display: flex; flex-direction: column; gap: 10px; min-width: 0;
+  }
+  .card-foot { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+  .nested {
+    background: var(--action); border: 1px solid var(--border-container); border-radius: 12px; padding: 12px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .row {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px;
+    border-radius: 12px; min-width: 0; color: var(--foreground);
+  }
+  .row + .row { border-top: 1px solid var(--border-container); border-top-left-radius: 0; border-top-right-radius: 0; }
+  .row small { display: block; font-size: 12px; color: var(--secondary-foreground); }
+  .row.is-hover { background: var(--secondary); }
+  .row.is-sel { background: var(--secondary-hover); }
+  .row.is-hover + .row, .row.is-sel + .row { border-top-color: transparent; }
+
+  /* Floating */
+  .pop {
+    width: 100%; max-width: 260px; background: var(--popover); border: 1px solid var(--border-container);
+    border-radius: 16px; padding: 4px; box-shadow: var(--shadow-pop);
+  }
+  .mi {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 32px; padding: 0 10px;
+    border-radius: 12px; font-size: 14px; color: var(--foreground);
+  }
+  .mi.is-hover { background: var(--secondary); }
+  .mi.dis { opacity: 0.5; }
+  .mi.danger { color: var(--error-foreground); }
+  .sep { height: 1px; margin: 4px 0; background: var(--border-container); }
+  .tip {
+    display: inline-block; background: var(--foreground); color: var(--background); font-size: 12px;
+    padding: 6px 10px; border-radius: 12px;
+  }
+  .dlg {
+    width: 100%; max-width: 360px; background: var(--popover); border: 1px solid var(--border-container);
+    border-radius: 16px; box-shadow: var(--shadow-pop); overflow: hidden;
+  }
+  .dlg-h { padding: 16px 16px 0; font-weight: 600; color: var(--foreground); }
+  .dlg-b { padding: 8px 16px 16px; font-size: 13px; color: var(--secondary-foreground); }
+  .dlg-f { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--border-container); }
+
+  /* Badges and alerts */
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 9px; border-radius: 999px;
+    font-size: 12px; font-weight: 500; white-space: nowrap;
+  }
+  .b-neutral { background: var(--secondary); color: var(--foreground); }
+  .b-primary { background: var(--primary); color: var(--primary-foreground); }
+  .b-error { background: var(--color-error-background); color: var(--error-foreground); }
+  .b-warning { background: var(--color-warning-background); color: var(--warning-foreground); }
+  .b-success { background: var(--color-success-background); color: var(--color-success-foreground); }
+  .b-info { background: var(--color-info-background); color: var(--info-foreground); }
+  .alert {
+    display: flex; gap: 10px; min-width: 0; padding: 12px 14px; border-radius: 16px;
+    border: 1px solid color-mix(in oklab, var(--c) 30%, transparent); background: var(--cb);
+  }
+  .alert .adot { width: 8px; height: 8px; margin-top: 7px; border-radius: 50%; background: var(--c); flex: none; }
+  .alert b { display: block; font-weight: 600; color: var(--cf); }
+  .alert span { display: block; font-size: 13px; color: var(--secondary-foreground); }
+
+  /* Action cards (soft phase surfaces; --phase set inline) */
+  .acard {
+    display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: 12px 14px; border-radius: 16px;
+    background: color-mix(in oklab, var(--phase) var(--phase-mix), var(--background));
+  }
+  .acard.is-hover { background: color-mix(in oklab, var(--phase) var(--phase-mix-hover), var(--background)); }
+  .acard b { font-weight: 600; color: var(--foreground); }
+  .acard .m { font-size: 12px; color: var(--secondary-foreground); }
+  .acard .ph { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--secondary-foreground); }
+  .acard .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--phase); flex: none; }
+  .acard.late { background: var(--color-error-background); box-shadow: 0 0 0 1px var(--color-error); }
+
+  /* Kanban and calendar */
+  .kcol {
+    background: var(--card); border: 1px solid var(--border-container); border-radius: 16px; padding: 12px;
+    display: flex; flex-direction: column; gap: 8px; min-width: 0;
+  }
+  .kh { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-weight: 600; color: var(--foreground); }
+  .mcard { background: var(--action); border-radius: 12px; padding: 8px 10px; font-size: 13px; color: var(--foreground); }
+  .mcard.is-hover { background: var(--action-hover); }
+  .cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; min-width: 0; }
+  .cal .wd { font-size: 11px; text-align: center; color: var(--secondary-foreground); padding: 2px 0; }
+  .day {
+    min-width: 0; min-height: 40px; padding: 4px 6px; border: 1px solid var(--border-container); border-radius: 12px;
+    display: flex; justify-content: flex-end; align-items: flex-start; font-size: 12px; color: var(--secondary-foreground);
+  }
+  .day.wk { background: var(--secondary); }
+  .day.is-hover { background: var(--secondary-hover); }
+  .day.today { color: var(--foreground); font-weight: 600; box-shadow: inset 0 0 0 2px var(--primary); }
+
+  /* Header bar and nav */
+  .hbar {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 12px; min-width: 0;
+    background: var(--background); border-bottom: 1px solid var(--border-container);
+  }
+  .nav {
+    height: 32px; padding: 0 10px; border-radius: 12px; display: inline-flex; align-items: center;
+    font-size: 14px; color: var(--secondary-foreground); white-space: nowrap;
+  }
+  .nav.act { background: var(--secondary-hover); color: var(--foreground); }
+  .nav.is-hover { background: var(--secondary); color: var(--foreground); }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%; background: var(--action-hover); color: var(--foreground);
+    display: inline-grid; place-items: center; font-size: 12px; font-weight: 600; flex: none;
+  }
+  .pill {
+    flex: 1 1 140px; min-width: 0; height: 32px; padding: 0 12px; border-radius: 999px; background: var(--input);
+    display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--secondary-foreground);
+  }
+
+  /* Footer with the formulas (page chrome) */
+  .foot { padding: 20px 16px 48px; color: var(--chrome-muted); font-size: 12px; }
+  .foot h2 { font-size: 14px; color: var(--chrome-fg); margin: 0 0 8px; }
+  .foot .fcols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  @media (max-width: 899px) { .foot .fcols { grid-template-columns: minmax(0, 1fr); } }
+  .foot h3 { font-size: 12px; color: var(--chrome-fg); margin: 0 0 4px; font-weight: 600; }
+  .foot ul { margin: 0 0 12px; padding-left: 16px; }
+  .foot li { margin: 0 0 2px; }
+  .foot p { margin: 8px 0 0; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>DS28 · Conferência dos neutros novos</h1>
+  <label>Tema
+    <select id="theme" aria-label="Escolher tema"></select>
+  </label>
+  <p>Todas as cores neutras saem do fundo do tema (cor pai).</p>
+</header>
+
+<main class="cols">
+  <section class="col mode-light" data-mode="light" aria-label="Modo claro">
+    <h2 class="col-title">Claro</h2>
+    <div class="content"></div>
+  </section>
+  <section class="col mode-dark dark" data-mode="dark" aria-label="Modo escuro">
+    <h2 class="col-title">Escuro</h2>
+    <div class="content"></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <h2>Fórmulas dos neutros por modo (valores de novo/tailwind-novo.css)</h2>
+  <div class="fcols">
+    <div>
+      <h3>Claro</h3>
+      <ul>
+        <li>Texto principal = fundo L −0,96 e C −0,002 (mínimo 0)</li>
+        <li>Texto secundário = fundo L −0,512 e C −0,001 (mínimo 0)</li>
+        <li>Cartão = fundo L −0,02</li>
+        <li>Popover = fundo L +0,02</li>
+        <li>Campo = fundo L −0,04</li>
+        <li>Borda = fundo L −0,07</li>
+        <li>Ação = fundo L +0,02</li>
+        <li>Ação (hover) = fundo L +0,10</li>
+        <li>Secundário = fundo L −0,036</li>
+        <li>Secundário (hover) = fundo L −0,083</li>
+        <li>Texto suave = texto principal a 40%</li>
+        <li>Borda do container = texto principal a 5%</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Escuro</h3>
+      <ul>
+        <li>Texto principal = fundo L +0,80 e C −0,01 (mínimo 0)</li>
+        <li>Texto secundário = fundo L +0,549 e C −0,007 (mínimo 0)</li>
+        <li>Cartão = fundo L +0,05</li>
+        <li>Popover = fundo L −0,03</li>
+        <li>Campo = fundo L +0,02</li>
+        <li>Borda = fundo L +0,10</li>
+        <li>Ação = fundo L +0,10</li>
+        <li>Ação (hover) = fundo L +0,20</li>
+        <li>Secundário = fundo L +0,098 e C −0,002 (mínimo 0)</li>
+        <li>Secundário (hover) = fundo L +0,133 e C −0,002 (mínimo 0)</li>
+        <li>Texto suave = texto principal a 40%</li>
+        <li>Borda do container = texto principal a 10%</li>
+      </ul>
+    </div>
+  </div>
+  <p>Semânticas (erro, aviso, sucesso, info) são valores fixos por modo, sem fórmula de fundo. Os fundos de alerta são mistura com o fundo: 10% no claro e 30% no escuro.</p>
+</footer>
+
+<script>
+  // Palettes copied from app/lib/palettes.ts (id, label, bg, primary, primaryFg, ring per mode).
+  // Ring equals primary except Turquesa (light), which has its own ring.
+  // Every palette has primaryFg in both modes, so no fallback is needed.
+  const o = (l, c, h) => ({ l, c, h });
+  const ok = (v) => `oklch(${v.l} ${v.c} ${v.h})`;
+
+  const PALETTES = [
+    { id: "default", label: "Ônix",
+      light: { bg: o(0.96, 0.002, 200), primary: o(0, 0, 0), primaryFg: o(1, 0, 0) },
+      dark:  { bg: o(0.2, 0.01, 250), primary: o(1, 0, 0), primaryFg: o(0, 0, 0) } },
+    { id: "carbon", label: "Carbono",
+      light: { bg: o(1, 0, 0), primary: o(0.3, 0.02, 240), primaryFg: o(1, 0, 0) },
+      dark:  { bg: o(0.25, 0.015, 240), primary: o(0.99, 0.01, 240), primaryFg: o(0.3, 0.02, 240) } },
+    { id: "red", label: "Rubi",
+      light: { bg: o(0.98, 0, 0), primary: o(0.62, 0.25, 20), primaryFg: o(1, 0, 0) },
+      dark:  { bg: o(0.141, 0.005, 285), primary: o(0.68, 0.25, 20), primaryFg: o(1, 0, 0) } },
+    { id: "orange", label: "Coral",
+      light: { bg: o(0.95, 0.01, 130), primary: o(0.65, 0.18, 25), primaryFg: o(1, 0, 0) },
+      dark:  { bg: o(0.25, 0.01, 190), primary: o(0.65, 0.18, 25), primaryFg: o(0.9, 0.02, 130) } },
+    { id: "yellow", label: "Damasco",
+      light: { bg: o(0.98, 0, 0), primary: o(0.8, 0.5, 100), primaryFg: o(0, 0, 0) },
+      dark:  { bg: o(0.141, 0.005, 285), primary: o(0.8, 0.4, 100), primaryFg: o(0, 0, 0) } },
+    { id: "energy", label: "Elétrico",
+      light: { bg: o(0.96, 0.004, 240), primary: o(0.94, 0.15, 120), primaryFg: o(0, 0, 0) },
+      dark:  { bg: o(0.2, 0.01, 250), primary: o(0.9, 0.18, 120), primaryFg: o(0, 0, 0) } },
+    { id: "green", label: "Folha",
+      light: { bg: o(0.98, 0, 0), primary: o(0.7, 0.2, 130), primaryFg: o(1, 0, 0) },
+      dark:  { bg: o(0.141, 0.005, 285), primary: o(0.65, 0.2, 130), primaryFg: o(0, 0, 0) } },
+    { id: "cyan", label: "Turquesa",
+      light: { bg: o(0.96, 0, 0), primary: o(0.7, 0.1, 200), ring: o(0.7, 0.2, 200), primaryFg: o(1, 0, 0) },
+      dark:  { bg: o(0.141, 0.005, 285), primary: o(0.65, 0.2, 200), primaryFg: o(0, 0, 0) } },
+    { id: "blue", label: "Cobalto",
+      light: { bg: o(1, 0, 0), primary: o(0.45, 0.31, 264), primaryFg: o(1, 0, 0) },
+      dark:  { bg: o(0.141, 0.005, 285), primary: o(0.58, 0.31, 264), primaryFg: o(1, 0, 0) } },
+    { id: "purple", label: "Violeta",
+      light: { bg: o(1, 0, 0), primary: o(0.54, 0.28, 290), primaryFg: o(1, 0, 0) },
+      dark:  { bg: o(0.141, 0.005, 285), primary: o(0.68, 0.28, 290), primaryFg: o(1, 0, 0) } },
+    { id: "magenta", label: "Fúcsia",
+      light: { bg: o(0.98, 0.02, 320), primary: o(0.9, 0.4, 350), primaryFg: o(0, 0, 0) },
+      dark:  { bg: o(0.3, 0.1, 340), primary: o(0.8, 0.4, 350), primaryFg: o(0, 0, 0) } },
+  ];
+
+  // Phase colors from app/lib/CONSTANTS.ts (PHASES).
+  const PHASES = [
+    ["Ideia", "#fbbf24"], ["Fazer", "#f97316"], ["Fazendo", "#ec4899"],
+    ["Análise", "#a855f7"], ["Feito", "#38bdf8"], ["Concluído", "#4ade80"],
+  ];
+
+  const ICON = {
+    plus: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
+    check: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
+    checkBox: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
+    chevron: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>',
+    search: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+  };
+
+  // Each state: [caption, extra class, disabled]
+  const STATES = [
+    ["Repouso", "", false],
+    ["Hover", "is-hover", false],
+    ["Pressionado", "is-pressed", false],
+    ["Desabilitado", "", true],
+  ];
+
+  const stateRow = (label, cls, content) => `
+    <div class="srow">
+      <div class="slabel">${label}</div>
+      <div class="states">
+        ${STATES.map(([cap, st, dis]) => `
+          <div class="st">
+            <span class="cap">${cap}</span>
+            <button type="button" class="btn ${cls} ${st}" ${dis ? "disabled" : ""}>${content}</button>
+          </div>`).join("")}
+      </div>
+    </div>`;
+
+  const section = (title, body) => `
+    <div class="blk">
+      <h2 class="sec">${title}</h2>
+      ${body}
+    </div>`;
+
+  const TOKENS = [
+    "background", "card", "popover", "input", "border", "action", "action-hover",
+    "secondary", "secondary-hover", "foreground", "secondary-foreground", "text-soft", "border-container",
+  ];
+
+  function renderContent() {
+    const sSwatches = `<div class="grid g4">${TOKENS.map((t) => `
+      <div class="swatch">
+        <div class="chip" style="background: var(--${t})"></div>
+        <code>${t}</code>
+      </div>`).join("")}</div>`;
+
+    const sText = `
+      <h3 class="t-h">Título de seção</h3>
+      <p class="t-p">Texto principal: a ação aguarda a aprovação do cliente antes de publicar.</p>
+      <p class="t-s">Texto secundário: responsável e data de execução.</p>
+      <p class="t-x">Texto suave: dica e metadado de apoio.</p>
+      <a class="lnk" href="#" onclick="return false">Link para a ação</a>`;
+
+    const sButtons = [
+      stateRow("Primário", "btn-primary", "Salvar"),
+      stateRow("Secundário", "btn-secondary", "Filtrar"),
+      stateRow("Fantasma", "btn-ghost", "Cancelar"),
+      stateRow("Contorno", "btn-outline", "Exportar"),
+      stateRow("Destrutivo", "btn-destructive", "Excluir"),
+      stateRow("Sucesso forte", "btn-success", "Publicar"),
+      stateRow("Ícone (fantasma)", "btn-ghost btn-icon", ICON.plus),
+      stateRow("Ícone (secundário)", "btn-secondary btn-icon", ICON.plus),
+      stateRow("Redondo (primário)", "btn-primary btn-round", ICON.plus),
+    ].join("");
+
+    const sFields = `
+      <div class="grid">
+        <div class="sample">
+          <label class="lbl">Repouso</label>
+          <input class="field" placeholder="Nome do parceiro">
+        </div>
+        <div class="sample">
+          <label class="lbl">Foco</label>
+          <input class="field is-focus" value="Cliente Exemplo">
+        </div>
+        <div class="sample">
+          <label class="lbl">Erro</label>
+          <input class="field is-error" placeholder="Campo obrigatório">
+          <p class="err">Informe o nome do parceiro.</p>
+        </div>
+        <div class="sample">
+          <label class="lbl">Desabilitado</label>
+          <input class="field" disabled value="Somente leitura">
+        </div>
+        <div class="sample">
+          <label class="lbl">Texto longo</label>
+          <textarea class="field" placeholder="Legenda da ação"></textarea>
+        </div>
+        <div class="sample">
+          <span class="lbl">Seleção</span>
+          <div class="field select-like"><span>Canal: Instagram</span>${ICON.chevron}</div>
+        </div>
+        <div class="sample">
+          <span class="lbl">Busca</span>
+          <div class="search">${ICON.search}<input class="field" placeholder="Buscar ação"></div>
+        </div>
+        <div class="sample">
+          <span class="lbl">Caixas e chaves</span>
+          <div class="ctl"><span class="cb">${ICON.checkBox}</span>Desmarcada</div>
+          <div class="ctl"><span class="cb on">${ICON.checkBox}</span>Marcada</div>
+          <div class="ctl"><span class="rd"></span>Opção não escolhida</div>
+          <div class="ctl"><span class="rd on"></span>Opção escolhida</div>
+          <div class="ctl"><span class="tgl"></span>Chave desligada</div>
+          <div class="ctl"><span class="tgl on"></span>Chave ligada</div>
+        </div>
+      </div>`;
+
+    const sTabs = `
+      <div class="tabs" role="presentation">
+        <span class="tab on">Visão geral</span>
+        <span class="tab">Ações</span>
+        <span class="tab">Arquivo</span>
+      </div>
+      <div style="height:14px"></div>
+      <div class="seg" role="presentation">
+        <span>Mês</span><span class="on">Semana</span><span>Dia</span>
+      </div>
+      <div style="height:14px"></div>
+      <div class="bgroup" role="group" aria-label="Navegação de período">
+        <button type="button" class="btn btn-ghost">Anterior</button>
+        <button type="button" class="btn btn-ghost">Hoje</button>
+        <button type="button" class="btn btn-ghost">Próximo</button>
+      </div>`;
+
+    const sCards = `
+      <div class="grid">
+        <article class="card">
+          <h3 class="t-h" style="font-size:15px;margin:0">Post de lançamento</h3>
+          <p class="t-s" style="margin:0">Roteiro aprovado. Falta a arte final e a legenda.</p>
+          <div class="nested">
+            <span class="t-p" style="font-size:13px">Responsável</span>
+            <span class="t-s" style="font-size:12px">Equipe de conteúdo · 18 nov</span>
+          </div>
+          <div class="card-foot">
+            <button type="button" class="btn btn-outline">Cancelar</button>
+            <button type="button" class="btn btn-primary">Salvar</button>
+          </div>
+        </article>
+        <div class="card" style="gap:0;padding:6px">
+          <div class="row is-hover"><div>Roteiro do reel<small>Parceiro A</small></div><span class="badge b-neutral">Feito</span></div>
+          <div class="row is-sel"><div>Aprovação do cliente<small>Parceiro B · selecionada</small></div><span class="badge b-primary">Ativa</span></div>
+          <div class="row"><div>Legenda final<small>Parceiro A</small></div><span class="badge b-neutral">Rascunho</span></div>
+        </div>
+      </div>`;
+
+    const sFloating = `
+      <div class="grid" style="align-items:start">
+        <div class="pop" role="presentation">
+          <div class="mi">Editar</div>
+          <div class="mi is-hover">Duplicar (hover)</div>
+          <div class="mi">Fase: Fazendo <span style="color:var(--primary)">${ICON.check}</span></div>
+          <div class="mi dis">Arquivar (desabilitado)</div>
+          <div class="sep"></div>
+          <div class="mi danger">Excluir</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;align-items:flex-start;min-width:0">
+          <span class="tip">Copiar link</span>
+          <div class="dlg" role="presentation">
+            <div class="dlg-h">Mover para Feito?</div>
+            <div class="dlg-b">A ação sai da coluna atual e fica disponível no calendário.</div>
+            <div class="dlg-f">
+              <button type="button" class="btn btn-ghost">Cancelar</button>
+              <button type="button" class="btn btn-primary">Confirmar</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+
+    const alertBox = (name, c, cb, cf, title, desc) => `
+      <div class="alert" style="--c:var(${c}); --cb:var(${cb}); --cf:var(${cf})">
+        <span class="adot"></span>
+        <div><b>${title}</b><span>${desc}</span></div>
+      </div>`;
+
+    const sBadges = `
+      <div class="badges">
+        <span class="badge b-neutral">Neutro</span>
+        <span class="badge b-primary">Primário</span>
+        <span class="badge b-error">Erro</span>
+        <span class="badge b-warning">Aviso</span>
+        <span class="badge b-success">Sucesso</span>
+        <span class="badge b-info">Info</span>
+      </div>
+      <div style="height:14px"></div>
+      <div class="grid" style="gap:10px">
+        ${alertBox("erro", "--color-error", "--color-error-background", "--error-foreground", "Falha ao salvar", "A alteração não foi gravada. Tente de novo.")}
+        ${alertBox("aviso", "--color-warning", "--color-warning-background", "--warning-foreground", "Prazo próximo", "Faltam dois dias para a publicação.")}
+        ${alertBox("sucesso", "--color-success", "--color-success-background", "--color-success-foreground", "Ação publicada", "O conteúdo já está no ar.")}
+        ${alertBox("info", "--color-info", "--color-info-background", "--info-foreground", "Nova versão", "A proposta foi atualizada pelo cliente.")}
+      </div>`;
+
+    const sActions = `
+      <div class="grid">
+        ${PHASES.map(([name, color], i) => `
+          <article class="acard${name === "Fazendo" ? " is-hover" : ""}" style="--phase:${color}">
+            <span class="ph"><span class="dot"></span>${name}</span>
+            <b>Post de bastidores ${i + 1}</b>
+            <span class="m">Parceiro A · ${10 + i} nov</span>
+          </article>`).join("")}
+        <article class="acard late" style="--phase:var(--color-error)">
+          <span class="ph"><span class="dot"></span>Atrasada</span>
+          <b>Aprovação pendente</b>
+          <span class="m">Parceiro B · venceu 14 nov</span>
+        </article>
+      </div>`;
+
+    const sKanban = `
+      <div class="kcol" style="max-width:420px">
+        <div class="kh"><span>Fazendo</span><span class="badge b-neutral">3</span></div>
+        <div class="mcard">Roteiro do reel</div>
+        <div class="mcard is-hover">Legenda do carrossel (hover)</div>
+        <div class="mcard">Arte da semana</div>
+      </div>
+      <div style="height:14px"></div>
+      ${calendarHtml()}`;
+
+    const sHeader = `
+      <div class="hbar">
+        <span class="nav act">Hoje</span>
+        <span class="nav is-hover">Ações (hover)</span>
+        <span class="nav">Parceiros</span>
+        <span class="pill">${ICON.search}&nbsp;Buscar</span>
+        <span class="avatar">AB</span>
+      </div>`;
+
+    return [
+      section("Amostras de tokens", sSwatches),
+      section("Texto", sText),
+      section("Botões (repouso, hover, pressionado, desabilitado)", sButtons),
+      section("Campos", sFields),
+      section("Abas e grupos", sTabs),
+      section("Cartões e painéis", sCards),
+      section("Flutuantes", sFloating),
+      section("Badges e alertas", sBadges),
+      section("Ações (cartões do app)", sActions),
+      section("Kanban e calendário", sKanban),
+      section("Barra lateral e cabeçalho", sHeader),
+    ].join("");
+  }
+
+  function calendarHtml() {
+    // 2026-11-15 is a Sunday; the grid shows 15 to 28 Nov. Today is 17 Nov.
+    const names = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+    const head = names.map((n) => `<div class="wd">${n}</div>`).join("");
+    let cells = "";
+    for (let i = 0; i < 14; i++) {
+      const day = 15 + i;
+      const col = i % 7;
+      const classes = ["day"];
+      if (col === 0 || col === 6) classes.push("wk");
+      if (day === 17) classes.push("today");
+      if (day === 19) classes.push("is-hover");
+      cells += `<div class="${classes.join(" ")}">${day}</div>`;
+    }
+    return `<div class="cal" role="presentation">${head}${cells}</div>`;
+  }
+
+  // Sets per-column tokens from the palette. Neutrals come from CSS formulas.
+  function applyPalette(id) {
+    const p = PALETTES.find((x) => x.id === id) || PALETTES[0];
+    document.querySelectorAll(".col").forEach((col) => {
+      const v = p[col.dataset.mode];
+      col.style.setProperty("--background", ok(v.bg));
+      col.style.setProperty("--primary", ok(v.primary));
+      col.style.setProperty("--primary-foreground", ok(v.primaryFg));
+      col.style.setProperty("--ring", ok(v.ring || v.primary));
+    });
+  }
+
+  const select = document.getElementById("theme");
+  PALETTES.forEach((p) => {
+    const opt = document.createElement("option");
+    opt.value = p.id;
+    opt.textContent = p.label;
+    select.appendChild(opt);
+  });
+
+  let saved = "default";
+  try { saved = localStorage.getItem("ds28-tema") || "default"; } catch (e) { /* storage blocked */ }
+  if (!PALETTES.some((p) => p.id === saved)) saved = "default";
+  select.value = saved;
+
+  document.querySelectorAll(".col .content").forEach((el) => { el.innerHTML = renderContent(); });
+  applyPalette(saved);
+
+  select.addEventListener("change", () => {
+    applyPalette(select.value);
+    try { localStorage.setItem("ds28-tema", select.value); } catch (e) { /* storage blocked */ }
+  });
+</script>
+</body>
+</html>

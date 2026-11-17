@@ -224,7 +224,7 @@ export function TokensColorsSection() {
           <GallerySectionContent className="flex flex-col divide-y divide-border">
             {/* Categoria 1 — Superfícies, Estrutura e Texto Neutro */}
             <SemanticCategory
-              description="Superfícies base do app e tons neutros de texto. A luminosidade de card, popover, input e border deriva de background por deltas OKLCH (--*-l-delta), enquanto secondary e secondary-foreground derivam de foreground por color-mix."
+              description="Superfícies base do app e tons neutros de texto. Todos os neutros derivam de background (cor pai) por um delta fixo de luminosidade OKLCH, o mesmo para todas as paletas (DS28)."
               title="Superfícies, Estrutura e Texto Neutro"
             >
               <SemanticSwatch
@@ -248,7 +248,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="bg-card"
                 name="Card"
-                note="Derivada de background (l + --card-l-delta: -0.02 claro, +0.05 escuro)"
+                note="Derivada de background (L −0,02 claro, +0,05 escuro)"
                 preview={
                   <div className="size-11 rounded-xl border border-border bg-card shadow-xs squircle" />
                 }
@@ -256,7 +256,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="bg-popover"
                 name="Popover"
-                note="Derivada de background (l + --popover-l-delta: 0 claro, -0.03 escuro)"
+                note="Derivada de background (L +0,02 claro, −0,03 escuro)"
                 preview={
                   <div className="size-11 rounded-xl border border-border bg-popover shadow-xs squircle" />
                 }
@@ -264,7 +264,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="bg-input"
                 name="Input"
-                note="Derivada de background (l + --input-l-delta: -0.05 claro, +0.05 escuro)"
+                note="Derivada de background (L −0,04 claro, +0,02 escuro)"
                 preview={
                   <div className="size-11 rounded-xl border border-border bg-input shadow-xs squircle" />
                 }
@@ -272,7 +272,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="border-border / bg-border"
                 name="Border"
-                note="Derivada de background (l + --border-l-delta: -0.05 claro, +0.20 escuro)"
+                note="Derivada de background (L −0,07 claro, +0,10 escuro)"
                 preview={
                   <div className="flex size-11 items-center justify-center rounded-xl border-2 border-border bg-background shadow-xs squircle">
                     <div className="size-4.5 rounded-md bg-border squircle" />
@@ -282,7 +282,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="bg-secondary"
                 name="Secondary"
-                note="Derivada de foreground (5% no claro, 10% no escuro)"
+                note="Derivada de background (L −0,036 claro, +0,098 escuro); hover em bg-secondary-hover (L −0,083 claro, +0,133 escuro)"
                 preview={
                   <div className="size-11 rounded-xl border border-border bg-secondary shadow-xs squircle" />
                 }
@@ -290,7 +290,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="text-secondary-foreground"
                 name="Secondary Foreground"
-                note="Derivada de foreground (65% nos dois modos)"
+                note="Derivada de background (L −0,512 claro, +0,549 escuro)"
                 preview={
                   <div className="flex size-11 items-center justify-center rounded-xl border border-border bg-secondary text-xs font-bold text-secondary-foreground shadow-xs squircle">
                     Aa
@@ -315,7 +315,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="bg-action"
                 name="Action"
-                note="Superfície base do cartão (background com --action-l-delta: +0.02 claro, +0.10 escuro)"
+                note="Superfície base do cartão (background L +0,02 claro, +0,10 escuro)"
                 preview={
                   <div className="size-11 rounded-xl border border-border/40 bg-action shadow-action ring ring-action-ring squircle" />
                 }
@@ -323,7 +323,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="bg-action-hover"
                 name="Action Hover"
-                note="Versão ao passar o mouse (background com --action-hover-l-delta: +0.04 claro, +0.20 escuro)"
+                note="Versão ao passar o mouse (background L +0,10 claro, +0,20 escuro)"
                 preview={
                   <div className="size-11 rounded-xl border border-border/40 bg-action-hover shadow-action-hover ring ring-action-ring squircle" />
                 }
