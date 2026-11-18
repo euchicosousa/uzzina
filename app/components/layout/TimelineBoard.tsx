@@ -1,8 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { isToday } from "date-fns";
+import { ScanIcon } from "lucide-react";
 import {
   useCallback,
   useEffect,
+  useEffectEvent,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -12,7 +15,13 @@ import {
 import { Focusable } from "react-aria-components";
 import { toast } from "sonner";
 import { ActionItem } from "~/components/features/ActionItem";
-import { PrismTooltip } from "~/components/prism";
+import {
+  PrismButton,
+  PrismSlider,
+  PrismSliderOutput,
+  PrismSliderTrack,
+  PrismTooltip,
+} from "~/components/prism";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UPeopleCombobox } from "~/components/uzzina/UPeopleCombobox";
 import { useAppContext } from "~/contexts/AppContext";
@@ -23,7 +32,7 @@ import { QUERY_KEYS } from "~/lib/query-keys";
 import { ActionConflictError } from "~/lib/supabase.mutations";
 import { fetchPeople } from "~/lib/supabase.queries";
 import { cn } from "~/lib/utils";
-import type { Action } from "~/types";
+import type { Action, Person } from "~/types";
 import { getFormattedPartnersName } from "~/utils";
 import { getActionRevision } from "~/utils/date";
 import {
@@ -43,16 +52,40 @@ import {
 } from "~/utils/timeline";
 
 const TOTAL_HOURS = 24;
-const HOUR_WIDTH_PX = 60 * TIMELINE_PX_PER_MINUTE;
-const TRACK_WIDTH = TIMELINE_TOTAL_MINUTES * TIMELINE_PX_PER_MINUTE;
 const HOURS = Array.from({ length: TOTAL_HOURS }, (_, i) => i);
 const FIVE_MINUTE_OFFSETS = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
 
 const DRAG_THRESHOLD_PX = 5;
+const TIMELINE_RESIZE_DEBOUNCE_MS = 180;
+const TIMELINE_MAX_SCALE = TIMELINE_PX_PER_MINUTE * 2;
+const TIMELINE_HOUR_STEPS = [1, 2, 3, 4, 6, 8, 12, 24];
 
 interface LanedTimelineAction extends TimelineInterval {
   action: Action;
   lane: number;
+}
+
+type CommitTimelineInterval = (
+  action: Action,
+  startMin: number,
+  durationMin: number,
+) => void;
+
+interface TimelineGalleryOptions {
+  initialMinute: number;
+  onOpenAction: (action: Action) => void;
+}
+
+interface TimelineCamera {
+  scale: number;
+  centerMinute?: number;
+}
+
+function clampTimelineScale(scale: number, viewportWidth: number) {
+  return Math.min(
+    TIMELINE_MAX_SCALE,
+    Math.max(viewportWidth / TIMELINE_TOTAL_MINUTES, scale),
+  );
 }
 
 type TimelineGestureMode = "move" | "resize-start" | "resize-end";
@@ -75,14 +108,14 @@ function isEditableTarget(target: EventTarget | null): boolean {
 
 function TimelineActionBar({
   item,
+  onOpenAction,
+  pxPerMinute,
   onCommitInterval,
 }: {
   item: LanedTimelineAction;
-  onCommitInterval: (
-    action: Action,
-    nextStartMin: number,
-    nextDurationMin: number,
-  ) => void;
+  pxPerMinute: number;
+  onOpenAction?: TimelineGalleryOptions["onOpenAction"];
+  onCommitInterval: CommitTimelineInterval;
 }) {
   const { currentPartners, currentCategory } = useActionData(item.action);
   const partnersLabel = getFormattedPartnersName(currentPartners);
@@ -103,14 +136,19 @@ function TimelineActionBar({
   const displayStartMin = preview ? preview.startMin : item.startMin;
   const displayDurationMin = preview ? preview.durationMin : item.durationMin;
 
-  const leftPx = displayStartMin * TIMELINE_PX_PER_MINUTE;
-  const widthPx = Math.max(16, displayDurationMin * TIMELINE_PX_PER_MINUTE);
+  const leftPx = displayStartMin * pxPerMinute;
+  const widthPx = displayDurationMin * pxPerMinute;
+  // Keep the active handle mounted if a resize crosses the visibility threshold.
+  const showHandles = item.durationMin * pxPerMinute >= 16 || preview !== null;
+  const handleSize =
+    "w-[min(10px,25%)] pointer-coarse:hidden focus-visible:ring-inset";
 
   const startPointerGesture = (
     e: ReactPointerEvent<HTMLElement>,
     mode: TimelineGestureMode,
   ) => {
     if (e.button !== 0) return;
+    if (e.pointerType === "touch") return;
     if (mode === "move" && isEditableTarget(e.target)) return;
     if (mode !== "move") {
       e.stopPropagation();
@@ -161,7 +199,7 @@ function TimelineActionBar({
       const deltaX = moveEvent.clientX - startClientX;
       if (!hasMoved && Math.abs(deltaX) < DRAG_THRESHOLD_PX) return;
       hasMoved = true;
-      const deltaMinutes = deltaX / TIMELINE_PX_PER_MINUTE;
+      const deltaMinutes = deltaX / pxPerMinute;
       latestInterval = computeInterval(deltaMinutes);
       setPreview({
         mode,
@@ -264,7 +302,7 @@ function TimelineActionBar({
   return (
     <div
       className={cn(
-        "group/bar relative col-start-1 row-start-1 self-center justify-self-start",
+        "group/bar relative col-start-1 row-start-1 self-center justify-self-start select-none",
         preview && "z-30 select-none",
       )}
       onClickCapture={(e) => {
@@ -291,26 +329,30 @@ function TimelineActionBar({
         </div>
       )}
 
-      <button
-        aria-label={`Ajustar início de ${item.action.title}`}
-        className={cn(
-          "absolute inset-y-0 left-0 z-20 flex w-2.5 cursor-ew-resize touch-none items-center justify-center rounded-l-xl opacity-0 transition-opacity group-focus-within/bar:opacity-100 group-hover/bar:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-          isResizingStart && "opacity-100",
-        )}
-        onClick={(e) => e.stopPropagation()}
-        onKeyDown={handleResizeStartKeyDown}
-        onPointerDown={(e) => startPointerGesture(e, "resize-start")}
-        type="button"
-      >
-        <span className="h-4 w-0.5 rounded-full bg-foreground/50" />
-      </button>
+      {showHandles && (
+        <button
+          aria-label={`Ajustar início de ${item.action.title}`}
+          className={cn(
+            "absolute inset-y-0 left-0 z-20 flex cursor-ew-resize touch-none items-center justify-center rounded-l-xl opacity-0 transition-opacity group-focus-within/bar:opacity-100 group-hover/bar:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+            handleSize,
+            isResizingStart && "opacity-100",
+          )}
+          onClick={(e) => e.stopPropagation()}
+          onKeyDown={handleResizeStartKeyDown}
+          onPointerDown={(e) => startPointerGesture(e, "resize-start")}
+          type="button"
+        >
+          <span className="h-4 w-0.5 max-w-full rounded-full bg-foreground/50" />
+        </button>
+      )}
 
       <PrismTooltip delay={300} label={tooltipText} placement="top">
         <Focusable>
           <div className="w-full">
             <ActionItem
               action={item.action}
-              className="min-h-9 w-full"
+              className="w-full"
+              onClick={onOpenAction}
               displayFlags={{ showLate: true, showSprint: true }}
               variant={VARIANT.timeline}
             />
@@ -318,19 +360,22 @@ function TimelineActionBar({
         </Focusable>
       </PrismTooltip>
 
-      <button
-        aria-label={`Ajustar duração de ${item.action.title}`}
-        className={cn(
-          "absolute inset-y-0 right-0 z-20 flex w-2.5 cursor-ew-resize touch-none items-center justify-center rounded-r-xl opacity-0 transition-opacity group-focus-within/bar:opacity-100 group-hover/bar:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-          isResizingEnd && "opacity-100",
-        )}
-        onClick={(e) => e.stopPropagation()}
-        onKeyDown={handleResizeEndKeyDown}
-        onPointerDown={(e) => startPointerGesture(e, "resize-end")}
-        type="button"
-      >
-        <span className="h-4 w-0.5 rounded-full bg-foreground/50" />
-      </button>
+      {showHandles && (
+        <button
+          aria-label={`Ajustar duração de ${item.action.title}`}
+          className={cn(
+            "absolute inset-y-0 right-0 z-20 flex cursor-ew-resize touch-none items-center justify-center rounded-r-xl opacity-0 transition-opacity group-focus-within/bar:opacity-100 group-hover/bar:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+            handleSize,
+            isResizingEnd && "opacity-100",
+          )}
+          onClick={(e) => e.stopPropagation()}
+          onKeyDown={handleResizeEndKeyDown}
+          onPointerDown={(e) => startPointerGesture(e, "resize-end")}
+          type="button"
+        >
+          <span className="h-4 w-0.5 max-w-full rounded-full bg-foreground/50" />
+        </button>
+      )}
     </div>
   );
 }
@@ -346,11 +391,6 @@ export function TimelineBoard({
 }) {
   const { person } = useAppContext();
   const { handleAction } = useActionMutations();
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [selectedUserIds, setSelectedUserIds] = useState<string[] | undefined>(
-    undefined,
-  );
-  const [nowMinutes, setNowMinutes] = useState<number>(getCurrentMinutesOfDay);
   const [optimisticOverrides, setOptimisticOverrides] = useState<
     Record<string, { date: string; time: number }>
   >({});
@@ -364,34 +404,6 @@ export function TimelineBoard({
     staleTime: 30 * 60 * 1000,
     enabled: Boolean(person?.user_id),
   });
-
-  const defaultSelectedUserIds = useMemo(
-    () => (person?.user_id ? [person.user_id] : []),
-    [person?.user_id],
-  );
-  const effectiveSelectedUserIds = selectedUserIds ?? defaultSelectedUserIds;
-
-  const showNowLine = isToday(currentDay);
-  const nowLeftPx = nowMinutes * TIMELINE_PX_PER_MINUTE;
-
-  useEffect(() => {
-    if (!showNowLine) return;
-    setNowMinutes(getCurrentMinutesOfDay());
-    const intervalId = window.setInterval(() => {
-      setNowMinutes(getCurrentMinutesOfDay());
-    }, 60_000);
-    return () => window.clearInterval(intervalId);
-  }, [showNowLine]);
-
-  useEffect(() => {
-    if (!showNowLine) return;
-    const container = scrollContainerRef.current;
-    if (!container) return;
-    container.scrollLeft = Math.max(
-      0,
-      getCurrentMinutesOfDay() * TIMELINE_PX_PER_MINUTE - 120,
-    );
-  }, [showNowLine]);
 
   const commitInterval = useCallback(
     async (action: Action, nextStartMin: number, nextDurationMin: number) => {
@@ -485,11 +497,84 @@ export function TimelineBoard({
     [actions, optimisticOverrides],
   );
 
+  return (
+    <TimelineGrid
+      actions={effectiveActions}
+      allPeople={allPeople}
+      currentDay={currentDay}
+      fillHeight={fillHeight}
+      onCommitInterval={commitInterval}
+    />
+  );
+}
+
+export function TimelineGrid({
+  actions,
+  allPeople,
+  currentDay,
+  fillHeight = false,
+  gallery,
+  onCommitInterval,
+}: {
+  actions: Action[];
+  allPeople: Person[];
+  currentDay: Date;
+  fillHeight?: boolean;
+  gallery?: TimelineGalleryOptions;
+  onCommitInterval: CommitTimelineInterval;
+}) {
+  const { person } = useAppContext();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>();
+  const [nowMinutes, setNowMinutes] = useState(getCurrentMinutesOfDay);
+  const personColumnRef = useRef<HTMLDivElement>(null);
+  const [viewportWidth, setViewportWidth] = useState(0);
+  const [camera, setCamera] = useState<TimelineCamera>({
+    scale: TIMELINE_PX_PER_MINUTE,
+  });
+  const settledWidthRef = useRef(0);
+  const viewportCenterRef = useRef<number | undefined>(undefined);
+  const pxPerMinute = camera.scale;
+  const initialMinute = gallery?.initialMinute;
+  const hourWidth = 60 * pxPerMinute;
+  const trackWidth = TIMELINE_TOTAL_MINUTES * pxPerMinute;
+  const minScale = viewportWidth / TIMELINE_TOTAL_MINUTES;
+  const hourStep =
+    TIMELINE_HOUR_STEPS.find((step) => step * hourWidth >= 42) ?? 24;
+  const showFiveMinuteGrid = 5 * pxPerMinute >= 8;
+
+  const isGallery = gallery !== undefined;
+  const defaultSelectedUserIds = useMemo(() => {
+    if (isGallery) return allPeople.map(({ user_id }) => user_id);
+    return person?.user_id ? [person.user_id] : [];
+  }, [allPeople, isGallery, person?.user_id]);
+  const effectiveSelectedUserIds = selectedUserIds ?? defaultSelectedUserIds;
+
+  const showNowLine = isToday(currentDay);
+  const nowLeftPx = nowMinutes * pxPerMinute;
+
+  useEffect(() => {
+    if (!showNowLine) return;
+    setNowMinutes(getCurrentMinutesOfDay());
+    const intervalId = window.setInterval(() => {
+      setNowMinutes(getCurrentMinutesOfDay());
+    }, 60_000);
+    return () => window.clearInterval(intervalId);
+  }, [showNowLine]);
+
+  const getViewportWidth = useCallback(() => {
+    const container = scrollContainerRef.current;
+    const personColumn = personColumnRef.current;
+    return container && personColumn
+      ? Math.max(0, container.clientWidth - personColumn.offsetWidth)
+      : 0;
+  }, []);
+
   const peopleRows = useMemo(
     () =>
       getTimelinePeopleRows(
         allPeople,
-        effectiveActions,
+        actions,
         person,
         person?.admin ? effectiveSelectedUserIds : undefined,
       ).map((row) => {
@@ -513,8 +598,102 @@ export function TimelineBoard({
           lanes,
         };
       }),
-    [allPeople, effectiveActions, effectiveSelectedUserIds, person],
+    [actions, allPeople, effectiveSelectedUserIds, person],
   );
+
+  const visibleActions = peopleRows.flatMap(({ lanes }) => lanes.flat());
+
+  function getFitCamera(width: number): TimelineCamera | undefined {
+    if (width <= 0 || visibleActions.length === 0) return;
+    const start = Math.min(...visibleActions.map((action) => action.startMin));
+    const end = Math.min(
+      TIMELINE_TOTAL_MINUTES,
+      Math.max(
+        ...visibleActions.map(
+          ({ startMin, durationMin }) => startMin + durationMin,
+        ),
+      ),
+    );
+    const margin = Math.min(24, Math.max(16, width * 0.04), width / 4);
+    return {
+      scale: clampTimelineScale((width - 2 * margin) / (end - start), width),
+      centerMinute: (start + end) / 2,
+    };
+  }
+
+  const onViewportSettled = useEffectEvent((width: number) => {
+    settledWidthRef.current = width;
+    setViewportWidth(width);
+
+    const scale =
+      camera.scale * TIMELINE_TOTAL_MINUTES < width
+        ? clampTimelineScale(camera.scale, width)
+        : camera.scale;
+    if (scale > camera.scale) {
+      setCamera({ scale, centerMinute: viewportCenterRef.current });
+    }
+  });
+
+  useLayoutEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    let observedWidth = getViewportWidth();
+    settledWidthRef.current = observedWidth;
+    setViewportWidth(observedWidth);
+    let settleTimer: number | undefined;
+    const observer = new ResizeObserver(() => {
+      const width = getViewportWidth();
+      if (width === observedWidth) return;
+      observedWidth = width;
+      window.clearTimeout(settleTimer);
+      if (width <= 0) return;
+      settleTimer = window.setTimeout(
+        () => onViewportSettled(width),
+        TIMELINE_RESIZE_DEBOUNCE_MS,
+      );
+    });
+
+    observer.observe(container);
+    return () => {
+      window.clearTimeout(settleTimer);
+      observer.disconnect();
+    };
+  }, [getViewportWidth]);
+
+  useLayoutEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const width = getViewportWidth();
+    const left =
+      camera.centerMinute === undefined
+        ? initialMinute !== undefined
+          ? initialMinute * camera.scale - 32
+          : showNowLine
+            ? getCurrentMinutesOfDay() * camera.scale - 120
+            : container.scrollLeft
+        : camera.centerMinute * camera.scale - width / 2;
+    container.scrollLeft = Math.max(0, left);
+    viewportCenterRef.current =
+      (container.scrollLeft + width / 2) / camera.scale;
+  }, [camera, getViewportWidth, initialMinute, showNowLine]);
+
+  function changeZoom(percent: number) {
+    const width = getViewportWidth();
+    if (width <= 0) return;
+    setCamera({
+      scale: clampTimelineScale(
+        (percent / 100) * TIMELINE_PX_PER_MINUTE,
+        width,
+      ),
+      centerMinute: viewportCenterRef.current,
+    });
+  }
+
+  function fitActions() {
+    const fit = getFitCamera(getViewportWidth());
+    if (fit) setCamera(fit);
+  }
 
   return (
     <div
@@ -523,8 +702,32 @@ export function TimelineBoard({
         fillHeight && "flex h-full min-h-0 flex-col",
       )}
     >
-      {person?.admin && (
-        <div className="flex flex-wrap items-center justify-end gap-4 pb-2">
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <PrismSlider
+            aria-label="Zoom da linha do tempo"
+            className="flex w-32 flex-row items-center lg:w-48 xl:w-80"
+            maxValue={200}
+            minValue={Math.floor((minScale / TIMELINE_PX_PER_MINUTE) * 100)}
+            onChange={changeZoom}
+            value={Math.round((camera.scale / TIMELINE_PX_PER_MINUTE) * 100)}
+          >
+            <PrismSliderOutput>
+              {({ state }) => `${state.values[0]}%`}
+            </PrismSliderOutput>
+            <PrismSliderTrack />
+          </PrismSlider>
+          <PrismButton
+            isDisabled={visibleActions.length === 0 || viewportWidth === 0}
+            onPress={fitActions}
+            size="icon-sm"
+            variant="secondary"
+            aria-label="Ajustar às ações"
+          >
+            <ScanIcon />
+          </PrismButton>
+        </div>
+        {person?.admin && (
           <UPeopleCombobox
             mode="responsibles"
             onSelect={setSelectedUserIds}
@@ -532,8 +735,8 @@ export function TimelineBoard({
             size="sm"
             variant="ghost"
           />
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Scroll region intentionally without tabIndex (not a focus stop) */}
       <div
@@ -541,6 +744,12 @@ export function TimelineBoard({
           "w-full overflow-x-auto",
           fillHeight && "min-h-0 flex-1 overflow-y-auto",
         )}
+        onScroll={(event) => {
+          const width = getViewportWidth();
+          if (width !== settledWidthRef.current) return;
+          viewportCenterRef.current =
+            (event.currentTarget.scrollLeft + width / 2) / camera.scale;
+        }}
         ref={scrollContainerRef}
       >
         <div className="relative min-w-max">
@@ -548,20 +757,21 @@ export function TimelineBoard({
           <div className="flex border-b border-border">
             <div
               aria-label="Responsável"
-              className="sticky left-0 z-30 flex h-10 w-14 shrink-0 items-center justify-center"
+              className="sticky left-0 z-30 flex h-10 w-14 shrink-0 items-center justify-center bg-background"
+              ref={personColumnRef}
             />
 
             <div
               className="relative flex h-10 shrink-0"
-              style={{ width: `${TRACK_WIDTH}px` }}
+              style={{ width: `${trackWidth}px` }}
             >
               {HOURS.map((hour) => (
                 <div
                   className="relative flex h-full shrink-0 items-center border-l border-border pl-2 text-xs font-medium text-secondary-foreground tabular-nums"
                   key={hour}
-                  style={{ width: `${HOUR_WIDTH_PX}px` }}
+                  style={{ width: `${hourWidth}px` }}
                 >
-                  {String(hour).padStart(2, "0")}h
+                  {hour % hourStep === 0 && `${String(hour).padStart(2, "0")}h`}
                 </div>
               ))}
 
@@ -591,7 +801,7 @@ export function TimelineBoard({
                     {/* Sticky person header (avatar only) */}
                     <div
                       aria-label={fullName}
-                      className="sticky left-0 z-20 flex w-14 shrink-0 items-start justify-center py-3"
+                      className="sticky left-0 z-40 flex w-14 shrink-0 items-start justify-center bg-background py-3"
                       title={fullName}
                     >
                       <UAvatar
@@ -605,7 +815,7 @@ export function TimelineBoard({
                     {/* Time track */}
                     <div
                       className="relative shrink-0"
-                      style={{ width: `${TRACK_WIDTH}px` }}
+                      style={{ width: `${trackWidth}px` }}
                     >
                       {/* Hour & 5-minute vertical grid lines */}
                       <div
@@ -616,17 +826,18 @@ export function TimelineBoard({
                           <div
                             className="relative h-full shrink-0 border-l border-border"
                             key={hour}
-                            style={{ width: `${HOUR_WIDTH_PX}px` }}
+                            style={{ width: `${hourWidth}px` }}
                           >
-                            {FIVE_MINUTE_OFFSETS.map((minuteOffset) => (
-                              <div
-                                className="absolute inset-y-0 border-l border-border/30"
-                                key={minuteOffset}
-                                style={{
-                                  left: `${minuteOffset * TIMELINE_PX_PER_MINUTE}px`,
-                                }}
-                              />
-                            ))}
+                            {showFiveMinuteGrid &&
+                              FIVE_MINUTE_OFFSETS.map((minuteOffset) => (
+                                <div
+                                  className="absolute inset-y-0 border-l border-border/30"
+                                  key={minuteOffset}
+                                  style={{
+                                    left: `${minuteOffset * pxPerMinute}px`,
+                                  }}
+                                />
+                              ))}
                           </div>
                         ))}
                       </div>
@@ -644,14 +855,17 @@ export function TimelineBoard({
                       <div className="relative flex flex-col divide-y divide-border/50">
                         {lanes.map((laneItems, laneIndex) => (
                           <div
-                            className="relative grid min-h-12 w-full grid-cols-1 py-1.5"
+                            className="relative grid min-h-9 w-full grid-cols-1 py-1"
+                            // biome-ignore lint/suspicious/noArrayIndexKey: The lane is a numbered slot; its actions move between slots.
                             key={laneIndex}
                           >
                             {laneItems.map((item) => (
                               <TimelineActionBar
                                 item={item}
                                 key={item.action.id}
-                                onCommitInterval={commitInterval}
+                                onCommitInterval={onCommitInterval}
+                                onOpenAction={gallery?.onOpenAction}
+                                pxPerMinute={pxPerMinute}
                               />
                             ))}
                           </div>

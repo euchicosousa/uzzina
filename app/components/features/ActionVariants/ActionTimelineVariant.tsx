@@ -1,30 +1,11 @@
-import { INTENT } from "~/lib/CONSTANTS";
-import { ActionItemTitleInput } from "../ActionItemTitleInput";
 import type { ActionVariantRendererProps } from "./types";
 
-export function ActionTimelineVariant({
-  action,
-  isEditing,
-  handleSetIsEditing,
-  handleAction,
-}: ActionVariantRendererProps) {
+export function ActionTimelineVariant({ action }: ActionVariantRendererProps) {
   return (
     <div className="flex h-full w-full items-center overflow-hidden">
-      <ActionItemTitleInput
-        className="w-full text-xs leading-tight font-medium"
-        isEditing={isEditing}
-        multiline
-        onBlur={(title) => {
-          handleAction({
-            intent: INTENT.update_action,
-            id: action.id,
-            expectedUpdatedAt: action.updated_at,
-            title,
-          });
-        }}
-        setIsEditing={handleSetIsEditing}
-        title={action.title}
-      />
+      <span className="line-clamp-2 w-full text-xs leading-tight font-medium wrap-break-word whitespace-normal">
+        {action.title}
+      </span>
     </div>
   );
 }

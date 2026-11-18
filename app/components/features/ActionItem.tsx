@@ -140,7 +140,7 @@ export function ActionItem({
       case VARIANT.block:
         return "flex-col gap-2 px-4 py-3";
       case VARIANT.timeline:
-        return "flex min-h-9 items-center rounded-xl px-2 py-1.5";
+        return "flex min-h-7 items-center rounded-xl px-[min(8px,10%)] py-1";
       // case VARIANT.line:
       default:
         return "rounded-xl px-3 py-1 @xs:p-1";
@@ -258,7 +258,12 @@ export function ActionItem({
       role="button"
       aria-pressed={isSelectionMode ? isSelected : undefined}
       tabIndex={0}
-      title={`${action.title} • ${getFormattedPartnersName(currentPartners)}`}
+      aria-label={variant === VARIANT.timeline ? action.title : undefined}
+      title={
+        variant === VARIANT.timeline
+          ? undefined
+          : `${action.title} • ${getFormattedPartnersName(currentPartners)}`
+      }
     >
       {isSelectionMode && (
         <div
