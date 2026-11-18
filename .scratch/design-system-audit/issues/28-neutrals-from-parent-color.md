@@ -1,6 +1,6 @@
 # DS28 — Neutros derivados da cor pai: aceite no app
 
-**Status.** Aberto em 17/11/2026. Implementado em `app/tailwind.css` no mesmo dia, a pedido do proprietário, depois de ele conferir os 11 temas no laboratório [ds28-conferencia-neutros.html](../ds28-conferencia-neutros.html). **Aceito pelo proprietário em 17/11/2026.** Sem commit e sem push.
+**Status.** Aberto em 17/11/2026. Implementado em `app/tailwind.css` no mesmo dia, a pedido do proprietário, depois de ele conferir os 11 temas no laboratório [ds28-conferencia-neutros.html](../ds28-conferencia-neutros.html). **Aceito pelo proprietário em 17/11/2026 e encerrado.** Commit `6b677b4`, enviado ao GitHub. Os casos de cinza sobre cor seguem no [DS35](35-unified-surfaces-and-neutrals.md).
 
 ## O que é
 
@@ -8,17 +8,17 @@ Todas as cores neutras do app (fundo de cartão, menu, campo, borda, cartão de 
 
 ## O que já mudou
 
-| Cor | Claro (luz do fundo) | Escuro (luz do fundo) |
-|---|---|---|
-| Cartão | −0,02 | +0,05 |
-| Menu e diálogo | +0,02 | −0,03 |
-| Campo | −0,04 | +0,02 |
-| Borda | −0,07 | +0,10 |
-| Cartão de ação | +0,02 | +0,10 |
-| Cartão de ação, hover | +0,10 | +0,20 |
-| Secundário (agora opaco) | −0,036 | +0,098 |
-| Secundário, hover (novo: `bg-secondary-hover`) | −0,083 | +0,133 |
-| Texto secundário | −0,512 | +0,549 |
+| Cor                                            | Claro (luz do fundo) | Escuro (luz do fundo) |
+| ---------------------------------------------- | -------------------- | --------------------- |
+| Cartão                                         | −0,02                | +0,05                 |
+| Menu e diálogo                                 | +0,02                | −0,03                 |
+| Campo                                          | −0,04                | +0,02                 |
+| Borda                                          | −0,07                | +0,10                 |
+| Cartão de ação                                 | +0,02                | +0,10                 |
+| Cartão de ação, hover                          | +0,10                | +0,20                 |
+| Secundário (agora opaco)                       | −0,036               | +0,098                |
+| Secundário, hover (novo: `bg-secondary-hover`) | −0,083               | +0,133                |
+| Texto secundário                               | −0,512               | +0,549                |
 
 - O texto principal continua com a cor da paleta ou do tema Personalizado. A regra derivada (claro −0,96, escuro +0,8) só vale quando não há cor própria. A troca definitiva está no [DS30](30-palette-cleanup-parent-color.md).
 - Os ajustes por paleta (`*-l-delta` escritos por `palette-vars.ts`) deixaram de ser lidos pelo CSS.
@@ -39,7 +39,7 @@ Nos dois modos, em pelo menos três temas (Ônix, Carbono e Fúcsia):
 - [x] Valores aplicados em `app/tailwind.css`.
 - [x] Conferência técnica da tela Hoje (valores calculados batem com as fórmulas, sem erro de console).
 - [x] Aceite visual do proprietário (17/11).
-- [ ] Commit (pedido do proprietário).
+- [x] Commit (`6b677b4`).
 
 ## Modelos sugeridos
 

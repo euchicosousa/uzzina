@@ -6,7 +6,6 @@
   Regra: cada cor de tema parte do fundo (--background, a cor pai).
   Neutros = fundo + delta de L (valores do laboratório ds24).
   Croma e matiz do neutro herdam do fundo, exceto o texto, que tem ΔC próprio (quase zero).
-  Texto suave e borda de container = transparência do texto principal (confirmado).
   Semânticas = valores fixos, um por modo (valores confirmados no laboratório ds25).
   Fundo do alerta = mistura com o fundo (10% claro, 30% escuro).
 */
@@ -23,10 +22,6 @@
   --action-hover: oklch(from var(--background) calc(l + 0.1) c h);
   --secondary: oklch(from var(--background) calc(l - 0.036) c h);
   --secondary-hover: oklch(from var(--background) calc(l - 0.083) c h);
-
-  /* Transparências do texto principal. */
-  --text-soft: oklch(from var(--foreground) l c h / 0.4);
-  --border-container: oklch(from var(--foreground) l c h / 0.05);
 
   /* Semânticas: um valor fixo por cor e por função (claro). */
   --color-error: oklch(0.65 0.16 16);
@@ -68,10 +63,6 @@
   --action-hover: oklch(from var(--background) calc(l + 0.2) c h);
   --secondary: oklch(from var(--background) calc(l + 0.098) max(0, calc(c - 0.002)) h);
   --secondary-hover: oklch(from var(--background) calc(l + 0.133) max(0, calc(c - 0.002)) h);
-
-  /* Transparências do texto principal. */
-  --text-soft: oklch(from var(--foreground) l c h / 0.4);
-  --border-container: oklch(from var(--foreground) l c h / 0.1);
 
   /* Semânticas: valores fixos no escuro, com texto próprio. */
   --color-error: oklch(0.72 0.14 16);

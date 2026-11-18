@@ -1,5 +1,7 @@
 # DS30 — Limpar as paletas: cada tema guarda só a cor pai e a principal
 
+> **Absorvido pelo [DS35](35-unified-surfaces-and-neutrals.md) em 17/11/2026 como fase 3 (cores no CSS e limpeza das paletas).** Este arquivo continua como detalhe; o status e a ordem valem pelo DS35.
+
 **Status.** Aberto em 17/11/2026. Nada aplicado. Depende de o trabalho do Gemini no DS21 (`palettes.ts`, `palette-vars.ts`, `color.ts`, sem commit) ser commitado ou descartado pelo proprietário.
 
 ## O que é

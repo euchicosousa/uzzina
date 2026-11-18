@@ -1,5 +1,7 @@
 # DS31 — Refazer o tema Personalizado de Minha Conta no modelo cor pai
 
+> **Absorvido pelo [DS35](35-unified-surfaces-and-neutrals.md) em 17/11/2026 como fase 5 (ferramentas que dependem do contrato).** Este arquivo continua como detalhe; o status e a ordem valem pelo DS35.
+
 **Status.** Aberto em 17/11/2026 a pedido do proprietário ("a aba de personalizado precisa ser inteiramente revista"). Estudo e proposta antes de qualquer código. Depende do DS29 e do DS30 estarem definidos.
 
 ## O que é

@@ -1,5 +1,7 @@
 # DS23 — Trocar as transparências de destaque por cores opacas calculadas pela superfície
 
+> **Absorvido pelo [DS35](35-unified-surfaces-and-neutrals.md) em 17/11/2026 como referência da fase 1. O modelo de camadas descrito aqui não é o caminho padrão: o proprietário escolheu limitar o uso das cores em vez de criar camadas. Só volta se a fase 1 mostrar que os limites não bastam.** Este arquivo continua como detalhe; o status e a ordem valem pelo DS35.
+
 **Status.** Reaberto em 17/11/2026 a pedido do proprietário, com novo escopo: modelo de camadas. Proposta aprovada pelo proprietário em 17/11 (gostou de tudo); nenhuma alteração no código do app sem a ordem de cada passo.
 
 Documentos: [opções de superfície](../ds23-opcoes-superficie.html) · [camadas (proposta)](../ds23-camadas.html) · [grupos do DS33](../ds33-grupos.html) · [referências](../../../docs/audits/2026-11-17-ds23-referencias.md) · [inventário do DS33](../../../docs/audits/2026-11-17-ds33-inventory.md) · [estudo de 16/11](../../../docs/audits/2026-11-16-ds23-surfaces-study.md)

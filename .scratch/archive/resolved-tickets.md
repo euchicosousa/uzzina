@@ -5565,3 +5565,7 @@ Encerrado com aceite do proprietário em 16/11/2026. Seção "Tópicos" em Admin
 ## DS22 — Unificar os botões secundários de adicionar
 
 Encerrado com aceite do proprietário em 16/11/2026. "Adicionar Cor" (Admin → Parceiro) e "Novo / Trocar proposta" (Planejamento) passaram de `outline` para `secondary` `sm`, igual a "Novo tópico". Link "Adicionar arquivo" do portal e os `xs` de conteúdo/arquivos mantidos pelo contexto. Commitado, sem push. [Ticket](../design-system-audit/issues/22-secondary-buttons-unification.md) · [Estudo](../../docs/audits/2026-11-16-ds22-secondary-buttons-study.md)
+
+## DS28 — Neutros derivados da cor pai
+
+Encerrado com aceite do proprietário em 17/11/2026. Cartão, menu, campo, borda, cartão de ação, secundário (agora opaco, com `secondary-hover` novo) e texto secundário saem do fundo de cada tema com um delta fixo de luz, igual para todas as paletas (`app/tailwind.css`). Commit `6b677b4`, enviado ao GitHub; deploy Ready não conferido. Os ajustes por paleta deixaram de ser lidos e saem na fase 3 do DS35. [Ticket](../design-system-audit/issues/28-neutrals-from-parent-color.md)

@@ -1,5 +1,7 @@
 # DS33 — Transparências escritas à mão e o novo secundário
 
+> **Absorvido pelo [DS35](35-unified-surfaces-and-neutrals.md) em 17/11/2026 como fases 2 e 4 (inventário por papel e reescrita por área). A dependência do DS23 abaixo não vale mais; as correções seguem o contrato da fase 1.** Este arquivo continua como detalhe; o status e a ordem valem pelo DS35.
+
 **Status.** Aberto em 17/11/2026. **Depende do [DS23](23-opaque-surface-aware-colors.md)** (modelo de camadas): este ticket é a parte de troca nos componentes, que só faz sentido depois que as camadas existirem (passo 4 do DS23). Inventário pronto; nenhuma alteração no código do app.
 
 Inventário: [docs/audits/2026-11-17-ds33-inventory.md](../../../docs/audits/2026-11-17-ds33-inventory.md). Página de grupos: [ds33-grupos.html](../ds33-grupos.html).

@@ -1,5 +1,7 @@
 # DS34 — Cores do widget do Cloudinary ligadas aos neutros
 
+> **Absorvido pelo [DS35](35-unified-surfaces-and-neutrals.md) em 17/11/2026 como fase 5 (ferramentas que dependem do contrato).** Este arquivo continua como detalhe; o status e a ordem valem pelo DS35.
+
 **Status.** Aberto em 17/11/2026. Decisão A7 do DS25 (17/11): o widget de envio de arquivos segue os neutros do tema. Nada aplicado.
 
 ## O que é

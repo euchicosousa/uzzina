@@ -1,5 +1,7 @@
 # DS32 — Ajustar o editor de temas do Admin ao modelo cor pai
 
+> **Absorvido pelo [DS35](35-unified-surfaces-and-neutrals.md) em 17/11/2026 como fase 5 (ferramentas que dependem do contrato).** Este arquivo continua como detalhe; o status e a ordem valem pelo DS35.
+
 **Status.** Aberto em 17/11/2026 a pedido do proprietário. Complementa o [DS21](21-admin-theme-colors-editor.md) (página `/app/admin/themes`, feita pelo Gemini, sem commit). Não edita o ticket nem os arquivos do DS21 sem o proprietário decidir o destino deles.
 
 ## O que é

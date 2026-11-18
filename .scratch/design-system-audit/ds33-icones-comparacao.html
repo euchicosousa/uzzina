@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DS33 — Comparação de Cores e Opacidades de Ícones</title>
+  <style>
+    :root {
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+      /* Semânticas fixas — Light (app/tailwind.css) */
+      --light-color-error: oklch(0.65 0.16 16);
+      --light-error-foreground: oklch(0.52 0.205 16);
+      --light-color-warning: oklch(0.82 0.12 80);
+      --light-warning-foreground: oklch(0.51 0.1 80);
+      --light-color-success: oklch(0.65 0.11 163);
+      --light-success-foreground: oklch(0.495 0.1 163);
+      --light-success-strong: oklch(0.53 0.105 163);
+      --light-success-strong-fg: #ffffff;
+      --light-color-info: oklch(0.65 0.12 250);
+      --light-info-foreground: oklch(0.505 0.14 250);
+
+      /* Semânticas fixas — Dark (app/tailwind.css) */
+      --dark-color-error: oklch(0.72 0.14 16);
+      --dark-error-foreground: oklch(0.72 0.16 16);
+      --dark-color-warning: oklch(0.84 0.12 80);
+      --dark-warning-foreground: oklch(0.84 0.14 80);
+      --dark-color-success: oklch(0.75 0.1 163);
+      --dark-success-foreground: oklch(0.75 0.15 163);
+      --dark-success-strong: oklch(0.53 0.105 163);
+      --dark-success-strong-fg: #ffffff;
+      --dark-color-info: oklch(0.75 0.12 250);
+      --dark-info-foreground: oklch(0.75 0.14 250);
+    }
+
+    /* Paleta Ônix (default) */
+    [data-palette="onix"] .mode-light {
+      --background: oklch(0.96 0.002 200);
+      --foreground: oklch(0 0 0);
+      --card: oklch(0.94 0.002 200);
+      --popover: oklch(0.98 0.002 200);
+      --primary: oklch(0 0 0);
+      --primary-foreground: oklch(1 0 0);
+      --secondary: oklch(0.924 0.002 200);
+      --secondary-hover: oklch(0.877 0.002 200);
+      --secondary-foreground: oklch(0.448 0.001 200);
+      --border: oklch(0.89 0.002 200);
+      --input: oklch(0.92 0.002 200);
+      --ring: oklch(0 0 0);
+      --action: oklch(0.98 0.002 200);
+      --popover-border: color-mix(in oklab, var(--foreground) 5%, transparent);
+
+      --error: var(--light-color-error);
+      --error-foreground: var(--light-error-foreground);
+      --error-bg: color-mix(in oklab, var(--light-color-error) 10%, var(--background));
+      --warning: var(--light-color-warning);
+      --warning-foreground: var(--light-warning-foreground);
+      --warning-bg: color-mix(in oklab, var(--light-color-warning) 10%, var(--background));
+      --success: var(--light-color-success);
+      --success-foreground: var(--light-success-foreground);
+      --success-bg: color-mix(in oklab, var(--light-color-success) 10%, var(--background));
+      --info: var(--light-color-info);
+      --info-foreground: var(--light-info-foreground);
+      --info-bg: color-mix(in oklab, var(--light-color-info) 10%, var(--background));
+    }
+
+    [data-palette="onix"] .mode-dark {
+      --background: oklch(0.2 0.01 250);
+      --foreground: oklch(1 0 0);
+      --card: oklch(0.25 0.01 250);
+      --popover: oklch(0.17 0.01 250);
+      --primary: oklch(1 0 0);
+      --primary-foreground: oklch(0 0 0);
+      --secondary: oklch(0.298 0.008 250);
+      --secondary-hover: oklch(0.333 0.008 250);
+      --secondary-foreground: oklch(0.749 0.003 250);
+      --border: oklch(0.3 0.01 250);
+      --input: oklch(0.22 0.01 250);
+      --ring: oklch(1 0 0);
+      --action: oklch(0.3 0.01 250);
+      --popover-border: color-mix(in oklab, var(--foreground) 10%, transparent);
+
+      --error: var(--dark-color-error);
+      --error-foreground: var(--dark-error-foreground);
+      --error-bg: color-mix(in oklab, var(--dark-color-error) 30%, var(--background));
+      --warning: var(--dark-color-warning);
+      --warning-foreground: var(--dark-warning-foreground);
+      --warning-bg: color-mix(in oklab, var(--dark-color-warning) 30%, var(--background));
+      --success: var(--dark-color-success);
+      --success-foreground: var(--dark-success-foreground);
+      --success-bg: color-mix(in oklab, var(--dark-color-success) 30%, var(--background));
+      --info: var(--dark-color-info);
+      --info-foreground: var(--dark-info-foreground);
+      --info-bg: color-mix(in oklab, var(--dark-color-info) 30%, var(--background));
+    }
+
+    /* Paleta Carbono */
+    [data-palette="carbon"] .mode-light {
+      --background: oklch(1 0 0);
+      --foreground: oklch(0 0 0);
+      --card: oklch(0.98 0 0);
+      --popover: oklch(1 0 0);
+      --primary: oklch(0.3 0.02 240);
+      --primary-foreground: oklch(1 0 0);
+      --secondary: oklch(0.964 0 0);
+      --secondary-hover: oklch(0.917 0 0);
+      --secondary-foreground: oklch(0.488 0 0);
+      --border: oklch(0.93 0 0);
+      --input: oklch(0.96 0 0);
+      --ring: oklch(0.3 0.02 240);
+      --action: oklch(0.98 0 0);
+      --popover-border: color-mix(in oklab, var(--foreground) 5%, transparent);
+
+      --error: var(--light-color-error);
+      --error-foreground: var(--light-error-foreground);
+      --error-bg: color-mix(in oklab, var(--light-color-error) 10%, var(--background));
+      --warning: var(--light-color-warning);
+      --warning-foreground: var(--light-warning-foreground);
+      --warning-bg: color-mix(in oklab, var(--light-color-warning) 10%, var(--background));
+      --success: var(--light-color-success);
+      --success-foreground: var(--light-success-foreground);
+      --success-bg: color-mix(in oklab, var(--light-color-success) 10%, var(--background));
+      --info: var(--light-color-info);
+      --info-foreground: var(--light-info-foreground);
+      --info-bg: color-mix(in oklab, var(--light-color-info) 10%, var(--background));
+    }
+
+    [data-palette="carbon"] .mode-dark {
+      --background: oklch(0.25 0.015 240);
+      --foreground: oklch(1 0 0);
+      --card: oklch(0.3 0.015 240);
+      --popover: oklch(0.22 0.015 240);
+      --primary: oklch(0.99 0.01 240);
+      --primary-foreground: oklch(0.3 0.02 240);
+      --secondary: oklch(0.348 0.013 240);
+      --secondary-hover: oklch(0.383 0.013 240);
+      --secondary-foreground: oklch(0.799 0.008 240);
+      --border: oklch(0.35 0.015 240);
+      --input: oklch(0.27 0.015 240);
+      --ring: oklch(0.99 0.01 240);
+      --action: oklch(0.35 0.015 240);
+      --popover-border: color-mix(in oklab, var(--foreground) 10%, transparent);
+
+      --error: var(--dark-color-error);
+      --error-foreground: var(--dark-error-foreground);
+      --error-bg: color-mix(in oklab, var(--dark-color-error) 30%, var(--background));
+      --warning: var(--dark-color-warning);
+      --warning-foreground: var(--dark-warning-foreground);
+      --warning-bg: color-mix(in oklab, var(--dark-color-warning) 30%, var(--background));
+      --success: var(--dark-color-success);
+      --success-foreground: var(--dark-success-foreground);
+      --success-bg: color-mix(in oklab, var(--dark-color-success) 30%, var(--background));
+      --info: var(--dark-color-info);
+      --info-foreground: var(--dark-info-foreground);
+      --info-bg: color-mix(in oklab, var(--dark-color-info) 30%, var(--background));
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      background: #f4f4f5;
+      color: #18181b;
+      line-height: 1.45;
+      font-size: 14px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #e4e4e7;
+      padding: 14px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .topbar p {
+      margin: 2px 0 0;
+      font-size: 12px;
+      color: #52525b;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .segmented {
+      display: inline-flex;
+      background: #e4e4e7;
+      padding: 3px;
+      border-radius: 10px;
+      gap: 2px;
+    }
+
+    .segmented button {
+      border: 0;
+      background: transparent;
+      padding: 6px 12px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #52525b;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .segmented button.active {
+      background: #ffffff;
+      color: #18181b;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    }
+
+    .container {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .summary-card {
+      background: #ffffff;
+      border: 1px solid #e4e4e7;
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .summary-item h3 {
+      margin: 0 0 4px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .summary-item p {
+      margin: 0;
+      font-size: 12px;
+      color: #52525b;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: rgba(128, 128, 128, 0.12);
+      padding: 1px 5px;
+      border-radius: 5px;
+      word-break: break-word;
+    }
+
+    .section-block {
+      background: #ffffff;
+      border: 1px solid #e4e4e7;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .section-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid #e4e4e7;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      background: #fafafa;
+    }
+
+    .section-header h2 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .section-header .file-ref {
+      font-size: 12px;
+      color: #52525b;
+    }
+
+    .section-note {
+      padding: 10px 20px;
+      font-size: 12px;
+      color: #3f3f46;
+      background: #fefce8;
+      border-bottom: 1px solid #fef08a;
+    }
+
+    .modes-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @media (max-width: 1060px) {
+      .modes-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .mode-panel {
+      background: var(--background);
+      color: var(--foreground);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .mode-panel + .mode-panel {
+      border-left: 1px solid #e4e4e7;
+    }
+
+    .mode-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--secondary-foreground);
+    }
+
+    .compare-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+    }
+
+    .compare-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .tag-today {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--error-bg);
+      color: var(--error-foreground);
+    }
+
+    .tag-proposed {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--success-bg);
+      color: var(--success-foreground);
+    }
+
+    .states-strip {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .state-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
+    .state-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--secondary-foreground);
+    }
+
+    /* ======================================================
+       COMPONENTES SIMULADOS COM TOKENS REAIS DO UZZINA
+       ====================================================== */
+    .u-svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      display: block;
+    }
+    .u-svg-sm { width: 12px; height: 12px; }
+    .u-svg-md { width: 20px; height: 20px; }
+
+    /* Opacidades explícitas */
+    .op-60 { opacity: 0.6; }
+    .op-50 { opacity: 0.5; }
+    .op-40 { opacity: 0.4; }
+    .op-100 { opacity: 1; }
+    .op-fg-40 { color: color-mix(in oklab, var(--foreground) 40%, transparent); }
+    .op-24 { opacity: 0.24; } /* 0.40 * 0.60 efetivo */
+
+    /* Botão Prism */
+    .p-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .p-btn-icon {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+    }
+    .p-btn-default {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: var(--primary-foreground);
+    }
+    .p-btn-default.is-hover {
+      background: color-mix(in oklab, var(--primary), var(--background) 20%);
+      border-color: color-mix(in oklab, var(--primary), var(--background) 20%);
+    }
+    .p-btn-secondary {
+      background: var(--secondary);
+      border-color: var(--secondary);
+      color: var(--foreground);
+    }
+    .p-btn-secondary.is-hover {
+      background: color-mix(in oklch, var(--secondary), var(--foreground) 5%);
+    }
+    .p-btn-ghost {
+      background: transparent;
+      color: var(--foreground);
+    }
+    .p-btn-ghost.is-hover {
+      background: var(--secondary);
+    }
+    .p-btn-error {
+      background: var(--error-bg);
+      border-color: var(--error);
+      color: var(--error-foreground);
+    }
+    .p-btn-success {
+      background: var(--light-success-strong);
+      border-color: var(--light-success-strong);
+      color: #ffffff;
+    }
+    .p-btn.is-focus {
+      border-color: color-mix(in oklab, var(--ring) 60%, transparent);
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 30%, transparent);
+    }
+    .p-btn.is-disabled {
+      opacity: 0.5;
+    }
+
+    /* InputGroup */
+    .p-input-group {
+      display: inline-flex;
+      align-items: center;
+      height: 38px;
+      width: 190px;
+      border-radius: 12px;
+      background: var(--input);
+      border: 1px solid transparent;
+      padding: 0 10px;
+      gap: 8px;
+      color: var(--foreground);
+      font-size: 13px;
+    }
+    .p-input-group.is-hover {
+      border-color: var(--border);
+    }
+    .p-input-group.is-focus {
+      border-color: color-mix(in oklab, var(--ring) 60%, transparent);
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 30%, transparent);
+    }
+    .p-input-group.is-disabled {
+      opacity: 0.5;
+    }
+    .p-input-placeholder {
+      color: color-mix(in oklab, var(--foreground) 40%, transparent);
+      font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Menu / Select / Combobox / Command item */
+    .p-popover {
+      background: var(--popover);
+      border: 1px solid var(--popover-border);
+      border-radius: 12px;
+      padding: 4px;
+      min-width: 170px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    }
+    .p-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 30px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--foreground);
+    }
+    .p-item.is-hover,
+    .p-item.is-focus {
+      background: var(--secondary);
+    }
+    .p-item.is-disabled {
+      opacity: 0.5;
+    }
+    .p-item-check {
+      margin-left: auto;
+    }
+
+    /* Select Trigger */
+    .p-select-trigger {
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      height: 36px;
+      min-width: 155px;
+      padding: 0 12px;
+      border-radius: 12px;
+      background: var(--input);
+      border: 1px solid transparent;
+      color: var(--foreground);
+      font-size: 13px;
+    }
+    .p-select-trigger.is-focus {
+      border-color: color-mix(in oklab, var(--ring) 60%, transparent);
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 30%, transparent);
+    }
+    .p-select-trigger.is-disabled {
+      opacity: 0.5;
+    }
+
+    /* Badge */
+    .p-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 20px;
+      padding: 0 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+      border: 1px solid transparent;
+    }
+    .p-badge-default {
+      background: var(--card);
+      color: var(--foreground);
+      border-color: color-mix(in oklab, var(--foreground) 20%, transparent);
+    }
+    .p-badge-secondary {
+      background: var(--secondary);
+      color: var(--foreground);
+    }
+    .p-badge-success {
+      background: var(--success-bg);
+      color: var(--success);
+      border-color: var(--success-bg);
+    }
+    .p-badge-warning {
+      background: var(--warning-bg);
+      color: var(--warning-foreground);
+      border-color: var(--warning-bg);
+    }
+    .p-badge-error {
+      background: var(--error-bg);
+      color: var(--error-foreground);
+      border-color: var(--error-bg);
+    }
+    .p-badge-info {
+      background: var(--info-bg);
+      color: var(--info-foreground);
+      border-color: var(--info-bg);
+    }
+
+    /* ButtonGroupText */
+    .p-bg-group {
+      display: inline-flex;
+      align-items: stretch;
+    }
+    .p-bg-text {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 36px;
+      padding: 0 12px;
+      border: 1px solid var(--border);
+      border-right: 0;
+      border-radius: 12px 0 0 12px;
+      background: var(--secondary);
+      color: var(--secondary-foreground);
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .p-bg-btn-end {
+      border-radius: 0 12px 12px 0;
+    }
+
+    /* Tabs */
+    .p-tabs {
+      display: inline-flex;
+      border-bottom: 1px solid var(--border);
+      gap: 2px;
+    }
+    .p-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 34px;
+      padding: 0 12px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--secondary-foreground);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    .p-tab.is-hover {
+      background: var(--secondary);
+      color: var(--foreground);
+    }
+    .p-tab.is-focus {
+      background: var(--secondary);
+      color: var(--foreground);
+      outline: 2px solid color-mix(in oklab, var(--ring) 40%, transparent);
+      outline-offset: -2px;
+    }
+    .p-tab.is-selected {
+      color: var(--foreground);
+      border-bottom-color: var(--primary);
+    }
+    .p-tab.is-disabled {
+      opacity: 0.5;
+    }
+
+    /* ActionItem */
+    .p-action-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--action);
+      border: 1px solid var(--border);
+      color: var(--foreground);
+      min-width: 280px;
+    }
+    .p-action-card.is-hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Image Icon */
+    .p-thumb {
+      position: relative;
+      width: 92px;
+      height: 72px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #3b82f6 0%, #f59e0b 55%, #ec4899 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.85);
+    }
+    .p-thumb-light {
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 55%, #fef3c7 100%);
+      color: rgba(15, 23, 42, 0.5);
+    }
+    .image-icon {
+      color: #ffffff;
+      filter: drop-shadow(0 0 1px rgb(0 0 0 / 0.7)) drop-shadow(0 1px 2px rgb(0 0 0 / 0.55));
+    }
+    .p-thumb-tl { position: absolute; top: 6px; left: 6px; }
+    .p-thumb-tr { position: absolute; top: 6px; right: 6px; }
+    .p-thumb-focus {
+      outline: 2px solid #ffffff;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body data-palette="onix">
+  <header class="topbar">
+    <div>
+      <h1>DS33 — Comparação de Cores e Opacidades de Ícones</h1>
+      <p>Tokens OKLCH reais de <code>app/tailwind.css</code> e <code>app/lib/palettes.ts</code> · Hoje vs. Proposta Unificada</p>
+    </div>
+    <div class="controls">
+      <div class="segmented" role="group" aria-label="Selecionar paleta">
+        <button type="button" class="active" data-palette-btn="onix">Ônix (default)</button>
+        <button type="button" data-palette-btn="carbon">Carbono</button>
+      </div>
+      <div class="segmented" role="group" aria-label="Modo de exibição">
+        <button type="button" class="active" data-mode-btn="both">Claro + Escuro</button>
+        <button type="button" data-mode-btn="light">Só Claro</button>
+        <button type="button" data-mode-btn="dark">Só Escuro</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="summary-card">
+      <div class="summary-item">
+        <h3>Regra 1 — Ícones de apoio / decorativos</h3>
+        <p>Em botões neutros, inputs, menus, selects, combobox, command e metadados: <code>opacity-60</code> sobre <code>text-foreground</code> (ou <code>text-secondary-foreground</code> sem dupla opacidade). Nunca combinar <code>text-foreground/40</code> + <code>opacity-60</code> (que resulta em 24%) nem <code>text-secondary-foreground</code> + <code>opacity-60</code>.</p>
+      </div>
+      <div class="summary-item">
+        <h3>Regra 2 — Ícones de ação, estado e seleção</h3>
+        <p>Badges semânticos (<code>success</code>, <code>warning</code>, <code>error</code>, <code>info</code>), indicadores selecionados (<code>CheckIcon</code>, <code>CheckCircle2Icon</code>), prioridade, atraso e fase mantêm <code>opacity-100</code> e cor semântica ou herdada.</p>
+      </div>
+      <div class="summary-item">
+        <h3>Regra 3 — Ícones sobre imagem (<code>image-icon</code>)</h3>
+        <p>Preservado integralmente: branco (<code>#ffffff</code>, <code>opacity-100</code>) com duplo <code>drop-shadow</code> e sem fundo, independente da paleta ativa.</p>
+      </div>
+    </section>
+
+    <div id="sections-root"></div>
+  </main>
+
+  <script>
+    // Ícones SVG reais (estilo Lucide 24x24, strokeWidth=2)
+    const ICONS = {
+      plus: `<svg class="u-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>`,
+      bell: `<svg class="u-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>`,
+      trash: `<svg class="u-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>`,
+      check: `<svg class="u-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`,
+      checkCircle: `<svg class="u-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`,
+      atSign: `<svg class="u-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/></svg>`,
+      lock: `<svg class="u-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
+      eye: `<svg class="u-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>`,
+      search: `<svg class="u-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>`,
+      chevronsUpDown: `<svg class="u-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>`,
+      chevronDown: `<svg class="u-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`,
+      chevronRight: `<svg class="u-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`,
+      user: `<svg class="u-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+      palette: `<svg class="u-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>`,
+      alert: `<svg class="u-svg u-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>`,
+      signal: `<svg class="u-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h.01"/><path d="M7 20v-4"/><path d="M12 20v-8"/><path d="M17 20V8"/><path d="M22 4v16"/></svg>`,
+      calendar: `<svg class="u-svg u-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>`,
+      grip: `<svg class="u-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="19" r="1"/></svg>`,
+      square: `<svg class="u-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/></svg>`,
+      squareCheck: `<svg class="u-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 12 2 2 4-4"/></svg>`,
+      logout: `<svg class="u-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>`,
+    };
+
+    const withClass = (svg, cls) => svg.replace('class="u-svg', `class="u-svg ${cls}`);
+
+    const SECTIONS = [
+      {
+        title: "1. Botões (PrismButton)",
+        file: "app/components/prism/button.tsx",
+        note: "Hoje todos os SVGs em qualquer variante recebem [&_svg:not([class*='opacity-'])]:opacity-60. Em variantes primárias (default) e semânticas (error, success), a opacidade de 60% atenua ícones de ação direta.",
+        todayCode: "[&_svg:not([class*='opacity-'])]:opacity-60",
+        proposedCode: "Apoio: opacity-60 · Ação direta/semântica (default/error/success) e icon-only: opacity-100",
+        renderToday: () => `
+          <div class="states-strip">
+            <div class="state-cell">
+              <span class="state-label">Repouso (default)</span>
+              <span class="p-btn p-btn-default">Nova ação ${withClass(ICONS.plus, "op-60")}</span>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">Hover (secondary)</span>
+              <span class="p-btn p-btn-secondary is-hover">${withClass(ICONS.bell, "op-60")} Notificações</span>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">Foco (ghost icon)</span>
+              <span class="p-btn p-btn-ghost p-btn-icon is-focus">${withClass(ICONS.bell, "op-60")}</span>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">Desabilitado (error)</span>
+              <span class="p-btn p-btn-error is-disabled">Excluir ${withClass(ICONS.trash, "op-60")}</span>
+            </div>
+          </div>
+        `,
+        renderProposed: () => `
+          <div class="states-strip">
+            <div class="state-cell">
+              <span class="state-label">Repouso (default)</span>
+              <span class="p-btn p-btn-default">Nova ação ${withClass(ICONS.plus, "op-100")}</span>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">Hover (secondary)</span>
+              <span class="p-btn p-btn-secondary is-hover">${withClass(ICONS.bell, "op-60")} Notificações</span>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">Foco (ghost icon)</span>
+              <span class="p-btn p-btn-ghost p-btn-icon is-focus">${withClass(ICONS.bell, "op-100")}</span>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">Desabilitado (error)</span>
+              <span class="p-btn p-btn-error is-disabled">Excluir ${withClass(ICONS.trash, "op-100")}</span>
+            </div>
+          </div>
+        `,
+      },
+      {
+        title: "2. InputGroup + Overrides manuais em rotas de autenticação",
+        file: "input-group.tsx · login.tsx · dash/login.tsx · forgot-password.tsx · reset-password.tsx",
+        note: "InputGroupAddon aplica [&_svg]:text-foreground e [&_svg:not([class*='opacity-'])]:opacity-60. Nas 4 rotas de auth, className=\"[&_svg]:text-foreground/40\" sobrescreve a cor mantendo opacity-60 — resultando em 40% × 60% = 24% de opacidade efetiva.",
+        todayCode: "Addon: [&_svg]:text-foreground [&_svg:not([class*='opacity-'])]:opacity-60 · Auth: [&_svg]:text-foreground/40",
+        proposedCode: "Remover [&_svg]:text-foreground/40 das rotas de auth; manter padrão único opacity-60 do InputGroupAddon",
+        renderToday: () => `
+          <div class="states-strip">
+            <div class="state-cell">
+              <span class="state-label">Repouso (Auth 24%)</span>
+              <div class="p-input-group">
+                ${withClass(ICONS.atSign, "op-fg-40 op-60")}
+                <span class="p-input-placeholder">seu@email.com</span>
+              </div>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">Hover (InputGroup 60%)</span>
+              <div class="p-input-group is-hover">
+                ${withClass(ICONS.search, "op-60")}
+                <span class="p-input-placeholder">Buscar...</span>
+              </div>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">Foco (Auth 24% + Olho 60%)</span>
+              <div class="p-input-group is-focus">
+                ${withClass(ICONS.lock, "op-fg-40 op-60")}
+                <span class="p-input-placeholder">••••••••</span>
+                <span style="margin-left:auto">${withClass(ICONS.eye, "op-60")}</span>
+              </div>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">Desabilitado</span>
+              <div class="p-input-group is-disabled">
+                ${withClass(ICONS.lock, "op-fg-40 op-60")}
+                <span class="p-input-placeholder">Bloqueado</span>
+              </div>
+            </div>
+          </div>
+        `,
+        renderProposed: () => `
+          <div class="states-strip">
+            <div class="state-cell">
+              <span class="state-label">Repouso (Auth 60%)</span>
+              <div class="p-input-group">
+                ${withClass(ICONS.atSign, "op-60")}
+                <span class="p-input-placeholder">seu@email.com</span>
+              </div>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">Hover (InputGroup 60%)</span>
+              <div class="p-input-group is-hover">
+                ${withClass(ICONS.search, "op-60")}
+                <span class="p-input-placeholder">Buscar...</span>
+              </div>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">Foco (Auth 60% + Olho 60%)</span>
+              <div class="p-input-group is-focus">
+                ${withClass(ICONS.lock, "op-60")}
+                <span class="p-input-placeholder">••••••••</span>
+                <span style="margin-left:auto">${withClass(ICONS.eye, "op-60")}</span>
+              </div>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">Desabilitado</span>
+              <div class="p-input-group is-disabled">
+                ${withClass(ICONS.lock, "op-60")}
+                <span class="p-input-placeholder">Bloqueado</span>
+              </div>
+            </div>
+          </div>
+        `,
+      },
+      {
+        title: "3. DropdownMenu, Select, Combobox e Command",
+        file: "dropdown-menu.tsx · select.tsx · combobox.tsx · command.tsx",
+        note: "DropdownMenuItem, SelectItem, ComboboxItem e CommandItem usam [&_svg:not([class*='opacity-'])]:opacity-60 com CheckIcon/CheckCircle2Icon em opacity-100. Divergência: DropdownMenuSubTrigger usa [&_svg]:opacity-50.",
+        todayCode: "Item: opacity-60 (Check: opacity-100) · SubTrigger: [&_svg]:opacity-50",
+        proposedCode: "Unificar todos os itens e SubTrigger em opacity-60 (apoio) e opacity-100 no indicador selecionado",
+        renderToday: () => `
+          <div class="states-strip">
+            <div class="state-cell">
+              <span class="state-label">Repouso (SelectTrigger)</span>
+              <div class="p-select-trigger">
+                <span>Selecionar</span>
+                ${withClass(ICONS.chevronsUpDown, "op-60")}
+              </div>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">Hover / Foco (MenuItem)</span>
+              <div class="p-popover">
+                <div class="p-item is-hover">
+                  ${withClass(ICONS.user, "op-60")}
+                  <span>Minha Conta</span>
+                  <span class="p-item-check">${withClass(ICONS.check, "op-100")}</span>
+                </div>
+                <div class="p-item">
+                  ${withClass(ICONS.palette, "op-50")}
+                  <span>SubTrigger (50%)</span>
+                  <span class="p-item-check">${withClass(ICONS.chevronRight, "op-50")}</span>
+                </div>
+              </div>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">Desabilitado (Command)</span>
+              <div class="p-popover">
+                <div class="p-item is-disabled">
+                  ${withClass(ICONS.search, "op-60")}
+                  <span>Ação indisponível</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `,
+        renderProposed: () => `
+          <div class="states-strip">
+            <div class="state-cell">
+              <span class="state-label">Repouso (SelectTrigger)</span>
+              <div class="p-select-trigger">
+                <span>Selecionar</span>
+                ${withClass(ICONS.chevronsUpDown, "op-60")}
+              </div>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">Hover / Foco (MenuItem)</span>
+              <div class="p-popover">
+                <div class="p-item is-hover">
+                  ${withClass(ICONS.user, "op-60")}
+                  <span>Minha Conta</span>
+                  <span class="p-item-check">${withClass(ICONS.check, "op-100")}</span>
+                </div>
+                <div class="p-item">
+                  ${withClass(ICONS.palette, "op-60")}
+                  <span>SubTrigger (60%)</span>
+                  <span class="p-item-check">${withClass(ICONS.chevronRight, "op-60")}</span>
+                </div>
+              </div>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">Desabilitado (Command)</span>
+              <div class="p-popover">
+                <div class="p-item is-disabled">
+                  ${withClass(ICONS.search, "op-60")}
+                  <span>Ação indisponível</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `,
+      },
+      {
+        title: "4. Badges, ButtonGroupText e Abas (Tabs)",
+        file: "badge.tsx · button-group.tsx · tabs.tsx",
+        note: "Badge aplica opacity-60 até em variantes semânticas (success/warning/error/info). ButtonGroupText combina text-secondary-foreground + opacity-60 (dupla atenuação). Tabs usa text-secondary-foreground -> text-foreground sem opacity-60.",
+        todayCode: "Badge: [&_svg:not([class*='opacity-'])]:opacity-60 · ButtonGroupText: text-secondary-foreground + opacity-60 · Tabs: currentColor",
+        proposedCode: "Badge semântico: opacity-100 · ButtonGroupText: text-secondary-foreground (opacity-100) · Tabs: currentColor",
+        renderToday: () => `
+          <div class="states-strip">
+            <div class="state-cell">
+              <span class="state-label">Badges (60% em tudo)</span>
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <span class="p-badge p-badge-default">${withClass(ICONS.palette, "u-svg-sm op-60")} Padrão</span>
+                <span class="p-badge p-badge-success">${withClass(ICONS.check, "u-svg-sm op-60")} Concluído</span>
+                <span class="p-badge p-badge-error">${withClass(ICONS.alert, "u-svg-sm op-60")} Atrasado</span>
+              </div>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">ButtonGroupText (dupla atenuação)</span>
+              <div class="p-bg-group">
+                <span class="p-bg-text">${withClass(ICONS.search, "op-60")} Filtro</span>
+                <span class="p-btn p-btn-secondary p-bg-btn-end">Aplicar</span>
+              </div>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">Tabs (Repouso · Hover · Foco · Desab.)</span>
+              <div class="p-tabs">
+                <span class="p-tab is-selected">${ICONS.user} Geral</span>
+                <span class="p-tab is-hover">${ICONS.palette} Tema</span>
+                <span class="p-tab is-focus">${ICONS.bell} Alertas</span>
+                <span class="p-tab is-disabled">${ICONS.lock} Restrito</span>
+              </div>
+            </div>
+          </div>
+        `,
+        renderProposed: () => `
+          <div class="states-strip">
+            <div class="state-cell">
+              <span class="state-label">Badges (semânticos 100%)</span>
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <span class="p-badge p-badge-default">${withClass(ICONS.palette, "u-svg-sm op-60")} Padrão</span>
+                <span class="p-badge p-badge-success">${withClass(ICONS.check, "u-svg-sm op-100")} Concluído</span>
+                <span class="p-badge p-badge-error">${withClass(ICONS.alert, "u-svg-sm op-100")} Atrasado</span>
+              </div>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">ButtonGroupText (sem dupla atenuação)</span>
+              <div class="p-bg-group">
+                <span class="p-bg-text">${withClass(ICONS.search, "op-100")} Filtro</span>
+                <span class="p-btn p-btn-secondary p-bg-btn-end">Aplicar</span>
+              </div>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">Tabs (Repouso · Hover · Foco · Desab.)</span>
+              <div class="p-tabs">
+                <span class="p-tab is-selected">${ICONS.user} Geral</span>
+                <span class="p-tab is-hover">${ICONS.palette} Tema</span>
+                <span class="p-tab is-focus">${ICONS.bell} Alertas</span>
+                <span class="p-tab is-disabled">${ICONS.lock} Restrito</span>
+              </div>
+            </div>
+          </div>
+        `,
+      },
+      {
+        title: "5. Cartão de Ação e Cabeçalho / Navegação",
+        file: "ActionItem.tsx · ActionBlockVariant.tsx · ActionLineVariant.tsx · Header.tsx",
+        note: "ActionItem usa cor semântica 100% para prioridade/atraso e opacity-50 na data (.action-date). Header usa CheckIcon text-primary sem opacity-100 dentro do MenuItem (cai para 60%).",
+        todayCode: "Data: opacity-50 · Prioridade/Atraso: text-error/info 100% · Header CheckIcon: text-primary (herda opacity-60)",
+        proposedCode: "Metadados (data): opacity-60 · Estado/Prioridade/Check ativo: opacity-100 semântico",
+        renderToday: () => `
+          <div class="states-strip">
+            <div class="state-cell">
+              <span class="state-label">ActionItem (Repouso / Hover)</span>
+              <div class="p-action-card is-hover">
+                <span style="color:var(--error-foreground)">${ICONS.alert}</span>
+                <span style="font-size:13px;font-weight:500">Post Instagram</span>
+                <span style="color:var(--info)">${ICONS.signal}</span>
+                <span class="op-50" style="margin-left:auto;display:inline-flex;align-items:center;gap:4px;font-size:12px">
+                  ${ICONS.calendar} 18/11
+                </span>
+              </div>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">Header Menu (Check 60% vs Sair)</span>
+              <div class="p-popover">
+                <div class="p-item">
+                  ${withClass(ICONS.palette, "op-60")}
+                  <span>Tema claro</span>
+                  <span class="p-item-check op-60" style="color:var(--primary)">${ICONS.check}</span>
+                </div>
+                <div class="p-item" style="color:var(--error-foreground)">
+                  ${withClass(ICONS.logout, "op-60")}
+                  <span>Sair</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `,
+        renderProposed: () => `
+          <div class="states-strip">
+            <div class="state-cell">
+              <span class="state-label">ActionItem (Repouso / Hover)</span>
+              <div class="p-action-card is-hover">
+                <span style="color:var(--error-foreground)">${ICONS.alert}</span>
+                <span style="font-size:13px;font-weight:500">Post Instagram</span>
+                <span style="color:var(--info)">${ICONS.signal}</span>
+                <span class="op-60" style="margin-left:auto;display:inline-flex;align-items:center;gap:4px;font-size:12px">
+                  ${ICONS.calendar} 18/11
+                </span>
+              </div>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">Header Menu (Check 100% + Sair 100%)</span>
+              <div class="p-popover">
+                <div class="p-item">
+                  ${withClass(ICONS.palette, "op-60")}
+                  <span>Tema claro</span>
+                  <span class="p-item-check op-100" style="color:var(--primary)">${ICONS.check}</span>
+                </div>
+                <div class="p-item" style="color:var(--error-foreground)">
+                  ${withClass(ICONS.logout, "op-100")}
+                  <span>Sair</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `,
+      },
+      {
+        title: "6. Ícones sobre Imagem (image-icon)",
+        file: "app/tailwind.css · ContentReorderDialog.tsx",
+        note: "Alça de reordenação (GripVerticalIcon) e caixa de seleção (SquareIcon / SquareCheckIcon) sobre miniaturas: sempre brancos com duplo drop-shadow, sem fundo.",
+        todayCode: "@utility image-icon { color: white; filter: drop-shadow(...) }",
+        proposedCode: "Mantido igual (white + drop-shadow, opacity-100) sobre qualquer paleta",
+        renderToday: () => `
+          <div class="states-strip">
+            <div class="state-cell">
+              <span class="state-label">Repouso / Hover (fundo colorido)</span>
+              <div class="p-thumb">
+                <span class="p-thumb-tl image-icon">${ICONS.grip}</span>
+                <span class="p-thumb-tr image-icon">${ICONS.square}</span>
+                Mídia 01
+              </div>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">Foco / Selecionado (fundo claro)</span>
+              <div class="p-thumb p-thumb-light">
+                <span class="p-thumb-tl image-icon">${ICONS.grip}</span>
+                <span class="p-thumb-tr image-icon p-thumb-focus">${ICONS.squareCheck}</span>
+                Mídia 02
+              </div>
+            </div>
+          </div>
+        `,
+        renderProposed: () => `
+          <div class="states-strip">
+            <div class="state-cell">
+              <span class="state-label">Repouso / Hover (mantido)</span>
+              <div class="p-thumb">
+                <span class="p-thumb-tl image-icon">${ICONS.grip}</span>
+                <span class="p-thumb-tr image-icon">${ICONS.square}</span>
+                Mídia 01
+              </div>
+            </div>
+            <div class="state-cell">
+              <span class="state-label">Foco / Selecionado (mantido)</span>
+              <div class="p-thumb p-thumb-light">
+                <span class="p-thumb-tl image-icon">${ICONS.grip}</span>
+                <span class="p-thumb-tr image-icon p-thumb-focus">${ICONS.squareCheck}</span>
+                Mídia 02
+              </div>
+            </div>
+          </div>
+        `,
+      },
+    ];
+
+    let activeMode = "both";
+
+    function render() {
+      const root = document.getElementById("sections-root");
+      root.innerHTML = SECTIONS.map((sec) => {
+        const showLight = activeMode === "both" || activeMode === "light";
+        const showDark = activeMode === "both" || activeMode === "dark";
+        const gridCols = showLight && showDark ? "1fr 1fr" : "1fr";
+
+        const renderPanel = (modeClass, modeTitle) => `
+          <div class="mode-panel ${modeClass}">
+            <div class="mode-badge">${modeTitle}</div>
+            <div class="compare-row">
+              <div class="compare-meta">
+                <span class="tag-today">Hoje (como está no app)</span>
+                <code>${sec.todayCode}</code>
+              </div>
+              ${sec.renderToday()}
+            </div>
+            <div class="compare-row">
+              <div class="compare-meta">
+                <span class="tag-proposed">Proposta unificada</span>
+                <code>${sec.proposedCode}</code>
+              </div>
+              ${sec.renderProposed()}
+            </div>
+          </div>
+        `;
+
+        return `
+          <section class="section-block">
+            <div class="section-header">
+              <h2>${sec.title}</h2>
+              <span class="file-ref"><code>${sec.file}</code></span>
+            </div>
+            <div class="section-note">${sec.note}</div>
+            <div class="modes-grid" style="grid-template-columns:${gridCols}">
+              ${showLight ? renderPanel("mode-light", "Modo Claro") : ""}
+              ${showDark ? renderPanel("mode-dark", "Modo Escuro") : ""}
+            </div>
+          </section>
+        `;
+      }).join("");
+    }
+
+    document.querySelectorAll("[data-palette-btn]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("[data-palette-btn]").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        document.body.setAttribute("data-palette", btn.dataset.paletteBtn);
+      });
+    });
+
+    document.querySelectorAll("[data-mode-btn]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("[data-mode-btn]").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        activeMode = btn.dataset.modeBtn;
+        render();
+      });
+    });
+
+    render();
+  </script>
+</body>
+</html>
