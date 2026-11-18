@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS33: grupos de transparência e cinza do secundário</title>
+<style>
+/* ---------- Página (neutra, fora da paleta) ---------- */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#f5f5f4;color:#1c1917;font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow-wrap:break-word}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+h1{font-size:24px;line-height:1.25;margin:18px 0 6px}
+h2{font-size:20px;margin:44px 0 8px;padding-top:14px;border-top:2px solid #e7e5e4;scroll-margin-top:90px}
+h3{font-size:17px;margin:0;line-height:1.3}
+h4{font-size:13px;margin:0 0 6px;color:#1c1917;font-weight:600}
+p{margin:6px 0}
+.lead{color:#44403c;max-width:760px}
+.small{font-size:13px;color:#78716c}
+.intro{background:#fff;border:1px solid #e7e5e4;border-radius:16px;padding:16px 18px;margin-top:16px}
+.intro ul{padding-left:20px;margin:6px 0}
+.intro li{margin:4px 0}
+.bar{position:sticky;top:0;z-index:10;background:#f5f5f4;border-bottom:1px solid #e7e5e4;padding:10px 0;margin-top:12px}
+.bar .wrap{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.seglabel{font-size:12px;color:#78716c}
+.seg{display:inline-flex;flex-wrap:wrap;background:#e7e5e4;border-radius:12px;padding:3px;gap:2px}
+.seg button{font:inherit;font-size:14px;border:0;background:transparent;color:#44403c;padding:6px 12px;border-radius:9px;cursor:pointer;min-height:36px}
+.seg button[aria-pressed="true"]{background:#fff;color:#1c1917;box-shadow:0 1px 2px rgba(0,0,0,.12);font-weight:600}
+.seg button:focus-visible{outline:2px solid #0369a1;outline-offset:2px}
+.toc{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:14px;margin:10px 0 0;padding:0;list-style:none}
+.toc a{color:#0c4a6e}
+
+/* ---------- Paletas (valores reais de app/lib/palettes.ts) ---------- */
+[data-pal="onix"] .panel.light{--background:oklch(0.96 0.002 200);--foreground:oklch(0 0 0);--primary:oklch(0 0 0);--primary-foreground:oklch(1 0 0)}
+[data-pal="onix"] .panel.dark{--background:oklch(0.2 0.01 250);--foreground:oklch(1 0 0);--primary:oklch(1 0 0);--primary-foreground:oklch(0 0 0)}
+[data-pal="carbono"] .panel.light{--background:oklch(1 0 0);--foreground:oklch(0 0 0);--primary:oklch(0.3 0.02 240);--primary-foreground:oklch(1 0 0)}
+[data-pal="carbono"] .panel.dark{--background:oklch(0.25 0.015 240);--foreground:oklch(1 0 0);--primary:oklch(0.99 0.01 240);--primary-foreground:oklch(0.3 0.02 240)}
+
+/* ---------- Fórmulas neutras (copiadas de app/tailwind.css) ---------- */
+.panel.light{
+  --card:oklch(from var(--background) calc(l - 0.02) c h);
+  --popover:oklch(from var(--background) calc(l + 0.02) c h);
+  --secondary:oklch(from var(--background) calc(l - 0.036) c h);
+  --secondary-hover:oklch(from var(--background) calc(l - 0.083) c h);
+  --secondary-foreground:oklch(from var(--background) calc(l - 0.512) max(0, calc(c - 0.001)) h);
+  --border:oklch(from var(--background) calc(l - 0.07) c h);
+  --input:oklch(from var(--background) calc(l - 0.04) c h);
+  --action:oklch(from var(--background) calc(l + 0.02) c h);
+  --action-hover:oklch(from var(--background) calc(l + 0.1) c h);
+}
+.panel.dark{
+  --card:oklch(from var(--background) calc(l + 0.05) c h);
+  --popover:oklch(from var(--background) calc(l - 0.03) c h);
+  --secondary:oklch(from var(--background) calc(l + 0.098) max(0, calc(c - 0.002)) h);
+  --secondary-hover:oklch(from var(--background) calc(l + 0.133) max(0, calc(c - 0.002)) h);
+  --secondary-foreground:oklch(from var(--background) calc(l + 0.549) max(0, calc(c - 0.007)) h);
+  --border:oklch(from var(--background) calc(l + 0.1) c h);
+  --input:oklch(from var(--background) calc(l + 0.02) c h);
+  --action:oklch(from var(--background) calc(l + 0.1) c h);
+  --action-hover:oklch(from var(--background) calc(l + 0.2) c h);
+}
+
+/* ---------- Painéis de modo ---------- */
+.panel{background:var(--background);color:var(--foreground);border:1px solid rgba(127,127,127,.28);border-radius:16px;padding:12px;min-width:0;display:flex;flex-direction:column;gap:10px;font-size:14px}
+.mlabel{font-size:11px;color:var(--secondary-foreground);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+#stage[data-mode="light"] .panel.dark,#stage[data-mode="dark"] .panel.light{display:none}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:8px;min-width:0}
+#stage[data-mode="light"] .pair,#stage[data-mode="dark"] .pair{grid-template-columns:1fr}
+.col{min-width:0;container-type:inline-size;display:flex;flex-direction:column;gap:8px}
+.col .pair{grid-template-columns:1fr}
+@container (min-width: 480px){ .col .pair{grid-template-columns:1fr 1fr} }
+#stage[data-mode="light"] .col .pair,#stage[data-mode="dark"] .col .pair{grid-template-columns:1fr}
+
+/* ---------- Exemplos ---------- */
+.ex{background:#fff;border:1px solid #e7e5e4;border-radius:16px;padding:16px;margin:16px 0;display:flex;flex-direction:column;gap:10px;min-width:0;scroll-margin-top:90px}
+.exhead{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.dtag{font-size:12px;font-weight:700;background:#1c1917;color:#fff;border-radius:999px;padding:2px 10px}
+.where{margin:0}
+.file{margin:0;font-size:12px;color:#78716c;overflow-wrap:anywhere}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px;min-width:0}
+.cls{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;line-height:1.45;color:#57534e;overflow-wrap:anywhere;white-space:normal}
+.rec{display:inline-block;font-size:11px;font-weight:700;background:#dcfce7;color:#14532d;border-radius:999px;padding:1px 8px;margin-left:4px;vertical-align:middle}
+.note{margin:0;font-size:13px;color:#44403c;background:#fafaf9;border-radius:10px;padding:8px 10px}
+.refgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px;min-width:0}
+.sw-box{border-radius:12px;padding:10px;min-height:66px;border:1px solid rgba(127,127,127,.28);display:flex;flex-direction:column;gap:2px;font-size:12px;min-width:0}
+.sw-box span{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:10px;opacity:.8;overflow-wrap:anywhere}
+
+/* ---------- Amostras ---------- */
+.states{display:grid;grid-template-columns:1fr 1fr;gap:8px;min-width:0}
+.states figure{margin:0;display:flex;flex-direction:column;align-items:flex-start;min-width:0;width:100%}
+.states figcaption{font-size:11px;color:var(--secondary-foreground);margin-bottom:4px}
+.chip{display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:0 12px;border-radius:16px;font-size:14px;border:1px solid transparent;white-space:nowrap;color:var(--foreground);max-width:100%}
+.chip.sq{width:32px;padding:0;font-size:18px;line-height:1}
+.chip.xs{height:24px;font-size:12px;padding:0 8px}
+.chip.day{width:40px;height:40px;padding:0;border-radius:12px}
+.chip.wide{display:flex;width:100%;justify-content:space-between;white-space:normal}
+.hv{background:var(--rest,transparent);border-color:var(--rb,transparent)}
+.hv:hover,.hv.is-hover{background:var(--hov,var(--rest,transparent));border-color:var(--hb,var(--rb,transparent))}
+.txt{margin:0;font-size:14px;line-height:1.4;overflow-wrap:anywhere}
+.it{font-style:italic}
+.badge{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;border:1px solid transparent;font-size:12px;background:var(--card);color:var(--foreground)}
+.num{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:999px;font-size:12px;font-weight:600}
+.legend{display:flex;gap:10px;align-items:center;font-size:14px;min-width:0}
+.sw2{width:24px;height:24px;border-radius:8px;background:var(--secondary);flex:none;border:1px solid var(--border)}
+.sw{display:block;width:100%;height:44px;border:2px solid;border-radius:12px;background:linear-gradient(90deg,oklch(0.7 0.15 150),oklch(0.7 0.15 30))}
+.blk{border:1px solid transparent;border-radius:14px;padding:10px;font-size:13px;line-height:1.35}
+.dash{border:1px dashed transparent;border-radius:14px;padding:14px;font-size:13px;text-align:center;color:var(--secondary-foreground)}
+.float{border:1px solid transparent;border-radius:16px;padding:10px;background:var(--popover);font-size:14px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.panel.light .float{border-color:color-mix(in oklab,var(--foreground) 5%,transparent)}
+.panel.dark .float{border-color:color-mix(in oklab,var(--foreground) 10%,transparent)}
+.ph{font-size:14px}
+.kcol{border:1px dashed var(--border);border-radius:14px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.kcard{background:var(--card);border-radius:10px;padding:8px;font-size:13px}
+
+/* Fase (cartão colorido, como em app/tailwind.css phase-surface) */
+.phase{display:flex;align-items:center;gap:8px;padding:10px;border-radius:14px;background:color-mix(in oklab,var(--phase-color) 15%,var(--background));--foreground:oklch(from var(--phase-color) 0.35 0.07 h);color:var(--foreground);min-width:0;flex-wrap:wrap}
+.panel.dark .phase{background:color-mix(in oklab,var(--phase-color) 40%,var(--background));--foreground:oklch(from var(--phase-color) 0.92 0.06 h)}
+.av{width:28px;height:28px;border-radius:999px;display:inline-grid;place-items:center;font-size:11px;font-weight:600;flex:none}
+.ptxt{font-size:13px;font-weight:600}
+
+/* Imagem (gradiente que imita uma foto) */
+.imgbox{position:relative;min-height:112px;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,#f97316 0%,#ec4899 45%,#38bdf8 100%);display:flex;align-items:flex-end;padding:8px}
+.quad{width:100%;height:56px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--foreground)}
+.ov{position:relative;min-height:150px;border-radius:12px;overflow:hidden;background:linear-gradient(160deg,#fb923c 0%,#be185d 55%,#1e3a8a 100%)}
+.ov .lbl{position:absolute;top:8px;right:8px;font-size:11px;padding:2px 8px;border-radius:999px;color:#fff;background:rgba(0,0,0,.6)}
+.ov .arr{position:absolute;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:999px;display:grid;place-items:center;color:#fff;font-size:18px;line-height:1;background:rgba(0,0,0,.5)}
+.ov .arr.l{left:8px}
+.ov .arr.r{right:8px}
+.ov.ov-icon .lbl,.ov.ov-icon .arr{background:none;filter:drop-shadow(0 0 1px rgb(0 0 0 / .7)) drop-shadow(0 1px 2px rgb(0 0 0 / .55))}
+.ov.ov-icon .arr{font-size:22px}
+
+/* ---------- Seções de texto ---------- */
+.group p.what,.group p.why{margin:6px 0;max-width:820px}
+.dlist{padding-left:0;list-style:none;margin:12px 0 0;display:flex;flex-direction:column;gap:10px}
+.dlist li{background:#fff;border:1px solid #e7e5e4;border-radius:14px;padding:12px 14px}
+.dlist a{color:#0c4a6e;font-weight:600}
+.subtle-list{padding-left:20px;margin:6px 0;font-size:14px}
+.subtle-list li{margin:4px 0;overflow-wrap:anywhere}
+details{margin-top:12px}
+summary{cursor:pointer;font-weight:600}
+a:focus-visible{outline:2px solid #0369a1;outline-offset:2px}
+footer{margin:40px 0 28px;font-size:13px;color:#78716c}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <p class="small">UZZINA · Ticket DS33 · 17/11/2026 · Protótipo visual para conferência (não é uma captura do app)</p>
+  <h1>DS33: onde o cinza do secundário e as transparências mudam</h1>
+  <p class="lead">Cada caso mostra o que o app faz hoje (Hoje) e o que o relatório propõe (Proposta). Os dois modos ficam lado a lado, e a paleta fica no topo.</p>
+</div>
+
+<div class="bar">
+  <div class="wrap">
+    <span class="seglabel">Paleta</span>
+    <div class="seg" role="group" aria-label="Paleta">
+      <button type="button" data-set-pal="onix" aria-pressed="true">Ônix</button>
+      <button type="button" data-set-pal="carbono" aria-pressed="false">Carbono</button>
+    </div>
+    <span class="seglabel">Modo</span>
+    <div class="seg" role="group" aria-label="Modo">
+      <button type="button" data-set-mode="both" aria-pressed="true">Claro e Escuro lado a lado</button>
+      <button type="button" data-set-mode="light" aria-pressed="false">Só claro</button>
+      <button type="button" data-set-mode="dark" aria-pressed="false">Só escuro</button>
+    </div>
+  </div>
+</div>
+
+<main class="wrap" id="stage" data-pal="onix" data-mode="both">
+
+  <section class="intro" aria-labelledby="sobre">
+    <h2 id="sobre" style="margin-top:8px;border-top:0;padding-top:0">Antes de começar</h2>
+    <p><strong>O que o DS28 já entregou.</strong> O cinza dos botões e itens secundários virou um cinza sólido, calculado a partir da cor de fundo da página: no modo claro ele fica um pouco mais escuro que o fundo, e no escuro, um pouco mais claro. Também existe agora um cinza de hover (<code>--secondary-hover</code>), um tom mais forte para quando o mouse passa por cima.</p>
+    <p><strong>O que o DS33 faz.</strong> Só liga esse cinza nos componentes que ainda usam transparências escritas à mão. Nada é descartado, e nenhuma classe nova é criada.</p>
+    <p><strong>Termos.</strong></p>
+    <ul>
+      <li><strong>Película:</strong> um fundo translúcido. A cor que está por baixo aparece através dele.</li>
+      <li><strong>Cor neutra do sistema:</strong> uma cor que o próprio sistema calcula a partir do fundo, com um nome (por exemplo <code>--secondary</code>).</li>
+      <li><strong>Mouse em cima:</strong> a aparência do item quando o cursor passa por ele. Em cada caso, o "mouse em cima" fica ao lado do "repouso", e você também pode passar o mouse para testar.</li>
+    </ul>
+    <p class="small"><strong>Limites.</strong> Estes exemplos são reproduções em CSS feitas a partir do código (arquivo e linha citados em cada caso). Não são capturas do app. A conferência final é visual, no app.</p>
+    <p><strong>Referência: cores desta paleta</strong> (muda com os botões do topo)</p>
+    <div id="ref"></div>
+    <ul class="toc" aria-label="Seções">
+      <li><a href="#grupo-a">A · Hover que não muda</a></li>
+      <li><a href="#grupo-b">B · Cinza sobre cor ou imagem</a></li>
+      <li><a href="#grupo-d">D · Vira cor neutra existente</a></li>
+      <li><a href="#grupo-e">E · Depende da sua decisão</a></li>
+      <li><a href="#grupo-c">C · Manter</a></li>
+      <li><a href="#decisoes">Decisões D1 a D10</a></li>
+    </ul>
+  </section>
+
+  <!-- ===================== GRUPO A ===================== -->
+  <section class="group" id="grupo-a">
+    <h2>Grupo A: hover que não muda (14 ocorrências)</h2>
+    <p class="what"><strong>O que é:</strong> itens que já são cinza quando estão parados e que, ao passar o mouse, pedem o mesmo cinza. Resultado: ao passar o mouse, nada acontece.</p>
+    <p class="why"><strong>Por quê:</strong> com o DS28 o cinza ficou sólido. O hover antigo continuou apontando para o mesmo cinza, então perdeu o efeito. A correção usa o cinza de hover que já existe (<code>bg-secondary-hover</code>).</p>
+    <p class="small">Em cada caso: "repouso" e "mouse em cima" (ou "aberto", "selecionado") lado a lado, nos dois modos.</p>
+
+    <div data-ex="a1"></div>
+    <div data-ex="a2"></div>
+    <div data-ex="a3"></div>
+    <div data-ex="a4"></div>
+    <div data-ex="a5"></div>
+    <div data-ex="a6"></div>
+    <div data-ex="a7"></div>
+
+    <details open>
+      <summary>Demais casos do grupo A (mesma regra, sem exemplo separado)</summary>
+      <ul class="subtle-list">
+        <li><code>app/components/features/admin/themes/ThemeColorInspector.tsx:423</code> e <code>:895</code>: linhas de seção do editor de temas, igual ao caso a6.</li>
+        <li><code>app/components/prism/button.tsx:45</code>: botão Contorno selecionado, igual ao caso a3.</li>
+        <li><code>app/components/prism/calendar.tsx:309</code>: dias do meio da faixa no seletor de datas, igual ao caso a4.</li>
+        <li><code>app/components/ui-sections/GalleryHelperComponents.tsx:175</code>: subitem ativo do índice da galeria /ui, igual ao caso a5.</li>
+      </ul>
+    </details>
+  </section>
+
+  <!-- ===================== GRUPO B ===================== -->
+  <section class="group" id="grupo-b">
+    <h2>Grupo B: cinza sólido sobre cor ou imagem (9 ocorrências)</h2>
+    <p class="what"><strong>O que é:</strong> elementos cinza colocados por cima de uma cor (um cartão de ação colorido pela fase) ou de uma foto.</p>
+    <p class="why"><strong>Por quê:</strong> antes do DS28 o cinza era uma película translúcida, e a cor de baixo aparecia. Agora ele é sólido e cobre a cor. Mostramos a versão atual (sólida) e a película (<code>bg-foreground/10</code>) lado a lado. A escolha é sua (decisão D5).</p>
+
+    <div data-ex="b1"></div>
+    <div data-ex="b3"></div>
+
+    <details open>
+      <summary>Demais casos do grupo B</summary>
+      <ul class="subtle-list">
+        <li><code>app/components/layout/Header.tsx:717</code>: grupo Admin do menu do avatar (<code>bg-secondary/50</code>), que é uma transparência sobre o menu. Está na decisão D4.</li>
+        <li><code>app/components/features/media/WorkFileThumbnail.tsx:48</code>: miniatura de arquivo sem imagem (PDF). Está no exemplo b3.</li>
+        <li><code>app/components/prism/avatar.tsx:88</code>: contador "+N" dos grupos de avatares. Está no exemplo b1.</li>
+      </ul>
+    </details>
+  </section>
+
+  <!-- ===================== GRUPO D ===================== -->
+  <section class="group" id="grupo-d">
+    <h2>Grupo D: vira uma cor neutra que já existe (18 ocorrências)</h2>
+    <p class="what"><strong>O que é:</strong> transparências escritas à mão (texto a 60%, borda a 20%, opacidade 50%, cor misturada no hover) em lugares onde já existe uma cor neutra do sistema.</p>
+    <p class="why"><strong>Por quê:</strong> usar a cor neutra do sistema faz o cinza seguir o fundo de cada paleta e deixa os valores num lugar só. Nenhuma classe nova é criada.</p>
+
+    <div data-ex="dx1"></div>
+    <div data-ex="dx2"></div>
+    <div data-ex="dx3"></div>
+    <div data-ex="dx4"></div>
+    <div data-ex="dx5"></div>
+    <div data-ex="dx6"></div>
+
+    <details open>
+      <summary>Demais casos do grupo D</summary>
+      <ul class="subtle-list">
+        <li><code>app/components/ui-sections/TokensColorsSection.tsx:130</code>: nota da galeria /ui, de <code>text-secondary-foreground/80</code> para <code>text-secondary-foreground</code>.</li>
+        <li>Opacidade de 50% a 70% em textos de apoio: <code>BulkArchiveDialog.tsx:36</code>, <code>LeadDetail.tsx:49</code>, <code>ContentReorderDialog.tsx:99</code>, <code>UAdminItemCard.tsx:50</code> (o caso dx5 mostra o padrão).</li>
+        <li><code>app/routes/dash/action/$id.tsx:411</code>: já usa <code>text-secondary-foreground/50</code>, e a proposta é tirar o "/50" e manter o itálico (o caso dx5 mostra o padrão).</li>
+      </ul>
+    </details>
+  </section>
+
+  <!-- ===================== GRUPO E ===================== -->
+  <section class="group" id="grupo-e">
+    <h2>Grupo E: depende da sua decisão (32 ocorrências)</h2>
+    <p class="what"><strong>O que é:</strong> trocas que mudam a hierarquia visual ou a intensidade do cinza. Cada opção vem com o número da decisão (D1 a D10). Quando o relatório recomenda uma opção, ela aparece marcada como "Recomendado".</p>
+    <p class="why"><strong>Por quê:</strong> não há resposta única. Uma opção deixa a tela mais apagada, outra mais forte. Só a sua escolha define o caminho.</p>
+
+    <div data-ex="e1"></div>
+    <div data-ex="e2a"></div>
+    <div data-ex="e2b"></div>
+    <div data-ex="e3a"></div>
+    <div data-ex="e3b"></div>
+    <div data-ex="e3c"></div>
+    <div data-ex="e4"></div>
+    <div data-ex="e7"></div>
+    <div data-ex="e8"></div>
+    <div data-ex="e10"></div>
+
+    <details open>
+      <summary>Sem número no relatório (dúvida, sem exemplo visual)</summary>
+      <ul class="subtle-list">
+        <li><code>app/components/prism/command.tsx:276</code>: busca global (Ctrl+K). Item com foco e item marcado usam o mesmo cinza, então o foco não muda nada. Vale checar no app.</li>
+        <li><code>app/components/ui-sections/TokensFocusSection.tsx:548</code>: demonstração da galeria /ui. Confirmar contra o campo real do título da ação.</li>
+        <li><code>app/components/prism/calendar.tsx:309</code>: <code>[&amp;&gt;span]:opacity-70</code> nos textos pequenos dentro do dia. Não foi verificado o que é esse span.</li>
+      </ul>
+    </details>
+  </section>
+
+  <!-- ===================== GRUPO C ===================== -->
+  <section class="group" id="grupo-c">
+    <h2>Grupo C: manter (346 de 433 ocorrências)</h2>
+    <p class="what"><strong>O que é:</strong> transparências que ficam como estão. Não há troca proposta.</p>
+    <p class="why"><strong>Por quê:</strong> são intencionais. Incluem as bordas de caixas flutuantes (regra DS24: /5 no claro e /10 no escuro), os textos de dica (placeholder a 40%), os ícones apagados, os estados de arrastar e de fora do mês, e a película da barra de rolagem.</p>
+
+    <div data-ex="c1"></div>
+    <div data-ex="c2"></div>
+    <p class="small">A lista completa de 346 casos, com o motivo de cada um, está na seção 8 do inventário: <code>docs/audits/2026-11-17-ds33-inventory.md</code>.</p>
+  </section>
+
+  <!-- ===================== DECISÕES ===================== -->
+  <section class="group" id="decisoes">
+    <h2>Decisões D1 a D10, em linguagem simples</h2>
+    <p class="small">Cada item leva ao exemplo onde a escolha aparece. "Recomendado" só aparece quando o relatório indica uma opção.</p>
+    <ol class="dlist">
+      <li><a href="#e1">D1 · Itens que ficam cinza ao passar o mouse</a> (menus, abas, listas). Mantêm o cinza atual, ou ganham o cinza de hover? <strong>Recomendado: manter o cinza atual.</strong></li>
+      <li><a href="#e2a">D2 · Textos apagados a 70%, 80% e 90%</a>. Viram texto principal, texto de apoio, ou ficam como estão? <strong>Recomendado: 80% e 90% viram texto principal; o 70% das notificações lidas vira texto de apoio.</strong></li>
+      <li><a href="#e3a">D3 · Bordas</a>: unificar as amostras de cor (/10 ou /15), usar a cor do próprio bloco nos blocos de Minha Conta, e alinhar a barra de atalhos ao padrão claro/escuro. Sem recomendação no relatório.</li>
+      <li><a href="#e4">D4 · Realce de 50% e 20% do cinza</a> (coluna do Kanban ao arrastar, dia do calendário, grupo Admin do menu): manter, ou usar o cinza cheio? Sem recomendação.</li>
+      <li><a href="#b1">D5 · Cinza sólido sobre cor ou imagem</a>: avatares sem foto nos cartões de fase, e quadros atrás de fotos. <strong>Recomendado para os quadros de imagem: manter o cinza sólido.</strong> Os avatares ficam sem recomendação.</li>
+      <li><a href="#dx6">D6 · Botão Secundário com mouse em cima</a>: trocar a mistura de cor escrita à mão pelo cinza de hover? Sem recomendação.</li>
+      <li><a href="#e7">D7 · Editor de temas</a>: ajustar já a explicação antiga do cinza, ou deixar para o DS21 (em andamento)? Sem recomendação.</li>
+      <li><a href="#e8">D8 · Controles sobre a foto do Instagram</a>: estender o estilo sem fundo a esses botões e etiquetas? Sem recomendação.</li>
+      <li><a href="#dx2">D9 · Selos e etiquetas com película do texto</a>: trocar sem ver antes, ou ver antes? Sem recomendação.</li>
+      <li><a href="#e10">D10 · Bordas sutis e tracejadas</a> (borda em 30% a 80%): manter a transparência? <strong>Recomendado: manter.</strong></li>
+    </ol>
+  </section>
+
+  <footer>
+    Protótipo gerado a partir de <code>docs/audits/2026-11-17-ds33-inventory.md</code>, <code>app/tailwind.css</code> e <code>app/lib/palettes.ts</code>. Fórmulas e valores são os do código, mas as reproduções visuais são aproximadas: confira no app.
+  </footer>
+</main>
+
+<script>
+/* ---------- Helpers ---------- */
+const SEC = 'var(--secondary)';
+const SECH = 'var(--secondary-hover)';
+const SECF = 'var(--secondary-foreground)';
+const BORDER = 'var(--border)';
+const CM5 = 'color-mix(in oklch, var(--secondary), var(--foreground) 5%)';
+const FGP = p => `color-mix(in oklab, var(--foreground) ${p}%, transparent)`;
+const MIXP = (c, p) => `color-mix(in oklab, ${c} ${p}%, transparent)`;
+const PHASE = '#fbbf24';
+
+function chip(text, o, hover) {
+  const v = [`--rest:${o.rest || 'transparent'}`, `--hov:${o.hov || o.rest || 'transparent'}`];
+  if (o.rb) v.push(`--rb:${o.rb}`);
+  if (o.hb) v.push(`--hb:${o.hb}`);
+  return `<span class="chip hv${hover ? ' is-hover' : ''}${o.cls ? ' ' + o.cls : ''}" style="${v.join(';')}">${text}</span>`;
+}
+function states(text, o, la = 'repouso', lb = 'mouse em cima') {
+  return `<div class="states"><figure><figcaption>${la}</figcaption>${chip(text, o, false)}</figure><figure><figcaption>${lb}</figcaption>${chip(text, o, true)}</figure></div>`;
+}
+function pair(html) {
+  return `<div class="pair"><div class="panel light"><span class="mlabel">Claro</span>${html}</div><div class="panel dark"><span class="mlabel">Escuro</span>${html}</div></div>`;
+}
+function col(c) {
+  return `<div class="col"><h4>${c.t}${c.rec ? ' <span class="rec">Recomendado</span>' : ''}</h4>${pair(c.html)}<code class="cls">${c.cls}</code></div>`;
+}
+function ex(e) {
+  return `<article class="ex" id="${e.id}">
+  <div class="exhead"><h3>${e.title}</h3>${e.d ? `<span class="dtag">${e.d}</span>` : ''}</div>
+  <p class="where"><strong>Onde aparece:</strong> ${e.where}</p>
+  <p class="file">${e.file}</p>
+  <div class="cols">${e.cols.map(col).join('')}</div>
+  ${e.note ? `<p class="note">${e.note}</p>` : ''}
+</article>`;
+}
+const av = (bg, color, txt) => `<span class="av" style="background:${bg};color:${color}">${txt}</span>`;
+const phaseCard = inner => `<div class="phase" style="--phase-color:${PHASE}">${inner}</div>`;
+const imgBox = (bg, text) => `<div class="imgbox"><div class="quad" style="background:${bg}">${text}</div></div>`;
+const txtLine = (color, text, extra = '') => `<p class="txt ${extra}" style="color:${color}">${text}</p>`;
+
+/* ---------- Exemplos ---------- */
+const EX = {
+  /* GRUPO A: hover que não muda */
+  a1: {
+    id: 'a1', d: 'A', title: 'Botão de fechar da gaveta lateral',
+    where: 'botão × no canto de cima do painel lateral (Sheet). Ao passar o mouse, hoje nada muda.',
+    file: 'app/components/prism/sheet.tsx:89 (botão) · app/components/prism/button.tsx:30 (variante ghost)',
+    cols: [
+      { t: 'Hoje', cls: 'Classes: sheet.tsx:89 "absolute top-4 right-4 bg-secondary" · ghost "hover:bg-secondary"', html: states('&times;', { rest: SEC, hov: SEC, cls: 'sq' }) },
+      { t: 'Proposta', cls: 'Classes: "absolute top-4 right-4 bg-secondary hover:bg-secondary-hover"', html: states('&times;', { rest: SEC, hov: SECH, cls: 'sq' }) }
+    ],
+    note: 'Hoje o hover usa o mesmo cinza do repouso, então não há resposta visual. Com a proposta, o cinza escurece um degrau ao passar o mouse.'
+  },
+  a2: {
+    id: 'a2', d: 'A', title: 'Botão Secundário com o menu aberto',
+    where: 'botão cinza Secundário (ex.: Filtrar) enquanto o menu dele está aberto.',
+    file: 'app/components/prism/button.tsx:28 (aria-expanded:bg-secondary)',
+    cols: [
+      { t: 'Hoje', cls: 'Classes: "bg-secondary aria-expanded:bg-secondary"', html: states('Filtrar &#9662;', { rest: SEC, hov: SEC }, 'repouso', 'aberto') },
+      { t: 'Proposta', cls: 'Classes: "bg-secondary aria-expanded:bg-secondary-hover"', html: states('Filtrar &#9662;', { rest: SEC, hov: SECH }, 'repouso', 'aberto') }
+    ],
+    note: 'Aqui só o estado aberto muda. O mouse em cima deste botão usa outra regra (decisão D6, mais abaixo).'
+  },
+  a3: {
+    id: 'a3', d: 'A', title: 'Botão de alternar selecionado',
+    where: 'botão Fantasma ou Contorno usado como alternador, quando a opção está selecionada.',
+    file: 'app/components/prism/button.tsx:44 e :45 (data-selected:bg-secondary)',
+    cols: [
+      { t: 'Hoje', cls: 'Classes: "data-selected:bg-secondary" (o hover herda o mesmo cinza)', html: states('Mensal', { rest: SEC, hov: SEC }, 'selecionado', 'selecionado + mouse em cima') },
+      { t: 'Proposta', cls: 'Classes: "data-selected:bg-secondary data-selected:hover:bg-secondary-hover"', html: states('Mensal', { rest: SEC, hov: SECH }, 'selecionado', 'selecionado + mouse em cima') }
+    ]
+  },
+  a4: {
+    id: 'a4', d: 'A', title: 'Dia de hoje no seletor de datas',
+    where: 'seletor de datas: o dia de hoje. Os dias do meio de uma faixa escolhida seguem a mesma regra.',
+    file: 'app/components/prism/calendar.tsx:309 (data-[today=true]:bg-secondary)',
+    cols: [
+      { t: 'Hoje', cls: 'Classes: "data-[today=true]:bg-secondary" (hover herda bg-secondary)', html: states('18', { rest: SEC, hov: SEC, cls: 'day' }, 'hoje, repouso', 'hoje, mouse em cima') },
+      { t: 'Proposta', cls: 'Classes: "data-[today=true]:bg-secondary data-[today=true]:hover:bg-secondary-hover"', html: states('18', { rest: SEC, hov: SECH, cls: 'day' }, 'hoje, repouso', 'hoje, mouse em cima') }
+    ]
+  },
+  a5: {
+    id: 'a5', d: 'A', title: 'Item ativo do índice da Ajuda',
+    where: 'página Ajuda: item marcado no índice lateral (o item ativo já é cinza).',
+    file: 'app/components/features/HelpPage.tsx:337 (hover e foco) e :339 (ativo)',
+    cols: [
+      { t: 'Hoje', cls: 'Classes: "hover:bg-secondary focus-visible:bg-secondary" · ativo "bg-secondary"', html: states('Primeiros passos', { rest: SEC, hov: SEC, cls: 'wide' }, 'ativo, repouso', 'ativo, mouse em cima') },
+      { t: 'Proposta', cls: 'Classes do item ativo: "bg-secondary hover:bg-secondary-hover focus-visible:bg-secondary-hover"', html: states('Primeiros passos', { rest: SEC, hov: SECH, cls: 'wide' }, 'ativo, repouso', 'ativo, mouse em cima') }
+    ],
+    note: 'Os itens que não estão ativos são transparentes e ganham o cinza no mouse. Essa regra é a decisão D1, e segue igual nos dois casos.'
+  },
+  a6: {
+    id: 'a6', d: 'A', title: 'Linha de seção aberta no editor de temas',
+    where: 'Admin > Temas > editor de cores: linha de seção aberta (ex.: "Fundo neutro").',
+    file: 'app/components/features/admin/themes/ThemeColorInspector.tsx:330 (também :423 e :895)',
+    cols: [
+      { t: 'Hoje', cls: 'Classes: "hover:bg-secondary" · aberta "bg-secondary"', html: states('Fundo neutro &#8964;', { rest: SEC, hov: SEC, cls: 'wide' }, 'aberta, repouso', 'aberta, mouse em cima') },
+      { t: 'Proposta', cls: 'Classes: "hover:bg-secondary-hover" · aberta "bg-secondary"', html: states('Fundo neutro &#8964;', { rest: SEC, hov: SECH, cls: 'wide' }, 'aberta, repouso', 'aberta, mouse em cima') }
+    ]
+  },
+  a7: {
+    id: 'a7', d: 'A', title: 'Selo cinza usado como link',
+    where: 'selo cinza que funciona como link: ao passar o mouse, deveria mostrar uma mudança clara.',
+    file: 'app/components/prism/badge.tsx:10 ([a]:hover:bg-secondary/80)',
+    cols: [
+      { t: 'Hoje', cls: 'Classes: "bg-secondary [a]:hover:bg-secondary/80"', html: states('Rótulo', { rest: SEC, hov: MIXP(SEC, 80), cls: 'xs' }, 'repouso', 'mouse em cima') },
+      { t: 'Proposta', cls: 'Classes: "bg-secondary [a]:hover:bg-secondary-hover"', html: states('Rótulo', { rest: SEC, hov: SECH, cls: 'xs' }, 'repouso', 'mouse em cima') }
+    ],
+    note: 'Hoje o hover usa 80% do cinza, então a cor muda pouco e depende do que está atrás do selo. A proposta usa o cinza de hover sólido.'
+  },
+
+  /* GRUPO B: cinza sólido sobre cor ou imagem */
+  b1: {
+    id: 'b1', d: 'D5', title: 'Avatar sem foto e contador "+3" no cartão de fase',
+    where: 'cartão de ação colorido pela fase (ex.: Kanban ou Hoje): avatar de pessoa sem foto, com iniciais, e o contador de grupo.',
+    file: 'app/components/prism/avatar.tsx:46 e :88 · app/components/uzzina/UAvatar.tsx:142',
+    cols: [
+      { t: 'Hoje: cinza sólido', cls: 'Classes: "bg-secondary" nos avatares (o cartão de fase segue a cor da fase)', html: phaseCard(av(SEC, SECF, 'AB') + av(SEC, SECF, '+3') + '<span class="ptxt">Ação de exemplo</span>') },
+      { t: 'Alternativa: película do texto da fase', cls: 'Classes: "bg-foreground/10" (o cartão de fase redefine --foreground com a cor do texto da fase)', html: phaseCard(av(FGP(10), 'var(--foreground)', 'AB') + av(FGP(10), 'var(--foreground)', '+3') + '<span class="ptxt">Ação de exemplo</span>') }
+    ],
+    note: 'O relatório não recomenda uma opção para os avatares. Hoje o avatar sólido fica cinza sobre a cor da fase; a película mantém o tom da fase (decisão D5, opção b).'
+  },
+  b3: {
+    id: 'b3', d: 'D5', title: 'Quadro atrás de uma foto (miniatura)',
+    where: 'miniatura de imagem: quadro atrás da foto enquanto ela carrega, ou quando não há imagem (feed do Instagram, Reordenar conteúdo, arquivos de trabalho).',
+    file: 'app/components/features/Content.tsx:77 · features/media/InstagramPreview.tsx:55–56 · features/media/ContentReorderDialog.tsx:122 · features/media/WorkFileThumbnail.tsx:48',
+    cols: [
+      { t: 'Hoje: cinza sólido', rec: true, cls: 'Classes: "bg-secondary" (quadro atrás da imagem)', html: imgBox(SEC, 'Sem imagem') },
+      { t: 'Alternativa: película', cls: 'Classes: "bg-foreground/10"', html: imgBox(FGP(10), 'Sem imagem') }
+    ],
+    note: 'Recomendação do relatório: manter o cinza sólido nos quadros de imagem (decisão D5, opção a). Ele só aparece enquanto a foto carrega ou quando não há foto.'
+  },
+
+  /* GRUPO D: vira cor neutra existente */
+  dx1: {
+    id: 'dx1', title: 'Texto de apoio no menu de notificações',
+    where: 'sino do topo: trecho do comentário dentro do menu de notificações.',
+    file: 'app/components/layout/Header.tsx:506',
+    cols: [
+      { t: 'Hoje', cls: 'Classes: "text-foreground/60"', html: txtLine(FGP(60), 'Trecho de comentário de exemplo, em cinza apagado.') },
+      { t: 'Proposta', cls: 'Classes: "text-secondary-foreground"', html: txtLine(SECF, 'Trecho de comentário de exemplo, em cinza apagado.') }
+    ]
+  },
+  dx2: {
+    id: 'dx2', d: 'D9', title: 'Selo padrão (etiqueta de status)',
+    where: 'selo (Badge) padrão, presente em toda a interface.',
+    file: 'app/components/prism/badge.tsx:9',
+    cols: [
+      { t: 'Hoje', cls: 'Classes: "bg-card border-foreground/20"', html: `<span class="badge" style="border-color:${FGP(20)}">Em revisão</span>` },
+      { t: 'Proposta', cls: 'Classes: "bg-card border-border"', html: `<span class="badge" style="border-color:${BORDER}">Em revisão</span>` }
+    ],
+    note: 'Decisão D9: trocar sem ver antes (proposta), ou ver antes (Hoje). O relatório não recomenda uma das duas.'
+  },
+  dx3: {
+    id: 'dx3', d: 'D9', title: 'Etiqueta do item escolhido (chip) em seletor múltiplo',
+    where: 'seletor com várias escolhas: a etiqueta do item escolhido, com × para remover.',
+    file: 'app/components/prism/combobox.tsx:318 (borda, fundo, hover) e :329 (botão ×)',
+    cols: [
+      { t: 'Hoje (decisão D9, ver antes)', cls: 'Classes: "border-foreground/20 bg-foreground/10 hover:bg-foreground/15"', html: states('Fase: Ideia &times;', { rest: FGP(10), hov: FGP(15), rb: FGP(20), hb: FGP(20), cls: 'xs' }) },
+      { t: 'Proposta (decisão D9, trocar)', cls: 'Classes: "border-border bg-secondary hover:bg-secondary-hover"', html: states('Fase: Ideia &times;', { rest: SEC, hov: SECH, rb: BORDER, hb: BORDER, cls: 'xs' }) }
+    ],
+    note: 'Os dois são alternativas da mesma decisão D9. O relatório não diz qual escolher.'
+  },
+  dx4: {
+    id: 'dx4', title: 'Número da ação na revisão pública',
+    where: 'página pública de revisão: bolinha com o número de cada ação.',
+    file: 'app/routes/dash/review.$slug.tsx:202',
+    cols: [
+      { t: 'Hoje', cls: 'Classes: "bg-foreground/8 text-secondary-foreground"', html: `<span class="num" style="background:${FGP(8)};color:${SECF}">1</span>` },
+      { t: 'Proposta', cls: 'Classes: "bg-secondary text-secondary-foreground"', html: `<span class="num" style="background:${SEC};color:${SECF}">1</span>` }
+    ]
+  },
+  dx5: {
+    id: 'dx5', title: 'Aviso apagado em itálico',
+    where: 'aviso em itálico, por exemplo "Sem legenda criada" no portal do cliente (/dash), ou rótulos apagados em janelas.',
+    file: 'app/routes/dash/action/$id.tsx:411 · app/components/features/bulk/BulkArchiveDialog.tsx:36 · app/components/features/leads/LeadDetail.tsx:49 · app/components/uzzina/UAdminItemCard.tsx:50',
+    cols: [
+      { t: 'Hoje', cls: 'Classes: "opacity-50" (texto do sistema a 50%)', html: `<p class="txt it" style="opacity:.5">Sem legenda criada</p>` },
+      { t: 'Proposta', cls: 'Classes: "text-secondary-foreground italic"', html: txtLine(SECF, 'Sem legenda criada', 'it') }
+    ],
+    note: 'No portal ($id.tsx:411) o texto atual já é "text-secondary-foreground/50": a proposta é tirar o "/50" e manter o itálico.'
+  },
+  dx6: {
+    id: 'dx6', d: 'D6', title: 'Botão Secundário com mouse em cima',
+    where: 'botão cinza Secundário (ex.: Filtrar, Cancelar) ao passar o mouse. O mesmo desenho aparece na pré-visualização do editor de temas.',
+    file: 'app/components/prism/button.tsx:28 · app/components/features/admin/themes/ThemePreviewPane.tsx:78',
+    cols: [
+      { t: 'Hoje (mistura escrita à mão)', cls: 'Classes: "hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] hover:border-[…mesma mistura]"', html: states('Filtrar', { rest: SEC, hov: CM5, rb: SEC, hb: CM5 }, 'repouso', 'mouse em cima') },
+      { t: 'Proposta (cinza de hover)', cls: 'Classes: "hover:bg-secondary-hover hover:border-secondary-hover"', html: states('Filtrar', { rest: SEC, hov: SECH, rb: SEC, hb: SECH }, 'repouso', 'mouse em cima') }
+    ],
+    note: 'Decisão D6. O visual fica parecido. A diferença é que o cinza de hover depende só do fundo, e a mistura atual depende também da cor do texto da paleta.'
+  },
+
+  /* GRUPO E: depende da decisão */
+  e1: {
+    id: 'e1', d: 'D1', title: 'Itens transparentes que ganham cinza no mouse',
+    where: 'itens de menu, abas e cartões de lista: transparentes em repouso e cinza ao passar o mouse.',
+    file: 'exemplos: app/components/prism/dropdown-menu.tsx:94 · app/components/prism/tabs.tsx:29 · app/components/features/leads/LeadCard.tsx:22',
+    cols: [
+      { t: '(a) Manter o cinza atual', rec: true, cls: 'Classes: "hover:bg-secondary"', html: states('Item de menu', { rest: 'transparent', hov: SEC, cls: 'wide' }, 'repouso', 'mouse em cima') },
+      { t: '(b) Cinza de hover', cls: 'Classes: "hover:bg-secondary-hover"', html: states('Item de menu', { rest: 'transparent', hov: SECH, cls: 'wide' }, 'repouso', 'mouse em cima') }
+    ],
+    note: 'Recomendação do relatório: manter bg-secondary nesses itens. O bg-secondary-hover fica para os itens que já são cinza (grupo A).'
+  },
+  e2a: {
+    id: 'e2a', d: 'D2', title: 'Texto a 70% (notificação já lida)',
+    where: 'página de Notificações: comentário de uma notificação que já foi lida.',
+    file: 'app/components/features/NotificationsPage.tsx:153 e :159',
+    cols: [
+      { t: '(a) Texto principal', cls: 'Classes: "text-foreground"', html: txtLine('var(--foreground)', 'Comentário de exemplo, já lido.') },
+      { t: '(b) Texto de apoio', rec: true, cls: 'Classes: "text-secondary-foreground"', html: txtLine(SECF, 'Comentário de exemplo, já lido.') },
+      { t: '(c) Manter 70%', cls: 'Classes: "text-foreground/70"', html: txtLine(FGP(70), 'Comentário de exemplo, já lido.') }
+    ],
+    note: 'Recomendação do relatório: (b) para o 70% das notificações lidas, porque o texto de apoio deixa a lida mais apagada que as não lidas. Essa mudança altera a hierarquia da página.'
+  },
+  e2b: {
+    id: 'e2b', d: 'D2', title: 'Texto a 80% ou 90% (nome, título, briefing)',
+    where: 'nome do autor e título da ação nas Notificações (80%), linha do sino (80%), percentual em Hoje, e-mail em Minha Conta e briefing do Planejamento (90%).',
+    file: 'NotificationsPage.tsx:164 e :169 · Header.tsx:493 · home/DashboardMetrics.tsx:267 · app/routes/app/profile.tsx:989 · dash/review.$slug.tsx:273 · planning/PlanningSuggestionsList.tsx:226',
+    cols: [
+      { t: '(a) Texto principal', rec: true, cls: 'Classes: "text-foreground"', html: txtLine('var(--foreground)', '<strong>Nome da pessoa</strong> · título da ação') },
+      { t: '(b) Texto de apoio', cls: 'Classes: "text-secondary-foreground"', html: txtLine(SECF, '<strong>Nome da pessoa</strong> · título da ação') },
+      { t: '(c) Manter 80%', cls: 'Classes: "text-foreground/80"', html: txtLine(FGP(80), '<strong>Nome da pessoa</strong> · título da ação') }
+    ],
+    note: 'Recomendação do relatório: (a), o texto principal sem transparência, para os 80% e 90%.'
+  },
+  e3a: {
+    id: 'e3a', d: 'D3', title: 'Amostras de cor: borda /10 ou /15',
+    where: 'editor de cores do tema (Admin > Temas): barras e amostras com borda sobre cor.',
+    file: 'app/components/features/admin/themes/ThemeColorInspector.tsx:138, 162, 186 (/10) e 231, 240, 443, 458, 578, 587, 919 (/15)',
+    cols: [
+      { t: '(a) Unificar em /10 (as barras)', cls: 'Classes: "border-foreground/10"', html: `<span class="sw" style="border-color:${FGP(10)}"></span>` },
+      { t: '(b) Unificar em /15 (as amostras)', cls: 'Classes: "border-foreground/15"', html: `<span class="sw" style="border-color:${FGP(15)}"></span>` }
+    ],
+    note: 'O relatório não recomenda uma opção. A pergunta é se vale unificar os dois valores que existem hoje.'
+  },
+  e3b: {
+    id: 'e3b', d: 'D3', title: 'Bloco com cor própria: de qual texto é a borda?',
+    where: 'Minha Conta > Aparência: blocos do modo claro e do modo escuro do tema Personalizado, com fundo e texto próprios.',
+    file: 'app/components/features/profile/CustomThemePanel.tsx:109 · app/routes/app/profile.tsx:152',
+    cols: [
+      { t: '(a) Borda do texto da página (atual)', cls: 'Classes: "border-foreground/10"', html: `<div class="blk" style="background:oklch(0.2 0 0);color:oklch(0.96 0 0);border-color:${FGP(10)}">Bloco escuro<br>texto do próprio bloco</div>` },
+      { t: '(b) Borda do texto do próprio bloco', cls: 'Classes: "border-current/10"', html: `<div class="blk" style="background:oklch(0.2 0 0);color:oklch(0.96 0 0);border-color:${MIXP('currentColor', 10)}">Bloco escuro<br>texto do próprio bloco</div>` }
+    ],
+    note: 'Sem recomendação no relatório. Num bloco escuro sobre página clara, a borda atual quase some. Compare com a página escura no modo Escuro.'
+  },
+  e3c: {
+    id: 'e3c', d: 'D3', title: 'Barra de atalhos no rodapé (AppBar)',
+    where: 'barra flutuante de atalhos no rodapé da tela.',
+    file: 'app/components/layout/AppBar.tsx:85',
+    cols: [
+      { t: '(a) /10 nos dois modos (atual)', cls: 'Classes: "border-foreground/10"', html: `<div class="float" style="border-color:${FGP(10)}"><span class="badge">Início</span><span class="badge">Hoje</span><span class="badge">Ações</span></div>` },
+      { t: '(b) /5 claro e /10 escuro (padrão DS24)', cls: 'Classes: "border-foreground/5 dark:border-foreground/10"', html: `<div class="float"><span class="badge">Início</span><span class="badge">Hoje</span><span class="badge">Ações</span></div>` }
+    ],
+    note: 'Sem recomendação no relatório. A opção (b) é o padrão que o DS24 usa nas outras caixas flutuantes.'
+  },
+  e4: {
+    id: 'e4', d: 'D4', title: 'Realce de 50% do cinza ao arrastar no Kanban',
+    where: 'Kanban: coluna que fica cinza quando um cartão é arrastado sobre ela.',
+    file: 'app/components/features/DnD.tsx:12 (também CalendarDayCell.tsx:69 e Header.tsx:717)',
+    cols: [
+      { t: '(a) Manter 50% (atual)', cls: 'Classes: "bg-secondary/50"', html: `<div class="kcol" style="background:${MIXP(SEC, 50)}"><div class="kcard">Cartão</div><div class="kcard">Cartão</div></div>` },
+      { t: '(b) Cinza cheio', cls: 'Classes: "bg-secondary"', html: `<div class="kcol" style="background:${SEC}"><div class="kcard">Cartão</div><div class="kcard">Cartão</div></div>` }
+    ],
+    note: 'Sem recomendação no relatório. Com o cinza sólido, 50% vira "metade do cinza" e o realce fica mais fraco.'
+  },
+  e7: {
+    id: 'e7', d: 'D7', title: 'Explicação antiga do cinza no editor de temas',
+    where: 'Admin > Temas > editor de cores: linha "Fundo neutro", com uma legenda que descreve o cinza pela fórmula antiga.',
+    file: 'app/components/features/admin/themes/ThemeColorInspector.tsx:702–703 e :712–713',
+    cols: [
+      { t: '(a) Ajustar agora, neste ticket', cls: 'Classes: cor da amostra "color-mix(… fg 5% …)" (fórmula antiga)', html: `<div class="legend"><span class="sw2"></span><span>Fundo neutro<br><small>Texto em transparência 5% (texto atual da legenda)</small></span></div>` },
+      { t: '(b) Deixar com o DS21 (em andamento)', cls: 'Classes: as mesmas, sem mudança neste ticket', html: `<div class="legend"><span class="sw2"></span><span>Fundo neutro<br><small>Texto em transparência 5% (texto atual da legenda)</small></span></div>` }
+    ],
+    note: 'Decisão D7. O relatório não diz qual texto novo usar; por isso a proposta aqui é só onde fazer o ajuste.'
+  },
+  e8: {
+    id: 'e8', d: 'D8', title: 'Controles sobre a foto do Instagram',
+    where: 'aba Instagram > pré-visualização: etiqueta "Vídeo", setas do carrossel, contador e bolinhas sobre a imagem.',
+    file: 'app/components/features/media/InstagramPreview.tsx:92, 159, 170, 186, 193',
+    cols: [
+      { t: '(a) Manter fundo escuro (atual)', cls: 'Classes: "bg-black/60" (etiqueta) · "bg-black/50 hover:bg-black/70" (setas)', html: `<div class="ov"><span class="lbl">Vídeo</span><span class="arr l">&#8249;</span><span class="arr r">&#8250;</span></div>` },
+      { t: '(b) Sem fundo, branco com sombra', cls: 'Classes: "image-icon" (app/tailwind.css:629, já usada no ContentReorderDialog)', html: `<div class="ov ov-icon"><span class="lbl">Vídeo</span><span class="arr l">&#8249;</span><span class="arr r">&#8250;</span></div>` }
+    ],
+    note: 'Sem recomendação no relatório. A regra de 12/11 (sem fundo, branco com sombra) foi aplicada só no Reordenar conteúdo.'
+  },
+  e10: {
+    id: 'e10', d: 'D10', title: 'Borda sutil e tracejada',
+    where: 'caixas tracejadas, como "Nenhum parceiro" na lista de Parceiros, e divisórias sutis.',
+    file: 'app/components/layout/PartnersBoard.tsx:36 · TimelineBoard.tsx:623, 644 · CustomThemePanel.tsx:83, 194, 253',
+    cols: [
+      { t: '(a) Manter a transparência', rec: true, cls: 'Classes: "border-dashed border-border/60"', html: `<div class="dash" style="border-color:${MIXP(BORDER, 60)}">Nenhum parceiro</div>` },
+      { t: '(b) Não manter: borda sólida', cls: 'Classes: "border-dashed border-border"', html: `<div class="dash" style="border-color:${BORDER}">Nenhum parceiro</div>` }
+    ],
+    note: 'Recomendação do relatório: manter. São bordas intencionais. O exemplo usa 60%, um valor dentro da faixa de 30% a 80%.'
+  },
+
+  /* GRUPO C: manter */
+  c1: {
+    id: 'c1', title: 'Borda de caixa flutuante (regra DS24)',
+    where: 'caixas flutuantes em todo o app: popover, menus, seletores.',
+    file: 'app/components/prism/popover.tsx:76 · dropdown-menu.tsx:46 · select.tsx:139',
+    cols: [
+      { t: 'Hoje (mantém)', cls: 'Classes: "border-foreground/5 dark:border-foreground/10"', html: `<div class="float"><span class="badge">Opção 1</span><span class="badge">Opção 2</span></div>` }
+    ],
+    note: 'Intencional e aprovada no DS24: o contorno do claro é mais suave que o do escuro.'
+  },
+  c2: {
+    id: 'c2', title: 'Texto de dica (placeholder a 40%)',
+    where: 'campos de texto vazios, com a dica dentro.',
+    file: 'app/components/prism/input.tsx:9 · textarea.tsx:15 · command.tsx:157',
+    cols: [
+      { t: 'Hoje (mantém)', cls: 'Classes: "placeholder:text-foreground/40"', html: `<div class="float" style="width:100%"><span class="ph" style="color:${FGP(40)}">Digite um e-mail</span></div>` }
+    ],
+    note: 'Intencional: o texto de dica precisa ser mais apagado que o texto digitado.'
+  }
+};
+
+/* ---------- Render ---------- */
+document.querySelectorAll('[data-ex]').forEach(el => {
+  const e = EX[el.dataset.ex];
+  if (e) el.innerHTML = ex(e);
+});
+
+const REF = `<div class="refgrid">
+  <div class="sw-box" style="background:var(--background);color:var(--foreground)"><b>Fundo</b><span>--background</span></div>
+  <div class="sw-box" style="background:var(--card);color:var(--foreground)"><b>Cartão</b><span>--card</span></div>
+  <div class="sw-box" style="background:var(--secondary);color:var(--secondary-foreground)"><b>Secundário</b><span>--secondary</span></div>
+  <div class="sw-box" style="background:var(--secondary-hover);color:var(--secondary-foreground)"><b>Secundário hover</b><span>--secondary-hover</span></div>
+  <div class="sw-box" style="background:var(--primary);color:var(--primary-foreground)"><b>Ação principal</b><span>--primary</span></div>
+</div>`;
+document.getElementById('ref').innerHTML = pair(REF);
+
+/* ---------- Controles ---------- */
+const stage = document.getElementById('stage');
+function press(attr, val) {
+  document.querySelectorAll(`[${attr}]`).forEach(b => b.setAttribute('aria-pressed', String(b.getAttribute(attr) === val)));
+}
+document.querySelectorAll('[data-set-pal]').forEach(b => b.addEventListener('click', () => {
+  stage.dataset.pal = b.dataset.setPal;
+  press('data-set-pal', b.dataset.setPal);
+}));
+document.querySelectorAll('[data-set-mode]').forEach(b => b.addEventListener('click', () => {
+  stage.dataset.mode = b.dataset.setMode;
+  press('data-set-mode', b.dataset.setMode);
+}));
+</script>
+</body>
+</html>

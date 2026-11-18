@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS23 - opções da cor cinza por superfície</title>
+<style>
+/* Página de estudo: cores próprias, não usa as cores do app. */
+:root{--ui-bg:#f7f7f5;--ui-fg:#1b1b1f;--ui-mut:#5f5f68;--ui-line:rgba(0,0,0,.1);--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;--font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--ui-bg);color:var(--ui-fg);font:400 15px/1.5 var(--font);-webkit-font-smoothing:antialiased}
+body{overflow-x:hidden}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 16px 80px}
+h1{font-size:26px;line-height:1.2;margin:0 0 10px;font-weight:650}
+h2{font-size:20px;line-height:1.25;margin:0 0 6px;font-weight:650}
+h3{font-size:16px;margin:30px 0 8px;font-weight:650}
+h4{font-size:14px;margin:0 0 8px;font-weight:600}
+p{margin:0 0 10px}
+.mut{color:var(--ui-mut);font-size:14px}
+.box{background:#fff;border:1px solid var(--ui-line);border-radius:16px;padding:14px 16px;margin:16px 0}
+.ctrl{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;margin:14px 0 4px}
+.ctrl-label{font-size:13px;color:var(--ui-mut);margin-right:6px}
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;background:#e9e9e6;border-radius:12px;padding:4px}
+.seg button{border:0;background:transparent;border-radius:9px;padding:6px 12px;font:500 14px var(--font);color:var(--ui-fg);cursor:pointer}
+.seg button[aria-pressed="true"]{background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.14)}
+.opt{margin-top:46px;padding-top:10px;border-top:1px solid var(--ui-line)}
+pre.code{margin:8px 0 14px;padding:12px 14px;background:#1d1f24;color:#e6e6eb;border-radius:12px;font:12px/1.55 var(--mono);white-space:pre-wrap;word-break:break-word;overflow:hidden}
+.row{margin:24px 0 4px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.trap-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+body.only-light .pair,body.only-dark .pair{grid-template-columns:1fr}
+body.only-light .pair .m-dark{display:none}
+body.only-dark .pair .m-light{display:none}
+@media (max-width:700px){.pair,.trap-pair{grid-template-columns:1fr}}
+
+/* Célula = um modo (claro ou escuro). Ela define o fundo e o texto do modo. */
+.cell{background:var(--background);color:var(--foreground);border:1px solid var(--ui-line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.cell.faint{outline:3px solid #ffd43b;outline-offset:-3px}
+.ch{margin:0;font-size:12px;font-weight:600;opacity:.7}
+
+/* Leitura de contraste (texto com cor fixa, legível nos dois modos) */
+.ro{margin:0;font:500 12px/1.4 var(--font);color:inherit;background:rgba(127,127,127,.12);border-radius:10px;padding:6px 8px}
+.ro b{font-family:var(--mono);font-weight:600;padding:0 3px}
+.ro b.low{background:#ffd43b;color:#3b2a00;border-radius:6px}
+.tag{display:none;margin-left:4px;background:#ffd43b;color:#3b2a00;border-radius:999px;padding:1px 8px;font-weight:650}
+.cell.faint .tag{display:inline-block}
+
+/* Peças de teste (layout apenas; as cores vêm do CSS mostrado nos blocos) */
+.surf{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px;border-radius:14px;min-height:64px}
+.pop-pad{padding:6px;border-radius:14px}
+.s-img{min-height:112px;justify-content:center}
+.btn{height:32px;padding:0 12px;border:0;border-radius:12px;font:500 13px/1 var(--font);cursor:pointer}
+.av{width:32px;height:32px;border-radius:999px;display:inline-grid;place-items:center;font:600 12px/1 var(--font)}
+
+/* Tabela comparativa */
+.tbl{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--ui-line);border-radius:12px;overflow:hidden;font-size:14px}
+.tbl th,.tbl td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--ui-line)}
+.tbl th{background:#f0f0ee;font-weight:600}
+@media (max-width:640px){
+  .tbl thead{display:none}
+  .tbl,.tbl tbody,.tbl tr,.tbl td{display:block;width:100%}
+  .tbl tr{border-bottom:1px solid var(--ui-line);padding:6px 0}
+  .tbl td{border:0;padding:3px 12px}
+  .tbl td::before{content:attr(data-label);display:block;font-size:12px;font-weight:600;color:var(--ui-mut)}
+}
+.rec{border-left:4px solid #3b6fd6;background:#fff;border-radius:0 14px 14px 0;padding:14px 18px;margin:14px 0}
+.note{font-size:13px;color:var(--ui-mut)}
+</style>
+</head>
+<body data-pal="onix">
+<main class="wrap">
+
+<h1>DS23: três jeitos de calcular a cinza dos botões</h1>
+<p class="mut">A cinza dos botões e dos itens secundários depende da cor do lugar onde ela fica. Esta página mostra as três formas possíveis, com as mesmas superfícies em cada uma. Os números são medidos pelo próprio navegador.</p>
+
+<div class="box">
+  <div class="ctrl">
+    <div><span class="ctrl-label">Paleta</span>
+      <span class="seg" role="group" aria-label="Paleta">
+        <button type="button" data-pal-btn="onix" aria-pressed="true">Ônix</button>
+        <button type="button" data-pal-btn="carbono" aria-pressed="false">Carbono</button>
+      </span>
+    </div>
+    <div><span class="ctrl-label">Modo</span>
+      <span class="seg" role="group" aria-label="Modo">
+        <button type="button" data-mode-btn="both" aria-pressed="true">Claro e escuro</button>
+        <button type="button" data-mode-btn="light" aria-pressed="false">Só claro</button>
+        <button type="button" data-mode-btn="dark" aria-pressed="false">Só escuro</button>
+      </span>
+    </div>
+  </div>
+  <p class="note" style="margin-top:12px">Como ler: em cada quadro há um botão em repouso, o mesmo botão com o mouse em cima (forçado aqui, e também pelo mouse de verdade) e um círculo "+3". Abaixo, <b>ΔL</b> é a diferença de luminosidade (OKLCH L) entre a cinza e a superfície em que ela está. Abaixo de 0,03 o quadro ganha borda amarela e a marca "quase invisível".</p>
+</div>
+
+<h3>Cores e neutros usados (copiados do app)</h3>
+<p class="note">Valores de app/lib/palettes.ts (fundo, texto e primário de Ônix e Carbono, claro e escuro) e as fórmulas de app/tailwind.css (cartão, popover e borda). Os quatro blocos de paleta são o que muda quando você troca Ônix e Carbono.</p>
+<pre class="code" id="tokens"></pre>
+
+<div id="opts"></div>
+
+<section class="opt" id="trap">
+  <h2>Armadilha da opção 3: declarar só na raiz</h2>
+  <p class="mut">A opção 3 não funciona se a raiz declarar a cinza e o cartão só redeclarar --surface. Uma propriedade personalizada é calculada no elemento onde é declarada, e o resultado já calculado é herdado pelos filhos. Então o cartão, sozinho, não recalcula a cinza: ela continua sendo a da raiz.</p>
+  <p class="mut">A correção é o cartão declarar --surface e também receber a classe <code>.surface</code>, que refaz --secondary no próprio elemento. Os dois lados abaixo são modo claro.</p>
+  <div class="trap-pair">
+    <div class="cell m-light t-wrong">
+      <p class="ch">Errado: cinza só na raiz</p>
+      <div class="surf s-card" data-measure>
+        <button class="btn" type="button">Repouso</button><button class="btn is-hover" type="button">Mouse em cima</button><span class="av" aria-hidden="true">+3</span>
+      </div>
+      <p class="ro">Repouso: <b data-r="rest">–</b> · Mouse em cima: <b data-r="hover">–</b> <span class="tag">quase invisível</span></p>
+    </div>
+    <div class="cell m-light">
+      <p class="ch">Certo: o cartão redeclara</p>
+      <div class="surf s-card surface" data-measure>
+        <button class="btn" type="button">Repouso</button><button class="btn is-hover" type="button">Mouse em cima</button><span class="av" aria-hidden="true">+3</span>
+      </div>
+      <p class="ro">Repouso: <b data-r="rest">–</b> · Mouse em cima: <b data-r="hover">–</b> <span class="tag">quase invisível</span></p>
+    </div>
+  </div>
+  <pre class="code" id="trap-code"></pre>
+</section>
+
+<section class="opt">
+  <h2>Comparação</h2>
+  <table class="tbl">
+    <thead><tr><th>Opção</th><th>Como se adapta</th><th>Problema</th><th>Quanto código</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Opção">1. Hoje (DS28)</td><td data-label="Como se adapta">Não se adapta. É a mesma cinza em todo lugar, derivada do fundo da página.</td><td data-label="Problema">Some ou fica fraca sobre superfícies de outra cor, como o cartão de ação colorido e o menu.</td><td data-label="Quanto código">Pouco: uma declaração por modo, na raiz.</td></tr>
+      <tr><td data-label="Opção">2. Transparência</td><td data-label="Como se adapta">Sim, sozinha. O navegador mistura a cinza com o que está atrás, em qualquer fundo.</td><td data-label="Problema">Sobre imagem e cor de fase, a cinza fica tingida pela cor de baixo e o contraste muda de um lugar para outro. O app antigo não tinha hover.</td><td data-label="Quanto código">Mínimo: duas declarações por modo.</td></tr>
+      <tr><td data-label="Opção">3. Variável por superfície</td><td data-label="Como se adapta">Sim, quando cada superfície declara --surface e recebe a classe <code>.surface</code>.</td><td data-label="Problema">Cada superfície precisa declarar a sua cor (a armadilha acima). A imagem não tem uma cor só, então usa um valor aproximado.</td><td data-label="Quanto código">Médio: uma classe <code>.surface</code> e uma linha de --surface nas superfícies que precisam.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Recomendação</h3>
+  <div class="rec">
+    <p>Recomendo a opção 3 só nas superfícies que precisam dela: o cartão no modo claro, a cor de fase, a área Admin do menu e a imagem. As regras ficam concentradas na classe <code>.surface</code>, e a declaração de <code>--surface</code> fica em cada superfície. Onde não houver declaração, vale a opção 1, que é o que o app já usa. Nenhum token novo é criado; <code>--surface</code> é só a variável local da superfície.</p>
+  </div>
+</section>
+
+<section class="opt">
+  <h3>Limites desta medição</h3>
+  <ul class="note" style="padding-left:18px;margin:0">
+    <li>A imagem é um gradiente, não uma foto. A leitura usa a cor exata do gradiente embaixo de cada botão. Na opção 3 o --surface da imagem é um valor fixo (a cor do centro), então ali a leitura mostra a diferença real entre a cinza e a cor fixa.</li>
+    <li>A área Admin usa <code>bg-secondary/50</code> no app (Header.tsx, perto da linha 717), reproduzido com <code>color-mix(in oklab, ... 50%, transparent)</code>.</li>
+    <li>O app antigo (antes do DS28) não tinha --secondary-hover. O hover desta página segue o pedido: 10% (claro) e 15% (escuro).</li>
+    <li>Na opção 3 o texto do círculo "+3" também é refeito (--secondary-foreground), para não herdar a cor da raiz.</li>
+    <li>Os valores de ΔL vêm de canvas de 8 bits, com erro da ordem de 0,002.</li>
+  </ul>
+</section>
+
+</main>
+
+<script>
+/* ===================== CSS (fonte única: a mesma string vai para a página e para os blocos de código) ===================== */
+
+const CSS_TOKENS = `/* Paletas (app/lib/palettes.ts): fundo, texto e primário por modo */
+body[data-pal="onix"] .m-light { --background: oklch(0.96 0.002 200); --foreground: oklch(0 0 0); --primary: oklch(0 0 0); }
+body[data-pal="onix"] .m-dark { --background: oklch(0.2 0.01 250); --foreground: oklch(1 0 0); --primary: oklch(1 0 0); }
+body[data-pal="carbono"] .m-light { --background: oklch(1 0 0); --foreground: oklch(0 0 0); --primary: oklch(0.3 0.02 240); }
+body[data-pal="carbono"] .m-dark { --background: oklch(0.25 0.015 240); --foreground: oklch(1 0 0); --primary: oklch(0.99 0.01 240); }
+
+/* Neutros e fase (app/tailwind.css, DS28 e phase-surface) */
+.m-light { --phase-mix: 15%; --card: oklch(from var(--background) calc(l - 0.02) c h); --popover: oklch(from var(--background) calc(l + 0.02) c h); --border: oklch(from var(--background) calc(l - 0.07) c h); }
+.m-dark { --phase-mix: 40%; --card: oklch(from var(--background) calc(l + 0.05) c h); --popover: oklch(from var(--background) calc(l - 0.03) c h); --border: oklch(from var(--background) calc(l + 0.1) c h); }`;
+
+const S = {
+  page: `.s-page { --surface: var(--background); background: transparent; }`,
+  card: `.s-card { --surface: var(--card); background: var(--surface); }`,
+  pop: `.s-pop { --surface: var(--popover); background: var(--surface); border: 1px solid var(--border); }`,
+  acard: `.s-acard { --phase-color: #fbbf24; --surface: color-mix(in oklab, var(--phase-color) var(--phase-mix), var(--background)); background: var(--surface); }`,
+  img: `.s-img { --surface: #dcbc97; background-image: linear-gradient(90deg, #5b4636 0%, #c79a6b 35%, #e9d3b5 60%, #6f8a7e 80%, #2d3d4a 100%); }`,
+  adminO12: `.s-admin { background: color-mix(in oklab, var(--secondary) 50%, transparent); }`,
+  adminO3: `.surface.s-admin { --surface: color-mix(in oklab, oklch(from var(--background) calc(l - 0.036) c h) 50%, var(--popover)); background: var(--surface); }
+.m-dark .surface.s-admin { --surface: color-mix(in oklab, oklch(from var(--background) calc(l + 0.098) max(0, calc(c - 0.002)) h) 50%, var(--popover)); }`
+};
+
+const BTN = `.btn { background: var(--secondary); color: var(--foreground); }
+.btn:hover, .btn.is-hover { background: var(--secondary-hover); }
+.av { background: var(--secondary); color: var(--secondary-foreground); }`;
+
+const CSS_O1 = `/* Opção 1 (Hoje): a raiz de cada modo deriva a cinza do fundo, uma vez */
+.o1.m-light { --secondary: oklch(from var(--background) calc(l - 0.036) c h); --secondary-hover: oklch(from var(--background) calc(l - 0.083) c h); --secondary-foreground: oklch(from var(--background) calc(l - 0.512) max(0, calc(c - 0.001)) h); }
+.o1.m-dark { --secondary: oklch(from var(--background) calc(l + 0.098) max(0, calc(c - 0.002)) h); --secondary-hover: oklch(from var(--background) calc(l + 0.133) max(0, calc(c - 0.002)) h); --secondary-foreground: oklch(from var(--background) calc(l + 0.549) max(0, calc(c - 0.007)) h); }`;
+
+const CSS_O2 = `/* Opção 2 (Transparência): texto a 5%/10% por cima do que estiver atrás */
+.o2.m-light { --secondary: color-mix(in srgb, var(--foreground) 5%, transparent); --secondary-hover: color-mix(in srgb, var(--foreground) 10%, transparent); --secondary-foreground: color-mix(in srgb, var(--foreground) 65%, transparent); }
+.o2.m-dark { --secondary: color-mix(in oklch, var(--foreground) 10%, transparent); --secondary-hover: color-mix(in oklch, var(--foreground) 15%, transparent); --secondary-foreground: color-mix(in srgb, var(--foreground) 65%, transparent); }`;
+
+const CSS_O3 = `/* Opção 3 (Variável por superfície): sem declaração, cai na opção 1 */
+.o3.m-light { --secondary: oklch(from var(--background) calc(l - 0.036) c h); --secondary-hover: oklch(from var(--background) calc(l - 0.083) c h); --secondary-foreground: oklch(from var(--background) calc(l - 0.512) max(0, calc(c - 0.001)) h); }
+.o3.m-dark { --secondary: oklch(from var(--background) calc(l + 0.098) max(0, calc(c - 0.002)) h); --secondary-hover: oklch(from var(--background) calc(l + 0.133) max(0, calc(c - 0.002)) h); --secondary-foreground: oklch(from var(--background) calc(l + 0.549) max(0, calc(c - 0.007)) h); }
+
+/* Classe auxiliar: refaz a cinza a partir do --surface do próprio elemento */
+.surface { --secondary: oklch(from var(--surface) calc(l - 0.036) c h); --secondary-hover: oklch(from var(--surface) calc(l - 0.083) c h); --secondary-foreground: oklch(from var(--surface) calc(l - 0.512) max(0, calc(c - 0.001)) h); }
+.m-dark .surface { --secondary: oklch(from var(--surface) calc(l + 0.098) max(0, calc(c - 0.002)) h); --secondary-hover: oklch(from var(--surface) calc(l + 0.133) max(0, calc(c - 0.002)) h); --secondary-foreground: oklch(from var(--surface) calc(l + 0.549) max(0, calc(c - 0.007)) h); }`;
+
+const CSS_TRAP = `/* ERRADO: a cinza é declarada só na raiz. O cartão redeclara --surface, mas --secondary chega calculado da raiz. */
+.t-wrong { --surface: var(--background); --secondary: oklch(from var(--surface) calc(l - 0.036) c h); --secondary-hover: oklch(from var(--surface) calc(l - 0.083) c h); }
+
+/* CERTO: o cartão também recebe a classe .surface (CSS_O3), que refaz --secondary no próprio elemento. */
+<div class="surf s-card surface"> ... </div>`;
+
+/* Estilo da página: aplica tudo, na ordem das partes acima */
+(function injectCss(){
+  const st = document.createElement('style');
+  st.textContent = [CSS_TOKENS, S.page, S.card, S.pop, S.acard, S.img, S.adminO12, S.adminO3, BTN, CSS_O1, CSS_O2, CSS_O3,
+    `.t-wrong { --surface: var(--background); --secondary: oklch(from var(--surface) calc(l - 0.036) c h); --secondary-hover: oklch(from var(--surface) calc(l - 0.083) c h); }`].join('\n');
+  document.head.appendChild(st);
+})();
+
+/* ===================== Estrutura da página ===================== */
+
+const SURF_CSS = {
+  a: { o1: S.page, o2: S.page, o3: S.page },
+  b: { o1: S.card, o2: S.card, o3: S.card },
+  c: { o1: S.pop, o2: S.pop, o3: S.pop },
+  d: { o1: S.acard, o2: S.acard, o3: S.acard },
+  e: { o1: S.img, o2: S.img, o3: S.img },
+  f: { o1: S.pop + '\n' + S.adminO12, o2: S.pop + '\n' + S.adminO12, o3: S.pop + '\n' + S.adminO3 }
+};
+
+const SURFS = [
+  { id: 'a', title: 'a) Sobre o fundo da página', cls: 's-page' },
+  { id: 'b', title: 'b) Sobre um cartão (--card)', cls: 's-card' },
+  { id: 'c', title: 'c) Sobre um popover/menu (--popover), com borda', cls: 's-pop' },
+  { id: 'd', title: 'd) Sobre o cartão de ação colorido da fase (Ideia, #fbbf24, suave)', cls: 's-acard' },
+  { id: 'e', title: 'e) Sobre uma imagem (gradiente imitando foto)', cls: 's-img' },
+  { id: 'f', title: 'f) Sobre a área Admin do menu (bg-secondary/50 sobre o popover)', cls: 's-admin' }
+];
+
+const OPTS = [
+  { id: 'o1', title: '1. Hoje (DS28): só o fundo da página', css: CSS_O1,
+    desc: 'É o que o app usa hoje. A cinza sai do fundo e é declarada uma vez na raiz de cada modo. Todas as superfícies recebem a mesma cinza, mesmo quando estão sobre outra cor. Os números mostram onde isso some.' },
+  { id: 'o2', title: '2. Transparência (como era antes do DS28)', css: CSS_O2,
+    desc: 'A cinza é o texto a 5% (claro) ou 10% (escuro) por cima do que estiver atrás. Não precisa de declaração por superfície. O problema é o que fica atrás: sobre imagem e cor de fase a cinza se mistura com essa cor.' },
+  { id: 'o3', title: '3. Variável por superfície (DS23)', css: CSS_O3,
+    desc: 'Cada superfície declara a sua cor em --surface, e a classe .surface refaz a cinza a partir dela (e o texto do +3). Onde não há declaração, a cinza cai na opção 1. A armadilha no fim mostra por que o cartão precisa redeclarar.' }
+];
+
+const PHOTO = [[0, '#5b4636'], [0.35, '#c79a6b'], [0.6, '#e9d3b5'], [0.8, '#6f8a7e'], [1, '#2d3d4a']];
+
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+function items() {
+  return '<button class="btn" type="button">Repouso</button><button class="btn is-hover" type="button">Mouse em cima</button><span class="av" aria-hidden="true">+3</span>';
+}
+
+function markup(s, o) {
+  const sf = o.id === 'o3' ? ' surface' : '';
+  if (s.id === 'f') return '<div class="s-pop pop-pad"><div class="surf s-admin' + sf + '" data-measure>' + items() + '</div></div>';
+  return '<div class="surf ' + s.cls + sf + '" data-measure' + (s.id === 'e' ? ' data-photo' : '') + '>' + items() + '</div>';
+}
+
+function codeMarkup(s, o) {
+  const sf = o.id === 'o3' ? ' surface' : '';
+  if (s.id === 'f') return '<div class="s-pop pop-pad">\n  <div class="surf s-admin' + sf + '">…botões…</div>\n</div>';
+  return '<div class="surf ' + s.cls + sf + '"' + (s.id === 'e' ? ' data-photo' : '') + '>…botões e +3…</div>';
+}
+
+function readout() {
+  return '<p class="ro">Repouso: <b data-r="rest">–</b> · Mouse em cima: <b data-r="hover">–</b> <span class="tag">quase invisível</span></p>';
+}
+
+function cell(mode, s, o) {
+  const label = mode === 'm-light' ? 'Claro' : 'Escuro';
+  return '<div class="cell ' + mode + ' ' + o.id + '"><p class="ch">' + label + '</p>' + markup(s, o) + readout() + '</div>';
+}
+
+function rowCode(s, o) {
+  return '/* HTML */\n' + codeMarkup(s, o) + '\n\n/* CSS desta superfície */\n' + SURF_CSS[s.id][o.id] + '\n\n/* Botões e +3 (iguais em todas as superfícies) */\n' + BTN +
+    (o.id === 'o3' ? '\n\n/* A classe .surface (CSS_O3) faz o resto. */' : '\n\n/* A cinza vem de --secondary do modo (bloco da opção acima). */');
+}
+
+function optHTML(o) {
+  const rows = SURFS.map(s =>
+    '<article class="row"><h4>' + s.title + '</h4><div class="pair">' + cell('m-light', s, o) + cell('m-dark', s, o) + '</div>' +
+    '<pre class="code">' + esc(rowCode(s, o)) + '</pre></article>'
+  ).join('');
+  return '<section class="opt" id="' + o.id + '"><h2>' + o.title + '</h2><p class="mut">' + o.desc + '</p>' +
+    '<pre class="code">' + esc(o.css) + '</pre>' + rows + '</section>';
+}
+
+document.getElementById('opts').innerHTML = OPTS.map(optHTML).join('');
+document.getElementById('tokens').textContent = CSS_TOKENS;
+document.getElementById('trap-code').textContent = CSS_TRAP;
+
+/* ===================== Medição ao vivo (OKLCH L) ===================== */
+
+const CTX = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+
+/* Pinta uma cor CSS por cima do pixel atual. Cor inválida é ignorada. */
+function paint(css) {
+  CTX.fillStyle = '#010203';
+  CTX.fillStyle = css;
+  if (CTX.fillStyle === '#010203') return;
+  CTX.fillRect(0, 0, 1, 1);
+}
+
+/* Cor de uma imagem de gradiente no ponto onde está o botão (mesmas paradas do CSS). */
+function photoAt(photoEl, probe) {
+  const pr = photoEl.getBoundingClientRect();
+  const br = probe.getBoundingClientRect();
+  const w = Math.max(2, Math.round(pr.width));
+  const x = Math.min(w - 1, Math.max(0, Math.round(br.left + br.width / 2 - pr.left)));
+  const c = document.createElement('canvas');
+  c.width = w; c.height = 1;
+  const g = c.getContext('2d', { willReadFrequently: true });
+  const grad = g.createLinearGradient(0, 0, w, 0);
+  PHOTO.forEach(([p, col]) => grad.addColorStop(p, col));
+  g.fillStyle = grad;
+  g.fillRect(0, 0, w, 1);
+  const d = g.getImageData(x, 0, 1, 1).data;
+  return [d[0], d[1], d[2]];
+}
+
+/* Cor visível de um elemento: compõe os fundos de cima a baixo sobre um fundo opaco. */
+function effColour(el, probe) {
+  const chain = [];
+  for (let n = el; n && n !== document.documentElement; n = n.parentElement) chain.unshift(n);
+  let base = [255, 255, 255];
+  let start = 0;
+  chain.forEach((n, i) => {
+    if (n.hasAttribute('data-photo')) { base = photoAt(n, probe); start = i + 1; }
+  });
+  CTX.fillStyle = 'rgb(' + base.join(',') + ')';
+  CTX.fillRect(0, 0, 1, 1);
+  for (let i = start; i < chain.length; i++) paint(getComputedStyle(chain[i]).backgroundColor);
+  const d = CTX.getImageData(0, 0, 1, 1).data;
+  return [d[0], d[1], d[2]];
+}
+
+/* Luminosidade L do OKLab (mesma conta do OKLCH L). */
+function lightness(c) {
+  const lin = v => { v /= 255; return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+  const r = lin(c[0]), g = lin(c[1]), b = lin(c[2]);
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return 0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s;
+}
+
+function measureCell(cell) {
+  const surf = cell.querySelector('[data-measure]');
+  if (!surf) return;
+  let faint = false;
+  [['rest', '.btn:not(.is-hover)'], ['hover', '.btn.is-hover']].forEach(([k, sel]) => {
+    const btn = surf.querySelector(sel);
+    const out = cell.querySelector('[data-r="' + k + '"]');
+    if (!btn || !out) return;
+    const d = Math.abs(lightness(effColour(btn, btn)) - lightness(effColour(surf, btn)));
+    out.textContent = d.toFixed(3).replace('.', ',');
+    out.classList.toggle('low', d < 0.03);
+    if (d < 0.03) faint = true;
+  });
+  cell.classList.toggle('faint', faint);
+}
+
+function measureAll() {
+  document.querySelectorAll('.cell').forEach(measureCell);
+}
+
+/* ===================== Controles ===================== */
+
+function pressOne(selector, btn, attr) {
+  document.querySelectorAll(selector).forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+}
+
+document.querySelectorAll('[data-pal-btn]').forEach(b => b.addEventListener('click', () => {
+  document.body.dataset.pal = b.dataset.palBtn;
+  pressOne('[data-pal-btn]', b);
+  measureAll();
+}));
+
+document.querySelectorAll('[data-mode-btn]').forEach(b => b.addEventListener('click', () => {
+  const m = b.dataset.modeBtn;
+  document.body.classList.toggle('only-light', m === 'light');
+  document.body.classList.toggle('only-dark', m === 'dark');
+  pressOne('[data-mode-btn]', b);
+  measureAll();
+}));
+
+let rz = 0;
+window.addEventListener('resize', () => {
+  cancelAnimationFrame(rz);
+  rz = requestAnimationFrame(measureAll);
+});
+window.addEventListener('load', measureAll);
+measureAll();
+</script>
+</body>
+</html>

@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS23 - camadas de superfície</title>
+<style>
+/* Página de estudo: cores próprias, não usa as cores do app. */
+:root{--ui-bg:#f7f7f5;--ui-fg:#1b1b1f;--ui-mut:#5f5f68;--ui-line:rgba(0,0,0,.1);--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;--font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--ui-bg);color:var(--ui-fg);font:400 15px/1.5 var(--font);-webkit-font-smoothing:antialiased}
+body{overflow-x:hidden}
+code{overflow-wrap:anywhere}
+.tbl td,.dark-panel td{overflow-wrap:anywhere}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 16px 80px;min-width:0}
+h1{font-size:26px;line-height:1.2;margin:0 0 10px;font-weight:650}
+h2{font-size:20px;line-height:1.25;margin:0 0 8px;font-weight:650}
+h3{font-size:16px;margin:26px 0 8px;font-weight:650}
+h4{font-size:14px;margin:0 0 8px;font-weight:600}
+p{margin:0 0 10px}
+ol.five{margin:0 0 6px;padding-left:20px}
+ol.five li{margin:0 0 4px}
+.mut{color:var(--ui-mut);font-size:14px}
+.note{font-size:13px;color:var(--ui-mut)}
+.box{background:#fff;border:1px solid var(--ui-line);border-radius:16px;padding:14px 16px;margin:16px 0}
+.sec{margin-top:44px;padding-top:12px;border-top:1px solid var(--ui-line)}
+.ctrl{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;margin:4px 0 4px}
+.ctrl-label{font-size:13px;color:var(--ui-mut);margin-right:6px}
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;background:#e9e9e6;border-radius:12px;padding:4px}
+.seg button{border:0;background:transparent;border-radius:9px;padding:6px 12px;font:500 14px var(--font);color:var(--ui-fg);cursor:pointer}
+.seg button[aria-pressed="true"]{background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.14)}
+pre.code{margin:8px 0 14px;padding:12px 14px;background:#1d1f24;color:#e6e6eb;border-radius:12px;font:12px/1.55 var(--mono);white-space:pre-wrap;word-break:break-word;overflow:hidden;max-width:100%}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;min-width:0}
+body.only-light .pair,body.only-dark .pair{grid-template-columns:1fr}
+body.only-light .m-dark{display:none}
+body.only-dark .m-light{display:none}
+.mw{min-width:0}
+.ba-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;min-width:0}
+@media (max-width:640px){.pair,.ba-row{grid-template-columns:1fr}}
+body.only-light .ba-row.m-dark,body.only-dark .ba-row.m-light{display:none}
+
+/* Célula = uma camada (ou um exemplo de cor "hoje"). Fundo e texto vêm da camada e do modo. */
+.cell{border:1px solid var(--ui-line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.cell.faint{outline:3px solid #ffd43b;outline-offset:-3px}
+.ch{margin:0;font-size:12px;font-weight:600;opacity:.7}
+.ro{margin:0;font:500 12px/1.5 var(--font);color:inherit;background:rgba(127,127,127,.12);border-radius:10px;padding:6px 8px}
+.ro b{font-family:var(--mono);font-weight:600;padding:0 3px}
+.ro b.low{background:#ffd43b;color:#3b2a00;border-radius:6px}
+.tag{display:none;margin-left:4px;background:#ffd43b;color:#3b2a00;border-radius:999px;padding:1px 8px;font-weight:650}
+.cell.faint .tag{display:inline-block}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.inner{padding:12px;border-radius:12px;display:flex;flex-direction:column;gap:8px}
+
+/* Degraus */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:10px;padding:14px;border-radius:16px;border:1px solid var(--ui-line);min-width:0}
+.step{min-width:0;display:flex;flex-direction:column;gap:4px;color:var(--foreground)}
+.step i{display:block;height:46px;border-radius:12px;outline:1px dashed rgba(127,127,127,.4);outline-offset:-1px}
+.step b{font:600 12px/1.3 var(--font)}
+.step code{font:11px/1.3 var(--mono);opacity:.85}
+.step span{font:500 11px/1.3 var(--mono);opacity:.85}
+.mapbox{margin:14px 0 0}
+
+/* Tabela */
+.tbl{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--ui-line);border-radius:12px;overflow:hidden;font-size:14px}
+.tbl th,.tbl td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--ui-line)}
+.tbl th{background:#f0f0ee;font-weight:600}
+.tbl code{font:12px var(--mono)}
+@media (max-width:640px){
+  .tbl thead{display:none}
+  .tbl,.tbl tbody,.tbl tr,.tbl td{display:block;width:100%}
+  .tbl tr{border-bottom:1px solid var(--ui-line);padding:6px 0}
+  .tbl td{border:0;padding:3px 12px}
+  .tbl td::before{content:attr(data-label);display:block;font-size:12px;font-weight:600;color:var(--ui-mut)}
+}
+
+/* Caixas de leitura (fundo escuro explícito) */
+.dark-panel{background:#1d1f24;color:#e6e6eb;border-radius:16px;padding:16px 18px;margin:16px 0}
+.dark-panel h2,.dark-panel h3{color:#fff}
+.dark-panel .mut{color:#b9bac2}
+.dark-panel ol{margin:0;padding-left:22px}
+.dark-panel li{margin:0 0 8px}
+.dark-panel code{font:12px var(--mono);color:#fff;background:rgba(255,255,255,.08);padding:1px 5px;border-radius:6px}
+.dark-panel .live{margin:10px 0 0;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.08);font-size:13px}
+.dark-panel table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+.dark-panel th,.dark-panel td{text-align:left;vertical-align:top;padding:7px 8px;border-bottom:1px solid rgba(255,255,255,.12)}
+.dark-panel th{color:#fff;font-weight:600}
+@media (max-width:640px){
+  .dark-panel thead{display:none}
+  .dark-panel table,.dark-panel tbody,.dark-panel tr,.dark-panel td{display:block;width:100%}
+  .dark-panel td{border:0;padding:2px 0}
+  .dark-panel tr{border-bottom:1px solid rgba(255,255,255,.12);padding:6px 0}
+  .dark-panel td::before{content:attr(data-label);display:block;font-size:11px;color:#b9bac2}
+}
+.rec{color:#fff;background:rgba(255,255,255,.12);border-radius:8px;padding:1px 7px;font-weight:600;font-size:12px;margin-left:6px;white-space:nowrap}
+.dec{background:#fff;border:1px solid var(--ui-line);border-radius:16px;padding:14px 16px;margin:12px 0}
+.dec ul{margin:6px 0 0;padding-left:20px}
+.dec li{margin:0 0 4px}
+.dec .rec{background:#1d1f24;color:#fff}
+.ba-title{margin:22px 0 4px}
+</style>
+</head>
+<body data-pal="onix">
+<main class="wrap">
+
+<h1>Camadas: uma regra para a cinza das superfícies</h1>
+<p class="mut">Proposta de estudo para a UZZINA (DS23). Nada aqui foi aplicado no app. A página mostra a ideia, mede os valores no navegador com a paleta escolhida e lista o que mudaria em app/tailwind.css.</p>
+
+<div class="box">
+  <div class="ctrl">
+    <div><span class="ctrl-label">Paleta</span>
+      <span class="seg" role="group" aria-label="Paleta">
+        <button type="button" data-pal-btn="onix" aria-pressed="true">Ônix</button>
+        <button type="button" data-pal-btn="carbono" aria-pressed="false">Carbono</button>
+      </span>
+    </div>
+    <div><span class="ctrl-label">Modo</span>
+      <span class="seg" role="group" aria-label="Modo">
+        <button type="button" data-mode-btn="both" aria-pressed="true">Claro e escuro</button>
+        <button type="button" data-mode-btn="light" aria-pressed="false">Só claro</button>
+        <button type="button" data-mode-btn="dark" aria-pressed="false">Só escuro</button>
+      </span>
+    </div>
+  </div>
+  <p class="note" style="margin-top:12px">Como ler: <b>ΔL</b> é a diferença de luminosidade (OKLCH L) entre a cinza e o lugar onde ela está. Abaixo de 0,03 o quadro ganha borda amarela e a marca "quase invisível". Os valores são medidos pelo próprio navegador.</p>
+</div>
+
+<section class="sec">
+<h2>1. A ideia em 5 linhas</h2>
+<ol class="five">
+  <li>Cada área com fundo declara em que camada está: página, cartão, flutuante ou colorida.</li>
+  <li>Cada camada guarda uma única cor, a variável <code>--layer</code>.</li>
+  <li>Botões, itens de menu, avatares e campos tiram a cinza dessa camada, com a mesma conta para todas.</li>
+  <li>Assim a cinza tem contraste com o lugar onde está, e não com a página inteira.</li>
+  <li>Áreas coloridas (fase, Admin) e imagens não usam cinza: usam um único véu transparente.</li>
+</ol>
+</section>
+
+<section class="sec">
+<h2>2. Os degraus</h2>
+<p>Cada camada tem cinco degraus, no estilo da escala numerada do Radix. O degrau 1 é a própria camada. Os degraus 2, 3 e 4 são a cinza de repouso, a cinza com o mouse em cima e a cinza pressionada. O degrau 5 é a linha da borda. Os valores L são medidos agora, na paleta escolhida.</p>
+<div id="steps"></div>
+<p class="ro" id="steps-sum"></p>
+<pre class="code" data-code="steps"></pre>
+
+<h3>Nomes: o que cada degrau se chama</h3>
+<table class="tbl">
+  <thead><tr><th>Degrau</th><th>Nome em português</th><th>Variável CSS</th><th>Papel</th></tr></thead>
+  <tbody>
+    <tr><td data-label="Degrau">1</td><td data-label="Nome">Camada</td><td data-label="Variável"><code>--layer</code></td><td data-label="Papel">Fundo do contêiner. Declarado uma vez, em cada camada.</td></tr>
+    <tr><td data-label="Degrau">2</td><td data-label="Nome">Preenchimento</td><td data-label="Variável"><code>--fill</code></td><td data-label="Papel">Cinza de repouso: botão secundário, base do item de menu, fundo do avatar.</td></tr>
+    <tr><td data-label="Degrau">3</td><td data-label="Nome">Preenchimento em cima</td><td data-label="Variável"><code>--fill-hover</code></td><td data-label="Papel">Botão com o mouse em cima.</td></tr>
+    <tr><td data-label="Degrau">4</td><td data-label="Nome">Preenchimento pressionado</td><td data-label="Variável"><code>--fill-active</code></td><td data-label="Papel">Novo: botão pressionado. Proposta, ver decisão D3.</td></tr>
+    <tr><td data-label="Degrau">5</td><td data-label="Nome">Linha</td><td data-label="Variável"><code>--line</code></td><td data-label="Papel">Borda sobre a camada: campo, caixa, separador.</td></tr>
+    <tr><td data-label="Extra">Véu</td><td data-label="Nome">Véu</td><td data-label="Variável"><code>--fill-overlay</code></td><td data-label="Papel">Só em camada colorida e imagem. Texto transparente, nunca cinza sólido.</td></tr>
+    <tr><td data-label="Texto">Texto</td><td data-label="Nome">Texto sobre o preenchimento</td><td data-label="Variável"><code>--secondary-foreground</code></td><td data-label="Papel">Segue a mesma camada. Não é um degrau.</td></tr>
+  </tbody>
+</table>
+
+<h3>Nomes antigos e novos (alias)</h3>
+<p class="note">Nada muda nos componentes. O nome antigo continua existindo, apontando para o novo.</p>
+<table class="tbl">
+  <thead><tr><th>Hoje</th><th>Proposta</th><th>Como fica</th></tr></thead>
+  <tbody>
+    <tr><td data-label="Hoje"><code>--secondary</code></td><td data-label="Proposta"><code>--fill</code></td><td data-label="Como fica">Alias dentro de <code>.layer</code>. <code>bg-secondary</code> segue funcionando.</td></tr>
+    <tr><td data-label="Hoje"><code>--secondary-hover</code></td><td data-label="Proposta"><code>--fill-hover</code></td><td data-label="Como fica">Alias dentro de <code>.layer</code>.</td></tr>
+    <tr><td data-label="Hoje"><code>--border</code></td><td data-label="Proposta"><code>--line</code></td><td data-label="Como fica">Alias dentro de <code>.layer</code>.</td></tr>
+    <tr><td data-label="Hoje"><code>--card</code></td><td data-label="Proposta">camada do cartão</td><td data-label="Como fica">Alias dentro de <code>.layer-card</code>.</td></tr>
+    <tr><td data-label="Hoje"><code>--popover</code></td><td data-label="Proposta">camada do flutuante</td><td data-label="Como fica">Alias dentro de <code>.layer-floating</code>.</td></tr>
+    <tr><td data-label="Hoje"><code>--input</code>, <code>--action</code>, <code>--action-hover</code></td><td data-label="Proposta">sem mudança</td><td data-label="Como fica">Fora do modelo nesta proposta. Ver Simplificação.</td></tr>
+  </tbody>
+</table>
+
+<h3>Como o CSS herda isso</h3>
+<p>Uma variável CSS é calculada no elemento onde é declarada. O valor já calculado é o que os filhos recebem. Por isso, um cartão que declara só a própria cor deixa o botão dentro dele com a cinza da página: a conta foi feita lá em cima. A regra <code>.layer</code> declara a camada e as cinzas juntas. Como tudo sai de <code>--layer</code> no próprio elemento, a mesma regra vale para todas as camadas.</p>
+<p class="note">Honestidade: são duas regras, não uma por camada. Uma para o modo claro (<code>.layer</code>) e uma para o escuro (<code>.dark .layer</code>). Só os deltas mudam.</p>
+<div class="pair" id="wrong-demo"></div>
+<pre class="code" data-code="wrong"></pre>
+</section>
+
+<section class="sec">
+<h2>3. Na prática</h2>
+<p>As mesmas peças em cada camada: botão secundário (repouso, em cima e pressionado), item de menu, avatar com "+3", campo, aba selecionada e caixa com borda. O componente é o mesmo. A camada muda o resultado.</p>
+
+<h3>1. Página</h3>
+<p class="note">Fundo da página. A cinza é calculada a partir da página.</p>
+<div class="pair" data-ex="page"></div>
+<pre class="code" data-code="ex-page"></pre>
+
+<h3>2. Cartão</h3>
+<p class="note">Mesmas peças. A cinza sai do cartão, não da página.</p>
+<div class="pair" data-ex="card"></div>
+<pre class="code" data-code="ex-card"></pre>
+
+<h3>3. Flutuante (menu, popover)</h3>
+<p class="note">O item em cima usa o preenchimento do flutuante.</p>
+<div class="pair" data-ex="floating"></div>
+<pre class="code" data-code="ex-floating"></pre>
+
+<h3>4. Cartão de fase (cor própria, usa véu)</h3>
+<p class="note">Aqui não há cinza sólida. Uma cinza fixa por cima de cor de fase ficaria tingida e com contraste imprevisível. O véu (texto a 20%) dá contraste nas duas cores. Com 12% ele fica fraco em partes da foto (ver D4). Limite: o hover aqui ainda não tem valor próprio (ver limite 3).</p>
+<div class="pair" data-ex="tinted"></div>
+<pre class="code" data-code="ex-tinted"></pre>
+
+<h3>5. Área Admin do menu</h3>
+<p class="note">No app é <code>bg-secondary/50</code> sobre o menu (Header.tsx, perto da linha 717). Na proposta vira um véu sobre o flutuante, sem outro véu dentro dele.</p>
+<div class="pair" data-ex="admin"></div>
+<pre class="code" data-code="ex-admin"></pre>
+
+<h3>6. Imagem (só véu)</h3>
+<p class="note">A cinza sai de uma cor só. Numa foto não existe uma cor só, então a imagem usa apenas o véu. A aba selecionada vira só uma linha, sem cor sólida. Os valores de ΔL variam porque a foto é clara em uns pontos e escura em outros.</p>
+<div class="pair" data-ex="photo"></div>
+<pre class="code" data-code="ex-photo"></pre>
+</section>
+
+<section class="sec">
+<h2>4. Antes e depois</h2>
+<p>Três situações reais. Em cada uma, "Hoje" usa as fórmulas de app/tailwind.css como estão agora. "Proposta" usa as camadas.</p>
+
+<h3 class="ba-title">a) Botão cinza sobre cartão claro</h3>
+<div id="ba1"></div>
+<pre class="code" data-code="ba-1"></pre>
+
+<h3 class="ba-title">b) Botão cinza dentro de um popover</h3>
+<div id="ba2"></div>
+<pre class="code" data-code="ba-2"></pre>
+
+<h3 class="ba-title">c) +3 cinza sobre um cartão de fase</h3>
+<div id="ba3"></div>
+<pre class="code" data-code="ba-3"></pre>
+</section>
+
+<section class="sec">
+<h2>5. Limites e leitura</h2>
+<div class="dark-panel">
+  <h3 style="margin-top:0">Limites</h3>
+  <ol>
+    <li>Todo contêiner com fundo próprio declara uma camada (<code>layer</code>, <code>layer-card</code>, <code>layer-floating</code> ou <code>layer-tinted</code>). Quem não declara herda a camada do pai, então nada quebra.</li>
+    <li>No máximo três camadas aninhadas: página &gt; cartão &gt; flutuante. Uma camada colorida (fase) encerra a cadeia.</li>
+    <li>Camadas coloridas e imagens não usam a cinza. Usam um único véu, <code>--fill-overlay</code>, com 20% do texto e limites de 12% a 24%. Véu não entra em cima de véu. Ponto em aberto: o hover em camada colorida ainda não tem um valor próprio. A demo usa o mesmo véu com contorno <code>--line</code>.</li>
+    <li>Sem <code>backdrop-blur</code> em estado de hover. Desfoque só em miniatura de imagem, e só se um teste mostrar a necessidade.</li>
+    <li>Componentes não escrevem transparência à mão para preenchimento. Usam <code>fill</code>, <code>fill-hover</code>, <code>fill-active</code> ou <code>fill-overlay</code>.</li>
+    <li>Quando o ΔL entre o preenchimento e a camada fica abaixo de 0,03, a camada define o próprio delta.</li>
+  </ol>
+  <p class="live" id="live6"></p>
+</div>
+
+<div class="dark-panel">
+  <h3 style="margin-top:0">Simplificação: conta real</h3>
+  <p class="mut">Os números vêm de grep no repositório. A proposta, do jeito que está, <b>não reduz</b> o número de nomes nem de fórmulas. Veja a linha das fórmulas por modo.</p>
+  <table>
+    <thead><tr><th>O que conta</th><th>Hoje</th><th>Com a proposta</th><th>Comando</th></tr></thead>
+    <tbody>
+      <tr><td data-label="O que conta">Fórmulas de cor neutra por modo (card, popover, input, border, action, action-hover, secondary, secondary-hover, secondary-foreground)</td><td data-label="Hoje">9</td><td data-label="Com a proposta">11: layer-card, layer-floating, fill, fill-hover, fill-active, line, secondary-foreground, fill-overlay e input, action, action-hover (que continuam). Cai para 8 se input e action saírem do modelo.</td><td data-label="Comando"><code>grep -cE "^\s*--(card|popover|input|border|action|action-hover|secondary|secondary-hover|secondary-foreground):" app/tailwind.css</code> → 22 declarações (claro, escuro e os blocos de fase e vivid; --action e --action-hover aparecem 4 vezes cada)</td></tr>
+      <tr><td data-label="O que conta">Nomes de variável neutra</td><td data-label="Hoje">9</td><td data-label="Com a proposta">6 novos (--layer, --fill, --fill-hover, --fill-active, --line, --fill-overlay) e os 9 antigos continuam como alias. Sobe para 15 enquanto os aliases existirem.</td><td data-label="Comando">Contagem manual dos nomes acima.</td></tr>
+      <tr><td data-label="O que conta">Campos <code>*-l-delta</code> por paleta (cardLDelta, borderLDelta, inputLDelta, actionLDelta, actionHoverLDelta, popoverLDelta)</td><td data-label="Hoje">6 campos, 132 valores em 11 paletas</td><td data-label="Com a proposta">0 necessários. O CSS já não lê esses valores desde o DS28; a regra 6 usa só CSS.</td><td data-label="Comando"><code>grep -cE "^\s+(cardLDelta|borderLDelta|inputLDelta|actionLDelta|actionHoverLDelta|popoverLDelta): " app/lib/palettes.ts</code> → 132</td></tr>
+      <tr><td data-label="O que conta">Linhas que ainda escrevem <code>*-l-delta</code> no DOM</td><td data-label="Hoje">24</td><td data-label="Com a proposta">0, se o campo sair de palette-vars.ts (passo separado)</td><td data-label="Comando"><code>grep -c "l-delta" app/lib/palette-vars.ts</code> → 24</td></tr>
+      <tr><td data-label="O que conta">Leituras de <code>*-l-delta</code> em app/tailwind.css</td><td data-label="Hoje">0 (só um comentário)</td><td data-label="Com a proposta">0</td><td data-label="Comando"><code>grep -c "l-delta" app/tailwind.css</code> → 1 (linha de comentário)</td></tr>
+      <tr><td data-label="O que conta">Cores de neutro com transparência escritas à mão (ex.: foreground/10, secondary/50)</td><td data-label="Hoje">111 ocorrências em 47 arquivos; 34 delas em <code>bg-*</code></td><td data-label="Com a proposta">Não cai sozinha. A regra 5 pede migrar os 34 <code>bg-*</code> para fill ou véu, em uma etapa própria.</td><td data-label="Comando"><code>grep -rhoE "(foreground|secondary|card|popover|black|white)/[0-9]+" app --include="*.ts" --include="*.tsx" --include="*.css" | wc -l</code> → 111; com <code>bg-</code> na frente → 34</td></tr>
+    </tbody>
+  </table>
+  <p class="live"><b>Veredito:</b> a proposta não reduz nomes nem fórmulas no estado atual. O ganho é de consistência: cada cinza sai da camada onde está, com uma regra só. A redução de fórmulas só aparece se input e action entrarem no modelo (decisão separada), e a redução de dados vem de tirar os seis campos por paleta.</p>
+</div>
+</section>
+
+<section class="sec">
+<h2>6. O que você precisa decidir</h2>
+<p class="mut">Cada item tem a pergunta, as opções e a recomendação marcada.</p>
+
+<div class="dec">
+  <h4>D1. Aceitar o modelo de camadas?</h4>
+  <p>Cada área com fundo declara a sua camada, e a cinza sai dela, não da página.</p>
+  <ul>
+    <li>Sim <span class="rec">Recomendado</span>: cada cinza tem contraste com o lugar onde está, com uma regra só. Corrige o cartão claro (0,016) e a cinza sobre fase.</li>
+    <li>Não: continua a cinza fixa da página (DS28), com as falhas que as medições mostram.</li>
+  </ul>
+</div>
+
+<div class="dec">
+  <h4>D2. Qual conjunto de nomes?</h4>
+  <p>Os nomes dos degraus: preenchimento, em cima, pressionado e linha.</p>
+  <ul>
+    <li>Conjunto A: <code>fill</code>, <code>fill-hover</code>, <code>fill-active</code>, <code>line</code> <span class="rec">Recomendado</span>. Curto, e segue o nome "secondary" que já existe.</li>
+    <li>Conjunto B: <code>control</code>, <code>control-hover</code>, <code>control-pressed</code>, <code>control-border</code>. Deixa claro que é a cor de controle, não de fundo.</li>
+    <li>Conjunto C: <code>tone</code>, <code>tone-hover</code>, <code>tone-active</code>, <code>outline</code>. Mais curto, mas "outline" se confunde com o contorno de foco.</li>
+  </ul>
+</div>
+
+<div class="dec">
+  <h4>D3. O degrau pressionado (<code>fill-active</code>) entra?</h4>
+  <p>Hoje o botão pressionado não tem cor própria no app.</p>
+  <ul>
+    <li>Sim <span class="rec">Recomendado</span>: dá retorno ao toque, como o passo 4 da escala Radix. Ajuste medido: 0,12 a menos em claro e 0,17 a mais em escuro.</li>
+    <li>Não: o pressionado reaproveita o "em cima". Fica com três degraus em vez de quatro.</li>
+  </ul>
+</div>
+
+<div class="dec">
+  <h4>D4. Valor do véu (<code>fill-overlay</code>) em cor de fase e imagem</h4>
+  <p>Texto transparente sobre áreas coloridas e fotos. Não entra em cima de outro véu. Medido na demo, com a foto de gradiente: a pior leitura de ΔL é a que manda.</p>
+  <ul>
+    <li>20% do texto, com limites de 12% a 24% <span class="rec">Recomendado</span>. Pior ponto da foto: 0,037 no escuro e 0,073 no claro. Na cor de fase: 0,146 no claro e 0,117 no escuro, mais forte que hoje.</li>
+    <li>16% do texto. Pior ponto da foto: 0,031 no escuro, no limite. Na cor de fase fica mais discreto.</li>
+    <li>12% do texto (valor da primeira versão). Pior ponto da foto: 0,022 no escuro, abaixo de 0,03. Na cor de fase: 0,089 no claro.</li>
+    <li>Pendência, em qualquer opção: o hover sobre o véu ainda não tem valor próprio. Hoje ele é igual ao repouso.</li>
+  </ul>
+</div>
+
+<div class="dec">
+  <h4>D5. Quantas camadas podem se aninhar?</h4>
+  <p>Limite de profundidade. Vale para o menu aberto dentro de um cartão, por exemplo.</p>
+  <ul>
+    <li>3: página, cartão e flutuante <span class="rec">Recomendado</span>. Cobre o menu aberto dentro de um cartão.</li>
+    <li>2: página e cartão, sem flutuante aninhado. Mais simples, mas o menu dentro de um cartão ficaria sem camada própria.</li>
+  </ul>
+</div>
+</section>
+
+<section class="sec">
+<h2>7. CSS completo</h2>
+<p class="note"><b>Só exemplo, não aplicado.</b> Este é o bloco que seria acrescentado a app/tailwind.css. Nada foi escrito no arquivo do app.</p>
+<pre class="code" id="final-css"></pre>
+</section>
+
+</main>
+
+<script>
+/* ===================== CSS ===================== */
+
+/* Palette values (app/lib/palettes.ts, Ônix and Carbono). The mode wrapper sets them. */
+const CSS_PALETTE = `body[data-pal="onix"] .m-light { --background: oklch(0.96 0.002 200); --foreground: oklch(0 0 0); }
+body[data-pal="onix"] .m-dark { --background: oklch(0.2 0.01 250); --foreground: oklch(1 0 0); }
+body[data-pal="carbono"] .m-light { --background: oklch(1 0 0); --foreground: oklch(0 0 0); }
+body[data-pal="carbono"] .m-dark { --background: oklch(0.25 0.015 240); --foreground: oklch(1 0 0); }
+:root { --phase-mix: 15%; }
+.dark { --phase-mix: 40%; }`;
+
+/* Demo parts: pieces built only from the layer tokens. Not part of the proposal. */
+const CSS_DEMO = `.btn2 { height: 32px; padding: 0 12px; border: 0; border-radius: 12px; background: var(--fill); color: var(--foreground); font: 500 13px/1 var(--font); cursor: pointer; }
+.btn2:hover, .btn2.is-hover { background: var(--fill-hover); }
+.btn2:active, .btn2.is-press { background: var(--fill-active); }
+.mi { display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 10px; background: transparent; color: var(--foreground); font: 500 13px/1 var(--font); }
+.mi:hover, .mi.is-hover { background: var(--fill); }
+.av { width: 32px; height: 32px; border-radius: 999px; display: inline-grid; place-items: center; background: var(--fill); color: var(--secondary-foreground); font: 600 12px/1 var(--font); }
+.seg2 { display: inline-flex; gap: 2px; padding: 3px; border-radius: 12px; background: var(--fill); }
+.seg2 span { padding: 5px 10px; border-radius: 9px; font: 500 13px/1 var(--font); color: var(--foreground); }
+.seg2 .on { background: var(--layer); }
+.fld { height: 32px; width: 132px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--layer); color: var(--foreground); font: 500 13px var(--font); }
+.bx { padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); color: var(--foreground); font: 500 13px/1.3 var(--font); }
+.tint { padding: 6px; border-radius: 12px; display: flex; flex-direction: column; gap: 2px; }
+.tint .lbl { font: 600 11px/1.3 var(--font); padding: 4px 10px 2px; color: var(--foreground); }
+.layer.photo { background-image: linear-gradient(90deg, #5b4636 0%, #c79a6b 35%, #e9d3b5 60%, #6f8a7e 80%, #2d3d4a 100%); }
+.wrong-card { --layer: oklch(from var(--background) calc(l - 0.02) c h); background: var(--layer); }
+.dark .wrong-card { --layer: oklch(from var(--background) calc(l + 0.05) c h); }
+.h-card { background: oklch(from var(--background) calc(l - 0.02) c h); }
+.h-pop { background: oklch(from var(--background) calc(l + 0.02) c h); }
+.h-phase { background: color-mix(in oklab, var(--phase-color) var(--phase-mix), var(--background)); }
+.h-btn, .h-av { background: oklch(from var(--background) calc(l - 0.036) c h); color: var(--foreground); }
+.h-btn:hover, .h-btn.is-hover { background: oklch(from var(--background) calc(l - 0.083) c h); }
+.dark .h-card { background: oklch(from var(--background) calc(l + 0.05) c h); }
+.dark .h-pop { background: oklch(from var(--background) calc(l - 0.03) c h); }
+.dark .h-btn, .dark .h-av { background: oklch(from var(--background) calc(l + 0.098) max(0, calc(c - 0.002)) h); }
+.dark .h-btn:hover, .dark .h-btn.is-hover { background: oklch(from var(--background) calc(l + 0.133) max(0, calc(c - 0.002)) h); }`;
+
+/* THE PROPOSAL (Só exemplo, não aplicado). Injected for the demo, and shown as-is below. */
+const CSS_PROPOSAL = `/* Camadas (proposta). Phase: --phase-mix já existe em phase-surface (15% claro, 40% escuro). */
+
+/* 1. Regra de todas as camadas, modo claro. Página = padrão. */
+.layer {
+  --layer: var(--background);
+  --fill: oklch(from var(--layer) calc(l - 0.036) c h);
+  --fill-hover: oklch(from var(--layer) calc(l - 0.083) c h);
+  --fill-active: oklch(from var(--layer) calc(l - 0.12) c h);
+  --line: oklch(from var(--layer) calc(l - 0.07) c h);
+  --fill-overlay: color-mix(in oklab, var(--foreground) 20%, transparent); /* D4: 20%, bounds 12%-24% */
+  --secondary-foreground: oklch(from var(--layer) calc(l - 0.512) max(0, calc(c - 0.001)) h);
+
+  /* Old names as aliases, so no component changes */
+  --secondary: var(--fill);
+  --secondary-hover: var(--fill-hover);
+  --border: var(--line);
+
+  background: var(--layer);
+  color: var(--foreground);
+}
+
+/* 2. Mesma regra, modo escuro (só os deltas mudam). */
+.dark .layer {
+  --fill: oklch(from var(--layer) calc(l + 0.098) max(0, calc(c - 0.002)) h);
+  --fill-hover: oklch(from var(--layer) calc(l + 0.133) max(0, calc(c - 0.002)) h);
+  --fill-active: oklch(from var(--layer) calc(l + 0.17) max(0, calc(c - 0.002)) h);
+  --line: oklch(from var(--layer) calc(l + 0.1) c h);
+  --secondary-foreground: oklch(from var(--layer) calc(l + 0.549) max(0, calc(c - 0.007)) h);
+}
+
+/* 3. Cada camada escolhe a sua cor. Vêm depois de .layer. */
+.layer-card { --layer: oklch(from var(--background) calc(l - 0.02) c h); --card: var(--layer); }
+.layer-floating { --layer: oklch(from var(--background) calc(l + 0.02) c h); --popover: var(--layer); }
+.layer-tinted { --layer: color-mix(in oklab, var(--phase-color) var(--phase-mix), var(--background)); }
+.dark .layer-card { --layer: oklch(from var(--background) calc(l + 0.05) c h); }
+.dark .layer-floating { --layer: oklch(from var(--background) calc(l - 0.03) c h); }
+
+/* 4. Colorida ou imagem: sem cinza sólido, só o véu. */
+:is(.layer-tinted, .photo) :is(.btn2, .mi, .av, .seg2, .fld) { background: var(--fill-overlay); }
+.photo .seg2 .on { background: transparent; border: 1px solid var(--line); }
+
+/* 5. Área Admin do menu: um véu sobre o flutuante; itens dentro não somam outro véu. */
+.tint { background: var(--fill-overlay); }
+.tint .mi:hover { background: transparent; box-shadow: inset 0 0 0 1px var(--line); }`;
+
+const CSS_TODAY_NOTE = `/* Hoje (DS28), só para comparação: cinza fixa a partir do fundo da página. */`;
+
+const CSS_THEME = `/* Tailwind (@theme inline): novas utilidades. bg-secondary, bg-card, bg-popover e border-border continuam como aliases. */
+@theme inline {
+  --color-fill: var(--fill);
+  --color-fill-hover: var(--fill-hover);
+  --color-fill-active: var(--fill-active);
+  --color-fill-overlay: var(--fill-overlay);
+  --color-line: var(--line);
+}`;
+
+const CSS_FINAL = CSS_PROPOSAL + '\n\n' + CSS_THEME;
+
+const CODE = {
+  wrong: `/* ERRADO: o cartão declara só --layer. O botão lê --fill, que vem herdado da página. */
+.wrong-card { --layer: oklch(from var(--background) calc(l - 0.02) c h); background: var(--layer); }
+
+/* CERTO: .layer declara --layer e as cinzas juntas, dentro do cartão. */
+<div class="layer layer-card">
+  <button class="btn2">Repouso</button>
+</div>`,
+  steps: `/* Cada camada: cinco degraus. Só --layer é escolhido; o resto sai dele. */
+--layer        /* 1 · camada */
+--fill         /* 2 · preenchimento de repouso */
+--fill-hover   /* 3 · preenchimento em cima */
+--fill-active  /* 4 · preenchimento pressionado (novo) */
+--line         /* 5 · linha */`,
+  'ex-page': `<div class="layer">          <!-- página: --layer = --background -->
+  <button class="btn2">Repouso</button>
+  <button class="btn2 is-hover">Mouse em cima</button>
+  <button class="btn2 is-press">Pressionado</button>
+  <span class="av">+3</span>
+  <div class="seg2"><span class="on">Aba</span><span>Outra</span></div>
+  <input class="fld" value="Campo">
+  <div class="mi is-hover">Item de menu</div>
+  <div class="bx">Caixa com borda</div>
+</div>
+
+/* Peças: nenhuma cor escrita à mão */
+.btn2 { background: var(--fill); }
+.btn2:hover, .btn2.is-hover { background: var(--fill-hover); }
+.btn2:active, .btn2.is-press { background: var(--fill-active); }
+.av { background: var(--fill); color: var(--secondary-foreground); }
+.mi:hover, .mi.is-hover { background: var(--fill); }
+.seg2 { background: var(--fill); }   .seg2 .on { background: var(--layer); }
+.fld { border: 1px solid var(--line); background: var(--layer); }
+.bx { border: 1px solid var(--line); }`,
+  'ex-card': `<div class="layer layer-card">   <!-- mesmas peças; a camada muda -->
+  ...
+</div>
+
+.layer-card { --layer: oklch(from var(--background) calc(l - 0.02) c h); --card: var(--layer); }
+.dark .layer-card { --layer: oklch(from var(--background) calc(l + 0.05) c h); }`,
+  'ex-floating': `<div class="layer layer-floating">   <!-- menu ou popover -->
+  <div class="mi is-hover">Item de menu</div>
+  ...
+</div>
+
+.layer-floating { --layer: oklch(from var(--background) calc(l + 0.02) c h); --popover: var(--layer); }
+.dark .layer-floating { --layer: oklch(from var(--background) calc(l - 0.03) c h); }`,
+  'ex-tinted': `<div class="layer layer-tinted" style="--phase-color: #fbbf24">
+  <button class="btn2">Repouso</button>   <!-- sem cinza: véu -->
+  ...
+</div>
+
+.layer-tinted { --layer: color-mix(in oklab, var(--phase-color) var(--phase-mix), var(--background)); }
+:is(.layer-tinted, .photo) :is(.btn2, .mi, .av, .seg2, .fld) { background: var(--fill-overlay); }
+.photo .seg2 .on { background: transparent; border: 1px solid var(--line); }`,
+  'ex-admin': `<div class="layer layer-floating">
+  <div class="mi is-hover">Parceiros</div>
+  <div class="tint">                  <!-- véu sobre o menu -->
+    <span class="lbl">Admin</span>
+    <div class="mi">Usuários</div>
+  </div>
+</div>
+
+.tint { background: var(--fill-overlay); }
+.tint .mi:hover { background: transparent; box-shadow: inset 0 0 0 1px var(--line); }`,
+  'ex-photo': `<div class="layer photo">            <!-- foto: sem camada colorida, só véu -->
+  <button class="btn2">Repouso</button>   <!-- véu -->
+  ...
+</div>
+
+.layer.photo { background-image: linear-gradient(90deg, ...); }`,
+  'ba-1': `/* Hoje (DS28): a cinza sai do fundo da página, não do cartão. */
+.h-card { background: oklch(from var(--background) calc(l - 0.02) c h); }
+.h-btn  { background: oklch(from var(--background) calc(l - 0.036) c h); }
+
+/* Proposta: a cinza sai do cartão. */
+<div class="layer layer-card"><button class="btn2">Repouso</button></div>`,
+  'ba-2': `/* Hoje: a cinza do botão continua vindo do fundo da página, dentro do menu. */
+.h-pop { background: oklch(from var(--background) calc(l + 0.02) c h); }
+.h-btn { background: oklch(from var(--background) calc(l - 0.036) c h); }
+
+/* Proposta: a cinza sai do flutuante. */
+<div class="layer layer-floating"><button class="btn2">Repouso</button></div>`,
+  'ba-3': `/* Hoje: cinza opaca sobre a cor de fase. */
+.h-phase { background: color-mix(in oklab, var(--phase-color) var(--phase-mix), var(--background)); }
+.h-av    { background: oklch(from var(--background) calc(l - 0.036) c h); }
+
+/* Proposta: véu sobre a cor de fase. */
+<div class="layer layer-tinted"><span class="av">+3</span></div>`,
+  final: CSS_FINAL
+};
+
+/* ===================== Injection ===================== */
+(function injectCss(){
+  const st = document.createElement('style');
+  st.textContent = [CSS_PALETTE, CSS_DEMO, CSS_PROPOSAL, CSS_TODAY_NOTE].join('\n');
+  document.head.appendChild(st);
+})();
+
+/* ===================== Render ===================== */
+const MODES = [
+  { cls: 'm-light', label: 'Claro' },
+  { cls: 'm-dark dark', label: 'Escuro' }
+];
+const LAYERS = [
+  { key: 'page', title: 'Página', cls: 'layer' },
+  { key: 'card', title: 'Cartão', cls: 'layer layer-card' },
+  { key: 'floating', title: 'Flutuante', cls: 'layer layer-floating' }
+];
+const STEP_NAMES = [
+  ['1 · Camada', '--layer', 'var(--layer)'],
+  ['2 · Preenchimento', '--fill', 'var(--fill)'],
+  ['3 · Em cima', '--fill-hover', 'var(--fill-hover)'],
+  ['4 · Pressionado', '--fill-active', 'var(--fill-active)'],
+  ['5 · Linha', '--line', 'var(--line)']
+];
+
+function stepsHTML(){
+  return LAYERS.map(L => {
+    const rows = MODES.map(m => {
+      const sw = STEP_NAMES.map(s => '<div class="step"><i style="background:' + s[2] + '"></i><b>' + s[0] + '</b><code>' + s[1] + '</code><span data-L></span></div>').join('');
+      return '<div class="mw ' + m.cls + '"><p class="ch" style="margin-bottom:4px">' + m.label + '</p><div class="steps ' + L.cls + '" data-key="' + L.key + '-' + m.label + '">' + sw + '</div></div>';
+    }).join('');
+    return '<h4 style="margin-top:14px">' + L.title + '</h4><div class="pair">' + rows + '</div>';
+  }).join('');
+}
+
+/* Cell builder: one cell per mode, with a readout. */
+function modeCells(build){
+  return MODES.map(m => '<div class="mw ' + m.cls + '"><p class="ch" style="margin:0 0 4px">' + m.label + '</p>' + build(m) + '</div>').join('');
+}
+
+/* Example body: same pieces on every layer. */
+const PLAIN = `<div class="row">
+  <button class="btn2" data-m="Repouso">Repouso</button>
+  <button class="btn2 is-hover" data-m="Mouse em cima">Mouse em cima</button>
+  <button class="btn2 is-press" data-m="Pressionado">Pressionado</button>
+</div>
+<div class="row">
+  <span class="av" data-m="Avatar +3">+3</span>
+  <div class="seg2"><span class="on" data-m="Aba selecionada">Aba</span><span>Outra</span></div>
+  <input class="fld" value="Campo" readonly data-m="Campo" data-line>
+</div>
+<div class="mi is-hover" data-m="Item de menu em cima">Item de menu</div>
+<div class="bx" data-m="Caixa com borda" data-line>Caixa com borda</div>`;
+
+const EX = {
+  page: { cell: 'layer', body: PLAIN },
+  card: { cell: 'layer layer-card', body: PLAIN },
+  floating: { cell: 'layer layer-floating', body: PLAIN },
+  tinted: { cell: 'layer layer-tinted', style: '--phase-color: #fbbf24', body: PLAIN },
+  admin: { cell: 'layer layer-floating', body: `<div class="mi is-hover" data-m="Item de menu em cima">Parceiros</div>
+<div class="tint" data-m="Grupo Admin"><span class="lbl">Admin</span><div class="mi">Usuários</div></div>` },
+  photo: { cell: 'layer photo', attr: 'data-photo', body: PLAIN.replace('data-m="Aba selecionada"', 'data-m="Aba selecionada" data-line') }
+};
+
+function exampleHTML(key){
+  const e = EX[key];
+  return modeCells(() => '<div class="cell ' + e.cell + '"' + (e.style ? ' style="' + e.style + '"' : '') + (e.attr ? ' ' + e.attr : '') + '>' + e.body + '<p class="ro" data-ro></p></div>');
+}
+
+function wrongHTML(){
+  const bad = m => '<div class="cell layer"><div class="inner wrong-card" style="padding:12px"><div class="row"><button class="btn2" data-m="Cinza dentro do cartão">Repouso</button></div></div><p class="ro" data-ro></p></div>';
+  const good = m => '<div class="cell layer"><div class="inner layer layer-card"><div class="row"><button class="btn2" data-m="Cinza dentro do cartão">Repouso</button></div></div><p class="ro" data-ro></p></div>';
+  return '<div style="grid-column:1/-1"><p class="note" style="margin:0 0 4px"><b>Errado</b>: cartão declara só a cor.</p></div>' + modeCells(bad) +
+         '<div style="grid-column:1/-1"><p class="note" style="margin:8px 0 4px"><b>Certo</b>: .layer declara tudo.</p></div>' + modeCells(good);
+}
+
+function baHTML(rows){
+  // rows: [{hoje: html, prop: html, label: 'Claro'|'Escuro'}]
+  return MODES.map(m => {
+    const r = rows[m.label === 'Claro' ? 0 : 1];
+    return '<div class="ba-row mw ' + m.cls + '">' +
+      '<div class="cell ' + r.hojeCls + '"' + (r.hojeStyle ? ' style="' + r.hojeStyle + '"' : '') + '><p class="ch">Hoje · ' + m.label + '</p>' + r.hoje + '<p class="ro" data-ro></p></div>' +
+      '<div class="cell ' + r.propCls + '"' + (r.hojeStyle ? ' style="' + r.hojeStyle + '"' : '') + '><p class="ch">Proposta · ' + m.label + '</p>' + r.prop + '<p class="ro" data-ro></p></div>' +
+      '</div>';
+  }).join('');
+}
+
+function baRows(hojeCls, hoje, propCls, prop, hojeStyle){
+  return [0,1].map(() => ({ hojeCls, hoje, propCls, prop, hojeStyle }));
+}
+
+function renderAll(){
+  document.getElementById('steps').innerHTML = stepsHTML();
+  document.getElementById('wrong-demo').innerHTML = wrongHTML();
+  document.querySelectorAll('[data-ex]').forEach(el => { el.innerHTML = exampleHTML(el.dataset.ex); });
+
+  const ba1 = baRows('h-card', '<div class="row"><button class="h-btn" data-m="Cinza no cartão">Repouso</button></div>',
+                     'layer layer-card', '<div class="row"><button class="btn2" data-m="Cinza no cartão">Repouso</button></div>');
+  document.getElementById('ba1').innerHTML = baHTML(ba1);
+
+  const ba2 = baRows('h-pop', '<div class="row"><button class="h-btn" data-m="Cinza no menu">Repouso</button></div>',
+                     'layer layer-floating', '<div class="row"><button class="btn2" data-m="Cinza no menu">Repouso</button></div>');
+  document.getElementById('ba2').innerHTML = baHTML(ba2);
+
+  const ba3 = baRows('h-phase', '<div class="row"><span class="h-av" data-m="+3 cinza">+3</span></div>',
+                     'layer layer-tinted', '<div class="row"><span class="av" data-m="+3 véu">+3</span></div>',
+                     '--phase-color: #fbbf24');
+  document.getElementById('ba3').innerHTML = baHTML(ba3);
+
+  document.querySelectorAll('pre[data-code]').forEach(p => { p.textContent = CODE[p.dataset.code]; });
+  document.getElementById('final-css').textContent = CODE.final;
+}
+
+/* ===================== Measurement (OKLCH L) ===================== */
+
+const CTX = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+const PHOTO = [[0, '#5b4636'], [0.35, '#c79a6b'], [0.6, '#e9d3b5'], [0.8, '#6f8a7e'], [1, '#2d3d4a']];
+const M = {};
+
+/* Paint a CSS colour over the current pixel. Invalid colour is ignored. */
+function paint(css){
+  CTX.fillStyle = '#010203';
+  CTX.fillStyle = css;
+  if (CTX.fillStyle === '#010203') return;
+  CTX.fillRect(0, 0, 1, 1);
+}
+
+/* Solid colour of a CSS value (used for borders). */
+function solid(css){
+  CTX.clearRect(0, 0, 1, 1);
+  paint(css);
+  const d = CTX.getImageData(0, 0, 1, 1).data;
+  return [d[0], d[1], d[2]];
+}
+
+/* Colour of the photo gradient at the probe's x position (same stops as the CSS). */
+function photoAt(photoEl, probe){
+  const pr = photoEl.getBoundingClientRect();
+  const br = probe.getBoundingClientRect();
+  const w = Math.max(2, Math.round(pr.width));
+  const x = Math.min(w - 1, Math.max(0, Math.round(br.left + br.width / 2 - pr.left)));
+  const c = document.createElement('canvas');
+  c.width = w; c.height = 1;
+  const g = c.getContext('2d', { willReadFrequently: true });
+  const grad = g.createLinearGradient(0, 0, w, 0);
+  PHOTO.forEach(([p, col]) => grad.addColorStop(p, col));
+  g.fillStyle = grad;
+  g.fillRect(0, 0, w, 1);
+  const d = g.getImageData(x, 0, 1, 1).data;
+  return [d[0], d[1], d[2]];
+}
+
+/* Visible colour of an element: composite every background from the top down. */
+function effColour(el, probe){
+  const chain = [];
+  for (let n = el; n && n !== document.documentElement; n = n.parentElement) chain.unshift(n);
+  let base = [255, 255, 255];
+  let start = 0;
+  chain.forEach((n, i) => {
+    if (n.hasAttribute('data-photo')) { base = photoAt(n, probe); start = i + 1; }
+  });
+  CTX.clearRect(0, 0, 1, 1);
+  CTX.fillStyle = 'rgb(' + base.join(',') + ')';
+  CTX.fillRect(0, 0, 1, 1);
+  for (let i = start; i < chain.length; i++) paint(getComputedStyle(chain[i]).backgroundColor);
+  const d = CTX.getImageData(0, 0, 1, 1).data;
+  return [d[0], d[1], d[2]];
+}
+
+/* OKLab L (same formula as OKLCH L). */
+function lightness(c){
+  const lin = v => { v /= 255; return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+  const r = lin(c[0]), g = lin(c[1]), b = lin(c[2]);
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return 0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s;
+}
+
+/* ΔL of an item against the place it sits on. Borders use data-line. */
+function dl(el){
+  const around = effColour(el.parentElement, el);
+  const own = el.hasAttribute('data-line') ? solid(getComputedStyle(el).borderTopColor) : effColour(el, el);
+  return Math.abs(lightness(own) - lightness(around));
+}
+
+const fmt = d => d.toFixed(3).replace('.', ',');
+
+function measureSteps(){
+  document.querySelectorAll('.steps').forEach(row => {
+    const sw = [...row.querySelectorAll('.step')];
+    const Ls = sw.map(s => {
+      const i = s.querySelector('i');
+      const L = lightness(effColour(i, i));
+      s.querySelector('[data-L]').textContent = 'L ' + L.toFixed(3).replace('.', ',');
+      return L;
+    });
+    M[row.dataset.key] = Math.abs(Ls[1] - Ls[0]);
+  });
+  const parts = [];
+  ['page', 'card', 'floating'].forEach(k => {
+    const lab = { page: 'Página', card: 'Cartão', floating: 'Flutuante' }[k];
+    parts.push(lab + ' claro ' + fmt(M[k + '-Claro']) + ' · escuro ' + fmt(M[k + '-Escuro']));
+  });
+  document.getElementById('steps-sum').innerHTML = 'ΔL entre o preenchimento (degrau 2) e a camada: ' + parts.join(' · ') + '. Todos acima de 0,03 nesta paleta.';
+}
+
+function measureCells(){
+  document.querySelectorAll('.cell').forEach(cell => {
+    const items = [...cell.querySelectorAll('[data-m]')];
+    const ro = cell.querySelector('[data-ro]');
+    if (!ro || items.length === 0) return;
+    let faint = false;
+    ro.innerHTML = items.map(el => {
+      const d = dl(el);
+      if (d < 0.03) faint = true;
+      if (el.dataset.k) M[el.dataset.k] = d;
+      return el.dataset.m + ' <b class="' + (d < 0.03 ? 'low' : '') + '">' + fmt(d) + '</b>';
+    }).join(' · ') + (faint ? ' <span class="tag">quase invisível</span>' : '');
+    cell.classList.toggle('faint', faint);
+  });
+}
+
+function measureLive(){
+  // Hoje: cartão claro, medido no Antes e depois (a).
+  const hojeCard = document.querySelector('#ba1 .m-light .cell:first-child [data-m]');
+  const hojeLight = hojeCard ? dl(hojeCard) : null;
+  const tintItem = document.querySelector('[data-ex="tinted"] .m-light [data-m]');
+  const tintLight = tintItem ? dl(tintItem) : null;
+  const sum = ['page', 'card', 'floating'];
+  const below = sum.filter(k => M[k + '-Claro'] < 0.03).length;
+  const names = { page: 'página', card: 'cartão', floating: 'flutuante' };
+  document.getElementById('live6').innerHTML =
+    '<b>Medido agora:</b> hoje, cartão claro = <b>' + (hojeLight === null ? '–' : fmt(hojeLight)) + '</b> (abaixo de 0,03: precisa de delta próprio). ' +
+    'Com a proposta, claro: ' + sum.map(k => names[k] + ' ' + fmt(M[k + '-Claro'])).join(', ') + '; camadas abaixo de 0,03 = <b>' + below + '</b>. ' +
+    'Véu do cartão de fase, claro: ' + (tintLight === null ? '–' : fmt(tintLight)) + '. ' +
+    'Regra 6 fica como rede de segurança; hoje nenhuma camada a precisa no modo claro.';
+}
+
+function measureAll(){
+  measureSteps();
+  measureCells();
+  measureLive();
+}
+
+/* ===================== Controls ===================== */
+
+function pressOne(selector, btn){
+  document.querySelectorAll(selector).forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+}
+
+document.querySelectorAll('[data-pal-btn]').forEach(b => b.addEventListener('click', () => {
+  document.body.dataset.pal = b.dataset.palBtn;
+  pressOne('[data-pal-btn]', b);
+  measureAll();
+}));
+
+document.querySelectorAll('[data-mode-btn]').forEach(b => b.addEventListener('click', () => {
+  const m = b.dataset.modeBtn;
+  document.body.classList.toggle('only-light', m === 'light');
+  document.body.classList.toggle('only-dark', m === 'dark');
+  pressOne('[data-mode-btn]', b);
+  measureAll();
+}));
+
+let rz = 0;
+window.addEventListener('resize', () => {
+  cancelAnimationFrame(rz);
+  rz = requestAnimationFrame(measureAll);
+});
+
+renderAll();
+window.addEventListener('load', measureAll);
+measureAll();
+</script>
+</body>
+</html>
