@@ -13,7 +13,7 @@ Os botões e itens cinzas (secundário) usam uma cor calculada só a partir do f
 Modelo de camadas: cada superfície declara uma única cor, `--layer`, e as cores do cinza são calculadas a partir dela.
 
 - **Quatro tipos de camada:** página, cartão, flutuante (menu, seletor, diálogo, folha lateral) e tingida (cartão de fase, cabeçalho da área de Admin).
-- **Cinco tons por camada:** `fill` (cinza do botão secundário), `fill-hover` (ao passar o mouse), `fill-active` (ao pressionar, novo), `line` (borda) e o texto correspondente.
+- **Tons por camada (decidido em 17/11: sem renomear, sem apelidos):** `secondary` (cinza do botão secundário, hover de itens, bolinha), `secondary-hover` (ao passar o mouse), `secondary-active` (ao pressionar, novo), `border` (borda) e o texto correspondente. Os nomes `fill`, `fill-hover`, `fill-active` e `line` das páginas de demonstração eram só ilustração. O único nome novo é `--layer`.
 - **Uma regra só** (`.layer`) para todas as camadas, no claro e no escuro. Nada de ajuste por paleta.
 - **Superfícies tingidas e imagens** usam uma única película translúcida de 20%, nunca empilhada. Limites de 12% a 24%.
 - **No máximo 3 camadas aninhadas.**
@@ -25,16 +25,14 @@ O que muda para a pessoa: o cinza dos botões secundários passa a aparecer em q
 ## Decisões já tomadas (17/11)
 
 - Modelo de camadas aceito.
-- Nomes `fill`, `fill-hover`, `fill-active` e `line`.
+- Nomes: ficam `secondary`, `secondary-hover` e `border`; entra só `secondary-active` (pressionado) e a variável `--layer`. Sem renomear e sem apelidos (proprietário, 17/11: renomear obrigaria a mexer também nas variantes dos botões e não faz sentido).
 - Estado pressionado incluído.
 - Película de 20% para superfícies tingidas e imagens.
 - Máximo de 3 camadas aninhadas.
 
 ## Decisões em aberto
 
-- **(a) Nomes antigos no passo 1: aguarda proprietário.**
-  - Opção A (recomendada para o passo 1): manter `secondary` e `secondary-hover`, mudando só a fórmula para ler `--layer`. Sem nomes novos, sem aliases, sem renomear em massa.
-  - Opção B: renomear para `fill*` em uma passada mecânica sobre os cerca de 130 usos de `bg-secondary`, sem alias. `secondary-foreground` continua. Pode ser um commit separado depois.
+- **(a) Nomes antigos no passo 1: decidido pelo proprietário em 17/11, opção A.** Mantém `secondary` e `secondary-hover`, mudando só a fórmula para ler `--layer`; sem nomes novos além de `secondary-active`, sem apelidos e sem renomear. A opção B (renomear para `fill*` em massa) foi descartada.
   - O proprietário não gosta de aliases; por isso a A não cria nenhum.
 - **(b) Hover sobre a película:** ainda não tem valor próprio (hoje é igual ao repouso). Definir ao ver a tela.
 - **(c) Teste com foto real** da película de 20%. A demonstração usou um gradiente.
