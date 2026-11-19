@@ -1,5 +1,7 @@
 # T01 — Evidência de execução: rastreamento das decisões D1–D6
 
+Registro histórico de 06/11. Para as decisões vigentes e perguntas remanescentes, consultar a [revisão do proprietário](../../plans/social-planning-design-decisions.md#revisão-do-proprietário--19112026).
+
 **Status:** needs-product-decision (D1, D2, D3, D4, D5, D6; ver perguntas na seção 4)
 **Executor:** Claude (rastreamento documental)
 **Revisor:** pendente

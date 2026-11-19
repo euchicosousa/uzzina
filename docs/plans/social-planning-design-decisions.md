@@ -2,7 +2,59 @@
 
 Registrado em 01/11/2026 após avaliação do mockup pelo proprietário. Referências: [mockup e limites](social-planning-mockup.md) e [divisão dos tickets](social-planning-ticket-breakdown.md).
 
-## Decisões aprovadas
+## Revisão do proprietário — 19/11/2026
+
+Esta seção é a referência vigente para a retomada. As anotações anteriores abaixo registram as rodadas em que foram escritas. A prévia da Mesa recebeu aceite visual do proprietário. A série de recuperação continua em espera.
+
+### Ajustes após conferir o Planejamento
+
+- **Parceiro.** Usar o seletor de parceiros existente ao lado do título Planejamento. Escolha única com avatar e nome, sem rótulo visual acima. O endereço da Mesa acompanha a seleção e conserva as guardas de saída.
+- **Período.** Limite aprovado de 60 dias civis, contando início e fim. A bancada compara atalhos Semana, 15 dias, Mês e 2 meses, ancorados no domingo da semana de referência. Em 19/11 a Semana é 15–21/11. Para testar, Mês usa 30 dias e 2 meses usa 60. Confirmar essas durações e a posição dos atalhos junto ao calendário pequeno do Prism. A seleção manual continua disponível.
+- **Dias preferidos.** A frequência e o número de dias marcados são independentes. Sete publicações podem ocupar só segunda, quarta e sexta, distribuídas como 3/2/2. Ao trocar a frequência, manter os dias marcados e recalcular. A bancada dá a sobra ao primeiro dia preferido no exemplo 7/3 e corta os dias que ficam fora de semanas parciais. Confirmar esses detalhes.
+- **Formatos.** Automático começa equilibrado. Em Definir quantidades, três sliders mostram as quantidades reais, sem pedir que a pessoa feche a soma. Estático, Carrossel e Reels têm essa ordem de prioridade. Ao reduzir Reels de 8 para 4, a bancada soma 3 Estáticos e 1 Carrossel. Ao aumentar um formato, os demais cedem, com maior redução no de menor prioridade quando há quantidade suficiente. Conferir arredondamento e comportamento no sentido inverso.
+- **Prévia e direcionamento.** Por período, mostrar os placeholders e seus formatos no calendário lateral antes de gerar. Por tema, seis conteúdos exibem seis placeholders na lista, por exemplo 2/2/2 em automático e 3/2/1 após ajuste. Direcionamento obrigatório nos dois modos. O preenchimento pelo cadastro do parceiro continua na etapa do Direcionamento.
+- **Comemorações.** O proprietário aprovou a apresentação e a lista filtrada pelo período. Conservar o controle existente. Nesta rodada, a bancada verifica os conteúdos regulares. O modo de combinar extras da própria proposta continua em discussão.
+
+Na `main` local, a Mesa reaproveita o seletor de parceiros no cabeçalho, impede selecionar intervalos superiores a 60 dias no próprio calendário e exige Direcionamento. A frequência usa dias preferidos, os sliders preservam a soma e a prévia de lista ou calendário reage antes de gerar. Na prévia do calendário, os conteúdos aparecem em espaços quadrados com ícones dos formatos, borda com 50% e fundo com 10% da cor da categoria. O layout e os nomes dos atalhos seguem em estudo na bancada.
+
+| Ponto | Definido | A fechar |
+| --- | --- | --- |
+| D1 · Acesso | Somente administradores ativos podem ver entradas, acessar a Mesa, ler, salvar, editar, aprovar, gerar e finalizar. Ocultar no menu do cabeçalho, na busca e na página do parceiro. URL direta, servidor e banco aplicam a mesma regra. | Verificar as fronteiras em ambiente isolado. |
+| D2 · Frequência e quantidade | No modo calendário, dias são preferidos e independentes da quantidade por semana. O calendário inicia no domingo e a seleção tem até 60 dias. A prévia lateral enquadra o período e mostra os espaços calculados. Na quantidade fechada, mostra uma lista. | Arredondamento de uma semana parcial, ordem de sobras, duração exata dos atalhos e se também existe total fixo dentro de um intervalo. |
+| D3 · Composição | Em automático, equilibrar formatos. No ajuste de quantidades, Estático, Carrossel e Reels têm sliders ligados e prioridade nessa ordem. Lista e calendário atualizam os placeholders. O total permanece fixo enquanto só a composição muda. | Arredondamento e comportamento ao aumentar um formato, ordem dos formatos na prévia e regra dos extras. |
+| D4 · Isolamento de ações existentes | O Planejamento tem acesso ao parceiro e às suas instruções, propostas e datas comemorativas selecionadas. O fluxo não consulta, exibe nem usa ações existentes para calcular, gerar, deduplicar ou finalizar. Uma ação já presente em um dia não impede uma nova. O admin decide o que fica pela aprovação das sugestões. | Efeito de uma comemoração sobre um dia regular da própria proposta e agrupamento de duas comemorações na mesma data. |
+| D5 · Data ao finalizar | Toda ação criada tem data. Ideias de quantidade fechada podem ficar sem dia durante a revisão. A preferência indicada para aprovadas sem data é criar no dia atual e deixar o admin distribuir depois. Datas já escolhidas são preservadas. | Confirmar o dia atual como padrão em vez de exigir data na confirmação, o fuso e a hora usados e como a confirmação apresenta aprovadas e pendentes. |
+| D6 · Direcionamento | O Direcionamento é obrigatório na geração. Vem da configuração do parceiro e pode ser alterado na solicitação. Contexto é opcional. A entrada efetiva é a versão usada para aquela proposta. O cadastro do parceiro oferece o direcionamento reutilizável. | Confirmar os campos de saída ainda em aberto e a mensagem quando o parceiro não tem direcionamento salvo. Proposta: permitir preencher na Mesa e guardar o texto na proposta, com alteração permanente só pelo cadastro. |
+
+### Nome da proposta — ajuste futuro
+
+O proprietário pediu que a IA retorne um nome curto para identificar cada planejamento. O nome será salvo com a proposta e exibido em Propostas salvas em vez do rótulo genérico Por tema ou Por período. O modo continua sendo dado da proposta. Para propostas antigas sem nome, a lista pode manter o rótulo atual. O pedido foi registrado para uma revisão posterior.
+
+### Bancada antes de reescrever a Mesa
+
+A [bancada interativa da Mesa](../../.scratch/social-planning-recovery/prototype/mesa-planejamento.html) está disponível no checkout local. Abre offline, com dados fictícios, e permite comparar opções de interação para os atalhos e regras ainda em discussão.
+
+- **Cenas atuais.** Subir a frequência sem mudar os dias preferidos, distribuir 7 em 3 dias e ajustar formatos em uma lista de 6 placeholders.
+- **Hipóteses.** O total fixo dentro de um período fica em discussão. As regras de sobras e o layout dos atalhos aguardam conferência.
+
+- **Calendário.** Intervalo, frequência e dias preferidos à esquerda, calendário à direita. Aumentar frequência redistribui a quantidade nos dias marcados. Exibir na prévia todos os placeholders e seus formatos. Comparar grade mensal rolável com semana compacta conforme a extensão do intervalo.
+- **Quantidade fechada.** Prototipar o total e as preferências à esquerda e uma lista por formato à direita. Estudar como esse recorte convive com **Por tema**, preservando o pedido por tema já previsto.
+- **Formatos.** Prototipar sliders de quantidades com redistribuição determinística. Para seis ideias, começar em 2/2/2; ao reduzir Reels para 1, visualizar 3/2/1. Para 8 → 4 Reels, verificar 3 vagas para Estático e 1 para Carrossel.
+- **Um resultado para a Mesa inteira.** Configuração deriva uma lista de itens com data opcional e formato. Prévia e resumo leem o mesmo resultado usado pela geração. Alterar a configuração não muda uma proposta salva que está em revisão. A prévia usa somente dados da proposta e do formulário, sem chamadas de IA ou gravação.
+
+### Prism como requisito de aceite
+
+A rota já usa vários controles Prism. O desvio está em trechos específicos: botões nativos de propostas salvas, filtros e cartões próprios de sugestões, superfícies `bg-card` montadas à mão e grade independente na revisão da proposta. A prévia do formulário já reaproveita a grade compartilhada do calendário. Reescrever esses trechos quando a composição com os componentes vigentes resolver. Reutilizar cabeçalho, AppBar, campos, alternadores, botões, diálogos e núcleo de calendário. Um componente composto pode coordenar vários controles com as mesmas regras de foco, estados, raios e tokens do Prism. A complexidade do comportamento não exige criar um segundo design system.
+
+Conferir no aceite visual do desktop as duas colunas, a prévia antes da geração, teclado, claro e escuro, e a rolagem necessária no intervalo longo. O trabalho de calendário reaproveita a apresentação da grade com dados de sugestões e callbacks próprios, sem importar a camada operacional que lê ou move ações. [Padrões Prism](../contracts/prism-details.md)
+
+### Evidência do código atual
+
+- A rota tem estado independente de frequência, dias e contagens. A prévia reativa usa a grade compartilhada. A geração é local e a revisão de uma proposta gerada usa uma grade própria. [Mesa atual](../../app/routes/app/planejamento.tsx)
+- O menu, a busca e a página de parceiro têm entradas para Planejamento. A migration preparada de propostas permite operações de membros em determinados casos. O contrato de admin exige revisitar as quatro fronteiras, incluindo a rota direta, e testar permissões reais sob uma instalação isolada. [Menu](../../app/components/layout/Header.tsx) · [Busca](../../app/components/features/GlobalSearchCommand.tsx) · [Página do parceiro](../../app/routes/app/partner/$slug.tsx) · [SQL preparado](../../supabase/migrations/20261102120000_social_plans.sql)
+- Existe um campo versionado de instruções reutilizáveis do parceiro, registrado como aplicado em produção. A integração dele com cadastro e Mesa ainda precisa ser comprovada. Reaproveitar o campo após conferir seu significado e permissões. [Registro do campo](../contracts/database-and-deploy.md#banco)
+
+## Decisões da rodada inicial de 01/11
 
 - **Mesa de planejamento**, a segunda alternativa do mockup, é a direção escolhida.
 - Planejamento é **mais uma página interna do sistema**, dentro do layout existente de `/app`. O cabeçalho superior é o mesmo do app, com logo, busca, menu, alinhamento e comportamento atuais. Não criar shell, barra superior, navegação ou cabeçalho global exclusivos do Planejamento.
@@ -36,7 +88,7 @@ Os detalhes visuais do mockup são ilustrativos. A escolha da composição não 
 - Se o componente atual estiver acoplado às mutações de ações, adaptar sua fronteira de dados/eventos ou extrair somente a parte compartilhada necessária. Isso não autoriza copiar/reimplementar um calendário paralelo, falsificar sugestões como ações ou remover recursos já existentes.
 - Cabeçalho, AppBar, contêineres, margens e reserva de rolagem seguem o layout vigente do app. A Mesa organiza somente o conteúdo desta página; não altera o restante do sistema.
 
-Busca global e menu superior continuam com entrada para todos os membros da equipe; a página operacional do parceiro tem o botão com ícone junto ao seu nome. Parceiro permanece na URL, e ausência de parceiro oferece seleção entre os autorizados. A restrição de largura não transforma a funcionalidade em administrativa nem amplia o acesso aos parceiros.
+A rodada inicial previa a entrada para membros no menu superior, na busca e na página operacional do parceiro. A decisão de 19/11 restringe essas entradas e a própria Mesa a administradores ativos. Parceiro permanece na URL, e ausência de parceiro permite escolher um disponível.
 
 ## Largura mínima e redimensionamento
 
@@ -86,9 +138,9 @@ Proprietário pediu delegar a um subagente mais leve apenas a criação da pági
 - O cabeçalho de `/dash` agora mantém avatar/identidade, seletor expansível e saída na mesma linha; em telas estreitas, saudação e texto de saída são visualmente compactados, mantendo nomes acessíveis. Sem mudança de sessão, query, seleção ou autenticação.
 - Isto implementa apenas navegação/seleção do shell e apresentação. Geração, IA, persistência, calendário e sugestões continuam pendentes; os campos e botão de geração ficam desativados.
 
-## Decisões do Contrato do Planejamento (D1 a D6) — 02/11/2026
+## Proposta histórica do Contrato do Planejamento (D1 a D6) — 02/11/2026
 
-Decisões de produto aprovadas para a série de correções do Planejamento Social:
+Proposta registrada na rodada anterior. As decisões e lacunas vigentes estão na revisão do proprietário de 19/11, no início deste documento.
 
 - **D1 — Visibilidade e Compartilhamento:**
   - Compartilhado entre os membros autorizados ao parceiro comercial (`partners.users_ids` e administradores da agência). Propostas são vinculadas ao `partner_slug` e criadas pelo `user_id`. Leitura permitida para membros com acesso ao parceiro. Edição permitida ao autor da proposta e aos administradores. RLS e armazenamento isolados por parceiro e usuário, evitando vazamento entre clientes ou contas externas.

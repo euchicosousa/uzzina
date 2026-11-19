@@ -4,6 +4,21 @@ Consolidado em 04/11/2026. Esta é uma referência histórica; a fila vigente es
 
 Os documentos completos abaixo substituem os antigos arquivos individuais. Nenhum conteúdo de ticket foi descartado. Os índices anteriores também foram preservados no final.
 
+## Encerramentos de 19/11/2026
+
+- [ARQ-02 · Separar os detalhes compartilhados dos cartões Linha e Bloco](../structural-audit/issues/02-shared-line-and-block-details.md) — encerrado com aceite do proprietário. Detalhes compartilhados (data, parceiros, responsáveis, prioridade e Sprint) movidos para `app/components/features/ActionItemDetails.tsx`, eliminando o ciclo entre `ActionItem.tsx`, `ActionLineVariant.tsx` e `ActionBlockVariant.tsx`. Verificados `tsc --noEmit`, `biome check`, `vite build`, grafo sem ciclos e 33 testes focados; commit local `c03cd77`, sem publicação.
+- [ARQ-01 · Auditoria da estrutura da UZZINA](../structural-audit/issues/01-app-structure-and-simplification.md) — encerrado pelo proprietário. Limpeza de consultas no commit local `98a81e9`. Ajustes de teclado da janela Arquivos e da consulta de sessão do Portal do cliente, documentação e testes verificados localmente, com commit e publicação pendentes. Teclado e altura dos cartões encerrados. [Reorganização de Linha e Bloco](../structural-audit/issues/02-shared-line-and-block-details.md) encerrada acima.
+
+## Encerramentos de 18/11/2026
+
+- [UP01 · Envio e visualização na janela Arquivos](../file-upload/issues/01-own-upload-dropzone.md) — concluído pelo proprietário. A janela de Essencial e Instagram foi enviada à main do GitHub no commit c54a14c7.
+- [HOJE-04 · Zoom, ajuste às ações do dia e barras compactas](../today-views/issues/04-timeline-zoom-fit-compact-bars.md) — aprovado pelo proprietário; commit fa740ef.
+
+- [DS17 · Cor viva da fase nos cartões de ação](../design-system-audit/issues/17-vivid-phase-color-cards.md) — concluído pelo proprietário.
+- [DS18 · Grupos de botões, seletores e campos](../design-system-audit/issues/18-group-borders-review.md) — concluído pelo proprietário.
+- [DS19 · Preferência Cor da fase em Minha Conta → Aparência](../design-system-audit/issues/19-phase-color-to-account.md) — concluído pelo proprietário.
+- [DS21 · Editor Cores dos temas da Administração](../design-system-audit/issues/21-admin-theme-colors-editor.md) — encerrado como frente independente. As adaptações do editor passam ao estudo de fundos e cinzas.
+
 ## Índice
 
 - [visual-controls · 45 — Modo unstyled dos botões Prism](#visual-controls-issues-45-clean-unstyled-button-mode)
@@ -5560,7 +5575,7 @@ Encerrado com aceite do proprietário em 16/11/2026. O dia por hora, estilo Gant
 
 ## TOP-01 — Tópicos por parceiro no lugar da cor da ação
 
-Encerrado com aceite do proprietário em 16/11/2026. Seção "Tópicos" em Admin → Parceiro (nome e cor, até 12 por parceiro, exclusão com contagem de ações), seletor de tópico no rodapé da gaveta no lugar da cor livre (desabilitado quando o parceiro não tem tópicos), "Alterar Tópico" no menu em lote (mesmo conjunto de parceiros) e cor exibida resolvida (tópico, senão a cor da própria ação) no app e no portal. Banco de produção: migration `20261116140000_partner_topics.sql` e carga (66 tópicos, 5.236 ações classificadas pela cor, `updated_at` intacto). Commitado, sem push; o app publicado só mostra tópicos após o deploy. Não verificado: acesso real de usuário não admin. [Ticket](../action-topics/issues/01-topics-with-color.md)
+Encerrado com aceite do proprietário em 16/11/2026. Seção "Tópicos" em Admin → Parceiro (nome e cor, até 12 por parceiro, exclusão com contagem de ações), seletor de tópico no rodapé da gaveta no lugar da cor livre (desabilitado quando o parceiro não tem tópicos), "Alterar Tópico" no menu em lote (mesmo conjunto de parceiros) e cor exibida resolvida (tópico, senão a cor da própria ação) no app e no portal. Banco de produção: migration `20261116140000_partner_topics.sql` e carga (66 tópicos, 5.236 ações classificadas pela cor, `updated_at` intacto). O commit `63b8bbca` consta no histórico local de `origin/main`; deploy Ready correspondente não foi confirmado. Não verificado: acesso real de usuário não admin. [Ticket](../action-topics/issues/01-topics-with-color.md)
 
 ## DS22 — Unificar os botões secundários de adicionar
 

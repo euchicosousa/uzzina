@@ -1,0 +1,1080 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Escala de cores DS35</title>
+<meta name="description" content="Escala de cores por papel: fundos, preenchimentos, linhas, textos, principal, cor de fase, semânticas e películas, em cada paleta, com antes do DS28 e hoje.">
+<style>
+  /* Page chrome: fixed colours, not part of the scale under review. */
+  :root {
+    --chrome-bg: #f6f6f8;
+    --chrome-card: #ffffff;
+    --chrome-fg: #17171c;
+    --chrome-mut: #55555f;
+    --chrome-line: #d9d9e0;
+    --chrome-accent: #2b43b8;
+    --chrome-dif-bg: #fff1d6;
+    --chrome-dif-fg: #6e4300;
+    --chrome-bad-bg: #fde2e2;
+    --chrome-bad-fg: #8a1b1b;
+    --chrome-ok-bg: #e0f3e6;
+    --chrome-ok-fg: #1b5b2f;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--chrome-bg);
+    color: var(--chrome-fg);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+    overflow-wrap: anywhere;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
+  header.top { background: var(--chrome-card); border-bottom: 1px solid var(--chrome-line); padding: 18px 0 14px; }
+  header.top h1 { margin: 0 0 6px; font-size: 22px; }
+  header.top p { margin: 0 0 6px; color: var(--chrome-mut); max-width: 80ch; }
+  .bar { position: sticky; top: 0; z-index: 10; background: var(--chrome-card); border-bottom: 1px solid var(--chrome-line); padding: 10px 0; }
+  .bar .wrap { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+  .seg { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+  .seg[role="group"] > button { }
+  button, .btn {
+    font: inherit; font-size: 13px; cursor: pointer;
+    border: 1px solid var(--chrome-line); background: var(--chrome-card); color: var(--chrome-fg);
+    border-radius: 8px; padding: 5px 10px; min-height: 32px;
+  }
+  button[aria-pressed="true"] { background: var(--chrome-accent); color: #fff; border-color: var(--chrome-accent); }
+  button:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible { outline: 3px solid #7c93ff; outline-offset: 2px; }
+  nav.index { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 13px; }
+  nav.index a { color: var(--chrome-accent); }
+  main { padding: 8px 0 60px; }
+  section { background: var(--chrome-card); border: 1px solid var(--chrome-line); border-radius: 12px; padding: 18px; margin: 18px 0; }
+  section h2 { margin: 0 0 6px; font-size: 19px; }
+  section h2 .num { display: inline-block; min-width: 1.6em; color: var(--chrome-accent); }
+  section h3 { font-size: 15px; margin: 18px 0 6px; }
+  p.intro { margin: 0 0 10px; color: var(--chrome-mut); max-width: 90ch; }
+  .small { font-size: 12.5px; color: var(--chrome-mut); }
+  .note { background: #f1f3ff; border-left: 4px solid var(--chrome-accent); padding: 8px 12px; border-radius: 6px; margin: 10px 0; font-size: 14px; max-width: 95ch; }
+  .note.warn { background: var(--chrome-dif-bg); border-color: #c98a1a; color: var(--chrome-dif-fg); }
+  .tw { overflow-x: auto; margin: 8px 0; border: 1px solid var(--chrome-line); border-radius: 8px; }
+  /* min-width is ignored on tables in some engines; width: max() keeps the table wide and scrolls it inside .tw */
+  table.lv { border-collapse: collapse; width: max(100%, 980px); font-size: 13px; }
+  table.lv th, table.lv td { border-bottom: 1px solid var(--chrome-line); padding: 7px 8px; text-align: left; vertical-align: top; }
+  table.lv thead th { background: #f0f0f4; font-weight: 600; position: sticky; top: 0; }
+  table.lv tbody th { font-weight: 600; width: 150px; }
+  table.lv td.papel { max-width: 300px; }
+  .mv { white-space: nowrap; line-height: 1.7; }
+  .mn { display: inline-block; width: 52px; color: var(--chrome-mut); font-size: 12px; }
+  .num { font-variant-numeric: tabular-nums; }
+  .sw { display: inline-block; width: 22px; height: 22px; border-radius: 6px; border: 1px solid rgb(0 0 0 / 0.18); vertical-align: middle; margin-right: 4px; }
+  .dl { font-size: 12px; font-variant-numeric: tabular-nums; }
+  .dl.bad { color: var(--chrome-bad-fg); background: var(--chrome-bad-bg); padding: 0 4px; border-radius: 4px; }
+  .dif { font-size: 11.5px; color: var(--chrome-dif-fg); background: var(--chrome-dif-bg); padding: 0 5px; border-radius: 4px; }
+  .flagcell { background: var(--chrome-dif-bg); }
+  .ajustes { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px; }
+  fieldset.ad { border: 1px solid var(--chrome-line); border-radius: 10px; padding: 8px 12px; margin: 0; min-width: 0; }
+  fieldset.ad legend { padding: 0 4px; font-size: 14px; }
+  label.sl { display: grid; grid-template-columns: 56px 1fr 90px; align-items: center; gap: 8px; font-size: 13px; margin: 4px 0; }
+  label.sl input[type="range"] { width: 100%; min-width: 0; }
+  label.sl output { font-variant-numeric: tabular-nums; text-align: right; font-size: 12.5px; }
+  .stages { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-top: 8px; }
+  .stage {
+    position: relative; min-width: 0; overflow: hidden; border-radius: 14px; padding: 14px;
+    background: var(--pg); color: var(--t1); border: 1px solid var(--chrome-line);
+    display: grid; gap: 10px; align-content: start;
+  }
+  .stage .label { font-size: 12px; color: var(--t2); }
+  .pv-card { background: var(--f5); border: 1px solid var(--l2); border-radius: 12px; padding: 10px 12px; color: var(--t1); display: grid; gap: 6px; }
+  .pv-card.hov { background: var(--f6); }
+  .pv-flt { background: var(--f2); border: 1px solid var(--l1); border-radius: 12px; padding: 4px; color: var(--t1); display: grid; gap: 2px; box-shadow: 0 6px 16px rgb(0 0 0 / 0.12); }
+  .pv-grp { background: var(--f3); border-radius: 8px; padding: 4px 8px; font-size: 12px; color: var(--t2); }
+  .pv-item { border-radius: 8px; padding: 5px 8px; font-size: 13px; color: var(--t1); }
+  .pv-item.hov { background: var(--p2); }
+  .pv-item.sel { background: var(--p3); }
+  .pv-unread { background: var(--f3); border-radius: 10px; padding: 8px 10px; font-size: 13px; color: var(--t1); }
+  .pv-unread.hov { background: var(--p2); }
+  .pv-read { background: var(--pg); border: 1px solid var(--l2); border-radius: 10px; padding: 8px 10px; font-size: 13px; color: var(--t1); }
+  .pv-field { background: var(--f4); border: 1px solid var(--l3); border-radius: 10px; padding: 7px 10px; font-size: 13px; color: var(--t3); }
+  .pv-toast { background: var(--f2); border-radius: 10px; padding: 8px 10px; font-size: 13px; color: var(--t1); border: 1px solid var(--l1); }
+  .pv-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .pv-btn { background: var(--p1); color: var(--t1); border: 1px solid transparent; border-radius: 10px; padding: 6px 12px; font-size: 13px; }
+  .pv-btn.hov { background: var(--p2); }
+  .pv-btn.sel { background: var(--p3); }
+  .pv-btn.out { background: transparent; border-color: var(--l2); }
+  .pv-btn.pri { background: var(--r1); color: var(--r4); }
+  .pv-btn.pri.hov { background: var(--r2); }
+  .pv-btn.pri.dis { background: var(--r3); }
+  .pv-tag { background: var(--p1); color: var(--t2); border-radius: 999px; padding: 1px 9px; font-size: 12px; }
+  .pv-av { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: var(--p1); color: var(--t2); font-size: 12px; }
+  .pv-track { height: 8px; width: 100%; border-radius: 999px; background: var(--p1); overflow: hidden; }
+  .pv-track i { display: block; height: 100%; width: 60%; background: var(--r1); }
+  .pv-hr { height: 1px; background: var(--l2); }
+  .pv-fase { background: var(--fa1); border: 1px solid var(--fa4); color: var(--fa5); border-radius: 12px; padding: 10px 12px; display: grid; gap: 6px; }
+  .pv-fase.hov { background: var(--fa2); }
+  .pv-fase .pv-av { background: var(--fa3); color: var(--fa5); }
+  .pv-al { border-radius: 10px; padding: 8px 10px; font-size: 13px; display: flex; gap: 8px; align-items: center; }
+  .pv-al i { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .pv-al.erro { background: var(--erro-fundo); color: var(--erro-texto); border: 1px solid var(--erro-forte); }
+  .pv-al.erro i { background: var(--erro-forte); }
+  .pv-al.aviso { background: var(--aviso-fundo); color: var(--aviso-texto); border: 1px solid var(--aviso-forte); }
+  .pv-al.aviso i { background: var(--aviso-forte); }
+  .pv-al.sucesso { background: var(--sucesso-fundo); color: var(--sucesso-texto); border: 1px solid var(--sucesso-forte); }
+  .pv-al.sucesso i { background: var(--sucesso-forte); }
+  .pv-al.info { background: var(--info-fundo); color: var(--info-texto); border: 1px solid var(--info-forte); }
+  .pv-al.info i { background: var(--info-forte); }
+  .pv-photo { position: relative; height: 96px; border-radius: 12px; background: linear-gradient(135deg, #5e7aa8, #d9a071); display: flex; align-items: center; justify-content: space-between; padding: 10px; }
+  .pv-ic { color: #fff; font-size: 18px; filter: drop-shadow(0 0 1px rgb(0 0 0 / 0.7)) drop-shadow(0 1px 2px rgb(0 0 0 / 0.55)); }
+  .pv-film-btn { background: var(--pel2); color: #fff; border-radius: 999px; padding: 2px 10px; font-size: 12px; }
+  .pv-dialog-area { position: relative; height: 130px; border-radius: 12px; overflow: hidden; background: var(--pg); border: 1px solid var(--l2); }
+  .pv-scrim { position: absolute; inset: 0; background: var(--pel1); }
+  .pv-dialog { position: absolute; left: 14px; right: 14px; top: 16px; background: var(--f2); border: 1px solid var(--l1); border-radius: 12px; padding: 10px; font-size: 13px; color: var(--t1); }
+  .c1 { color: var(--t1); } .c2 { color: var(--t2); } .c3 { color: var(--t3); } .c4 { color: var(--t4); }
+  .big { font-size: 17px; font-weight: 600; margin: 0; }
+  pre { white-space: pre-wrap; overflow-x: auto; background: #f3f3f7; border-radius: 8px; padding: 10px; font-size: 12px; margin: 8px 0; }
+  details { margin: 8px 0; }
+  details summary { cursor: pointer; color: var(--chrome-accent); font-size: 13px; }
+  .aprov { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 12px; }
+  .aprov label { font-weight: 600; }
+  label.nota { display: grid; gap: 4px; margin-top: 8px; font-size: 13px; color: var(--chrome-mut); }
+  textarea { width: 100%; min-height: 64px; font: inherit; font-size: 14px; padding: 8px; border: 1px solid var(--chrome-line); border-radius: 8px; color: var(--chrome-fg); background: #fff; }
+  input[type="text"] { font: inherit; font-size: 13px; padding: 4px 6px; border: 1px solid var(--chrome-line); border-radius: 6px; width: 150px; min-width: 0; }
+  .st { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .st-ok { background: var(--chrome-ok-bg); color: var(--chrome-ok-fg); }
+  .st-falta { background: var(--chrome-dif-bg); color: var(--chrome-dif-fg); }
+  .st-conf { background: var(--chrome-bad-bg); color: var(--chrome-bad-fg); }
+  .dec { border: 1px solid var(--chrome-line); border-radius: 10px; padding: 12px; margin: 10px 0; }
+  .dec h3 { margin: 0 0 4px; font-size: 15px; }
+  .dec p { margin: 4px 0; font-size: 14px; }
+  .copy-out { width: 100%; min-height: 220px; font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; }
+  @media (max-width: 480px) {
+    .wrap { padding: 0 16px; }
+    section { padding: 14px; }
+    .stage { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <h1>DS35 · Escala de cores por papel, paleta por paleta</h1>
+    <p>Objetivo: cada papel de cor tem um nível com nome, uma função escrita e um valor por paleta. Não é para ter poucas cores. É para não faltar cor e não usar transparência escrita à mão no lugar de um papel.</p>
+    <p class="small">Página de decisão do proprietário. Os valores iniciais são os de antes do DS28, aprovados visualmente por paleta. Os controles mudam a luz de cada nível; as cores são as da própria página, em oklch.</p>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="wrap">
+    <div class="seg" role="group" aria-label="Paleta">
+      <button type="button" data-pal="onix" aria-pressed="true">Ônix</button>
+      <button type="button" data-pal="carbono" aria-pressed="false">Carbono</button>
+      <button type="button" data-pal="fucsia" aria-pressed="false">Fúcsia</button>
+    </div>
+    <div class="seg" role="group" aria-label="Modo">
+      <button type="button" data-vis="both" aria-pressed="true">Claro e escuro lado a lado</button>
+      <button type="button" data-vis="light" aria-pressed="false">Só claro</button>
+      <button type="button" data-vis="dark" aria-pressed="false">Só escuro</button>
+    </div>
+    <button type="button" id="reset-all">Voltar tudo ao antes do DS28</button>
+    <button type="button" id="copy-sum">Copiar resumo das decisões</button>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <section id="intro-sec" aria-labelledby="intro-h">
+    <h2 id="intro-h">Como ler esta página</h2>
+    <p class="intro">Cada seção é um grupo de níveis que conversam entre si. Em cada linha: o <b>nome provisório</b> (Fundo 1, Preenchimento 2 etc.; o nome final é outra decisão), a função do nível, o valor <b>antes do DS28</b> e o valor <b>hoje</b>, com a diferença marcada quando passa de 0,01 de luz. O valor <b>atual</b> é o que você ajusta com os controles.</p>
+    <p class="intro"><b>ΔL</b> é a diferença de luz para a superfície em que o nível normalmente fica. Abaixo de 0,03 o nível aparece como <b>quase invisível</b>. Luz (L) vai de 0 (preto) a 1 (branco), na escala oklch.</p>
+    <nav class="index" aria-label="Seções">
+      <a href="#s-fundos">1 Fundos</a><a href="#s-preench">2 Preenchimentos</a><a href="#s-linhas">3 Linhas</a><a href="#s-texto">4 Texto</a><a href="#s-principal">5 Principal</a><a href="#s-fase">6 Cor de fase</a><a href="#s-semanticas">7 Semânticas</a><a href="#s-imagem">8 Imagem e película</a><a href="#s-cobertura">Cobertura</a><a href="#s-decisoes">Decisões</a>
+    </nav>
+  </section>
+
+  <section id="fato-sec" aria-labelledby="fato-h">
+    <h2 id="fato-h">Antes do DS28 e hoje: onde a luz mudou, por paleta</h2>
+    <p class="intro">Antes do DS28 cada paleta tinha os seus ajustes de cinza. O DS28 trocou tudo por uma fórmula única. Esta tabela mostra, para cada nível, a diferença de luz sobre a tela nas três paletas. Cada célula é <b>antes → hoje</b>. Célula destacada: diferença maior que 0,01.</p>
+    <div class="note warn" id="fato-note"></div>
+    <div class="tw"><table class="lv" id="fato-tab"></table></div>
+  </section>
+
+  <section id="s-fundos" class="sec" data-sec="fundos"></section>
+  <section id="s-preench" class="sec" data-sec="preench"></section>
+  <section id="s-linhas" class="sec" data-sec="linhas"></section>
+  <section id="s-texto" class="sec" data-sec="texto"></section>
+  <section id="s-principal" class="sec" data-sec="principal"></section>
+  <section id="s-fase" class="sec" data-sec="fase"></section>
+  <section id="s-semanticas" class="sec" data-sec="semanticas"></section>
+  <section id="s-imagem" class="sec" data-sec="imagem"></section>
+
+  <section id="s-cobertura" aria-labelledby="cob-h">
+    <h2 id="cob-h"><span class="num">9</span> Cobertura: cada papel tem um nível?</h2>
+    <p class="intro">Teste de qualidade desta escala: cada papel real do app (usos encontrados na auditoria de 18/11 e conferidos nesta página) deve cair em exatamente um nível, sem transparência escrita à mão. <b>Falta cor</b>: papel sem nível ou sem valor próprio. <b>Conflito</b>: dois papéis pedem o mesmo nível de um jeito que não funciona.</p>
+    <p id="cob-sum" class="small"></p>
+    <div class="tw"><table class="lv" id="cob-tab"></table></div>
+    <div class="aprov"><label><input type="checkbox" data-ok="cobertura"> Aprovado</label></div>
+    <label class="nota">Notas<textarea data-note="cobertura"></textarea></label>
+  </section>
+
+  <section id="s-decisoes" aria-labelledby="dec-h">
+    <h2 id="dec-h"><span class="num">10</span> Decisões</h2>
+    <p class="intro">As decisões do ticket DS35 (P1 a P8) continuam abertas: nenhuma foi resolvida por esta página, mas as propostas agora estão em níveis concretos. As perguntas novas (D0 e D9 a D13) saem desta página. Nenhuma tem recomendação quando a evidência não basta; a pergunta sobre escala única ou por paleta é só evidência.</p>
+    <div id="decisoes"></div>
+    <h3>Limites desta página</h3>
+    <ul id="limites" class="small"></ul>
+    <h3>Resumo copiável</h3>
+    <p class="small">O botão “Copiar resumo das decisões” põe o texto abaixo e tenta copiar. Se o navegador não deixar, o texto fica selecionado para você copiar com o teclado.</p>
+    <textarea id="resumo" class="copy-out" readonly aria-label="Resumo das decisões" hidden></textarea>
+  </section>
+
+</main>
+
+<script>
+/* =====================================================================
+   CONFIG: every number, label and sentence of the page lives here.
+
+   Colours are [L, C, H] in oklch. Palettes have [light, dark] pairs.
+
+   Level specs (the value `v` is what the slider edits):
+     rel(v)             L = page L + v          CSS: oklch(from var(--pg) calc(l ± v) c h)
+     mix(of, over, v, sp)   v% of `of` mixed into `over`; sp = 'srgb' | 'oklab'
+     abs(ref, v)        L = v, chroma and hue of palette colour `ref`
+     faseTxt(v, c)      phase colour with fixed L (v) and chroma (c)
+     fix(c, sub)        fixed semantic colour from `cores`, no slider
+     fixa(L, C, H, a)   fixed colour with alpha % (no page, so no ΔL), no slider
+
+   antes = values before DS28 (git 6b677b4^: app/lib/palettes.ts per-palette
+           *LDelta fields, and the color-mix secondary/text of app/tailwind.css).
+   hoje  = values after DS28 (app/tailwind.css now: one formula for all palettes).
+   Names in `nome` are provisional. `cls` is the Tailwind class(es) each level replaces.
+   ===================================================================== */
+const rel = (v) => ({ k: 'rel', v });
+const mix = (of, over, v, sp = 'srgb') => ({ k: 'mix', of, over, v, sp });
+const abs = (ref, v) => ({ k: 'abs', ref, v });
+const faseTxt = (v, c) => ({ k: 'faseTxt', v, c });
+const fix = (c, sub) => ({ k: 'fix', c, sub });
+const fixa = (L, C, H, a) => ({ k: 'fixa', L, C, H, a });
+// Same spec for all three palettes: [light, dark].
+const ALL = (l, d) => ({ onix: [l, d], carbono: [l, d], fucsia: [l, d] });
+
+const CONFIG = {
+  /* Palettes: page, text, primary, text on primary, shadow tint (for the dialog film). */
+  palettes: {
+    onix: {
+      label: 'Ônix',
+      page: [[0.96, 0.002, 200], [0.2, 0.01, 250]],
+      fg: [[0, 0, 0], [1, 0, 0]],
+      primary: [[0, 0, 0], [1, 0, 0]],
+      pfg: [[1, 0, 0], [0, 0, 0]],
+      shadow: [[0.25, 0.01, 200], [0.1, 0.01, 200]]
+    },
+    carbono: {
+      label: 'Carbono',
+      page: [[1, 0, 0], [0.25, 0.015, 240]],
+      fg: [[0, 0, 0], [1, 0, 0]],
+      primary: [[0.3, 0.02, 240], [0.99, 0.01, 240]],
+      pfg: [[1, 0, 0], [0.3, 0.02, 240]],
+      shadow: [[0.25, 0, 0], [0.1, 0, 0]]
+    },
+    fucsia: {
+      label: 'Fúcsia',
+      page: [[0.98, 0.02, 320], [0.3, 0.1, 340]],
+      fg: [[0, 0, 0], [1, 0, 0]],
+      primary: [[0.9, 0.4, 350], [0.8, 0.4, 350]],
+      pfg: [[0, 0, 0], [0, 0, 0]],
+      shadow: [[0.25, 0.15, 350], [0.1, 0.1, 340]]
+    }
+  },
+
+  /* Semantic colours (app/tailwind.css, DS21/DS25). Not changed by DS28. */
+  cores: {
+    erro:    { forte: [[0.65, 0.16, 16], [0.72, 0.14, 16]],   texto: [[0.52, 0.205, 16], [0.72, 0.16, 16]] },
+    aviso:   { forte: [[0.82, 0.12, 80], [0.84, 0.12, 80]],   texto: [[0.51, 0.1, 80], [0.84, 0.14, 80]] },
+    sucesso: { forte: [[0.65, 0.11, 163], [0.75, 0.1, 163]],  texto: [[0.495, 0.1, 163], [0.75, 0.15, 163]] },
+    info:    { forte: [[0.65, 0.12, 250], [0.75, 0.12, 250]], texto: [[0.505, 0.14, 250], [0.75, 0.12, 250]] }
+  },
+
+  /* Three example action (phase) colours; hex values taken from the app's colour options. */
+  fases: [
+    { nome: 'Amarelo', hex: '#fbbf24' },
+    { nome: 'Azul', hex: '#3558de' },
+    { nome: 'Verde', hex: '#46b95d' }
+  ],
+
+  /* Sections, in order. Each one is approved on its own. */
+  sections: [
+    { id: 'fundos', n: 1, titulo: 'Fundos', intro: 'Seis níveis, da tela de fundo ao cartão de ação. Todas as superfícies flutuantes (menu, popover, lista, diálogo, gaveta, aviso, balão, tooltip) usam o mesmo nível, Fundo 2. O destaque suave (Fundo 3) é o que hoje é o cartão cinza sem papel definido e o cinza transparente de três lugares.' },
+    { id: 'preench', n: 2, titulo: 'Preenchimentos', intro: 'O cinza de preenchimento (hoje chamado de “secundário” no código; o nome ainda não foi escolhido). Três níveis: repouso, com mouse e selecionado. Os usos reais estão na lista de cada nível. O valor de antes e o de hoje são o mesmo cinza com transparência de 5% no claro e 10% no escuro; hoje o cinza é uma cor opaca calculada da tela.' },
+    { id: 'linhas', n: 3, titulo: 'Linhas e bordas', intro: 'Três níveis de linha. O anel de foco usa a cor principal, por isso não entra aqui. A linha de divisor usa a Linha 2. A borda que muda com o mouse não tem nível hoje (falta cor, ver Cobertura).' },
+    { id: 'texto', n: 4, titulo: 'Texto', intro: 'Quatro níveis de texto sobre fundos neutros. O texto sobre cor principal fica na seção 5. O texto sobre cor de fase fica na seção 6.' },
+    { id: 'principal', n: 5, titulo: 'Principal (cor sólida)', intro: 'Cor de ação principal: o sólido, o mouse, o desabilitado e o texto sobre ele. Os valores vêm da cor de cada paleta.' },
+    { id: 'fase', n: 6, titulo: 'Cor de fase', intro: 'Cada cor de ação (fase) tem a mesma receita: a cor misturada com a tela em uma porcentagem, e o texto com luminosidade fixa. A receita é uma só; o que muda é a cor da fase. Os três valores abaixo são exemplos da lista de cores.' },
+    { id: 'semanticas', n: 7, titulo: 'Semânticas (erro, aviso, sucesso, informação)', intro: 'Três níveis por tipo: forte (ícone e borda), texto e fundo de alerta. Os valores fortes e de texto são fixos (DS21/DS25) e não têm controle aqui. Só o fundo muda com a tela e tem controle.' },
+    { id: 'imagem', n: 8, titulo: 'Imagem e película', intro: 'Três casos que não são cinza: a película de diálogo (véu de sombra), a película sobre foto (botões e contador sobre imagem) e o ícone branco com sombra sobre imagem. São as transparências que sobram de propósito.' }
+  ],
+
+  /* Levels. `sec` = section id; `sobre` = surface the level normally sits on (for ΔL). */
+  levels: [
+    /* 1 Fundos */
+    { id: 'pg', sec: 'fundos', nome: 'Fundo 1', cls: 'bg-background', papel: 'Fundo de toda a tela. Os outros fundos são medidos a partir dele.', sobre: null,
+      antes: ALL(rel(0), rel(0)), hoje: ALL(rel(0), rel(0)),
+      uso: 'bg-background: 38 usos (rotas, portal, painéis do Admin).', subst: 'Nada: já é o fundo.', pat: ['bg-background'] },
+    { id: 'f2', sec: 'fundos', nome: 'Fundo 2', cls: 'bg-popover', papel: 'Todo flutuante: menu, popover, lista de seleção, combobox, diálogo, gaveta, balão, aviso e tooltip.', sobre: 'pg',
+      antes: { onix: [rel(0.02), rel(-0.03)], carbono: [rel(0.10), rel(-0.03)], fucsia: [rel(0), rel(-0.03)] },
+      hoje: ALL(rel(0.02), rel(-0.03)),
+      uso: 'bg-popover: 19 usos; bg-popover/NN (80, 90, 95): 3.', subst: 'bg-popover (19) e as transparências /80, /90 e /95 (3). O aviso (toast) sai do bg-card (1).', pat: ['bg-popover'] },
+    { id: 'f3', sec: 'fundos', nome: 'Fundo 3', cls: 'bg-card · hover:bg-card · bg-secondary/50 · bg-secondary/20', papel: 'Destaque de estado sem caixa: notificação não lida, grupo Admin do menu, alvo ao arrastar, célula do calendário com mouse, comentário de outra pessoa, alerta padrão.', sobre: 'pg',
+      antes: { onix: [rel(-0.02), rel(0.05)], carbono: [rel(-0.04), rel(0.05)], fucsia: [rel(-0.02), rel(0.05)] },
+      hoje: ALL(rel(-0.02), rel(0.05)),
+      uso: 'bg-card: 20 ocorrências (3 delas são hover:bg-card); bg-secondary/50: 3; bg-secondary/20: 1 (escuro).', subst: 'bg-card (20, que hoje cobre 8 papéis diferentes), hover:bg-card (3), bg-secondary/50 (3, valor um pouco diferente), bg-secondary/20 (1).', pat: ['bg-card', 'bg-secondary/50', 'bg-secondary/20'] },
+    { id: 'f4', sec: 'fundos', nome: 'Fundo 4', cls: 'bg-input', papel: 'Fundo de campo de texto, caixa de seleção e botão de rádio.', sobre: 'pg',
+      antes: { onix: [rel(-0.04), rel(0.02)], carbono: [rel(-0.02), rel(0.04)], fucsia: [rel(-0.02), rel(0.02)] },
+      hoje: ALL(rel(-0.04), rel(0.02)),
+      uso: 'bg-input: 16; bg-input/NN: 2. Rádio usa bg-card (1).', subst: 'bg-input (16), bg-input/NN (2), bg-card do botão de rádio (1).', pat: ['bg-input'] },
+    { id: 'f5', sec: 'fundos', nome: 'Fundo 5', cls: 'bg-action', papel: 'Cartão de cada ação. Fica sobre a tela. Nada cinza dentro dele.', sobre: 'pg',
+      antes: { onix: [rel(0.02), rel(0.10)], carbono: [rel(-0.02), rel(0.10)], fucsia: [rel(0.02), rel(0.10)] },
+      hoje: ALL(rel(0.02), rel(0.10)),
+      uso: 'bg-action: 4 usos.', subst: 'bg-action (4).', pat: ['bg-action'] },
+    { id: 'f6', sec: 'fundos', nome: 'Fundo 6', cls: 'bg-action-hover', papel: 'Cartão de ação com o mouse por cima.', sobre: 'f5',
+      antes: { onix: [rel(0.10), rel(0.20)], carbono: [rel(-0.005), rel(0.20)], fucsia: [rel(0.04), rel(0.20)] },
+      hoje: ALL(rel(0.10), rel(0.20)),
+      uso: 'bg-action-hover: 7 usos.', subst: 'bg-action-hover (7).', pat: ['bg-action-hover'] },
+
+    /* 2 Preenchimentos (the grey that the code calls "secondary") */
+    { id: 'p1', sec: 'preench', nome: 'Preenchimento 1', cls: 'bg-secondary · bg-foreground/5…50', papel: 'Cinza parado: botão cinza, selo, tecla, avatar sem foto, “+N”, trilho de progresso, faixa de cabeçalho, esqueleto. Fica sobre a tela ou um flutuante, nunca sobre cartão de ação, de fase ou de imagem.', sobre: 'pg',
+      antes: ALL(mix('fg', 'pg', 5), mix('fg', 'pg', 10)),
+      hoje: ALL(rel(-0.036), rel(0.098)),
+      uso: 'bg-secondary: 102 ocorrências no total, 54 sem prefixo de estado. bg-foreground/NN (5 a 50): 10 usos, 7 valores.', subst: 'bg-secondary em repouso (54) e bg-foreground/NN (10), que são o mesmo papel escrito à mão.', pat: ['bg-secondary', 'bg-foreground/'] },
+    { id: 'p2', sec: 'preench', nome: 'Preenchimento 2', cls: 'hover:bg-secondary · focus:bg-secondary · mistura à mão no botão cinza', papel: 'Mouse ou foco sobre um botão cinza, um item transparente de menu ou lista, ou uma aba. Tem de se ver sobre o Preenchimento 1.', sobre: 'p1',
+      antes: ALL(mix('fg', 'p1', 5), mix('fg', 'p1', 5)),
+      hoje: ALL(rel(-0.083), rel(0.133)),
+      uso: 'hover/focus:bg-secondary: 26 usos. Mistura escrita à mão no botão cinza: 1 linha (button.tsx:28).', subst: 'hover e focus de bg-secondary (26) e a mistura à mão do botão (1).', pat: ['hover:bg-secondary', 'focus:bg-secondary'] },
+    { id: 'p3', sec: 'preench', nome: 'Preenchimento 3', cls: 'data-selected:bg-secondary · aria-expanded:bg-secondary', papel: 'Item selecionado ou aberto: botão de alternar ativo, aba escolhida, dia escolhido. Hoje tem o mesmo valor do repouso; é a decisão D6.', sobre: 'pg',
+      antes: ALL(mix('fg', 'pg', 5), mix('fg', 'pg', 10)),
+      hoje: ALL(rel(-0.036), rel(0.098)),
+      uso: 'data-selected:bg-secondary: 6. aria-expanded e condicionais: cerca de 5.', subst: 'data-selected:bg-secondary (6) e aria-expanded:bg-secondary (cerca de 5).', pat: ['data-selected:bg-secondary', 'aria-expanded:bg-secondary'] },
+
+    /* 3 Linhas */
+    { id: 'l1', sec: 'linhas', nome: 'Linha 1 (contêiner)', cls: 'border-foreground/5 · border-foreground/10', papel: 'Borda de cartão, painel e flutuante. É a única borda translúcida; fica como exceção registrada (DS24).', sobre: 'pg',
+      antes: ALL(mix('fg', 'pg', 5), mix('fg', 'pg', 10)),
+      hoje: ALL(mix('fg', 'pg', 5), mix('fg', 'pg', 10)),
+      uso: 'border-foreground/5: 11; border-foreground/10: 18.', subst: 'border-foreground/5 (11) e /10 (18). As /15 (7) e /20 (2) migram para a Linha 2.', pat: ['border-foreground/5', 'border-foreground/10'] },
+    { id: 'l2', sec: 'linhas', nome: 'Linha 2 (normal)', cls: 'border-border · border (padrão)', papel: 'Borda de 1 px de botões, cartões, campos, quadro atrás de imagem e divisor (separador).', sobre: 'pg',
+      antes: { onix: [rel(-0.07), rel(0.10)], carbono: [rel(-0.04), rel(0.10)], fucsia: [rel(-0.05), rel(0.20)] },
+      hoje: ALL(rel(-0.07), rel(0.10)),
+      uso: 'border-border: 64. “border” sem cor (usa a cor padrão): 114 (auditoria de 18/11).', subst: 'border-border (64). As /15 (7) e /20 (2) migram para cá.', pat: ['border-border'] },
+    { id: 'l3', sec: 'linhas', nome: 'Linha 3 (borda do campo)', cls: 'border-input', papel: 'Contorno de campo de texto, caixa de seleção e rádio. Hoje tem a mesma cor do próprio campo: a borda some sobre ele (D10).', sobre: 'f4',
+      antes: { onix: [rel(-0.04), rel(0.02)], carbono: [rel(-0.02), rel(0.04)], fucsia: [rel(-0.02), rel(0.02)] },
+      hoje: ALL(rel(-0.04), rel(0.02)),
+      uso: 'border-input: 3.', subst: 'border-input (3).', pat: ['border-input'] },
+
+    /* 4 Texto */
+    { id: 't1', sec: 'texto', nome: 'Texto 1 (principal)', cls: 'text-foreground (herdado do body)', papel: 'Títulos e texto do corpo sobre fundos neutros.', sobre: null,
+      antes: { onix: [abs('fg', 0), abs('fg', 1)], carbono: [abs('fg', 0), abs('fg', 1)], fucsia: [abs('fg', 0), abs('fg', 1)] },
+      hoje: { onix: [abs('fg', 0), abs('fg', 1)], carbono: [abs('fg', 0), abs('fg', 1)], fucsia: [abs('fg', 0), abs('fg', 1)] },
+      uso: 'Herdado do body (sem classe própria). hover:text-foreground: 13.', subst: 'Nada muda.', pat: ['hover:text-foreground'] },
+    { id: 't2', sec: 'texto', nome: 'Texto 2 (secundário)', cls: 'text-secondary-foreground', papel: 'Texto de apoio: legenda, metadado, rótulo. No Ônix é igual ao de antes; no Carbono e no Fúcsia a luz muda (marcado; decisão D9).', sobre: 'pg',
+      antes: ALL(mix('fg', 'pg', 65), mix('fg', 'pg', 65)),
+      hoje: ALL(rel(-0.512), rel(0.549)),
+      uso: 'text-secondary-foreground: 267 usos (5 com prefixo de estado).', subst: 'text-secondary-foreground (267).', pat: ['text-secondary-foreground'] },
+    { id: 't3', sec: 'texto', nome: 'Texto 3 (suave e placeholder)', cls: 'text-foreground/40 · placeholder:text-foreground/40', papel: 'Placeholder de campo, dica e texto apagado. Hoje não existe como papel: são transparências escritas à mão.', sobre: 'pg',
+      antes: ALL(mix('fg', 'pg', 40), mix('fg', 'pg', 40)),
+      hoje: ALL(mix('fg', 'pg', 40), mix('fg', 'pg', 40)),
+      uso: 'text-foreground/40: 16 (9 em placeholder).', subst: 'text-foreground/40 (16), escrito à mão.', pat: ['text-foreground/40'] },
+    { id: 't4', sec: 'texto', nome: 'Texto 4 (desabilitado)', cls: 'disabled:opacity-50', papel: 'Texto de item desabilitado. Hoje é a opacidade de 50% do elemento inteiro; o nível mostra o equivalente em cor.', sobre: 'pg',
+      antes: ALL(mix('fg', 'pg', 50), mix('fg', 'pg', 50)),
+      hoje: ALL(mix('fg', 'pg', 50), mix('fg', 'pg', 50)),
+      uso: 'disabled:opacity-NN: 20 usos, sem cor própria.', subst: 'opacidade (20). Não troca cor, só o elemento.', pat: ['disabled:opacity-'] },
+
+    /* 5 Principal */
+    { id: 'r1', sec: 'principal', nome: 'Principal 1 (sólido)', cls: 'bg-primary', papel: 'Ação principal: botão padrão, item selecionado com destaque forte. Também é a cor do anel de foco.', sobre: 'pg',
+      antes: { onix: [abs('primary', 0), abs('primary', 1)], carbono: [abs('primary', 0.3), abs('primary', 0.99)], fucsia: [abs('primary', 0.9), abs('primary', 0.8)] },
+      hoje: { onix: [abs('primary', 0), abs('primary', 1)], carbono: [abs('primary', 0.3), abs('primary', 0.99)], fucsia: [abs('primary', 0.9), abs('primary', 0.8)] },
+      uso: 'bg-primary: 34 ocorrências. Anel de foco (ring-ring): 34 ocorrências.', subst: 'bg-primary (34), usado também no alvo ao arrastar do Planejamento (1), que sai daqui.', pat: ['bg-primary', 'ring-ring'] },
+    { id: 'r2', sec: 'principal', nome: 'Principal 2 (com mouse)', cls: 'hover:bg-[color-mix(…primary…20%)] no botão', papel: 'Mouse sobre o botão principal. Hoje é uma mistura escrita à mão (80% da cor + 20% da tela).', sobre: 'pg',
+      antes: ALL(mix('primary', 'pg', 80, 'oklab'), mix('primary', 'pg', 80, 'oklab')),
+      hoje: ALL(mix('primary', 'pg', 80, 'oklab'), mix('primary', 'pg', 80, 'oklab')),
+      uso: 'Mistura escrita no botão principal: 1 linha (button.tsx:25).', subst: 'mistura à mão (1).', pat: ['hover:bg-\\[color-mix'] },
+    { id: 'r3', sec: 'principal', nome: 'Principal 3 (desabilitado)', cls: 'disabled:opacity-50 no botão principal', papel: 'Botão principal desabilitado. Hoje é opacidade; o nível mostra o equivalente em cor.', sobre: 'pg',
+      antes: ALL(mix('primary', 'pg', 50), mix('primary', 'pg', 50)),
+      hoje: ALL(mix('primary', 'pg', 50), mix('primary', 'pg', 50)),
+      uso: 'Opacidade (mesmo caso de Texto 4).', subst: 'opacidade no botão principal.', pat: ['disabled:opacity-'] },
+    { id: 'r4', sec: 'principal', nome: 'Texto sobre principal', cls: 'text-primary-foreground', papel: 'Texto e ícone sobre o Principal 1.', sobre: 'r1',
+      antes: { onix: [abs('pfg', 1), abs('pfg', 0)], carbono: [abs('pfg', 1), abs('pfg', 0.3)], fucsia: [abs('pfg', 0), abs('pfg', 0)] },
+      hoje: { onix: [abs('pfg', 1), abs('pfg', 0)], carbono: [abs('pfg', 1), abs('pfg', 0.3)], fucsia: [abs('pfg', 0), abs('pfg', 0)] },
+      uso: 'text-primary-foreground: 21.', subst: 'text-primary-foreground (21).', pat: ['text-primary-foreground'] },
+
+    /* 6 Cor de fase: one recipe, three phase colours */
+    { id: 'fa1', sec: 'fase', nome: 'Fase 1 (fundo do cartão)', cls: 'phase-surface', papel: 'Fundo do cartão de ação colorido pela fase: a cor da fase misturada com a tela (15% no claro, 40% no escuro).', sobre: 'pg',
+      antes: { onix: [mix('phase', 'pg', 15, 'oklab'), mix('phase', 'pg', 40, 'oklab')], carbono: [mix('phase', 'pg', 15, 'oklab'), mix('phase', 'pg', 40, 'oklab')], fucsia: [mix('phase', 'pg', 15, 'oklab'), mix('phase', 'pg', 40, 'oklab')] },
+      hoje: { onix: [mix('phase', 'pg', 15, 'oklab'), mix('phase', 'pg', 40, 'oklab')], carbono: [mix('phase', 'pg', 15, 'oklab'), mix('phase', 'pg', 40, 'oklab')], fucsia: [mix('phase', 'pg', 15, 'oklab'), mix('phase', 'pg', 40, 'oklab')] },
+      uso: 'phase-surface: 6 usos (vivid: 5, fora desta página).', subst: 'phase-surface (6).', pat: ['phase-surface'] },
+    { id: 'fa2', sec: 'fase', nome: 'Fase 2 (com mouse)', cls: 'phase-surface:hover', papel: 'Cartão colorido com o mouse por cima (30% no claro, 70% no escuro).', sobre: 'fa1',
+      antes: { onix: [mix('phase', 'pg', 30, 'oklab'), mix('phase', 'pg', 70, 'oklab')], carbono: [mix('phase', 'pg', 30, 'oklab'), mix('phase', 'pg', 70, 'oklab')], fucsia: [mix('phase', 'pg', 30, 'oklab'), mix('phase', 'pg', 70, 'oklab')] },
+      hoje: { onix: [mix('phase', 'pg', 30, 'oklab'), mix('phase', 'pg', 70, 'oklab')], carbono: [mix('phase', 'pg', 30, 'oklab'), mix('phase', 'pg', 70, 'oklab')], fucsia: [mix('phase', 'pg', 30, 'oklab'), mix('phase', 'pg', 70, 'oklab')] },
+      uso: 'Mesma classe (phase-surface, hover).', subst: 'mesmo caso de hover do phase-surface.', pat: ['phase-surface'] },
+    { id: 'fa3', sec: 'fase', nome: 'Fase 3 (avatar e “+N”)', cls: 'bg-secondary no avatar e no “+N” do cartão (hoje cinza sólido)', papel: 'Avatar sem foto e “+N” dentro do cartão colorido. Proposta: a cor da fase um degrau mais forte que o cartão, no lugar do cinza. Valor inicial meu, não aprovado (D13).', sobre: 'fa1',
+      antes: { onix: [mix('phase', 'fa1', 40, 'oklab'), mix('phase', 'fa1', 60, 'oklab')], carbono: [mix('phase', 'fa1', 40, 'oklab'), mix('phase', 'fa1', 60, 'oklab')], fucsia: [mix('phase', 'fa1', 40, 'oklab'), mix('phase', 'fa1', 60, 'oklab')] },
+      hoje: { onix: [mix('phase', 'fa1', 40, 'oklab'), mix('phase', 'fa1', 60, 'oklab')], carbono: [mix('phase', 'fa1', 40, 'oklab'), mix('phase', 'fa1', 60, 'oklab')], fucsia: [mix('phase', 'fa1', 40, 'oklab'), mix('phase', 'fa1', 60, 'oklab')] },
+      uso: 'avatar.tsx:46 e :88, UAvatar.tsx:142 (bg-secondary sobre o cartão de fase).', subst: 'bg-secondary sobre cartão de fase (cinza sólido, hoje).', pat: ['bg-secondary'] },
+    { id: 'fa4', sec: 'fase', nome: 'Fase 4 (borda)', cls: 'anel do phase-surface', papel: 'Contorno e anel do cartão colorido: a mesma cor da fase, mais fraca (30% no claro, 55% no escuro), misturada na tela.', sobre: 'pg',
+      antes: { onix: [mix('phase', 'pg', 30), mix('phase', 'pg', 55)], carbono: [mix('phase', 'pg', 30), mix('phase', 'pg', 55)], fucsia: [mix('phase', 'pg', 30), mix('phase', 'pg', 55)] },
+      hoje: { onix: [mix('phase', 'pg', 30), mix('phase', 'pg', 55)], carbono: [mix('phase', 'pg', 30), mix('phase', 'pg', 55)], fucsia: [mix('phase', 'pg', 30), mix('phase', 'pg', 55)] },
+      uso: 'Dentro de phase-surface (ring).', subst: 'anel do phase-surface.', pat: ['phase-surface'] },
+    { id: 'fa5', sec: 'fase', nome: 'Fase 5 (texto)', cls: 'texto do phase-surface (--foreground)', papel: 'Texto sobre o cartão colorido: a cor da fase com luminosidade fixa (0,35 no claro, 0,92 no escuro).', sobre: null,
+      antes: { onix: [faseTxt(0.35, 0.07), faseTxt(0.92, 0.06)], carbono: [faseTxt(0.35, 0.07), faseTxt(0.92, 0.06)], fucsia: [faseTxt(0.35, 0.07), faseTxt(0.92, 0.06)] },
+      hoje: { onix: [faseTxt(0.35, 0.07), faseTxt(0.92, 0.06)], carbono: [faseTxt(0.35, 0.07), faseTxt(0.92, 0.06)], fucsia: [faseTxt(0.35, 0.07), faseTxt(0.92, 0.06)] },
+      uso: 'Dentro de phase-surface (cor do texto).', subst: 'cor do texto do phase-surface.', pat: ['phase-surface'] },
+
+    /* 7 Semânticas */
+    ...['erro', 'aviso', 'sucesso', 'info'].flatMap((c) => {
+      const nomes = { erro: 'Erro', aviso: 'Aviso', sucesso: 'Sucesso', info: 'Informação' };
+      const usos = { erro: 'bg-error-background: 36; text-error-foreground: 22', aviso: 'bg-warning-background: 6; text-warning-foreground: 3', sucesso: 'bg-success-background: 6', info: 'bg-info-background: 3; text-info-foreground: 2' };
+      return [
+        { id: c + '-forte', sec: 'semanticas', nome: nomes[c] + ' · forte', cls: 'border-' + c + ' · ícone', papel: 'Cor forte do alerta: ícone, borda e ponto de estado.', sobre: 'pg',
+          antes: ALL(fix(c, 'forte'), fix(c, 'forte')), hoje: ALL(fix(c, 'forte'), fix(c, 'forte')),
+          uso: 'Usada como borda e ícone (contagem não separada).', subst: 'nada muda (DS21/DS25).', pat: ['border-' + c] },
+        { id: c + '-texto', sec: 'semanticas', nome: nomes[c] + ' · texto', cls: 'text-' + c + '-foreground', papel: 'Texto do alerta, sobre o fundo do alerta.', sobre: 'pg',
+          antes: ALL(fix(c, 'texto'), fix(c, 'texto')), hoje: ALL(fix(c, 'texto'), fix(c, 'texto')),
+          uso: usos[c], subst: 'text-' + c + '-foreground.', pat: ['text-' + c + '-foreground'] },
+        { id: c + '-fundo', sec: 'semanticas', nome: nomes[c] + ' · fundo', cls: 'bg-' + c + '-background', papel: 'Fundo do alerta e do aviso: a cor forte misturada com a tela (10% no claro, 30% no escuro).', sobre: 'pg',
+          antes: ALL(mix(c, 'pg', 10, 'oklab'), mix(c, 'pg', 30, 'oklab')), hoje: ALL(mix(c, 'pg', 10, 'oklab'), mix(c, 'pg', 30, 'oklab')),
+          uso: usos[c], subst: 'bg-' + c + '-background (um só, igual em todas as paletas, exceto pela tela).', pat: ['bg-' + c + '-background'] }
+      ];
+    }),
+
+    /* 8 Imagem e película */
+    { id: 'pel1', sec: 'imagem', nome: 'Película 1 (diálogo e gaveta)', cls: 'bg-overlay', papel: 'Véu escuro atrás de diálogo e gaveta: 30% da cor de sombra da paleta. É a única película de tela cheia.', sobre: 'pg',
+      antes: ALL(mix('shadow', 'pg', 30), mix('shadow', 'pg', 30)), hoje: ALL(mix('shadow', 'pg', 30), mix('shadow', 'pg', 30)),
+      uso: 'bg-overlay: 2.', subst: 'bg-overlay (2), que já é token.', pat: ['bg-overlay'] },
+    { id: 'pel2', sec: 'imagem', nome: 'Película 2 (sobre foto)', cls: 'bg-black/NN sobre foto', papel: 'Setas, contador e botões escritos sobre foto (prévia do Instagram). Não há tela de fundo; é preto com transparência. Valor mostrado: 50% (D11).', sobre: null,
+      antes: ALL(fixa(0, 0, 0, 50), fixa(0, 0, 0, 50)), hoje: ALL(fixa(0, 0, 0, 50), fixa(0, 0, 0, 50)),
+      uso: 'bg-black/NN: 9 usos com 5 valores (20, 50, 60, 70 e 80%); bg-white/40: 1.', subst: '9 usos com 5 valores diferentes: proposta de um ou dois valores.', pat: ['bg-black/', 'bg-white/'] },
+    { id: 'img', sec: 'imagem', nome: 'Branco sobre imagem (ícone)', cls: 'image-icon (ícone branco com sombra)', papel: 'Ícone sobre imagem: branco com sombra que segue o desenho (regra do proprietário, 12/11).', sobre: null,
+      antes: ALL(fixa(1, 0, 0, 100), fixa(1, 0, 0, 100)), hoje: ALL(fixa(1, 0, 0, 100), fixa(1, 0, 0, 100)),
+      uso: 'image-icon: 3.', subst: 'nada muda.', pat: ['image-icon'] }
+  ],
+
+  /* Superfícies flutuantes (section 1 table). All of them go to Fundo 2. */
+  flutuantes: [
+    { s: 'Menu (dropdown-menu)', h: 'bg-popover', n: 'Fundo 2' },
+    { s: 'Popover', h: 'bg-popover', n: 'Fundo 2' },
+    { s: 'Select e combobox (lista)', h: 'bg-popover', n: 'Fundo 2' },
+    { s: 'Diálogo (dialog)', h: 'bg-popover', n: 'Fundo 2 (com Película 1 atrás)' },
+    { s: 'Gaveta (sheet)', h: 'bg-popover', n: 'Fundo 2 (com Película 1 atrás)' },
+    { s: 'Tooltip', h: 'bg-popover + border-foreground/5', n: 'Fundo 2 (Linha 1 na borda)' },
+    { s: 'Aviso (toast, sonner)', h: 'bg-card', n: 'Fundo 2 (sai do cartão)' },
+    { s: 'Alerta (dentro da página, não flutuante)', h: 'bg-card', n: 'Fundo 3' }
+  ],
+
+  /* Cover table: every real role mapped to one level, or flagged. Status: ok | falta | conflito. */
+  cobertura: [
+    { p: 'Fundo da página', u: 'bg-background: 38', n: 'Fundo 1', s: 'ok' },
+    { p: 'Flutuante (menu, popover, lista, diálogo, gaveta, balão, tooltip)', u: 'bg-popover: 19 (+3 com /NN)', n: 'Fundo 2', s: 'ok' },
+    { p: 'Aviso (toast)', u: 'bg-card (sonner.tsx:49)', n: 'Fundo 2', s: 'ok', o: 'Sai do cartão.' },
+    { p: 'Campo de formulário', u: 'bg-input: 16', n: 'Fundo 4', s: 'ok' },
+    { p: 'Botão de rádio', u: 'bg-card (radio-group.tsx:25)', n: 'Fundo 4', s: 'ok', o: 'Sai do cartão.' },
+    { p: 'Cartão de ação', u: 'bg-action: 4', n: 'Fundo 5', s: 'ok' },
+    { p: 'Cartão de ação com mouse', u: 'bg-action-hover: 7', n: 'Fundo 6', s: 'ok' },
+    { p: 'Cartão de fase', u: 'phase-surface: 6 (vivid: 5)', n: 'Fase 1', s: 'ok' },
+    { p: 'Cartão de fase com mouse', u: 'phase-surface (hover)', n: 'Fase 2', s: 'ok' },
+    { p: 'Notificação não lida (destaque)', u: 'bg-card no sino e em Notificações', n: 'Fundo 3', s: 'ok' },
+    { p: 'Notificação não lida com mouse', u: 'hover:bg-card: 3', n: 'Preenchimento 2', s: 'conflito', o: 'Sobre o Fundo 3 precisa de cor própria. Hoje é o mesmo cinza, então o hover não aparece. Falta confirmar o nível (D12).' },
+    { p: 'Destaque suave: grupo Admin do menu, alvo ao arrastar, célula do calendário', u: 'bg-secondary/50: 3; bg-secondary/20: 1 (escuro)', n: 'Fundo 3', s: 'ok' },
+    { p: 'Comentário de outra pessoa e alerta padrão', u: 'bg-card (balão, alert.tsx:11)', n: 'Fundo 3', s: 'ok' },
+    { p: 'Botão cinza, selo, tecla, chip, trilho, esqueleto', u: 'bg-secondary (repouso): 54', n: 'Preenchimento 1', s: 'ok' },
+    { p: 'Avatar sem foto e “+N” na página', u: 'bg-secondary (avatar.tsx:46, :88)', n: 'Preenchimento 1', s: 'ok' },
+    { p: 'Avatar sem foto e “+N” dentro do cartão de ação', u: 'bg-secondary (UAvatar.tsx:142 via ActionItem)', n: 'Linha 2 (contorno)', s: 'conflito', o: 'Sobre o Fundo 5 o Preenchimento 1 tem ΔL de 0,002 no escuro (invisível). A proposta é contorno. Decisão D1.' },
+    { p: 'Faixa de cabeçalho (tabela, calendário, sino, perfil)', u: 'bg-secondary: 8 (contagem manual)', n: 'Preenchimento 1', s: 'ok' },
+    { p: 'Quadro atrás de imagem ou miniatura', u: 'bg-secondary: 5', n: 'Linha 2 (sem fundo)', s: 'ok', o: 'Sem fundo; só a linha.' },
+    { p: 'Caixa vazia tracejada e aviso', u: 'bg-secondary: 5', n: 'Preenchimento 1', s: 'ok' },
+    { p: 'Caixa em volta de conteúdo (Planejamento, portal, balão próprio)', u: 'bg-card: cerca de 10', n: '—', s: 'falta', o: 'A regra de superfícies não permite. Decisão D7.' },
+    { p: 'Hover e foco de item transparente (menu, lista, aba, ghost)', u: 'hover/focus:bg-secondary: 26', n: 'Preenchimento 2', s: 'ok' },
+    { p: 'Hover do botão cinza', u: 'mistura escrita à mão: 1', n: 'Preenchimento 2', s: 'ok' },
+    { p: 'Selecionado ou aberto', u: 'data-selected:bg-secondary: 6; aria-expanded: cerca de 5', n: 'Preenchimento 3', s: 'falta', o: 'Preenchimento 3 tem hoje o mesmo valor do repouso. Falta a cor própria (D6).' },
+    { p: 'Selecionado com mouse', u: 'data-selected + hover (não reage hoje em 14 lugares)', n: 'Preenchimento 2', s: 'conflito', o: 'Igual ao hover de item: o selecionado com mouse não se distingue do hover comum.' },
+    { p: 'Ação principal (botão padrão, toggle selecionado)', u: 'bg-primary: 34', n: 'Principal 1', s: 'ok' },
+    { p: 'Alvo ao arrastar do Planejamento', u: 'bg-primary (DnD do Planejamento)', n: 'Fundo 3', s: 'ok', o: 'Sai da cor forte para o destaque suave.' },
+    { p: 'Principal com mouse', u: 'mistura escrita à mão: 1', n: 'Principal 2', s: 'ok' },
+    { p: 'Principal desabilitado', u: 'opacidade (parte dos 20)', n: 'Principal 3', s: 'ok' },
+    { p: 'Texto sobre principal', u: 'text-primary-foreground: 21', n: 'Texto sobre principal', s: 'ok' },
+    { p: 'Borda padrão e divisor', u: 'border-border: 64', n: 'Linha 2', s: 'ok' },
+    { p: 'Borda de contêiner (flutuante, cartão, painel)', u: 'border-foreground/5: 11; /10: 18', n: 'Linha 1 (exceção)', s: 'ok' },
+    { p: 'Borda do campo', u: 'border-input: 3', n: 'Linha 3', s: 'conflito', o: 'A cor é a mesma do campo: a borda some sobre ele. Decisão D10.' },
+    { p: 'Borda ao passar o mouse', u: 'hover:border-* (poucos usos)', n: '—', s: 'falta', o: 'Não existe nível de borda com mouse.' },
+    { p: 'Anel de foco', u: 'ring-ring: 34', n: 'Principal 1 (anel)', s: 'ok', o: 'Usa a cor principal, por isso fica fora da escala neutra.' },
+    { p: 'Película de diálogo e gaveta', u: 'bg-overlay: 2', n: 'Película 1', s: 'ok' },
+    { p: 'Película sobre foto (setas, contador)', u: 'bg-black/NN: 9 (5 valores)', n: 'Película 2', s: 'ok', o: 'Escolher um valor. Decisão D11.' },
+    { p: 'Ícone sobre imagem', u: 'image-icon: 3', n: 'Branco sobre imagem (ícone)', s: 'ok' },
+    { p: 'Texto de apoio', u: 'text-secondary-foreground: 267', n: 'Texto 2', s: 'ok', o: 'Muda no Carbono e no Fúcsia. Decisão D9.' },
+    { p: 'Placeholder e texto apagado', u: 'text-foreground/40: 16', n: 'Texto 3', s: 'ok' },
+    { p: 'Texto desabilitado', u: 'disabled:opacity-NN: 20', n: 'Texto 4', s: 'ok' },
+    { p: 'Transparência escrita à mão no fundo (bg-foreground/NN)', u: 'bg-foreground/NN: 10 (7 valores)', n: 'Preenchimento 1', s: 'ok', o: 'Vai para um nível só, por codemod.' },
+    { p: 'Erro, aviso, sucesso e informação (forte, texto, fundo)', u: 'bg-*-background: 51; text-*-foreground: 27', n: 'Semânticas (3 níveis por tipo)', s: 'ok' }
+  ],
+
+  /* Decisions. origem = where the question comes from. `pergunta` is the owner's question. */
+  decisoes: [
+    { id: 'D0', origem: 'Nova (pedido do proprietário)', pergunta: 'A escala é a mesma para todas as paletas, ou cada paleta pode ter os seus próprios ajustes?',
+      evidencia: 'Antes do DS28, cada paleta tinha os seus deltas. No Carbono, o cartão de ação ficava mais escuro que a tela (ΔL −0,020). Hoje a fórmula única põe o cartão em +0,020, que a tela branca recorta em branco: o cartão some. No Ônix quase nada mudou. Sem recomendação: a evidência mostra o problema, não a solução.' },
+    { id: 'D1', origem: 'DS35 P1', pergunta: 'O botão cinza (Preenchimento 1) fica só sobre a tela de fundo, ou também dentro de menus e diálogos?',
+      evidencia: 'Hoje o avatar sem foto dentro do cartão de ação tem ΔL de 0,002 no escuro (invisível). A seção 2 mostra o cinza sobre o cartão.' },
+    { id: 'D2', origem: 'DS35 P2', pergunta: 'O cartão (bg-card) deixa de existir e vira o destaque suave (Fundo 3), ou sai do sistema?',
+      evidencia: 'bg-card cobre 8 papéis diferentes (seção 1). O Fundo 3 é o único lugar proposto para destaque de estado.' },
+    { id: 'D3', origem: 'DS35 P3', pergunta: 'O hover de item transparente (menu, lista, aba) usa o cinza do Preenchimento 2, ou uma cor própria?',
+      evidencia: 'Hoje são 26 usos no cinza. Uma cor própria teria de existir como terceiro cinza de repouso. A proposta desta página é o Preenchimento 2.' },
+    { id: 'D4', origem: 'DS35 P4', pergunta: 'Sobre cor de fase e imagem, nenhum cinza? Avatar e “+N” viram contorno ou usam a cor da fase (Fase 3)?',
+      evidencia: 'Ver seção 6: o cinza sólido sobre a cor da fase aparece hoje no avatar e no “+N”. A Fase 3 é uma proposta minha, sem aprovação.' },
+    { id: 'D5', origem: 'DS35 P5', pergunta: 'Transparências escritas à mão: quais continuam? A proposta desta página mantém a Linha 1, a Película 1 e o Texto 3.',
+      evidencia: 'Hoje há border-foreground/NN (38), text-foreground/NN (27) e bg-foreground/NN (10). Pela proposta, o fundo não tem mais transparência escrita à mão; a borda de contêiner e o placeholder seguem como exceção.' },
+    { id: 'D6', origem: 'DS35 P6', pergunta: 'O estado selecionado tem cor própria (Preenchimento 3), ou fica igual ao hover?',
+      evidencia: 'Hoje o selecionado é o mesmo cinza do repouso e não reage ao mouse em 14 lugares. A seção 2 mostra que, com o valor inicial, o Preenchimento 3 é igual ao 1.' },
+    { id: 'D7', origem: 'DS35 P7', pergunta: 'As caixas do Planejamento e do portal que usam o cartão perdem a caixa, ou viram exceção registrada?',
+      evidencia: 'Cerca de 10 usos de bg-card em volta de conteúdo. A regra das superfícies, do AGENTS, já proíbe essas caixas.' },
+    { id: 'D8', origem: 'DS35 P8', pergunta: 'A proteção é só a regra escrita, ou também uma checagem automática que aponta os usos proibidos?',
+      evidencia: 'Sem checagem, as transparências voltam. A decisão só vale depois que a seção 9 estiver aprovada.' },
+    { id: 'D9', origem: 'Nova (desta página)', pergunta: 'Texto secundário (Texto 2): no Carbono e no Fúcsia a luz mudou com o DS28. Aceitar essa mudança, ou voltar ao de antes?',
+      evidencia: 'Antes: 65% do texto sobre a tela. Hoje: fórmula fixa. No Ônix os dois são iguais. No Carbono claro a diferença é de 0,023 de luz; no Fúcsia escuro é de 0,081 (hoje mais claro). Marcado na tabela do topo e na seção 4.' },
+    { id: 'D10', origem: 'Nova (desta página)', pergunta: 'Borda do campo (Linha 3): dar uma cor própria, ou usar a Linha 2?',
+      evidencia: 'Hoje a borda do campo tem a mesma cor do campo (border-input = input): a borda some sobre ele. ΔL de 0 entre os dois, marcado na seção 3.' },
+    { id: 'D11', origem: 'Nova (desta página)', pergunta: 'Película sobre foto: um valor só (50% na proposta), ou manter os 5 valores atuais?',
+      evidencia: 'bg-black/NN aparece com 20, 50, 60, 70 e 80%. A seção 8 mostra o valor único.' },
+    { id: 'D12', origem: 'Nova (desta página)', pergunta: 'Notificação não lida com mouse: qual cor mostra o mouse sobre ela, já que a cor de não lida (Fundo 3) é a mesma do hover de hoje?',
+      evidencia: 'Hoje o hover é bg-card, igual ao destaque de não lida: nada muda ao passar o mouse. A proposta usa o Preenchimento 2, mas o conflito fica aberto até ver a cor sobre o Fundo 3.' },
+    { id: 'D13', origem: 'Nova (desta página)', pergunta: 'Fase 3 (avatar e “+N” sobre o cartão colorido) e a receita das fases (15% e 40%; 30% e 70%): aprovar, ou ajustar?',
+      evidencia: 'A receita vem do phase-surface atual. O valor da Fase 3 é uma proposta minha, sem aprovação do proprietário.' }
+  ],
+
+  limites: [
+    'Antes do DS28 vem de app/lib/palettes.ts e de app/tailwind.css no commit 6b677b4^, e foi recalculado aqui como cor; não é uma captura da tela antiga.',
+    'Transparências (color-mix em sRGB) são calculadas em sRGB nesta página. O antes do escuro usava oklch em parte; a diferença é pequena, mas existe.',
+    'Fúcsia: a cor principal (L 0,9 com croma 0,4) fica fora da faixa da tela. O navegador recorta a cor, então o valor exibido é aproximado.',
+    'Contagens de usos são busca por texto (grep) no app, sem ui-sections, data e routeTree.gen.ts. Padrões escritos em concatenação de texto podem ficar de fora.',
+    'Sombras estão fora do escopo (ticket à parte). Película 1 usa só a cor de sombra da paleta.',
+    'Nomes são provisórios. O campo “nome sugerido” só guarda o que você escrever.',
+    'Os controles mudam a luz (ΔL) ou a porcentagem de mistura, não a fórmula CSS. Para copiar, use o bloco “CSS real” de cada seção.',
+    'Os valores de Fase 3 e da receita das fases são propostas sem aprovação.',
+    'Conferida no navegador de automação (largura de desktop e 375 px): sem erros no console, troca de paleta e modo, sliders que atualizam prévia e CSS, persistência após recarregar e cópia do resumo. Não conferido em Safari nem em aparelho real.'
+  ]
+};
+
+/* =====================================================================
+   Engine: reads CONFIG and computes the colours. Nothing below holds data.
+   ===================================================================== */
+const KEY = 'ds35-escala-cores:v1';
+const MODES = ['light', 'dark'];
+const PAL_KEYS = Object.keys(CONFIG.palettes);
+
+const S = { pal: 'onix', vis: 'both', pw: {}, v: {}, ok: {}, nt: {}, nm: {}, dn: {} };
+try {
+  const raw = localStorage.getItem(KEY);
+  if (raw) {
+    const o = JSON.parse(raw);
+    ['pal', 'vis', 'pw', 'v', 'ok', 'nt', 'nm', 'dn'].forEach((k) => { if (o[k] !== undefined) S[k] = o[k]; });
+    if (!PAL_KEYS.includes(S.pal)) S.pal = 'onix';
+  }
+} catch (e) { /* storage unavailable: the page works with defaults */ }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* ignore */ } }
+
+const LV = {};
+CONFIG.levels.forEach((l) => { LV[l.id] = l; });
+const CORES = {};
+Object.keys(CONFIG.cores).forEach((n) => {
+  CORES[n] = { forte: CONFIG.cores[n].forte.map(lc), texto: CONFIG.cores[n].texto.map(lc) };
+});
+const P = {};
+PAL_KEYS.forEach((k) => {
+  const p = CONFIG.palettes[k];
+  P[k] = { label: p.label };
+  ['page', 'fg', 'primary', 'pfg', 'shadow'].forEach((f) => { P[k][f] = p[f].map(lc); });
+});
+
+function lc(a) { return { L: a[0], C: a[1], H: a[2] }; }
+const clamp01 = (x) => Math.min(1, Math.max(0, x));
+const dec = (x) => { const s = x < 0 ? -1 : 1; const a = Math.abs(x); return s * (a <= 0.04045 ? a / 12.92 : Math.pow((a + 0.055) / 1.055, 2.4)); };
+const enc = (x) => { const s = x < 0 ? -1 : 1; const a = Math.abs(x); return s * (a <= 0.0031308 ? 12.92 * a : 1.055 * Math.pow(a, 1 / 2.4) - 0.055); };
+const cbrtS = (x) => Math.sign(x) * Math.pow(Math.abs(x), 1 / 3);
+
+function rgbToLab(r, g, b) {
+  r = dec(r); g = dec(g); b = dec(b);
+  const l = cbrtS(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = cbrtS(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const s = cbrtS(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return [
+    0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s,
+    1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s,
+    0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s
+  ];
+}
+function labToRgb(L, a, b) {
+  const l0 = L + 0.3963377774 * a + 0.2158037573 * b;
+  const m0 = L - 0.1055613458 * a - 0.0638541728 * b;
+  const s0 = L - 0.0894841775 * a - 1.2914855480 * b;
+  const l = l0 * l0 * l0; const m = m0 * m0 * m0; const s = s0 * s0 * s0;
+  return [
+    enc(4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s),
+    enc(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s),
+    enc(-0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s)
+  ];
+}
+const fromLab = (L, a, b) => ({ L, C: Math.hypot(a, b), H: (Math.atan2(b, a) * 180 / Math.PI + 360) % 360 });
+const toLab = (c) => { const h = c.H * Math.PI / 180; return [c.L, c.C * Math.cos(h), c.C * Math.sin(h)]; };
+const toRgb = (c) => labToRgb(...toLab(c)).map(clamp01);
+const fromRgb = (r, g, b) => fromLab(...rgbToLab(r, g, b));
+function hexLch(hex) {
+  return fromRgb(parseInt(hex.slice(1, 3), 16) / 255, parseInt(hex.slice(3, 5), 16) / 255, parseInt(hex.slice(5, 7), 16) / 255);
+}
+function mixLch(A, B, p, sp) {
+  if (sp === 'oklab') {
+    const a = toLab(A); const b = toLab(B);
+    return fromLab(...a.map((x, i) => x * p + b[i] * (1 - p)));
+  }
+  const ra = toRgb(A); const rb = toRgb(B);
+  return fromRgb(...ra.map((x, i) => x * p + rb[i] * (1 - p)));
+}
+
+const dot = (x, d) => x.toFixed(d);
+const fx = (x, d = 3) => x.toFixed(d).replace('.', ',');
+const sx = (x, d = 3) => (x < 0 ? '−' : '+') + fx(Math.abs(x), d);
+const cssC = (c) => (c.alpha !== undefined
+  ? `oklch(${dot(c.L, 3)} ${dot(c.C, 3)} ${dot(c.H, 1)} / ${c.alpha}%)`
+  : `oklch(${dot(c.L, 4)} ${dot(c.C, 4)} ${dot(c.H, 2)})`);
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+const mname = (mi) => (mi ? 'Escuro' : 'Claro');
+const visModes = () => (S.vis === 'light' ? [0] : S.vis === 'dark' ? [1] : [0, 1]);
+const PHASES = CONFIG.fases.map((f) => ({ nome: f.nome, hex: f.hex, ...hexLch(f.hex) }));
+const SEC = CONFIG.sections.map((s) => ({ ...s, levels: CONFIG.levels.filter((l) => l.sec === s.id).map((l) => l.id) }));
+
+/* Value stored for a slider, or the antes default. */
+function getV(id, pal, mi) {
+  const s = S.v[id] && S.v[id][pal] && S.v[id][pal][mi];
+  return typeof s === 'number' ? s : LV[id].antes[pal][mi].v;
+}
+/* Spec of a level for one palette and mode. which: 'antes' | 'hoje' | 'atual'. */
+function specOf(lv, which, pal, mi) {
+  if (which === 'hoje') return lv.hoje[pal][mi];
+  const base = lv.antes[pal][mi];
+  if (which === 'antes' || base.v === undefined) return base;
+  return { ...base, v: getV(lv.id, pal, mi) };
+}
+const vn = (name) => (CORES[name] ? 'c-' + name : name);
+
+function nameColor(name, which, pal, mi, ph) {
+  if (LV[name]) return resolve(name, which, pal, mi, ph);
+  if (name === 'phase') return ph;
+  if (CORES[name]) return CORES[name].forte[mi];
+  return P[pal][name][mi];
+}
+function evalSpec(s, which, pal, mi, ph) {
+  switch (s.k) {
+    case 'rel': { const p = P[pal].page[mi]; return { L: clamp01(p.L + s.v), C: p.C, H: p.H }; }
+    case 'mix': return mixLch(nameColor(s.of, which, pal, mi, ph), nameColor(s.over, which, pal, mi, ph), s.v / 100, s.sp);
+    case 'abs': { const r = P[pal][s.ref][mi]; return { L: s.v, C: r.C, H: r.H }; }
+    case 'faseTxt': return { L: s.v, C: s.c, H: ph.H };
+    case 'fix': return CORES[s.c][s.sub][mi];
+    case 'fixa': return { L: s.L, C: s.C, H: s.H, alpha: s.a };
+    default: throw new Error('unknown spec ' + s.k);
+  }
+}
+function resolve(id, which, pal, mi, ph) {
+  return evalSpec(specOf(LV[id], which, pal, mi), which, pal, mi, ph);
+}
+/* CSS formula that the browser evaluates with the same numbers (uses the stage variables). */
+function formulaOf(s, pal, mi) {
+  switch (s.k) {
+    case 'rel': return s.v === 0 ? 'oklch(from var(--pg) l c h)' : `oklch(from var(--pg) calc(l ${s.v < 0 ? '-' : '+'} ${dot(Math.abs(s.v), 3)}) c h)`;
+    case 'mix': return `color-mix(in ${s.sp}, var(--${vn(s.of)}) ${s.v}%, var(--${vn(s.over)}))`;
+    case 'abs': return `oklch(from var(--${s.ref}) ${dot(s.v, 3)} c h)`;
+    case 'faseTxt': return `oklch(from var(--phase) ${dot(s.v, 2)} ${dot(s.c, 2)} h)`;
+    case 'fix': return cssC(CORES[s.c][s.sub][mi]);
+    case 'fixa': return cssC({ L: s.L, C: s.C, H: s.H, alpha: s.a });
+    default: return '';
+  }
+}
+/* Stage variables: page, text, primary and the level formulas for one palette and mode. */
+function buildVars(pal, which, mi, ph) {
+  const v = {};
+  const Pp = P[pal];
+  v['--pg'] = cssC(Pp.page[mi]);
+  v['--fg'] = cssC(Pp.fg[mi]);
+  v['--primary'] = cssC(Pp.primary[mi]);
+  v['--pfg'] = cssC(Pp.pfg[mi]);
+  v['--shadow'] = cssC(Pp.shadow[mi]);
+  Object.keys(CORES).forEach((n) => { v['--c-' + n] = cssC(CORES[n].forte[mi]); });
+  if (ph) v['--phase'] = ph.hex;
+  CONFIG.levels.forEach((lv) => {
+    if (lv.id === 'pg') return;
+    if (lv.sec === 'fase' && !ph) return;
+    v['--' + lv.id] = formulaOf(specOf(lv, which, pal, mi), pal, mi);
+  });
+  return v;
+}
+const styleOf = (v) => Object.keys(v).map((k) => `${k}:${v[k]}`).join(';');
+
+/* ---------- HTML pieces ---------- */
+const sw = (c) => `<span class="sw" style="background:${cssC(c)}" title="${esc(cssC(c))}"></span>`;
+function fmtDL(c, lv, which, pal, mi, ph) {
+  if (c.alpha !== undefined) return ' <span class="small">película, sem tela</span>';
+  if (!lv.sobre) return '';
+  const d = c.L - resolve(lv.sobre, which, pal, mi, ph).L;
+  const bad = Math.abs(d) < 0.03;
+  return ` <span class="dl${bad ? ' bad' : ''}">ΔL ${sx(d)}${bad ? ' quase invisível' : ''}</span>`;
+}
+function cellHTML(lv, which, pal, vis, ph) {
+  return vis.map((mi) => {
+    const c = resolve(lv.id, which, pal, mi, ph);
+    const lab = c.alpha !== undefined ? '' : ` <span class="num">L ${fx(c.L)}</span>`;
+    return `<div class="mv"><span class="mn">${mname(mi)}</span> ${sw(c)}${lab}${fmtDL(c, lv, which, pal, mi, ph)}</div>`;
+  }).join('');
+}
+function diffHTML(lv, pal, vis) {
+  return vis.map((mi) => {
+    const a = resolve(lv.id, 'antes', pal, mi, null);
+    const h = resolve(lv.id, 'hoje', pal, mi, null);
+    if (a.alpha !== undefined) return `<div class="mv"><span class="mn">${mname(mi)}</span> sem diferença</div>`;
+    const d = a.L - h.L;
+    const flag = Math.abs(d) > 0.01;
+    return `<div class="mv${flag ? ' flagcell' : ''}"><span class="mn">${mname(mi)}</span> antes − hoje ${sx(d)}${flag ? ' <span class="dif">difere</span>' : ''}</div>`;
+  }).join('');
+}
+function levelRow(lv, pal, vis) {
+  return `<tr>
+    <th scope="row"><b>${esc(lv.nome)}</b><br><span class="small">${lv.id}</span></th>
+    <td class="papel">${esc(lv.papel)}</td>
+    <td>${cellHTML(lv, 'antes', pal, vis, null)}</td>
+    <td>${cellHTML(lv, 'hoje', pal, vis, null)}</td>
+    <td>${diffHTML(lv, pal, vis)}</td>
+    <td>${cellHTML(lv, 'atual', pal, vis, null)}</td>
+    <td class="small"><b>${esc(lv.cls)}</b><br>${esc(lv.uso)}</td>
+    <td class="small">${esc(lv.subst)}</td>
+    <td><input type="text" data-name="${lv.id}" value="${esc(S.nm[lv.id] || '')}" placeholder="nome sugerido" aria-label="Nome sugerido para ${esc(lv.nome)}"></td>
+  </tr>`;
+}
+function phaseRow(lv, pal, vis) {
+  return `<tr>
+    <th scope="row"><b>${esc(lv.nome)}</b><br><span class="small">${lv.id}</span></th>
+    <td class="papel">${esc(lv.papel)}</td>
+    ${PHASES.map((ph) => `<td>${cellHTML(lv, 'atual', pal, vis, ph)}<div class="small">${esc(ph.nome)}</div></td>`).join('')}
+    <td class="small"><b>${esc(lv.cls)}</b><br>${esc(lv.uso)}</td>
+    <td class="small">${esc(lv.subst)}</td>
+    <td><input type="text" data-name="${lv.id}" value="${esc(S.nm[lv.id] || '')}" placeholder="nome sugerido" aria-label="Nome sugerido para ${esc(lv.nome)}"></td>
+  </tr>`;
+}
+function tableHTML(sec) {
+  const vis = visModes();
+  const pal = S.pal;
+  const lvs = sec.levels.map((id) => LV[id]);
+  if (sec.id === 'fase') {
+    return `<thead><tr><th>Nível</th><th>Papel</th>${PHASES.map((p) => `<th>${esc(p.nome)} (atual)</th>`).join('')}<th>Uso no app hoje</th><th>O que substitui</th><th>Nome sugerido</th></tr></thead>
+      <tbody>${lvs.map((lv) => phaseRow(lv, pal, vis)).join('')}</tbody>`;
+  }
+  return `<thead><tr><th>Nível</th><th>Papel</th><th>Antes do DS28</th><th>Hoje (DS28)</th><th>Diferença antes × hoje</th><th>Atual (com seus ajustes)</th><th>Uso no app hoje</th><th>O que substitui</th><th>Nome sugerido</th></tr></thead>
+    <tbody>${lvs.map((lv) => levelRow(lv, pal, vis)).join('')}</tbody>`;
+}
+function rangeOf(k) {
+  if (k === 'rel') return { min: -0.6, max: 0.6, step: 0.001 };
+  if (k === 'mix') return { min: 0, max: 100, step: 1 };
+  if (k === 'abs') return { min: 0, max: 1, step: 0.001 };
+  if (k === 'faseTxt') return { min: 0, max: 1, step: 0.01 };
+  return null;
+}
+function outText(k, v) {
+  if (k === 'rel') return sx(v);
+  if (k === 'mix') return `${v}%`;
+  return `L ${fx(v)}`;
+}
+function slidersHTML(sec) {
+  const pal = S.pal;
+  const vis = visModes();
+  const items = sec.levels.map((id) => LV[id]).filter((lv) => rangeOf(lv.antes[pal][0].k));
+  if (!items.length) return '<p class="small">Esta seção não tem controles: os valores são fixos.</p>';
+  return items.map((lv) => {
+    const rows = vis.map((mi) => {
+      const k = lv.antes[pal][mi].k;
+      const r = rangeOf(k);
+      const v = getV(lv.id, pal, mi);
+      return `<label class="sl"><span>${mname(mi)}</span><input type="range" min="${r.min}" max="${r.max}" step="${r.step}" value="${v}" data-id="${lv.id}" data-mi="${mi}" aria-label="${esc(lv.nome)}, ${mi ? 'escuro' : 'claro'}"><output>${outText(k, v)}</output></label>`;
+    }).join('');
+    return `<fieldset class="ad"><legend><b>${esc(lv.nome)}</b> <span class="small">${esc(lv.papel.split('.')[0])}</span></legend>${rows}</fieldset>`;
+  }).join('');
+}
+const PV = {
+  fundos: () => `
+    <div class="pv-card"><b class="c1">Cartão de ação</b><span class="c2 small">Texto do cartão (Fundo 5).</span>
+      <div class="pv-row"><span class="pv-av">+2</span><span class="small c2">avatar sem foto sobre o cartão (hoje cinza)</span></div>
+      <div class="pv-card hov"><span class="c1 small">Com mouse (Fundo 6)</span></div></div>
+    <div class="pv-flt"><div class="pv-grp">Admin</div><div class="pv-item c1">Item normal</div><div class="pv-item hov c1">Item com mouse (Preenchimento 2)</div><div class="pv-item sel c1">Selecionado (Preenchimento 3)</div></div>
+    <div class="pv-toast c1">Aviso: ação salva (Fundo 2)</div>
+    <div class="pv-unread c1">Notificação não lida (Fundo 3)</div>
+    <div class="pv-read c1">Notificação lida (tela)</div>
+    <div class="pv-field c3">Campo de texto (Fundo 4)</div>`,
+  preench: () => `
+    <div class="pv-row"><button class="pv-btn" type="button">Repouso</button><button class="pv-btn hov" type="button">Com mouse</button><button class="pv-btn sel" type="button">Selecionado</button></div>
+    <div class="pv-row"><span class="pv-tag">Selo</span><span class="pv-tag">Ctrl K</span><span class="pv-av">AB</span><span class="pv-av">+3</span></div>
+    <div class="pv-track"><i></i></div>
+    <div class="pv-flt"><div class="pv-item hov c1">Item de menu com mouse</div><div class="pv-item c1">Item normal</div></div>
+    <div class="pv-card"><div class="pv-row"><span class="pv-av">+N</span><span class="small c2">Sobre o cartão de ação: o cinza some (ver D1)</span></div></div>`,
+  linhas: () => `
+    <div class="pv-card" style="border-color:var(--l1)"><b class="c1">Contêiner (Linha 1)</b><span class="small c2">Cartão com borda translúcida.</span></div>
+    <div class="pv-row"><button class="pv-btn out" type="button">Botão com contorno (Linha 2)</button></div>
+    <div class="pv-field" style="border-color:var(--l3)">Campo com borda (Linha 3)</div>
+    <div class="pv-hr"></div>
+    <div class="small c2">Divisor: a mesma Linha 2.</div>`,
+  texto: () => `
+    <p class="big c1">Título e texto principal (Texto 1)</p>
+    <p class="c2" style="margin:0">Texto de apoio, legenda e metadado (Texto 2)</p>
+    <p class="c3" style="margin:0">Placeholder e dica (Texto 3)</p>
+    <p class="c4" style="margin:0">Item desabilitado (Texto 4)</p>`,
+  principal: () => `
+    <div class="pv-row"><button class="pv-btn pri" type="button">Principal</button><button class="pv-btn pri hov" type="button">Com mouse</button><button class="pv-btn pri dis" type="button">Desabilitado</button></div>
+    <div class="pv-row"><span class="pv-tag" style="background:var(--r1);color:var(--r4)">Texto sobre principal (r4)</span></div>
+    <p class="small c2" style="margin:0">Anel de foco: a cor principal (Principal 1).</p>`,
+  fase: (mi, which) => `
+    ${PHASES.map((ph) => `<div class="pv-fase" style="${styleOf(buildVars(S.pal, which, mi, ph))}">
+      <b>${esc(ph.nome)}: cartão de ação</b>
+      <span class="small">Texto sobre a cor da fase (Fase 5)</span>
+      <div class="pv-row"><span class="pv-av">+3</span><span class="small">avatar e “+N” (Fase 3)</span></div>
+    </div>`).join('')}
+    <div class="pv-fase hov" style="${styleOf(buildVars(S.pal, which, mi, PHASES[0]))}"><b>Com mouse (Fase 2), amarelo</b></div>`,
+  semanticas: () => `
+    <div class="pv-al erro"><i></i>Erro: falha ao salvar</div>
+    <div class="pv-al aviso"><i></i>Aviso: prazo amanhã</div>
+    <div class="pv-al sucesso"><i></i>Sucesso: publicado</div>
+    <div class="pv-al info"><i></i>Informação: nova versão</div>`,
+  imagem: () => `
+    <div class="pv-photo"><span class="pv-ic" aria-hidden="true">▶</span><span class="pv-film-btn">3/5</span></div>
+    <div class="pv-dialog-area"><div class="pv-scrim"></div><div class="pv-dialog"><b>Diálogo sobre a película (Fundo 2)</b></div></div>`
+};
+function previewHTML(sec) {
+  const which = S.pw[sec.id] || 'atual';
+  return `<div class="stages">${visModes().map((mi) => `<div class="stage" data-mode="${mi ? 'dark' : 'light'}" style="${styleOf(buildVars(S.pal, which, mi, null))}"><span class="label">${mname(mi)} · ${P[S.pal].label} · valores ${which}</span>${PV[sec.id](mi, which)}</div>`).join('')}</div>`;
+}
+function cssText(sec) {
+  const which = S.pw[sec.id] || 'atual';
+  const lines = [];
+  MODES.forEach((m, mi) => {
+    const v = buildVars(S.pal, which, mi, sec.id === 'fase' ? PHASES[0] : null);
+    lines.push(`/* ${mname(mi)} (${mi ? '.dark' : ':root'}) · ${P[S.pal].label} · valores ${which} */`);
+    Object.keys(v).forEach((k) => {
+      const id = k.slice(2);
+      const lv = LV[id];
+      const keep = k === '--pg' || k === '--fg' || k === '--primary' || k === '--pfg' || k === '--shadow' || k.startsWith('--c-') || (lv && lv.sec === sec.id) || (lv && lv.id === 'pg');
+      if (keep) lines.push(`${k}: ${v[k]};${lv ? '  /* ' + lv.cls + ' */' : ''}`);
+    });
+    lines.push('');
+  });
+  return lines.join('\n');
+}
+function sectionShell(sec) {
+  const which = S.pw[sec.id] || 'atual';
+  const wb = [['atual', 'Atual (com ajustes)'], ['antes', 'Antes do DS28'], ['hoje', 'Hoje (DS28)']]
+    .map(([k, t]) => `<button type="button" data-pw="${k}" data-sec="${sec.id}" aria-pressed="${which === k}">${t}</button>`).join('');
+  const isFase = sec.id === 'fase';
+  return `<h2><span class="num">${sec.n}</span> ${esc(sec.titulo)}</h2>
+    <p class="intro">${esc(sec.intro)}</p>
+    ${sec.id === 'fundos' ? `<h3>Superfícies flutuantes: todas no Fundo 2</h3>
+      <div class="tw"><table class="lv"><thead><tr><th>Superfície</th><th>Hoje</th><th>Proposta</th></tr></thead><tbody>
+      ${CONFIG.flutuantes.map((f) => `<tr><td>${esc(f.s)}</td><td><code>${esc(f.h)}</code></td><td>${esc(f.n)}</td></tr>`).join('')}
+      </tbody></table></div>` : ''}
+    ${sec.id === 'preench' ? '<div class="note">Papéis de uso real: botão cinza, selo, tecla (kbd), chips, avatar sem foto, “+N”, trilhos, faixas de cabeçalho e esqueleto. Repouso = Preenchimento 1; com mouse e foco = Preenchimento 2. O estado selecionado está em aberto (D6).</div>' : ''}
+    ${sec.id === 'linhas' ? '<div class="note">Anel de foco (ring-ring, 34 usos) usa a cor principal, por isso não entra nesta escala. Borda com mouse não tem nível (falta cor).</div>' : ''}
+    ${sec.id === 'semanticas' ? '<div class="note">Fora desta seção: o botão de sucesso forte (success-strong, 0,53 de luz) é outra cor de botão e não é coberto aqui.</div>' : ''}
+    ${isFase ? '<div class="note">Receita única para as três fases: cartão = cor da fase na tela (15% claro, 40% escuro, mistura em oklab); com mouse = 30% e 70%; borda = 30% e 55% (srgb); texto = luminosidade fixa 0,35 e 0,92 da própria fase. A Fase 3 é uma proposta minha, sem aprovação.</div>' : ''}
+    <h3>Níveis e valores${isFase ? ' (uma linha por nível, uma coluna por cor de fase)' : ''}</h3>
+    <div class="small">Paleta em foco: <b>${P[S.pal].label}</b>. ${isFase ? '' : 'Diferença marcada quando antes e hoje passam de 0,01 de luz.'}</div>
+    <div class="tw"><table class="lv" id="t-${sec.id}">${tableHTML(sec)}</table></div>
+    <h3>Ajustar (${P[S.pal].label}, por modo)</h3>
+    <p class="small">Os controles começam no valor de antes do DS28. Claro e escuro têm controle próprio. Em percentual, é a parte da cor misturada na tela. Em luz, é a diferença (ΔL) sobre a tela, ou a luz absoluta quando o nível não depende da tela.</p>
+    <div class="ajustes" id="a-${sec.id}">${slidersHTML(sec)}</div>
+    <p><button type="button" class="btn" data-reset="${sec.id}">Voltar esta seção ao antes do DS28 (todas as paletas)</button></p>
+    <h3>Prévia</h3>
+    <div class="seg" role="group" aria-label="Valores usados na prévia">${wb}</div>
+    <div id="p-${sec.id}">${previewHTML(sec)}</div>
+    <details><summary>CSS real desta seção (copie daqui)</summary><pre id="c-${sec.id}">${esc(cssText(sec))}</pre></details>
+    <details><summary>Como contei os usos (busca no app)</summary><pre>${esc(grepHelp(sec))}</pre></details>
+    <div class="aprov"><label><input type="checkbox" data-ok="${sec.id}" ${S.ok[sec.id] ? 'checked' : ''}> Aprovado</label></div>
+    <label class="nota">Notas<textarea data-note="${sec.id}">${esc(S.nt[sec.id] || '')}</textarea></label>`;
+}
+function grepHelp(sec) {
+  const base = "grep -rEo --include='*.tsx' --include='*.ts' --include='*.css' --exclude-dir=ui-sections --exclude-dir=data --exclude=routeTree.gen.ts '<padrão>' app | wc -l";
+  const lines = [`Base: ${base}`, ''];
+  sec.levels.forEach((id) => {
+    const lv = LV[id];
+    lines.push(`${lv.nome}: ${lv.pat.map((p) => `'${p}'`).join(' e ')}`);
+    lines.push(`   ${lv.uso}`);
+  });
+  lines.push('');
+  lines.push('Os números são busca por texto. Não contam ocorrências montadas por concatenação.');
+  return lines.join('\n');
+}
+
+/* ---------- Full-page renderers ---------- */
+function renderFato() {
+  const pals = PAL_KEYS;
+  const head = `<thead><tr><th>Nível</th>${pals.map((p) => `<th>${P[p].label} claro</th><th>${P[p].label} escuro</th>`).join('')}</tr></thead>`;
+  const rows = CONFIG.levels.filter((lv) => lv.sobre && lv.sec !== 'fase' && lv.sec !== 'semanticas' && lv.sec !== 'imagem').map((lv) => {
+    const cells = pals.map((p) => MODES.map((_, mi) => {
+      const a = resolve(lv.id, 'antes', p, mi, null);
+      const h = resolve(lv.id, 'hoje', p, mi, null);
+      /* This summary always measures against the page, so the shown ΔL matches the L flag. */
+      const da = a.L - resolve('pg', 'antes', p, mi, null).L;
+      const dh = h.L - resolve('pg', 'hoje', p, mi, null).L;
+      const flag = Math.abs(a.L - h.L) > 0.01;
+      return `<td class="${flag ? 'flagcell' : ''}">${sx(da)} → ${sx(dh)}${flag ? ' <span class="dif">difere</span>' : ''}</td>`;
+    }).join('')).join('');
+    return `<tr><th scope="row">${esc(lv.nome)}</th>${cells}</tr>`;
+  }).join('');
+  document.getElementById('fato-tab').innerHTML = `${head}<tbody>${rows}</tbody>`;
+  const flagged = [];
+  CONFIG.levels.filter((lv) => lv.sobre && lv.sec !== 'fase').forEach((lv) => {
+    pals.forEach((p) => MODES.forEach((_, mi) => {
+      const a = resolve(lv.id, 'antes', p, mi, null); const h = resolve(lv.id, 'hoje', p, mi, null);
+      if (Math.abs(a.L - h.L) > 0.01) flagged.push({ lv, p, mi, d: a.L - h.L });
+    }));
+  });
+  flagged.sort((x, y) => Math.abs(y.d) - Math.abs(x.d));
+  const top = flagged.slice(0, 3).map((f) => `${f.lv.nome} (${P[f.p].label}, ${mname(f.mi).toLowerCase()}): ${sx(f.d)}`).join('; ');
+  document.getElementById('fato-note').innerHTML = `<b>Diferenças acima de 0,01 em ${flagged.length} casos.</b> Maiores: ${esc(top)}.<br>No Carbono claro, a tela é branco puro (L 1,000). Antes, o cartão de ação ficava em L 0,980 (um pouco mais escuro que a tela). Pela fórmula única ele vai a L 1,020, que a tela recorta em branco: o cartão e o menu de ação somem sobre a tela. Esse é o caso que pede a decisão D0. O flutuante (Fundo 2) do Carbono claro já era branco sobre branco antes: o +0,10 de antes também era recortado pela tela.`;
+}
+function renderSections() {
+  SEC.forEach((sec) => {
+    const el = document.getElementById('s-' + sec.id);
+    el.innerHTML = sectionShell(sec);
+  });
+}
+function refreshSection(secId) {
+  const sec = SEC.find((s) => s.id === secId);
+  const t = document.getElementById('t-' + secId);
+  if (t) t.innerHTML = tableHTML(sec);
+  const p = document.getElementById('p-' + secId);
+  if (p) p.innerHTML = previewHTML(sec);
+  const c = document.getElementById('c-' + secId);
+  if (c) c.textContent = cssText(sec);
+}
+function renderCobertura() {
+  const cnt = { ok: 0, falta: 0, conflito: 0 };
+  CONFIG.cobertura.forEach((r) => { cnt[r.s] += 1; });
+  document.getElementById('cob-sum').textContent = `${CONFIG.cobertura.length} papéis: ${cnt.ok} com nível, ${cnt.falta} com falta de cor, ${cnt.conflito} em conflito. Cobertura sem transparência escrita à mão: todos os papéis acima usam um nível desta escala, ou ficam marcados.`;
+  const lab = { ok: 'coberto', falta: 'falta cor', conflito: 'conflito' };
+  const cls = { ok: 'st-ok', falta: 'st-falta', conflito: 'st-conf' };
+  document.getElementById('cob-tab').innerHTML = `<thead><tr><th>Papel real no app</th><th>Uso hoje (busca)</th><th>Nível proposto</th><th>Situação</th><th>Observação</th></tr></thead>
+    <tbody>${CONFIG.cobertura.map((r) => `<tr><th scope="row">${esc(r.p)}</th><td class="small">${esc(r.u)}</td><td>${esc(r.n)}</td><td><span class="st ${cls[r.s]}">${lab[r.s]}</span></td><td class="small">${esc(r.o || '')}</td></tr>`).join('')}</tbody>`;
+}
+function renderDecisoes() {
+  const box = document.getElementById('decisoes');
+  box.innerHTML = CONFIG.decisoes.map((d) => `<div class="dec"><h3>${d.id} · ${esc(d.pergunta)}</h3>
+    <p class="small"><b>Origem:</b> ${esc(d.origem)}</p>
+    <p class="small"><b>Evidência:</b> ${esc(d.evidencia)}</p>
+    <label class="nota">Sua resposta ou nota<textarea data-dec="${d.id}">${esc(S.dn[d.id] || '')}</textarea></label></div>`).join('');
+  document.getElementById('limites').innerHTML = CONFIG.limites.map((l) => `<li>${esc(l)}</li>`).join('');
+}
+function renderCobSection() {
+  const cb = document.querySelector('[data-ok="cobertura"]');
+  if (cb) cb.checked = !!S.ok.cobertura;
+  const ta = document.querySelector('[data-note="cobertura"]');
+  if (ta) ta.value = S.nt.cobertura || '';
+}
+function renderTop() {
+  document.querySelectorAll('[data-pal]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.pal === S.pal)));
+  document.querySelectorAll('[data-vis]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.vis === S.vis)));
+}
+function renderAll() {
+  renderTop();
+  renderFato();
+  renderSections();
+  renderCobertura();
+  renderCobSection();
+  renderDecisoes();
+}
+
+/* ---------- Summary for copy ---------- */
+function valText(lv, pal, mi) {
+  const s = specOf(lv, 'atual', pal, mi);
+  if (s.k === 'rel') return `ΔL ${sx(s.v)}`;
+  if (s.k === 'mix') return `${s.v}%`;
+  if (s.k === 'abs' || s.k === 'faseTxt') return `L ${fx(s.v)}`;
+  return 'fixo';
+}
+function resumo() {
+  const out = [];
+  out.push('DS35 · Escala de cores: resumo das decisões');
+  out.push(`Paleta em foco: ${P[S.pal].label}. Modo: ${S.vis === 'both' ? 'claro e escuro' : S.vis === 'light' ? 'só claro' : 'só escuro'}.`);
+  const apr = SEC.filter((s) => S.ok[s.id]).map((s) => s.titulo);
+  out.push(`Seções aprovadas: ${apr.length ? apr.join(', ') : 'nenhuma'}.`);
+  out.push(`Cobertura aprovada: ${S.ok.cobertura ? 'sim' : 'não'}.`);
+  SEC.forEach((s) => {
+    out.push('');
+    out.push(`## ${s.n}. ${s.titulo} (${S.ok[s.id] ? 'aprovada' : 'não aprovada'})`);
+    if (S.nt[s.id]) out.push(`Notas: ${S.nt[s.id]}`);
+    s.levels.forEach((id) => {
+      const lv = LV[id];
+      const nome = S.nm[id] ? ` · nome sugerido: ${S.nm[id]}` : '';
+      const vals = Object.keys(P).map((p) => `${P[p].label}: claro ${valText(lv, p, 0)} / escuro ${valText(lv, p, 1)}`).join(' | ');
+      out.push(`- ${lv.nome} (${lv.id})${nome}. ${vals}`);
+    });
+  });
+  if (S.nt.cobertura) out.push(`\nNotas da cobertura: ${S.nt.cobertura}`);
+  out.push('');
+  out.push('## Decisões');
+  CONFIG.decisoes.forEach((d) => { out.push(`- ${d.id}: ${d.pergunta}${S.dn[d.id] ? ' Resposta: ' + S.dn[d.id] : ''}`); });
+  return out.join('\n');
+}
+
+/* ---------- Events ---------- */
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('button');
+  if (!t) return;
+  if (t.dataset.pal) { S.pal = t.dataset.pal; save(); renderAll(); return; }
+  if (t.dataset.vis) { S.vis = t.dataset.vis; save(); renderAll(); return; }
+  if (t.dataset.pw) {
+    S.pw[t.dataset.sec] = t.dataset.pw; save();
+    document.querySelectorAll(`[data-sec="${t.dataset.sec}"][data-pw]`).forEach((b) => b.setAttribute('aria-pressed', String(b === t)));
+    refreshSection(t.dataset.sec);
+    return;
+  }
+  if (t.dataset.reset) {
+    const sec = SEC.find((s) => s.id === t.dataset.reset);
+    sec.levels.forEach((id) => { delete S.v[id]; });
+    save(); renderAll();
+    return;
+  }
+  if (t.id === 'reset-all') { S.v = {}; save(); renderAll(); return; }
+  if (t.id === 'copy-sum') {
+    const box = document.getElementById('resumo');
+    const txt = resumo();
+    box.hidden = false; box.value = txt;
+    box.focus(); box.select();
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt).then(() => { t.textContent = 'Resumo copiado'; }, () => { t.textContent = 'Texto selecionado: copie com o teclado'; });
+      } else { t.textContent = 'Texto selecionado: copie com o teclado'; }
+    } catch (err) { t.textContent = 'Texto selecionado: copie com o teclado'; }
+    box.scrollIntoView({ block: 'nearest' });
+  }
+});
+document.addEventListener('input', (e) => {
+  const t = e.target;
+  if (t.matches('input[type="range"][data-id]')) {
+    const id = t.dataset.id; const mi = Number(t.dataset.mi); const n = Number(t.value);
+    S.v[id] = S.v[id] || {};
+    S.v[id][S.pal] = S.v[id][S.pal] || [];
+    S.v[id][S.pal][mi] = n;
+    save();
+    const k = LV[id].antes[S.pal][mi].k;
+    t.nextElementSibling.textContent = outText(k, n);
+    refreshSection(LV[id].sec);
+    return;
+  }
+  if (t.matches('input[data-name]')) { S.nm[t.dataset.name] = t.value; save(); return; }
+  if (t.matches('textarea[data-note]')) { S.nt[t.dataset.note] = t.value; save(); return; }
+  if (t.matches('textarea[data-dec]')) { S.dn[t.dataset.dec] = t.value; save(); }
+});
+document.addEventListener('change', (e) => {
+  const t = e.target;
+  if (t.matches('input[type="checkbox"][data-ok]')) { S.ok[t.dataset.ok] = t.checked; save(); }
+});
+
+renderAll();
+</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # ARQ-01 — Auditar a estrutura da UZZINA e propor simplificações
 
-**Status.** Aberto para investigação. A entrega é um relatório da estrutura atual e uma proposta de mudanças priorizadas.
+**Status.** Encerrado pelo proprietário em 19/11/2026. Estudo entregue em 18/11/2026. Em 19/11, foram retiradas consultas antigas de Leads, revisão pública e listas de ações no commit local `98a81e9`. As propostas de teclado da janela Arquivos e de consulta de sessão do portal foram autorizadas, implementadas e verificadas na `main` local, ainda sem commit. O encerramento é do ticket. A entrega permanece local, com commit e publicação pendentes. Os apontamentos de teclado e altura do cartão foram fechados pelo proprietário. A reorganização de Linha e Bloco segue em [ticket próprio](02-shared-line-and-block-details.md). [Mapa, evidências e prioridades](../../../docs/audits/2026-11-18-arq01-estrutura.md).
 
 **Bloqueado por.** Nenhum ticket para iniciar a investigação. Cada mudança proposta depende de autorização explícita do proprietário.
 
@@ -23,10 +23,10 @@ Entender quais partes da UZZINA sustentam os fluxos atuais, quais mantêm caminh
 
 ## Critérios de conclusão
 
-- [ ] O relatório apresenta um mapa da arquitetura atual, a matriz de cobertura e os percursos rastreados. Explica o que foi verificado em código, o que foi reproduzido com dados controlados e o que segue inconclusivo, sem extrapolar para produção.
-- [ ] Cada achado prioritário inclui evidência rastreável, o fluxo e o local que o proprietário reconhece, o antes e o depois proposto, dependências, esforço, risco e uma verificação objetiva. Candidatos a remoção têm justificativa separada de propostas de simplificação.
-- [ ] O resumo executivo indica as primeiras decisões para o proprietário, com opções de manter, retirar, simplificar ou investigar melhor. Para mudanças sem diferença visual esperada, diz o que deve continuar funcionando na tela e qual trabalho de manutenção ficaria mais simples.
-- [ ] A entrega fica em relatório e proposta. Qualquer verificação executável usa ambiente isolado e dados fictícios, com preservação das mudanças externas no checkout. Nenhum código de implementação, exclusão de módulo, branch de implementação, SQL aplicado ou publicação faz parte desta etapa.
+- [x] O relatório apresenta um mapa da arquitetura atual, a matriz de cobertura e os percursos rastreados. Explica o que foi verificado em código, o que foi reproduzido com dados controlados e o que segue inconclusivo, sem extrapolar para produção.
+- [x] Cada achado prioritário inclui evidência rastreável, o fluxo e o local que o proprietário reconhece, o antes e o depois proposto, dependências, esforço, risco e uma verificação objetiva. Candidatos a remoção têm justificativa separada de propostas de simplificação.
+- [x] O resumo executivo indica as primeiras decisões para o proprietário, com opções de manter, retirar, simplificar ou investigar melhor. Para mudanças sem diferença visual esperada, diz o que deve continuar funcionando na tela e qual trabalho de manutenção ficaria mais simples.
+- [x] A entrega fica em relatório e proposta. Qualquer verificação executável usa ambiente isolado e dados fictícios, com preservação das mudanças externas no checkout. Nenhum código de implementação, exclusão de módulo, branch de implementação, SQL aplicado ou publicação faz parte desta etapa.
 
 ## Modelos sugeridos
 

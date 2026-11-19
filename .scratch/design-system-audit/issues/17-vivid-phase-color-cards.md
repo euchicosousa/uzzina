@@ -1,6 +1,8 @@
 # DS17 — Testar a cor viva da fase nos cartões de ação
 
-**Status.** Aberto em 13/11/2026 a pedido do proprietário. Estudo, implementação e migração em 13/11 (seções abaixo): código em `2581cc9`, enviado ao GitHub; migração aplicada em produção. Falta o aceite visual do proprietário e testar salvar as duas preferências pelo app.
+**Status.** Concluído pelo proprietário em 18/11/2026.
+
+**Registro anterior.** Aberto em 13/11/2026 a pedido do proprietário. Estudo, implementação e migração em 13/11 (seções abaixo): código em `2581cc9`, enviado ao GitHub; migração aplicada em produção. Falta o aceite visual do proprietário e testar salvar as duas preferências pelo app.
 
 ## O que a pessoa vê
 

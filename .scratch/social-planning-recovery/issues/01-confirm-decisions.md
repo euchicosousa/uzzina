@@ -6,7 +6,7 @@
 - **Anthropic** — Claude Haiku 5.5, para rastrear decisões existentes e consolidar o contrato de aceite.
 - **Google** — Gemini 3.8 Flash, para rastrear decisões existentes e consolidar o contrato de aceite.
 
-**Status:** needs-product-decision (D1, D2, D3, D4, D5, D6; perguntas em [T01-evidence](../../../docs/audits/social-planning-recovery/T01-evidence.md#4-perguntas-mínimas-ao-proprietário))
+**Status:** needs-product-decision. D1 confirmado. D2–D6 têm direções confirmadas e regras em discussão. [Revisão vigente de 19/11](../../../docs/plans/social-planning-design-decisions.md#revisão-do-proprietário--19112026).
 **Blocked by:** Nenhum.
 **Origem:** C00; decisões D1–D6 e evidência de aprovação.
 **Prioridade:** P2
@@ -19,7 +19,7 @@
 
 1. Ler o bloco D1–D6 vigente e comparar com as decisões anteriores. Para cada decisão, indicar fonte, autor e data da confirmação. “Siga os tickets” autoriza trabalho, mas não demonstra a resposta específica a uma pergunta de produto.
 2. Classificar cada decisão: confirmada por fonte, proposta técnica ou pendente. Se o chat de origem não estiver acessível, registrar “confirmação não verificada”; não alegar que não houve aprovação.
-3. Resolver somente as lacunas que afetam execução: D1 leitura/edição por autor, membro e admin; D2 semana e relação frequência/dias; D3 soma manual/auto/extras; D4 colisão de comemoração com regular e várias no mesmo dia; D5 pendentes, data/hora/fuso, responsáveis e campos; D6 entrada/saída editorial mínima.
+3. Resolver somente as lacunas que afetam execução: D2 composição de intervalos, frequência e dias; D3 preferência relativa, arredondamento e extras; D4 comemorações dentro da própria proposta; D5 padrão de data, hora/fuso e confirmação; D6 campos editoriais e preenchimento do Direcionamento. D1 já restringe todo o Planejamento a admin ativo.
 4. Registrar exemplos concretos: três regulares e uma comemoração no dia regular; duas comemorações na mesma data; tema sem data antes de finalizar; proposta com aprovadas e pendentes. Para cada um, indicar resultado esperado aprovado.
 5. Manter o já definido: página interna, Mesa, desktop, Prism, mesmo calendário, ações só na finalização e nova geração integral.
 6. Publicar a matriz D1–D6 em documento de decisões e ligar cada resposta ao teste dependente. Não implementar produto neste ticket.
@@ -46,7 +46,7 @@
 - Alterações formatadas e verificações pertinentes, sem escrever “concluído” com critério pendente.
 - CURRENT atualizado apenas com fatos observados. Não alterar status de outros tickets, SQL remoto ou deploy por inferência.
 
-## Execução — 06/11/2026
+## Execução histórica — 06/11/2026
 
 Rastreamento feito sobre `ea8b47b`, somente documental. Relatório: [T01-evidence](../../../docs/audits/social-planning-recovery/T01-evidence.md).
 

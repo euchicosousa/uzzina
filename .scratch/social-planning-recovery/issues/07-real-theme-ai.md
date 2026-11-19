@@ -20,7 +20,7 @@
 1. Tirar EDITORIAL_ANGLES e resolveTopic truncado do caminho de produção. Fixtures de teste não podem ser fallback do usuário.
 2. Implementar operação específica de Planejamento: autenticação, autorização atual ao parceiro e leitura canônica de nome/Contexto/voice. Integrar planning_instructions somente conforme contrato atual, sem recriar campo.
 3. Validar D6 e partner_name antes da quota persistente. Não confiar no contexto, nome ou identidade enviados pelo browser. Não modificar os fluxos permanentes de estratégias09.
-4. Chamar adaptador real do provedor no servidor, com direcionamento integral e saída estruturada. Validar formato, conteúdo mínimo e quantidade antes de aceitar.
+4. Chamar adaptador real do provedor no servidor com autorização de admin ativo e Direcionamento obrigatório. Carregar a instrução do cadastro do parceiro na Mesa e capturar a versão editada usada naquela solicitação. Contexto é opcional. Validar formato, conteúdo mínimo e quantidade. A edição na Mesa pertence à solicitação por padrão proposto, com gravação permanente no cadastro a confirmar em D6.
 5. Definir identidade de operação e repositório durável: capturada → geração em curso → resultado retido → proposta confirmada; falha/resultado incerto não autoriza repetir chamada indiscriminadamente. Mapear esses estados aos mecanismos existentes sem impor um framework novo.
 6. Reter resultado aceito antes de uma escrita recuperável da proposta. Retry do mesmo pedido técnico reutiliza resultado/identidade; nova solicitação explícita gera operação/proposta novas.
 7. UI usa estados reais de geração/salvamento/erro/retry. Não apagar proposta anterior nem apresentar templates em falha.

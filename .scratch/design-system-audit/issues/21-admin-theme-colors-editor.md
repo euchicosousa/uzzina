@@ -1,8 +1,10 @@
 # DS21 — Página exclusiva do Admin para edição completa e visualização lado a lado de todas as cores dos temas
 
-**Status.** Fase 1 (página `/app/admin/themes` + botão Salvar `.md`) implementada localmente em 16/11/2026, aguardando aceite visual antes da Fase 2 (correção do "Atenção" no escuro e prioridades derivadas). Modelo vigente: [protótipo v2](../prototipo-ds21-v2.html) com a [revisão](../../../docs/audits/2026-11-16-ds21-review.md).
+**Status.** Concluído como ticket independente em 18/11/2026 por decisão do proprietário. A primeira versão está preservada no commit 46a92ce. As próximas adaptações do editor passam à fase 5 do [DS35](35-unified-surfaces-and-neutrals.md), junto com a revisão das cores.
 
-**Bloqueado por.** Nenhum ticket (pode começar o estudo imediatamente).
+**Registro anterior.** Fase 1 (página `/app/admin/themes` + botão Salvar `.md`) implementada localmente em 16/11/2026, aguardando aceite visual antes da Fase 2 (correção do "Atenção" no escuro e prioridades derivadas). Modelo vigente: [protótipo v2](../prototipo-ds21-v2.html) com a [revisão](../../../docs/audits/2026-11-16-ds21-review.md).
+
+**Continuidade.** O trabalho futuro no editor segue as decisões de cores do ticket principal.
 
 ## O que a pessoa vê hoje
 

@@ -1,8 +1,10 @@
 # DS19 — Levar a "Cor da fase" do menu Visualizar para Minha Conta → Aparência
 
-**Status.** Código implementado em 16/11/2026 e enviado ao GitHub (`8d9353e`), build ok; migração `20261116120000_phase_color_preference.sql` aplicada em produção em 16/11 com autorização do proprietário; falta confirmar o deploy Ready, testar salvar pelo app e o aceite visual. Aberto em 16/11/2026 a pedido do proprietário; decisões na seção "Decisões do proprietário".
+**Status.** Concluído pelo proprietário em 18/11/2026.
 
-**Relação com o DS17.** O [DS17](17-vivid-phase-color-cards.md) criou a opção Viva e as duas preferências "Cor viva no escuro" e "Texto na cor viva"; ele ainda aguarda aceite visual. O DS19 não muda a aparência dos cartões: muda **onde se escolhe** a cor da fase e **quando** as duas preferências aparecem.
+**Registro anterior.** Código implementado em 16/11/2026 e enviado ao GitHub (`8d9353e`), build ok; migração `20261116120000_phase_color_preference.sql` aplicada em produção em 16/11 com autorização do proprietário; falta confirmar o deploy Ready, testar salvar pelo app e o aceite visual. Aberto em 16/11/2026 a pedido do proprietário; decisões na seção "Decisões do proprietário".
+
+**Relação com o DS17.** O [DS17](17-vivid-phase-color-cards.md) criou a opção Viva e as duas preferências "Cor viva no escuro" e "Texto na cor viva". O DS19 não muda a aparência dos cartões: muda **onde se escolhe** a cor da fase e **quando** as duas preferências aparecem.
 
 ## O que a pessoa vê hoje
 

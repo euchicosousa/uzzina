@@ -1,8 +1,8 @@
 # UP01 — Estudar um envio de arquivos próprio, com arrastar e soltar, no lugar do widget do Cloudinary
 
-**Status.** Estudo concluído em 18/11/2026. O proprietário autorizou a etapa 1 e relatou funcionamento normal na versão local. A galeria /ui → Uzzina → Upload de arquivos mostra a janela real para Essencial e Instagram com envio simulado, escala por largura e prévia lateral em desktop. Typecheck e três verificações focadas com transporte simulado passaram. Publicação e etapas seguintes pendentes. Nasceu do [INF01](../../backend-platform/issues/01-appwrite-migration-study.md), encerrado no mesmo dia. A análise foi documental e estática, com inspeção somente leitura do Console: nenhum arquivo do app foi alterado e nenhum upload real foi feito. Entregas: [relatório técnico](../up01-study-report.md) e [prévia fictícia](../up01-preview.html), verificada em DOM e viewport móvel simulada; o drop de arquivos reais ainda não foi ensaiado. O Console confirma o preset unsigned `bussola_unsigned` e plano Free; a captura do painel da conta confirma os limites por tipo. A conferência do preset confirmou ausência de transformações e de uma lista explícita de formatos. Consulte o relatório antes de definir validações. Implementação requer aprovação explícita em escopo próprio.
+**Status.** Encerrado em 18/11/2026 por decisão do proprietário após o aceite local. A janela Arquivos de Essencial e Instagram foi enviada à main do GitHub no commit c54a14c7. O build da entrega isolada passou. O status da Vercel para esse commit ficou pronto. Detalhes do estudo e do Console em [relatório técnico](../up01-study-report.md). Veja a [prévia fictícia do estudo](../up01-preview.html) ou a galeria do app em /ui → Componentes Uzzina → Upload de arquivos.
 
-## O que a pessoa vê hoje
+## Como era antes
 
 Para adicionar um arquivo a uma ação, a pessoa clica em um botão e o app abre a **janela do Cloudinary** (o widget). Ela demora para abrir, tem visual próprio, e só depois de escolher o arquivo ali o envio começa. Não dá para arrastar uma imagem da área de trabalho e soltar dentro do app.
 
@@ -73,9 +73,9 @@ A ideia é **simplificar**: um envio próprio, um componente só, sem a janela d
 - [x] Proposta de fluxo com celular, teclado e erros no relatório; conferir a prévia fictícia. Testes de interação real permanecem para implementação.
 - [x] Prévia isolada e roteiro curto.
 - [x] Plano em etapas alinhado às decisões anteriores do proprietário.
-- [x] Etapa 1 autorizada e implementada na main local.
+- [x] Etapa 1 autorizada, aceita e enviada à main do GitHub.
 
-**Próxima decisão do proprietário:** definir quando iniciar a etapa de arrastar direto na prévia do Instagram. A conferência em aparelho e a publicação da etapa 1 ficam pendentes.
+**Ideias para etapas futuras.** Arrastar direto na prévia do post do Instagram, recorte próprio de avatar e troca do widget no portal. Cada etapa depende de escopo e aprovação próprios.
 
 ## Modelos sugeridos
 

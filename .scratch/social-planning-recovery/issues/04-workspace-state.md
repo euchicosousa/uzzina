@@ -18,7 +18,7 @@
 ## Executar nesta ordem
 
 1. Definir estado distinto para configuração da próxima geração, proposta canônica aberta e rascunho editado. Não criar store global só para isso.
-2. Derivar lista/calendário da proposta aberta, nunca das datas mutáveis do formulário esquerdo.
+2. Derivar a revisão da proposta aberta da versão canônica. A prévia de nova configuração é separada e deriva do formulário. Alternar entre configurar e revisar deve deixar claro qual conteúdo está na coluna direita.
 3. Reabrir por leitura autorizada T02, com versão. Restaurar configuração completa e validar campos ausentes; não herdar valores de outro plano silenciosamente.
 4. Coordenar troca de parceiro, proposta e saída com a guarda vigente. Cancelar mantém contexto e URL; descartar é explícito. Não substituir guardas globais.
 5. Associar respostas a identidade, parceiro e abertura. Última escolha válida vence; nenhuma resposta atrasada reabre contexto antigo.

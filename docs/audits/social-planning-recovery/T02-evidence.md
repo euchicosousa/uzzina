@@ -1,5 +1,7 @@
 # T02 — Evidência de Execução: Persistência Canônica, RLS e Concorrência CAS
 
+Registro histórico da prova local. O proprietário restringiu o Planejamento a administradores ativos em 19/11. As permissões para membros abaixo precisam de revisão conforme a [revisão do proprietário](../../plans/social-planning-design-decisions.md#revisão-do-proprietário--19112026).
+
 **Status:** implemented-unverified (código e testes unitários/CAS locais aprovados; aplicação remota do SQL aguarda execução no console Supabase pelo proprietário)  
 **Executor:** Antigravity  
 **Data e base/diff:** 03/11/2026 sobre commit `ad0c0ed`  
@@ -8,7 +10,7 @@
 
 ## 1. Escopo e Dependências
 
-- **Ticket:** T02 — Salvar e editar propostas no banco com autorização e versão ([`02-canonical-storage.md`](../../.scratch/social-planning-recovery/issues/02-canonical-storage.md)).
+- **Ticket:** T02 — Salvar e editar propostas no banco com autorização e versão ([`02-canonical-storage.md`](../../../.scratch/social-planning-recovery/issues/02-canonical-storage.md)).
 - **Achados Resolvidos:** R4 (storage local sem persistência real), R5 (migration com tipos incompatíveis e `pe.role`), R11 (falta de Compare-And-Swap real na concorrência).
 - **Decisões:** D1 (compartilhamento restrito a membros autorizados ao parceiro em `partners.users_ids` ou `public.is_active_admin()`) e D6 (contrato estruturado de entradas e sugestões).
 
@@ -90,7 +92,6 @@ D1 não está confirmada pelo proprietário; P02–P05 e P10 permanecem provisó
 **Status:** permanece `implemented-unverified`.
 
 Decisão do proprietário em 06/11/2026: não instalar PostgreSQL local nesta máquina. A verificação P01–P10 continua pendente de outro ambiente isolado.
-
 ## Acesso e propostas salvas em 19/11/2026
 
 A listagem de tabelas do conector Supabase para o esquema público do projeto usado pelo app retornou as tabelas conhecidas de parceiros e ações e não retornou `public.social_plans`. A ausência no catálogo explica a falha da consulta capturada como HTTP 404. Não houve reprodução de HTTP em produção com uma conta do app, leitura de propostas ou alteração remota.

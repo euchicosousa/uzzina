@@ -7,19 +7,19 @@
 - **Google** — Gemini 4 Argon, para integrar calendário compartilhado e proteger movimentações. Disponibilidade depende do plano do Antigravity.
 
 **Status:** ready-for-agent
-**Blocked by:** T02 e T04; T05 para usar editor com salvamento protegido.
+**Blocked by:** A prévia pode ser estudada imediatamente. Para integrar a prévia, usar o cálculo de T03 e a composição de T12. A revisão com escrita depende de T02/T04 e do editor protegido de T05.
 **Origem:** R7; C07.
 **Prioridade:** P2
 **Regra de conclusão:** todos os critérios e testes deste ticket são obrigatórios. Sem evidência, usar implemented-unverified; com falha, verification-failed. Ler a regra completa no README.
 **Instrução:** não iniciar integração dependente antes de verificar os bloqueios. Caminhos e símbolos estão no mapa de referências desta série.
 
-**What to build:** Planejamento usa o mesmo núcleo de calendário do app, incluindo ajustes laterais e rolagem, enquanto movimento afeta exclusivamente sugestões.
+**What to build:** Antes de gerar, a coluna direita mostra o período e os formatos no calendário ou a distribuição por formato na lista de quantidade fechada. Na revisão, mapa e movimentos usam apenas as sugestões da proposta.
 
 ## Executar nesta ordem
 
 1. Identificar Calendar/CalendarWithDnd e consumidores operacionais. Registrar que componente será composto e quais acoplamentos a ações precisam ser separados.
 2. Reutilizar a implementação real. Extrair apenas uma fronteira de dados/eventos necessária quando houver acoplamento. Copiar JSX/estilo para nova grade não conta como reutilização.
-3. Remover do caminho ativo a grade independente de PlanningCalendarView. Não falsificar sugestão como Action nem chamar handlers de ações.
+3. Remover do caminho ativo a grade independente de PlanningCalendarView. Compor a apresentação do calendário com dados de prévia ou de sugestões. Não consultar ações existentes, falsificar sugestão como Action nem chamar handlers de ações.
 4. Conectar seleção/edição T05 e movimento à escrita versionada T02. Identidade da sugestão permanece estável.
 5. Preview é específico da operação. Falha desfaz somente esse preview; resposta antiga não restaura snapshot sobre edição mais recente.
 6. Preservar controles/ajustes laterais, alturas e ambos os eixos na coluna direita; esquerda rola independentemente.
@@ -42,7 +42,7 @@
 
 - [ ] K01–K04/K06 têm testes comportamentais; K05/K07 têm roteiro real de navegador e evidência.
 - [ ] Diff demonstra composição do calendário existente, não uma réplica visual.
-- [ ] Espionar fronteira/HTTP de ações confirma zero mutações nas operações de sugestões.
+- [ ] Conferir zero leitura e zero escrita no fluxo de ações ao configurar, mostrar a prévia ou mover sugestões. Confirmar o antes/depois de período, frequência e formatos na mesma coluna direita.
 - [ ] Proprietário recebe roteiro visual; sem navegador disponível, registrar verificação pendente.
 
 **Reprova automaticamente:** import do calendário não utilizado; grid copiado; apenas overflow e HTML5 drag chamados de integração concluída.

@@ -6,8 +6,8 @@
 - **Anthropic** — Claude Opus 5.5, para validar autorização, concorrência de versão e reabertura.
 - **Google** — Gemini 4 Argon, para validar autorização, concorrência de versão e reabertura. Disponibilidade depende do plano do Antigravity.
 
-**Status:** implemented-unverified (verificação isolada de 06/11 não executada: sem PostgreSQL local; P01–P10 sem resultado; D1 não confirmada, testes de acesso provisórios; código, models e CAS testados localmente com dublê; SQL preparado em supabase/migrations/20261102120000_social_plans.sql aguarda aplicação remota; evidência em docs/audits/social-planning-recovery/T02-evidence.md)
-**Blocked by:** T01/D1 e D6 confirmadas. Pode inventariar catálogo antes.
+**Status:** implemented-unverified. A versão preparada segue a proposta antiga de acesso de membros. D1 agora exige admin ativo e requer revisão da implementação, dos testes e do SQL preparado. A evidência de 06/11 é histórica.
+**Blocked by:** Retomada da série. D1 já foi definido, então a revisão de acesso pode avançar independentemente. A validação de toda a proposta usa a saída ainda pendente de D6.
 **Origem:** R4, R5 e R11; C01.
 **Prioridade:** P1
 **Regra de conclusão:** todos os critérios e testes deste ticket são obrigatórios. Sem evidência, usar implemented-unverified; com falha, verification-failed. Ler a regra completa no README.
@@ -20,7 +20,7 @@
 1. Inventariar catálogo/tipos/helpers atuais, migration preparada e todos os consumidores de storage. Registrar campos reais: não presumir people.role nem converter UUID/texto sem conferir.
 2. Corrigir/preparar migration incremental e executar a mesma migration em banco descartável controlado. Tabela, grants, RLS, constraints e versão devem ser os usados pelo app, não um schema de teste simplificado.
 3. Implementar leitura/lista/criação/edição em models/services autorizados; rota e componente não chamam .from(). Dados mutáveis são validados no limite; identidade vem da sessão.
-4. Exigir acesso ativo ao parceiro em cada operação. UPDATE protege origem e destino; parceiro/autoria não podem ser trocados por patch arbitrário. Administrador segue o contrato real ativo.
+4. Exigir administrador ativo para ler ou alterar qualquer proposta, incluindo as operações versionadas. Validar parceiro elegível. Preservar autoria e vínculo da proposta. Ocultar a entrada no menu, busca e tela do parceiro e aplicar a guarda administrativa na rota direta. Usar o padrão administrativo existente e verificar a regra no banco e no servidor.
 5. Fazer comparação da versão esperada e incremento no banco na mesma escrita. Retornar registro canônico; disputa resulta em conflito explícito, sem last-write-wins silencioso.
 6. Conectar lista, reabertura, edição, aprovação e rejeição da Mesa ao banco. Sem parceiro válido, exibir seleção sem listar tudo.
 7. Remover salvamento automático dentro do gerador e todos os fallbacks localStorage/default/global do fluxo ativo. Não importar cópias antigas sem autoria; não apagá-las silenciosamente.
@@ -34,15 +34,15 @@ Usar banco isolado real, identidades distintas e políticas reais. A configuraç
 | ID  | Ação                                                              | Resultado exato                                                                                       |
 | --- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | P01 | Aplicar migration sobre catálogo isolado compatível               | Sem coluna inexistente, erro de UUID/array ou grant ausente; CRUD autorizado funciona.                |
-| P02 | Autor cria P; outro cliente/navegador autorizado lê P             | Mesmo ID, entrada, sugestões e versão; localStorage pode estar vazio/desabilitado.                    |
-| P03 | Membro fora do parceiro lê/altera P por ID; anônimo tenta o mesmo | Nenhum conteúdo e nenhuma alteração; testar API e RLS diretamente quando aplicável.                   |
-| P04 | Conta inativa, parceiro arquivado ou vínculo revogado             | Novas leituras/escritas negadas segundo contrato; zero ampliação de escopo.                           |
+| P02 | Admin cria P; outro navegador ou admin ativo autorizado lê P             | Mesmo ID, entrada, sugestões e versão; localStorage pode estar vazio/desabilitado.                    |
+| P03 | Membro comum, inclusive do parceiro, ou sessão ausente acessa Mesa e dados | Entradas ocultas, rota e operações recusadas, sem conteúdo nem alteração. Verificar banco e servidor isolados.                   |
+| P04 | Admin inativo, papel removido ou parceiro arquivado             | Novas leituras/escritas negadas segundo contrato; zero ampliação de escopo.                           |
 | P05 | Ator tenta alterar autoria/parceiro por payload                   | Rejeitado; linha original inalterada.                                                                 |
 | P06 | Dois clientes editam versão V com alterações diferentes           | Exatamente uma escrita aceita; outra conflito. Versão V+1 e campos do vencedor, sem perda silenciosa. |
 | P07 | Desconectar escrita; salvar edição; reconectar e repetir          | Texto preservado, sem “salvo” falso; uma versão confirmada após retry.                                |
 | P08 | Logout/A→B durante leitura ou escrita pendente                    | Resposta de A não entra na UI/cache de B.                                                             |
 | P09 | Gerar/criar proposta e inspecionar armazenamento local            | Zero novas cópias em chaves default, globais ou por usuário; dados vêm da fronteira canônica.         |
-| P10 | Membro autorizado ao mesmo parceiro, mas não autor                | Leitura/edição exatamente conforme D1; não presumir que leitura permite escrita.                      |
+| P10 | Outro admin ativo usa proposta sem se tornar autor                | Leitura e edição versionada permitidas. Autoria e parceiro são preservados.                      |
 
 ## Acceptance criteria
 

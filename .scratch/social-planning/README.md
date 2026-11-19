@@ -1,5 +1,7 @@
 # Planejamento — tickets locais
 
+Registro histórico da série original. A [série de recuperação](../social-planning-recovery/README.md) é a referência da fila atual e continua em espera.
+
 Os tickets00–07 foram preparados após a revisão da divisão pelo proprietário. O08 foi adicionado depois para instruções reutilizáveis da marca, com somente Supabase concluído. São arquivos do tracker local; publicação documental não autoriza execução. A casca visual, os três acessos e a seleção de parceiro pela URL já foram preparados no app. O ticket00 corrige a configuração visual para o mockup escolhido; depois, o01 completa geração e persistência sem recriar página, Header/AppBar, acessos, seleção ou cabeçalho do portal. O00 foi solicitado somente para registro e execução posterior por outro agente.
 
 ## Tickets

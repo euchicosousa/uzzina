@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fundos e cinzas da UZZINA · Bancada de estudo</title>
+<style>
+  :root {
+    color-scheme: light;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f6f5f8;
+    color: #211d29;
+    --ink: #211d29;
+    --muted: #544b60;
+    --line: #ded9e6;
+    --paper: #fff;
+    --violet: #5633a6;
+    --wash: #ede6fb;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; }
+  button, select, input { font: inherit; }
+  button, select, summary, a { touch-action: manipulation; }
+  a { color: var(--violet); text-underline-offset: .16em; }
+  a:focus-visible, select:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--violet); outline-offset: 4px;
+  }
+  h1, h2, h3, p { margin: 0; }
+  h1 { font-size: clamp(2.25rem, 6.2vw, 4.7rem); line-height: 1.02; letter-spacing: -.047em; font-weight: 730; }
+  h2 { font-size: clamp(1.65rem, 3.4vw, 2.75rem); line-height: 1.12; letter-spacing: -.04em; }
+  h3 { font-size: 1.03rem; line-height: 1.35; }
+  p { line-height: 1.58; }
+  code { font: .94em ui-monospace, SFMono-Regular, Consolas, monospace; overflow-wrap: anywhere; }
+  .width { width: min(100% - 2.5rem, 77rem); margin-inline: auto; }
+  header { background: #20192b; color: #f7f2ff; }
+  .masthead { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .8rem; padding-block: 1.15rem; border-bottom: 1px solid #554960; }
+  .masthead p { font-weight: 710; letter-spacing: .06em; }
+  .masthead nav { display: flex; flex-wrap: wrap; gap: .5rem 1.1rem; }
+  .masthead a { color: #e7d9ff; font-size: .9rem; }
+  .masthead a:focus-visible { outline-color: #d5bcff; }
+  .intro { padding-block: clamp(2.15rem, 5vw, 4rem); display: grid; gap: .9rem; }
+  .intro p { max-width: 50ch; color: #e6ddec; }
+  .intro .status { color: #e5d0ff; }
+  main { padding-bottom: 4rem; }
+  main > section { padding-block: clamp(2.2rem, 5vw, 4rem); border-bottom: 1px solid var(--line); }
+  .lead { display: grid; gap: .65rem; margin-bottom: 1.6rem; }
+  .lead p, .note { color: var(--muted); max-width: 74ch; }
+  .note { font-size: .92rem; }
+  .controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem 1rem; margin-bottom: 1.2rem; }
+  .controls label { display: grid; gap: .25rem; font-weight: 620; font-size: .88rem; }
+  select { width: 100%; min-height: 2.55rem; padding: .4rem .6rem; border: 1px solid #9084a0; background: var(--paper); color: var(--ink); border-radius: .5rem; }
+  .alternatives { background: var(--wash); border-radius: .55rem; padding: .65rem .85rem; margin-bottom: .9rem; }
+  .alternatives summary { cursor: pointer; font-weight: 660; width: fit-content; }
+  .alternatives .controls { margin: .65rem 0 .2rem; }
+  .case { display: grid; gap: .37rem; padding-block: 1.2rem; border-top: 1px solid var(--line); }
+  .case:first-child { border: 0; }
+  .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-top: .55rem; }
+  .comparison figure { margin: 0; min-width: 0; }
+  .comparison figcaption { font-size: .82rem; font-weight: 700; color: var(--muted); padding-bottom: .35rem; }
+  .comparison [data-side="proposal"] figcaption { color: var(--violet); }
+  .preview {
+    color: var(--foreground); background: var(--background); border: 1px solid var(--border);
+    border-radius: .85rem; min-height: 100%; padding: clamp(.75rem, 2vw, 1.35rem);
+    display: grid; align-content: start; gap: .85rem; font-size: .88rem;
+  }
+  #comparison[data-palette="onyx"] {
+    --light-bg: oklch(.96 .002 200); --dark-bg: oklch(.2 .01 250);
+    --light-primary: oklch(0 0 0); --dark-primary: oklch(1 0 0);
+    --dark-primary-text: oklch(0 0 0);
+    --light-shadow: oklch(.25 .01 200); --dark-shadow: oklch(.1 .01 200);
+    --dark-shadow-opacity: 50%; --card-relief: 1;
+  }
+  #comparison[data-palette="carbon"] {
+    --light-bg: oklch(1 0 0); --dark-bg: oklch(.25 .015 240);
+    --light-primary: oklch(.3 .02 240); --dark-primary: oklch(.99 .01 240);
+    --dark-primary-text: oklch(.3 .02 240);
+    --light-shadow: oklch(.25 0 0); --dark-shadow: oklch(.1 0 0);
+    --dark-shadow-opacity: 40%; --card-relief: 0;
+  }
+  /* Deltas do CSS atual, aplicados aos valores de Ônix e Carbono. */
+  #comparison {
+    --background: var(--light-bg); --foreground: black; --primary: var(--light-primary); --primary-text: white;
+    --card: oklch(from var(--background) calc(l - .02) c h);
+    --popover: oklch(from var(--background) calc(l + .02) c h);
+    --input: oklch(from var(--background) calc(l - .04) c h);
+    --border: oklch(from var(--background) calc(l - .07) c h);
+    --secondary: oklch(from var(--background) calc(l - .036) c h);
+    --secondary-hover: oklch(from var(--background) calc(l - .083) c h);
+    --secondary-text: oklch(from var(--background) calc(l - .512) max(0, calc(c - .001)) h);
+    --action: oklch(from var(--background) calc(l + .02) c h);
+    --action-hover: oklch(from var(--background) calc(l + .1) c h);
+    --accent: oklch(from var(--primary) max(0, calc(l - .15)) c h);
+    --border-alpha: 5%; --shadow-tint: var(--light-shadow); --shadow-alpha: 10%;
+    --shadow-study: oklch(from color-mix(in oklab, var(--background), var(--primary) 30%) .15 c h);
+    --shadow-study-alpha: 10%;
+    --phase-mix: 15%; --phase-hover: 30%; --phase-ink-l: .35; --phase-ink-c: .07;
+    --calendar-alpha: 50%;
+  }
+  #comparison[data-mode="dark"] {
+    --background: var(--dark-bg); --foreground: white; --primary: var(--dark-primary); --primary-text: var(--dark-primary-text);
+    --card: oklch(from var(--background) calc(l + .05) c h);
+    --popover: oklch(from var(--background) calc(l - .03) c h);
+    --input: oklch(from var(--background) calc(l + .02) c h);
+    --border: oklch(from var(--background) calc(l + .1) c h);
+    --secondary: oklch(from var(--background) calc(l + .098) max(0, calc(c - .002)) h);
+    --secondary-hover: oklch(from var(--background) calc(l + .133) max(0, calc(c - .002)) h);
+    --secondary-text: oklch(from var(--background) calc(l + .549) max(0, calc(c - .007)) h);
+    --action: oklch(from var(--background) calc(l + .1) c h);
+    --action-hover: oklch(from var(--background) calc(l + .2) c h);
+    --accent: oklch(from var(--primary) min(1, calc(l + .1)) c h);
+    --border-alpha: 10%; --shadow-tint: var(--dark-shadow); --shadow-alpha: var(--dark-shadow-opacity);
+    --shadow-study: oklch(from color-mix(in oklab, var(--background), var(--primary) 20%) .15 c h);
+    --shadow-study-alpha: 70%;
+    --phase-mix: 40%; --phase-hover: 70%; --phase-ink-l: .92; --phase-ink-c: .06;
+    --calendar-alpha: 20%;
+  }
+  .preview {
+    --item-state: var(--secondary);
+    --button-state: color-mix(in oklch, var(--secondary), var(--foreground) 5%);
+    --unread-state: var(--card);
+    --unread-fill: var(--card);
+    --cluster-fill: color-mix(in oklab, var(--secondary) 50%, var(--popover));
+    --calendar-fill: color-mix(in oklab, var(--secondary) var(--calendar-alpha), var(--background));
+    --drop-fill: color-mix(in oklab, var(--secondary) 50%, var(--background));
+    --box-fill: var(--card); --badge-fill: var(--card);
+    --float-border: color-mix(in oklab, var(--foreground) var(--border-alpha), transparent);
+    --float-shadow: 0 12px 25px -12px color-mix(in srgb, var(--shadow-tint) var(--shadow-alpha), transparent),
+      0 8px 12px -8px color-mix(in srgb, var(--shadow-tint) var(--shadow-alpha), transparent);
+    --scrim: color-mix(in srgb, var(--shadow-tint) 30%, transparent);
+  }
+  [data-side="proposal"] .preview {
+    /* Hipótese de papéis. Os nomes e deltas do app são preservados nesta bancada. */
+    --button-state: var(--secondary-hover);
+    --unread-state: var(--secondary-hover);
+    --cluster-fill: var(--card); --calendar-fill: var(--card); --drop-fill: var(--card);
+    --box-fill: transparent; --badge-fill: var(--secondary);
+  }
+  #comparison[data-highlight="dot"] [data-side="proposal"] .preview {
+    --unread-fill: transparent; --unread-state: var(--item-state);
+    --cluster-fill: transparent; --calendar-fill: var(--item-state); --drop-fill: transparent;
+  }
+  #comparison[data-hover="accent"] [data-side="proposal"] .preview {
+    /* Simula accent assumindo papel neutro. O accent atual deriva do primário. */
+    --item-state: var(--secondary-hover);
+  }
+  #comparison[data-shadow="formula"] [data-side="proposal"] .preview {
+    --shadow-tint: var(--shadow-study); --shadow-alpha: var(--shadow-study-alpha);
+  }
+  .demo-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .48rem; }
+  .demo-stack { display: grid; gap: .5rem; }
+  .demo-row { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; }
+  .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .68rem; }
+  .demo-grid > * { min-width: 0; }
+  .demo-label { display: block; font-weight: 650; font-size: .76rem; margin-bottom: .25rem; }
+  .subdued { color: var(--secondary-text); }
+  .split { padding-top: .7rem; border-top: 1px solid var(--border); }
+  .demo-btn, .demo-item {
+    display: inline-flex; align-items: center; gap: .35rem; min-height: 2rem; padding: .3rem .65rem;
+    border: 1px solid transparent; border-radius: .65rem; color: inherit; font-weight: 610;
+  }
+  .demo-btn.solid { background: var(--secondary); border-color: var(--secondary); }
+  .demo-btn.ghost { border-color: var(--border); background: transparent; }
+  .demo-btn.primary { background: var(--primary); color: var(--primary-text); }
+  .demo-btn.solid.featured:hover,
+  #comparison:not([data-state="rest"]) .demo-btn.solid.featured { background: var(--button-state); border-color: var(--button-state); }
+  .demo-item { min-height: 1.8rem; font-weight: 510; }
+  .demo-item.featured:hover,
+  #comparison:not([data-state="rest"]) .demo-item.featured { background: var(--item-state); }
+  #comparison[data-state="focus"] .featured { outline: 2px solid var(--primary); outline-offset: -1px; }
+  #comparison[data-state="pressed"] .demo-btn.featured { translate: 0 1px; }
+  #comparison[data-surface="page"] [data-side="proposal"] .float-btn { background: transparent; border-color: var(--border); }
+  #comparison[data-surface="page"] [data-side="proposal"] .float-btn.featured:hover,
+  #comparison[data-surface="page"]:not([data-state="rest"]) [data-side="proposal"] .float-btn.featured { background: var(--item-state); }
+  .float {
+    background: var(--popover); border: 1px solid var(--float-border);
+    box-shadow: var(--float-shadow); border-radius: .75rem; padding: .55rem;
+    display: flex; flex-direction: column; gap: .28rem; min-width: 0;
+  }
+  .float.inset { padding: .72rem; }
+  .toast { background: var(--card); border: 1px solid var(--border); border-radius: .65rem; padding: .55rem .72rem; box-shadow: var(--float-shadow); }
+  [data-side="proposal"] .toast { background: var(--popover); border-color: var(--float-border); }
+  .cluster { background: var(--cluster-fill); border-radius: .55rem; padding: .35rem .55rem; }
+  .unread { background: var(--unread-fill); border-radius: .6rem; padding: .4rem .55rem; }
+  .unread:hover, #comparison:not([data-state="rest"]) .unread { background: var(--unread-state); }
+  #comparison[data-state="focus"] [data-side="current"] .unread { background: var(--secondary); }
+  .dot { display: inline-block; width: .5rem; height: .5rem; border-radius: 50%; background: var(--primary); flex: none; }
+  .target { background: var(--drop-fill); border: 1px dashed var(--border); border-radius: .55rem; padding: .4rem .55rem; }
+  #comparison[data-highlight="dot"] [data-side="proposal"] .target { border-color: var(--primary); }
+  .calendar { background: var(--calendar-fill); border: 1px solid var(--border); border-radius: .55rem; padding: .4rem .55rem; }
+  .demo-card {
+    display: grid; gap: .45rem; background: var(--action);
+    border-radius: .7rem; padding: .7rem; border-top: 1px solid color-mix(in oklab, white calc(var(--card-relief) * 78%), transparent);
+    box-shadow: 0 2px 4px color-mix(in srgb, var(--shadow-tint) calc(var(--card-relief) * 17%), transparent);
+  }
+  .demo-card:hover { background: var(--action-hover); }
+  .phase-card {
+    --phase: #ec4899;
+    --action: color-mix(in oklab, var(--phase) var(--phase-mix), var(--background));
+    --action-hover: color-mix(in oklab, var(--phase) var(--phase-hover), var(--background));
+    color: oklch(from var(--phase) var(--phase-ink-l) var(--phase-ink-c) h);
+  }
+  .avatar, .badge { display: inline-flex; align-items: center; justify-content: center; gap: .3rem; border-radius: 3rem; padding: .06rem .38rem; min-height: 1.3rem; font-size: .76rem; border: 1px solid transparent; }
+  .avatar { background: var(--secondary); }
+  .badge { background: var(--badge-fill); }
+  [data-side="proposal"] .phase-card .avatar { border-color: currentColor; background: transparent; }
+  .field {
+    background: var(--input); border: 1px solid var(--input); color: inherit; border-radius: .55rem;
+    min-width: 0; min-height: 2rem; padding: .34rem .6rem; width: 100%;
+  }
+  .field::placeholder { color: color-mix(in srgb, var(--foreground) 40%, transparent); }
+  .field:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  .media-frame {
+    display: grid; place-items: center; padding: .45rem; background: var(--secondary);
+    min-height: 4.4rem; border-radius: .55rem;
+  }
+  [data-side="proposal"] .media-frame { background: transparent; border: 1px dashed var(--border); }
+  .picture {
+    position: relative; display: grid; place-items: center; width: 100%; min-height: 4.5rem; border-radius: .5rem;
+    background: radial-gradient(ellipse at 60% 25%, #e8bc7e 0 12%, transparent 13%),
+      linear-gradient(155deg, #73517a 0 48%, #415b79 49% 60%, #282b53 61%);
+  }
+  .picture .play { font-size: 1.3rem; line-height: 1; color: white; filter: drop-shadow(0 1px 3px #111); }
+  [data-side="current"] .picture .play { border-radius: 50%; background: #0008; padding: .28rem .42rem; }
+  .wrap-box { min-width: 0; background: var(--box-fill); border: 1px solid var(--border); padding: .62rem; border-radius: .55rem; }
+  [data-side="proposal"] .wrap-box { border: 0; border-top: 1px solid var(--border); border-radius: 0; padding-inline: 0; }
+  .scrim-demo {
+    background: linear-gradient(var(--scrim), var(--scrim)), var(--background);
+    padding: .75rem; border-radius: .65rem;
+  }
+  .scrim-demo .float { max-width: 19rem; margin-inline: auto; }
+  .scale { display: grid; gap: .45rem; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .swatch { min-width: 0; border: 1px solid var(--line); border-radius: .58rem; background: var(--paper); overflow: hidden; }
+  .swatch-color { min-height: 2.65rem; display: grid; place-items: center; font-size: .83rem; font-weight: 670; }
+  .swatch-meta { padding: .38rem .48rem; display: grid; gap: .14rem; color: var(--muted); font-size: .72rem; }
+  .swatch-meta b { color: var(--ink); font-size: .78rem; overflow-wrap: anywhere; }
+  .rules { margin: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+  .rules > div { display: grid; grid-template-columns: minmax(8rem,.55fr) 1fr 1fr; border-bottom: 1px solid var(--line); padding-block: .7rem; gap: .45rem 1rem; }
+  dt { font-weight: 680; }
+  dd { margin: 0; color: var(--muted); line-height: 1.45; }
+  dd b { color: var(--ink); font-size: .83rem; }
+  .decision-list { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+  .decision { border: 1px solid var(--line); border-radius: .75rem; background: var(--paper); padding: 1rem; display: grid; gap: .5rem; align-content: start; }
+  .decision p { font-size: .9rem; }
+  .decision .impact { color: var(--muted); }
+  .decision small { color: var(--violet); font-size: .77rem; font-weight: 700; }
+  #css details { margin-bottom: 1rem; }
+  #css summary { cursor: pointer; font-weight: 690; color: var(--violet); width: fit-content; }
+  pre { background: #26212d; color: #f1eafa; border-radius: .7rem; padding: 1rem; overflow: auto; font-size: .84rem; line-height: 1.55; }
+  .handoff { display: grid; gap: .65rem; margin-bottom: 1.25rem; }
+  .sources { display: flex; flex-wrap: wrap; gap: .45rem .9rem; line-height: 1.55; }
+  [hidden] { display: none !important; }
+  @media (max-width: 45rem) {
+    .comparison, .decision-list { grid-template-columns: 1fr; }
+    .comparison { gap: 1rem; }
+    .scale { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .controls { grid-template-columns: 1fr 1fr; }
+    .rules > div { grid-template-columns: 1fr 1fr; }
+    dt { grid-column: 1 / -1; }
+  }
+  @media (max-width: 26rem) {
+    .width { width: calc(100% - 1.5rem); }
+    .demo-grid, .rules > div { grid-template-columns: 1fr; }
+    .scale { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="width">
+    <div class="masthead">
+      <p>UZZINA</p>
+      <nav aria-label="Seções do estudo">
+        <a href="#comparison">Comparar</a>
+        <a href="#papeis">Papéis</a>
+        <a href="#decisoes">Decisões</a>
+        <a href="#css">CSS e fontes</a>
+      </nav>
+    </div>
+    <div class="intro">
+      <h1>Fundos e cinzas</h1>
+      <p>Uma bancada para escolher onde cada neutro entra na UZZINA. Compare a leitura dos mesmos componentes no claro e no escuro.</p>
+      <p class="status">Fase 1 do DS35 · Hipóteses para decisão</p>
+    </div>
+  </div>
+</header>
+
+<main class="width">
+  <section id="comparison" data-palette="onyx" data-mode="light" data-state="hover" data-surface="page" data-highlight="card" data-hover="shared" data-shadow="palette">
+    <div class="lead">
+      <h2>Compare nas telas</h2>
+      <p>As amostras da esquerda reproduzem fórmulas e usos do código atual. À direita, a hipótese inicial reutiliza os nomes e os valores dos neutros para isolar o efeito de mudar seus papéis. As telas são maquetes com dados fictícios.</p>
+    </div>
+    <div class="controls">
+      <label>Paleta <select data-setting="palette"><option value="onyx">Ônix</option><option value="carbon">Carbono</option></select></label>
+      <label>Modo <select data-setting="mode"><option value="light">Claro</option><option value="dark">Escuro</option></select></label>
+      <label>Estado da amostra <select data-setting="state"><option value="rest">Repouso</option><option value="hover" selected>Ao passar o mouse</option><option value="focus">Foco pelo teclado</option><option value="pressed">Pressionado</option></select></label>
+    </div>
+    <details class="alternatives">
+      <summary>Experimentar alternativas da hipótese</summary>
+      <div class="controls">
+        <label>Botão secundário
+          <select data-setting="surface"><option value="page">Só sobre a página</option><option value="float">Página e flutuantes</option></select>
+        </label>
+        <label>Destaque
+          <select data-setting="highlight"><option value="card">Fundo suave com card</option><option value="dot">Sinal ou contorno</option></select>
+        </label>
+        <label>Hover de item transparente
+          <select data-setting="hover"><option value="shared">Reutilizar secondary</option><option value="accent">Simular accent neutro</option></select>
+        </label>
+        <label>Sombra dos flutuantes
+          <select data-setting="shadow"><option value="palette">Valor de cada paleta</option><option value="formula">Fórmula escolhida no estudo</option></select>
+        </label>
+      </div>
+      <p class="note">O accent neutro usa o tom de secondary-hover nesta amostra. O valor do accent atual, derivado do primário, aparece na escala. A opção de sombra demonstra a fórmula já escolhida para a etapa de CSS.</p>
+    </details>
+    <div id="examples"></div>
+    <div class="lead" style="margin-top:1.75rem">
+      <h3>Escala do app na paleta selecionada</h3>
+      <p>Os cartões da escala mostram a cor renderizada aproximada em sRGB. As duas leituras de contraste comparam texto principal e secundário sobre o fundo da página. Servem para orientar esta comparação visual.</p>
+    </div>
+    <div class="scale" id="scale"></div>
+    <p class="note" id="measurement" style="margin-top:.8rem"></p>
+  </section>
+
+  <section id="papeis">
+    <div class="lead">
+      <h2>Onde cada neutro entra</h2>
+      <p>Mapa inicial para a decisão. O contraste de papel deve ser coerente em página, menu, formulário e cartão de ação.</p>
+    </div>
+    <dl class="rules">
+      <div><dt>Página <code>background</code></dt><dd><b>Usar</b> como base de listas, quadros e áreas de edição.</dd><dd><b>Evitar</b> copiar o fundo da página para simular um flutuante sem a borda ou a elevação correspondentes.</dd></div>
+      <div><dt>Flutuante <code>popover</code></dt><dd><b>Usar</b> em menu, diálogo, seletor, gaveta e aviso padrão como hipótese.</dd><dd><b>Evitar</b> exceções por tela. Em Carbono claro, conferir a separação pela borda e pela sombra.</dd></div>
+      <div><dt>Campo <code>input</code></dt><dd><b>Usar</b> na página e dentro de diálogo. Conservar foco e semântica de erro.</dd><dd><b>Evitar</b> aplicar como fundo de caixas, cartões de fase ou sobre foto.</dd></div>
+      <div><dt>Cartão de ação <code>action</code></dt><dd><b>Usar</b> nos cartões do calendário e do quadro, com a cor da fase quando aplicável.</dd><dd><b>Evitar</b> usar como fundo de selo, painel ou bloco de formulário.</dd></div>
+      <div><dt>Botão cinza <code>secondary</code></dt><dd><b>Experimentar</b> página como padrão. Em flutuante, comparar botão de contorno e cinza sólido.</dd><dd><b>Evitar</b> sobre cartão de ação, fase colorida, imagem e destaque suave.</dd></div>
+      <div><dt>Hover e foco de item</dt><dd><b>Experimentar</b> secondary em menu, lista e aba transparentes e secondary-hover no botão já cinza.</dd><dd><b>Evitar</b> usar o accent atual de cor primária como se fosse cinza sem conferir o resultado.</dd></div>
+      <div><dt>Destaque <code>card</code></dt><dd><b>Experimentar</b> em não lida, grupo Admin e alvo de arraste. Para a célula do calendário, conferir a intensidade no escuro.</dd><dd><b>Evitar</b> como moldura geral de um bloco. Conferir que o hover de não lida continue perceptível.</dd></div>
+      <div><dt>Borda <code>border</code></dt><dd><b>Usar</b> em divisórias e limites de controles. Flutuantes preservam a borda translúcida da proposta.</dd><dd><b>Evitar</b> espalhar transparências sem papel definido. Conferir o contorno de campo e de bloco com cor própria.</dd></div>
+      <div><dt>Texto principal e de apoio</dt><dd><b>Usar</b> foreground e secondary-foreground sobre superfícies neutras. Manter placeholder a 40% como regra do Prism.</dd><dd><b>Evitar</b> porcentagens avulsas para o mesmo metadado. Texto de fase e sobre mídia têm regras próprias.</dd></div>
+      <div><dt>Sobre fase e imagem</dt><dd><b>Experimentar</b> contorno da cor do texto para avatar e +N de fase e ícone branco com sombra sobre mídia.</dd><dd><b>Evitar</b> preenchimento cinza herdado da página. Conferir leitura de placeholder de arquivo separadamente de ícone sobre foto.</dd></div>
+    </dl>
+  </section>
+
+  <section id="decisoes">
+    <div class="lead">
+      <h2>O que falta decidir</h2>
+      <p>As oito escolhas continuam abertas. As recomendações abaixo são condições iniciais de estudo e podem ser revistas ao comparar as superfícies.</p>
+    </div>
+    <div class="decision-list">
+      <article class="decision"><small>P1</small><h3>Secundário dentro de menu e diálogo?</h3><p><strong>Começar pela página.</strong> No diálogo, comparar o botão de contorno. Isso preserva a direção de limitar contextos e permite conferir se a ação secundária continua fácil de encontrar.</p><p class="impact">Se o contorno perder hierarquia nos quatro modos da bancada, registrar flutuantes como uma exceção única. O cinza também pode ser perceptível no flutuante. A escolha é de papel.</p></article>
+      <article class="decision"><small>P2</small><h3>Usar card como destaque suave?</h3><p><strong>Testar o card com um papel único.</strong> A caixa e o destaque já compartilham um valor no app. Reservar o nome existente para destaque evita renomear tokens.</p><p class="impact">A versão sem fundo nas não lidas depende do ponto, e o alvo depende do contorno. Confira também se o calendário e o grupo Admin continuam fáceis de identificar.</p></article>
+      <article class="decision"><small>P3</small><h3>O hover de item transparente precisa de cor própria?</h3><p><strong>Começar com secondary.</strong> Menus e abas já usam esse tom. Usar secondary-hover no botão que repousa em secondary.</p><p class="impact">Se o hover de lista pedir outra intensidade, testar um accent neutro. Dar esse papel ao token muda sua definição atual e requer revisar seus consumidores.</p></article>
+      <article class="decision"><small>P4</small><h3>Como mostrar controles sobre fases e fotos?</h3><p><strong>Experimentar o contorno no cartão e o ícone branco com sombra sobre mídia.</strong> O avatar cinza escuro tem luz quase igual à do cartão neutro escuro.</p><p class="impact">Nas fases claras e escuras, conferir iniciais e contador. Na mídia, conferir imagem, carregamento, ausência de foto e arquivo sem prévia separadamente. Películas de etiquetas de foto ainda pedem avaliação.</p></article>
+      <article class="decision"><small>P5</small><h3>Quais transparências continuam?</h3><p><strong>Dar nome às exceções.</strong> Preservar borda de flutuante, placeholder, fundo atrás de diálogo e sombra do ícone sobre imagem. Conferir texto apagado antes de generalizar.</p><p class="impact">Os fundos de Admin, arraste e calendário ganham um papel explícito. A película pode continuar diferente na gaveta até que a escolha sobre ela seja aprovada.</p></article>
+      <article class="decision"><small>P6</small><h3>O pressionado precisa de cor própria?</h3><p><strong>Testar o deslocamento atual.</strong> O botão Prism já desce 1 px durante o pressionamento, e a bancada mantém o tom de hover.</p><p class="impact">Separar o feedback momentâneo de pressionar da indicação persistente de item selecionado ou aberto. Um tom adicional precisa de caso comprovado.</p></article>
+      <article class="decision"><small>P7</small><h3>O que fazer com as caixas de conteúdo?</h3><p><strong>Deixar o conteúdo fluir na superfície.</strong> A separação por espaço e divisória segue a regra geral do projeto.</p><p class="impact">Conferir leitura de descrição no portal e separação entre propostas no Planejamento. Os blocos claro e escuro da prévia Personalizado são uma exceção já aprovada.</p></article>
+      <article class="decision"><small>P8</small><h3>O contrato precisa de uma checagem automática?</h3><p><strong>Começar com contrato e exemplos em /ui.</strong> No inventário seguinte, uma busca manual reproduzível pode ajudar a localizar usos proibidos.</p><p class="impact">Uma checagem permanente passa a valer quando o inventário separar exemplos, exceções e código de uso real. Nesta fase só se compara o contrato.</p></article>
+    </div>
+  </section>
+
+  <section id="css">
+    <div class="lead">
+      <h2>CSS de referência e próximos usos</h2>
+      <p>O trecho documenta a hipótese inicial da bancada. A validação dos papéis vem antes de aplicar qualquer mudança no app.</p>
+    </div>
+    <details open>
+      <summary>Ver o CSS comentado</summary>
+      <pre><code>/* Fase 1. Exemplo de aplicação dos tokens, sem alterar seus nomes. */
+.pagina { background: var(--background); color: var(--foreground); }
+.flutuante { background: var(--popover); /* Borda e elevação Prism. */ }
+.campo { background: var(--input); }
+.cartao-de-acao { background: var(--action); /* Fase e relevo próprios. */ }
+
+.botao-secundario { background: var(--secondary); }
+.botao-secundario:hover { background: var(--secondary-hover); }
+.item-transparente:where(:hover, :focus-visible) { background: var(--secondary); }
+
+/* Hipótese P2. Reservar card para destaque em vez de caixas. */
+.destaque-suave { background: var(--card); }
+.nao-lida:hover { background: var(--secondary-hover); }
+.bloco-de-conteudo { border-top: 1px solid var(--border); }
+
+.acao-de-fase .avatar-vazio { border: 1px solid currentColor; }
+.texto-de-apoio { color: var(--secondary-foreground); }
+
+/* Fórmula de sombra já escolhida. Aplicação futura, etapa de CSS. */
+:root { --shadow-mix: 30%; --shadow-l: .15; --shadow-alpha: 10%; }
+.dark { --shadow-mix: 20%; --shadow-alpha: 70%; }
+:root, .dark {
+  --shadow-color: oklch(
+    from color-mix(in oklab, var(--background), var(--primary) var(--shadow-mix))
+    var(--shadow-l) c h
+  );
+}</code></pre>
+    </details>
+    <div class="handoff">
+      <p><strong>Sombra e flutuantes.</strong> A amostra troca cor e força da sombra dos flutuantes. A geometria da sombra é ilustrativa. A película Prism usa hoje 30% da cor da sombra. Gaveta usa preto a 20% no claro e a 80% no escuro. Unificar a película da gaveta e aplicar a fórmula aos cartões ficam para discussão na etapa de CSS. O Carbono continua plano nos cartões.</p>
+      <p><strong>Minha Conta e editor de temas.</strong> A prévia Personalizado em Minha Conta conserva o bloco próprio de cada modo. Eventuais ajustes em controles de sombra, explicações e prévias de tema do Admin dependem da aprovação do contrato.</p>
+      <p><strong>Widget de arquivos.</strong> Essencial e Instagram da equipe já usam envio próprio. O portal conserva o widget, que recebe cores em hexadecimal. As cores do widget devem ser discutidas com o contrato de neutros aprovado.</p>
+    </div>
+    <div class="sources" aria-label="Fontes locais">
+      <a href="issues/35-unified-surfaces-and-neutrals.md">Ticket e fases</a>
+      <a href="../../app/tailwind.css">Tokens atuais</a>
+      <a href="../../app/lib/palettes.ts">Valores das paletas</a>
+      <a href="../../docs/audits/2026-11-17-ds33-inventory.md">Inventário de usos</a>
+      <a href="ds35-proposta-papeis.html">Exploração de papéis</a>
+      <a href="ds35-escala-cores.html">Estudo de escalas</a>
+      <a href="issues/29-single-shadow-formula.md">Fórmula de sombra</a>
+    </div>
+    <p class="note" style="margin-top:.75rem">As fórmulas, o uso do CSS e os registros anteriores orientam a bancada. Os estados forçados e os cenários fictícios servem à comparação visual. A próxima etapa inventaria todos os usos após o aceite.</p>
+  </section>
+</main>
+<script>
+  const comparison = document.querySelector("#comparison");
+  const cases = [
+    {
+      title: "Página, menu e destaque",
+      note: "Minha Conta → Aparência e menu do avatar. Compare o botão Adicionar e o item transparente em foco ou hover.",
+      view: `<div class="demo-head"><b>Aparência</b><span class="demo-btn solid featured">Adicionar +</span></div>
+        <div class="demo-grid">
+          <div class="demo-stack">
+            <div><span class="demo-label">Nome do tema</span><input class="field" value="Tema de trabalho" aria-label="Nome do tema na amostra" readonly></div>
+            <div><span class="demo-label">Paleta</span><span class="badge">Ônix</span></div>
+          </div>
+          <div class="float">
+            <span class="demo-item featured">Minha Conta</span>
+            <div class="cluster"><b>Admin</b><div class="subdued">Parceiros e temas</div></div>
+          </div>
+        </div>`,
+    },
+    {
+      title: "Lista do sino e agenda",
+      note: "Compare o fundo de não lida e sua reação ao mouse. Veja também o alvo de arraste de Hoje e o dia do calendário.",
+      view: `<div class="demo-grid">
+          <div class="float"><b>Notificações</b>
+            <div class="unread"><div class="demo-row"><span class="dot"></span><b>Revisar campanha</b></div><div class="subdued">Há 5 minutos</div></div>
+            <div class="demo-item featured">Ver todas</div>
+          </div>
+          <div class="demo-stack"><div class="target">Soltar em Fazendo</div><div class="calendar"><b>Terça, 24</b><div class="subdued">2 ações</div></div></div>
+        </div>`,
+    },
+    {
+      title: "Cartão neutro, fase e mídia",
+      note: "Hoje → Kanban e Instagram → Prévia. Observe o cartão neutro sobre o fundo e o contador de responsáveis no cartão de fase.",
+      view: `<div class="demo-grid">
+          <div class="demo-stack">
+            <div class="demo-card"><b>Organizar pauta</b><span class="subdued">Hoje, 14h</span></div>
+            <div class="demo-card phase-card"><b>Revisar carrossel</b><span class="demo-row"><span class="avatar">AS</span><span class="avatar">+3</span><span>Fazendo</span></span></div>
+          </div>
+          <div class="demo-stack">
+            <div class="media-frame"><div class="picture" aria-label="Imagem fictícia de prévia" role="img"><span class="play" aria-hidden="true">▶</span></div></div>
+            <div class="media-frame"><span class="subdued">Arquivo sem prévia</span></div>
+          </div>
+        </div>`,
+    },
+    {
+      title: "Diálogo, campo e aviso",
+      note: "Diálogo Prism fictício. Compare o flutuante, o botão Cancelar, o campo, a película e a separação do aviso padrão.",
+      view: `<div class="scrim-demo">
+          <div class="float inset"><b>Arquivar ação?</b>
+            <span class="subdued">Ela pode ser restaurada depois.</span>
+            <input class="field" placeholder="Motivo (opcional)" aria-label="Motivo na amostra" readonly>
+            <div class="demo-row"><span class="demo-btn solid float-btn featured">Cancelar</span><span class="demo-btn primary">Arquivar</span></div>
+          </div>
+        </div><div class="toast demo-head"><b>Ação atualizada</b><span class="subdued">Agora</span></div>`,
+    },
+    {
+      title: "Blocos de conteúdo no portal e no Planejamento",
+      note: "Compare o que muda ao retirar o fundo decorativo da descrição e da lista de propostas. O conteúdo e a separação visual têm a mesma função.",
+      view: `<div class="demo-grid">
+          <div><span class="demo-label">Descrição da ação</span><div class="wrap-box"><b>Campanha de lançamento</b><p class="subdued">Revisar o título da primeira peça e conferir a legenda.</p></div></div>
+          <div><span class="demo-label">Propostas salvas</span><div class="wrap-box"><b>Conteúdo de novembro</b><p class="subdued">4 propostas</p></div></div>
+        </div>`,
+    },
+  ];
+
+  document.querySelector("#examples").innerHTML = cases.map(({title, note, view}) => `
+    <article class="case">
+      <h3>${title}</h3>
+      <p class="note">${note}</p>
+      <div class="comparison">
+        <figure data-side="current"><figcaption>App atual</figcaption><div class="preview">${view}</div></figure>
+        <figure data-side="proposal"><figcaption>Hipótese de papéis</figcaption><div class="preview">${view}</div></figure>
+      </div>
+    </article>
+  `).join("");
+
+  const tokens = [
+    ["Página", "background"], ["Flutuante", "popover"], ["Campo", "input"],
+    ["Cartão de ação", "action"], ["Hover do cartão", "action-hover"],
+    ["Secundário", "secondary"], ["Hover do secundário", "secondary-hover"],
+    ["Card", "card"], ["Borda", "border"], ["Accent atual", "accent"],
+    ["Texto principal", "foreground"], ["Texto de apoio", "secondary-text"],
+  ];
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = 1;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  function sample(token) {
+    const swatch = document.createElement("span");
+    swatch.hidden = true;
+    swatch.style.color = `var(--${token})`;
+    comparison.append(swatch);
+    const computed = getComputedStyle(swatch).color;
+    swatch.remove();
+    ctx.clearRect(0, 0, 1, 1);
+    ctx.fillStyle = computed;
+    ctx.fillRect(0, 0, 1, 1);
+    return [...ctx.getImageData(0, 0, 1, 1).data].slice(0, 3);
+  }
+
+  function luminance(rgb) {
+    const linear = rgb.map(value => {
+      const channel = value / 255;
+      return channel <= .04045 ? channel / 12.92 : ((channel + .055) / 1.055) ** 2.4;
+    });
+    return linear[0] * .2126 + linear[1] * .7152 + linear[2] * .0722;
+  }
+
+  function ratio(left, right) {
+    const a = luminance(left);
+    const b = luminance(right);
+    return (Math.max(a, b) + .05) / (Math.min(a, b) + .05);
+  }
+
+  function formattedRatio(left, right) {
+    return ratio(left, right).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " : 1";
+  }
+
+  function renderScale() {
+    const scale = document.querySelector("#scale");
+    scale.innerHTML = tokens.map(([label, token]) => {
+      const rgb = sample(token);
+      const hex = "#" + rgb.map(value => value.toString(16).padStart(2, "0")).join("").toUpperCase();
+      const ink = ratio(rgb, [255, 255, 255]) > ratio(rgb, [0, 0, 0]) ? "#fff" : "#000";
+      const actualToken = token === "secondary-text" ? "secondary-foreground" : token;
+      return `<div class="swatch"><div class="swatch-color" style="background:var(--${token});color:${ink}">${hex}</div><div class="swatch-meta"><b>${label}</b><code>--${actualToken}</code></div></div>`;
+    }).join("");
+
+    const bg = sample("background");
+    const pageContrast = formattedRatio(bg, sample("foreground"));
+    const secondaryContrast = formattedRatio(bg, sample("secondary-text"));
+    const floatContrast = formattedRatio(bg, sample("popover"));
+    const cardContrast = formattedRatio(bg, sample("action"));
+    const carbonLight = comparison.dataset.palette === "carbon" && comparison.dataset.mode === "light";
+    let line = `Texto principal na página ${pageContrast} · Texto de apoio na página ${secondaryContrast} · Flutuante sobre página ${floatContrast} · Cartão sobre página ${cardContrast}.`;
+    if (carbonLight) line += " Em Carbono claro, fundo, flutuante e cartão neutro ficam brancos na tela. Confira se as bordas e a elevação dão a separação necessária.";
+    document.querySelector("#measurement").textContent = line;
+  }
+
+  function render() {
+    const dark = comparison.dataset.mode === "dark";
+    const name = comparison.dataset.palette === "carbon" ? "Carbono" : "Ônix";
+    comparison.querySelectorAll(".preview .badge").forEach(badge => badge.textContent = name);
+    comparison.querySelectorAll(".preview").forEach(panel => {
+      panel.style.colorScheme = dark ? "dark" : "light";
+    });
+    renderScale();
+  }
+
+  for (const control of comparison.querySelectorAll("[data-setting]")) {
+    control.addEventListener("change", () => {
+      comparison.dataset[control.dataset.setting] = control.value;
+      render();
+    });
+  }
+  render();
+</script>
+</body>
+</html>

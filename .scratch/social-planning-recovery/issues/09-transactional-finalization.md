@@ -20,7 +20,7 @@
 1. Remover o loop de createActionClient do navegador como mecanismo de conversão. UI envia identidade da proposta, operação/versão esperada e somente dados aprovados necessários, não uma lista autoritativa de ações.
 2. Implementar transação no banco via fronteira servidor/RPC autorizada. Na mesma transação: validar ator/parceiro/versão/estado; obter sugestões canônicas aprovadas; criar ações; gravar vínculo exclusivo por sugestão; confirmar plano/operação.
 3. Criar constraint única durável que impeça duas ações originadas da mesma sugestão. Serializar concorrência por locks/condições adequadas. Documentar ordem/resultado das chamadas concorrentes; botão disabled não é garantia.
-4. Aplicar D5 e defaults canônicos de criação. Responsáveis garantem criação por membro comum sem ampliar RLS; dono/ator são derivados no servidor. Não reintroduzir hoje/10h/11h implícitos.
+4. Exigir admin ativo. Toda ação criada sai com data válida. Preservar datas escolhidas e resolver no servidor o padrão explícito aprovado em D5 para ideias sem data. Dia atual é a preferência indicada, com fuso/hora e regra final a confirmar. Derivar ator da sessão e usar os defaults canônicos de criação.
 5. Revalidar todos os dados antes de escrever e garantir rollback real se a segunda ação falhar. Não compensar criando e depois apagando.
 6. Retry, aba antiga e resposta perdida consultam resultado canônico associado. Se já finalizado legitimamente, retornar vínculos existentes sem nova escrita. Versão desatualizada antes da conversão dá conflito.
 7. Vínculo permanece identificável mesmo se ação for excluída ou ficar inacessível; não recriar e não vazar seus dados. Política de exclusão não deve apagar a chave de idempotência sem deixar proteção equivalente.
@@ -38,7 +38,7 @@ Não substituir finalização, transação, constraints ou INSERT de ações por
 | F03 | Repetir F01 com mesmo pedido e cópia antiga de outra aba                   | Mesmos IDs; contagens continuam três/três.                                                                  |
 | F04 | Dez requisições simultâneas de pelo menos duas conexões                    | Exatamente três ações e três vínculos no total; resultados canônicos ou conflito recuperável coerente.      |
 | F05 | Commit ocorre, resposta se perde e cliente repete                          | Reconsulta encontra resultado; nenhuma quarta ação e nenhum vínculo extra.                                  |
-| F06 | Membro autorizado, admin ativo, membro alheio/inativo e parceiro arquivado | Permitidos funcionam; negados deixam zero novas linhas. Testar permissões reais, não service-role genérico. |
+| F06 | Admin ativo, membro comum (inclusive do parceiro), admin inativo e parceiro arquivado | Admin ativo com parceiro elegível cria; demais cenários deixam zero novas linhas. Usar permissões reais no banco isolado. |
 | F07 | Payload altera parceiro, autor, aprovadas, responsáveis ou versão          | Servidor ignora/rejeita autoridade indevida; estado canônico decide; zero escrita parcial.                  |
 | F08 | Rejeitadas/pendentes e aprovadas sem data válida                           | Exatamente o resultado D5, sem criação antecipada nem horário inventado.                                    |
 | F09 | Excluir ação resultante ou retirar acesso, repetir finalização             | Nenhuma recriação; sem exposição de conteúdo agora inacessível.                                             |
@@ -50,7 +50,7 @@ Não substituir finalização, transação, constraints ou INSERT de ações por
 - [ ] F01–F11 passam e incluem SELECTs finais de contagem/IDs/estado no banco isolado.
 - [ ] Evidência diferencia rollback, execução concorrente e commit com resposta perdida.
 - [ ] Não existe caminho alternativo da UI que volte ao loop antigo.
-- [ ] Membros funcionam sem modificação permissiva nas regras gerais de ações.
+- [ ] Somente admin ativo finaliza. Ações existentes na mesma data não impedem criação. Idempotência vale para a própria operação de finalização e conserva as regras gerais de ações.
 - [ ] Versionamento, constraints e política de exclusão mantêm idempotência fora da memória do browser.
 
 **Reprova automaticamente:** created_action_id apenas em JSON local; salvar vínculos depois dos INSERTs; testes concorrentes com mock de criação; aceitar parcial como atomicidade; flags só de frontend.

@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS35: papéis das cores neutras, três propostas</title>
+<style>
+/* ---------- Página (neutra, fora da paleta; todo painel escuro tem fundo explícito) ---------- */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#f5f5f4;color:#1c1917;font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow-wrap:break-word}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+h1{font-size:24px;line-height:1.25;margin:18px 0 6px}
+h2{font-size:20px;margin:44px 0 8px;padding-top:14px;border-top:2px solid #e7e5e4;scroll-margin-top:120px}
+h3{font-size:16px;margin:0 0 4px}
+p{margin:6px 0}
+.lead{color:#44403c;max-width:780px}
+.small{font-size:13px;color:#78716c}
+.box0{background:#fff;border:1px solid #e7e5e4;border-radius:16px;padding:14px 16px;margin:14px 0}
+.box0 ul{padding-left:20px;margin:6px 0}
+.bar{position:sticky;top:0;z-index:20;background:#f5f5f4;border-bottom:1px solid #e7e5e4;padding:8px 0;margin-top:12px}
+.bar .wrap{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+.seglabel{font-size:12px;color:#78716c;margin-right:4px}
+.seg{display:inline-flex;flex-wrap:wrap;background:#e7e5e4;border-radius:12px;padding:3px;gap:2px}
+.seg button{font:inherit;font-size:14px;border:0;background:transparent;color:#44403c;padding:6px 11px;border-radius:9px;cursor:pointer;min-height:36px}
+.seg button[aria-pressed="true"]{background:#fff;color:#1c1917;box-shadow:0 1px 2px rgba(0,0,0,.12);font-weight:600}
+button:focus-visible,input:focus-visible,summary:focus-visible,a:focus-visible,textarea:focus-visible{outline:2px solid #0369a1;outline-offset:2px}
+.toc{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:14px;margin:8px 0 0;padding:0;list-style:none}
+.toc a{color:#0c4a6e}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{border-bottom:1px solid #e7e5e4;padding:6px 8px;text-align:left;vertical-align:top}
+th{background:#fafaf9;font-weight:600;font-size:12px}
+.tw{overflow-x:auto;background:#fff;border:1px solid #e7e5e4;border-radius:12px;margin:10px 0}
+.tw table{min-width:640px}
+code,pre,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+code{font-size:12px;background:#f5f5f4;border-radius:5px;padding:0 4px;overflow-wrap:anywhere}
+pre{background:#1c1917;color:#e7e5e4;border-radius:12px;padding:10px 12px;font-size:11.5px;line-height:1.5;overflow-x:auto;margin:8px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+pre .o{color:#fca5a5}pre .n{color:#86efac}pre .c{color:#a8a29e}
+.tag{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:1px 8px;vertical-align:middle;margin-left:4px}
+.tag.rec{background:#dcfce7;color:#14532d}.tag.bad{background:#fee2e2;color:#7f1d1d}.tag.warn{background:#fef3c7;color:#78350f}.tag.ok{background:#e0f2fe;color:#0c4a6e}
+.cards3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.pcard{background:#fff;border:1px solid #e7e5e4;border-radius:14px;padding:12px 14px;min-width:0}
+.pcard.on{border-color:#1c1917;box-shadow:0 0 0 1px #1c1917}
+.off{background:#fff;border:1px solid #e7e5e4;border-left:4px solid #dc2626;border-radius:10px;padding:8px 12px;margin:8px 0}
+.off .f{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:#57534e;overflow-wrap:anywhere}
+.dec{background:#fff;border:1px solid #e7e5e4;border-radius:14px;padding:12px 14px;margin:10px 0}
+.dec ol{margin:6px 0;padding-left:20px}.dec li{margin:3px 0}
+.dec .opt.r{font-weight:600}
+.sl{display:grid;grid-template-columns:minmax(110px,1.1fr) 2fr 2fr;gap:6px 12px;align-items:center;padding:6px 0;border-bottom:1px solid #e7e5e4;font-size:13px}
+.sl label{display:flex;align-items:center;gap:6px;min-width:0}
+.sl input[type=range]{width:100%;min-width:0}
+.sl .v{font-family:ui-monospace,Menlo,monospace;font-size:12px;min-width:46px;display:inline-block}
+.sw0{width:18px;height:18px;border-radius:5px;border:1px solid rgba(127,127,127,.4);flex:none}
+.btn0{font:inherit;font-size:14px;border:1px solid #d6d3d1;background:#fff;border-radius:10px;padding:7px 12px;cursor:pointer;min-height:38px}
+.btn0.main{background:#1c1917;color:#fff;border-color:#1c1917}
+textarea{width:100%;min-height:150px;font:12px/1.5 ui-monospace,Menlo,monospace;border:1px solid #d6d3d1;border-radius:10px;padding:8px;background:#fff;color:#1c1917}
+.ro{display:grid;grid-template-columns:1fr auto auto;gap:2px 10px;font-size:12px;margin:8px 0 0;background:#fafaf9;border-radius:10px;padding:6px 10px;color:#1c1917}
+.ro b{font-weight:600}.ro .h{color:#78716c;font-size:11px}
+.dl{font-family:ui-monospace,Menlo,monospace}
+.dl.bad{color:#b91c1c;font-weight:700}.dl.mid{color:#92400e}.dl.good{color:#166534}
+.screen{background:#fff;border:1px solid #e7e5e4;border-radius:16px;padding:14px;margin:16px 0;min-width:0;scroll-margin-top:120px}
+.screen h3{font-size:16px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;min-width:0;margin-top:8px}
+#stage[data-mode="light"] .panel.dark,#stage[data-mode="dark"] .panel.light{display:none}
+#stage[data-mode="light"] .pair,#stage[data-mode="dark"] .pair{grid-template-columns:1fr}
+@media (max-width:760px){.pair{grid-template-columns:1fr}.sl{grid-template-columns:1fr}}
+
+/* ---------- Painéis de tema: variáveis geradas pelo script (<style id="gen">) ---------- */
+.panel{background:var(--r-page);color:var(--fg);border:1px solid rgba(127,127,127,.3);border-radius:14px;padding:10px;min-width:0;display:flex;flex-direction:column;gap:8px;font-size:12px;line-height:1.35;position:relative}
+.panel.light{color-scheme:light}.panel.dark{color-scheme:dark}
+.mlabel{font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;color:var(--ts)}
+.row{display:flex;align-items:center;gap:6px;min-width:0;flex-wrap:wrap}
+.between{justify-content:space-between}
+.col{display:flex;flex-direction:column;gap:6px;min-width:0}
+.t2{color:var(--ts)}.s{font-size:11px}
+.b{font-weight:600}
+.fl{background:var(--r-float);border:1px solid color-mix(in oklab,var(--fg) 6%,transparent);border-radius:14px;box-shadow:0 8px 20px -6px color-mix(in oklab,var(--shd) var(--sha),transparent);padding:4px;min-width:0}
+.panel.dark .fl{border-color:color-mix(in oklab,var(--fg) 10%,transparent)}
+.btn{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 10px;border-radius:10px;border:1px solid transparent;font:inherit;font-size:12px;color:var(--fg);background:transparent;cursor:pointer;white-space:nowrap}
+.btn.sec{background:var(--r-fill)}
+.btn.sec:hover,.btn.sec.h{background:var(--r-fillHover)}
+.btn.gh:hover,.btn.gh.h{background:var(--r-itemHover)}
+.btn.gh.sel{background:var(--r-selected)}
+.btn.gh.sel:hover,.btn.gh.sel.h{background:var(--r-selectedHover)}
+.btn.pri{background:var(--primary);color:var(--primary-fg)}
+.btn.sm{height:24px;padding:0 8px;font-size:11px}
+.mi{display:flex;align-items:center;gap:6px;min-height:26px;padding:3px 9px;border-radius:9px;font-size:12px}
+.mi:hover,.mi.h{background:var(--r-itemHover)}
+.mi.err{color:oklch(.6 .17 20)}
+.sep{height:1px;background:var(--r-line);border:0;margin:4px 0}
+.grp{background:var(--r-softMenu);margin:2px -4px;padding:4px;border-radius:0}
+.lbl{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 9px;color:var(--ts)}
+.field{display:flex;align-items:center;min-height:30px;padding:0 10px;border:1px solid transparent;border-radius:10px;background:var(--r-field);color:var(--ts);font-size:12px}
+.field.area{min-height:52px;align-items:flex-start;padding-top:7px}
+.badge{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;font-size:11px;background:var(--r-badgeDefault);border:1px solid transparent}
+[data-prop="hoje"] .badge.d{border-color:color-mix(in oklab,var(--fg) 20%,transparent)}
+.badge.sec{background:var(--r-fill)}
+.av{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:999px;font-size:10px;font-weight:600;flex:none;background:var(--r-fill);color:var(--fg)}
+.av.pic{background:linear-gradient(135deg,#f59e0b,#ec4899);color:#fff}
+.av.c{background:var(--r-avatarOnCard);border:1px solid color-mix(in oklab,currentColor 35%,transparent);color:inherit}
+[data-prop="hoje"] .av.c{border-color:transparent}
+.acard{background:var(--r-actionCard);border-radius:14px;border-top:1px solid var(--atop);box-shadow:var(--ash);padding:9px 10px;display:flex;flex-direction:column;gap:5px;min-width:0;transition:background .3s}
+.acard:hover,.acard.h{background:var(--r-actionHover)}
+.acard.phase{background:color-mix(in oklab,var(--phase) var(--pm),var(--bg));color:var(--pfg)}
+.acard.phase:hover,.acard.phase.h{background:color-mix(in oklab,var(--phase) var(--pmh),var(--bg))}
+.acard.phase .t2{color:color-mix(in oklab,var(--pfg) 70%,transparent)}
+.strip{background:var(--r-strip);padding:6px 10px;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.nitem{display:flex;gap:7px;padding:7px 10px;font-size:12px;align-items:flex-start}
+.nitem.u{background:var(--r-unread)}
+.nitem.u:hover,.nitem.u.h{background:var(--r-unreadHover)}
+.nitem:not(.u):hover,.nitem:not(.u).h{background:var(--r-readHover)}
+.dot{width:7px;height:7px;border-radius:999px;background:var(--primary);flex:none;margin-top:4px}
+.dot.off0{background:transparent}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:1px solid var(--r-line);border-radius:10px;overflow:hidden}
+.cal.nb{border:0}
+.cal .wd{background:var(--r-strip);font-size:9px;text-align:center;padding:4px 0;font-weight:700;color:var(--ts);text-transform:uppercase}
+.cell{min-height:44px;padding:3px;font-size:10px;border-top:1px solid var(--r-line);border-left:1px solid var(--r-line);min-width:0;position:relative}
+.cal .cell:nth-child(7n+8){border-left:0}
+.cell:hover,.cell.h{background:var(--r-cellHover)}
+.cell.out{background:var(--r-outsideMonth);opacity:.6}
+.cell.out:hover{background:var(--r-outsideMonth)}
+.cell.drop{background:var(--r-dropTarget)}
+.cell.pdrop{background:var(--r-planDrop)}
+[data-prop="hoje"] .cell.pdrop{color:var(--primary-fg)}
+body:not([data-prop="hoje"]) .cell.pdrop{outline:1px dashed var(--r-line);outline-offset:-3px}
+.today{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:999px;background:var(--fg);color:var(--bg)}
+.chip{display:block;margin-top:2px;font-size:9px;padding:1px 3px;border-radius:5px;background:var(--r-box);border:1px solid var(--r-line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.box{background:var(--r-box);border:1px solid var(--r-line);border-radius:12px;padding:8px 10px}
+.bub{background:var(--r-bubbleOther);border-radius:12px;padding:6px 10px;max-width:86%}
+.bub.me{background:var(--primary);color:var(--primary-fg);align-self:flex-end}
+.img{aspect-ratio:4/3;border-radius:10px;border:1px solid var(--r-line);background:linear-gradient(135deg,#f97316,#ec4899 50%,#38bdf8)}
+.img.ph{background:var(--r-imageBackdrop)}
+.alert{background:var(--r-alertDefault);border:1px solid var(--r-line);border-radius:12px;padding:8px 10px}
+.toast{background:var(--r-toastDefault);border:1px solid var(--r-line);border-radius:12px;padding:8px 12px;box-shadow:0 12px 24px -8px color-mix(in oklab,var(--shd) var(--sha),transparent)}
+.scrim{background:color-mix(in oklab,var(--shd) 30%,transparent);border-radius:10px;padding:10px;display:flex;justify-content:center}
+.radio{width:15px;height:15px;border-radius:999px;background:var(--r-radio);border:1px solid var(--r-line);flex:none}
+.chk{width:15px;height:15px;border-radius:5px;background:var(--r-field);border:1px solid transparent;flex:none}
+.trk{height:6px;border-radius:99px;background:var(--r-track);overflow:hidden}
+.trk i{display:block;height:100%;width:42%;background:var(--primary);border-radius:99px}
+.tabs{display:flex;border-bottom:1px solid var(--r-line)}
+.tab{padding:6px 12px;font-size:12px;color:var(--ts);border-top:2px solid transparent}
+.tab:hover,.tab.h{background:var(--r-itemHover)}
+.tab.sel{color:var(--fg);border-top-color:var(--primary);background:var(--r-float)}
+.cblock{border-radius:12px;padding:10px;background:var(--bg);color:var(--fg);display:flex;flex-direction:column;gap:7px;border:1px solid rgba(127,127,127,.3);min-width:0}
+.cblock .sw{width:22px;height:22px;border-radius:7px;border:1px solid rgba(127,127,127,.4)}
+.cb2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media (max-width:520px){.cb2{grid-template-columns:1fr}}
+.srow{font-size:11px;color:#57534e;margin-top:6px}
+</style>
+</head>
+<body data-prop="hoje">
+<div class="wrap">
+<h1>DS35 · Proposta dos papéis das cores neutras</h1>
+<p class="lead">Esta página é um estudo (nenhum código do app foi alterado). Ela mostra como o app pinta hoje os fundos e os cinzas, o que está errado, e três maneiras de simplificar. Escolha a proposta no topo e veja as mesmas oito telas pequenas refeitas com as cores dela. Os controles de ajuste (barras) mexem na página inteira.</p>
+<div class="box0">
+<b>Como ler.</b> Um <b>papel</b> é uma função de cor (fundo da página, menu flutuante, campo, destaque suave...). Uma <b>cor</b> é um valor calculado a partir do fundo da página, mais claro ou mais escuro por uma <b>diferença de claridade</b> (um número de 0 a 1; escrevo "diferença" e, quando é a conta, <code>ΔL</code>). Abaixo de 0,03 de diferença o olho quase não separa duas cores, e a página marca isso como <span class="tag bad">quase invisível</span>. Os números e as contagens vêm da leitura do código em 18/11/2026; as telas pequenas são redesenhos em CSS simples, não o app.
+</div>
+</div>
+
+<div class="bar"><div class="wrap">
+<span><span class="seglabel">Paleta</span><span class="seg" id="segPal" role="group" aria-label="Paleta"></span></span>
+<span><span class="seglabel">Modo</span><span class="seg" id="segMode" role="group" aria-label="Modo"></span></span>
+<span><span class="seglabel">Proposta</span><span class="seg" id="segProp" role="group" aria-label="Proposta"></span></span>
+</div>
+</div>
+<div class="wrap"><ul class="toc">
+<li><a href="#auditoria">1. Papéis que existem</a></li><li><a href="#erros">2. O que está errado</a></li><li><a href="#propostas">3. Propostas</a></li><li><a href="#telas">4. Telas</a></li><li><a href="#ajuste">5. Ajustar e copiar</a></li><li><a href="#decisoes">6. Decisões</a></li>
+</ul></div>
+
+<div class="wrap">
+<h2 id="auditoria">1. Os papéis de cor que o app realmente usa</h2>
+<p class="lead">Lista feita lendo o código de <code>app/components/prism</code>, <code>uzzina</code>, <code>features</code>, <code>layout</code>, <code>planning</code>, as rotas do portal e do Perfil. Contagens fora da galeria <code>/ui</code> (que repete os nomes só para documentar). Cada linha traz o comando que gera o número.</p>
+<div class="tw"><table id="tRoles"></table></div>
+<p class="small">Comando base de todas as linhas: <code id="baseCmd"></code>. Papéis que <b>não existem</b> no uso real e por isso ficam de fora das propostas: pressionado com cor própria (0 usos; o botão só desloca 1px), <code>accent</code> (0 usos fora da galeria), <code>secondary-hover</code> como classe (0 usos; o hover do botão cinza é uma mistura escrita à mão, veja a seção 2), fundo "muted" (0).</p>
+
+<h2 id="erros">2. O que está errado hoje (casos reais, com arquivo e linha)</h2>
+<div id="offenders"></div>
+<h3 style="margin-top:16px">Pares de cor medidos no estado de hoje</h3>
+<p class="small">Mesma conta da seção 4, mas só com a proposta "Hoje" e a paleta escolhida acima. Diferença abaixo de 0,03 = quase invisível.</p>
+<div class="tw"><table id="tHojePairs"></table></div>
+<p class="small" id="clampNote"></p>
+
+<h2 id="propostas">3. As três propostas (mais a situação de hoje)</h2>
+<p class="lead">Princípio do proprietário: poucas cores, cada uma com um papel fixo e limites de uso; se uma cor fica feia num lugar, ela simplesmente não é usada ali. O cartão (<code>card</code>) deixa de existir nas três. Uma descoberta que sustenta isso: <code>bg-secondary/50</code> escrito à mão dá quase exatamente o valor do <code>card</code> (claro −0,018 contra −0,020; escuro +0,049 contra +0,050). Os quatro "destaques sem nome" já eram o cartão.</p>
+<div class="cards3" id="propCards"></div>
+<h3 style="margin-top:18px">Comparação lado a lado</h3>
+<div class="tw"><table id="tCompare"></table></div>
+<h3 style="margin-top:18px" id="detTitle">Detalhe da proposta escolhida</h3>
+<div id="propDetail"></div>
+
+<h2 id="telas">4. As mesmas oito telas com as cores da proposta escolhida</h2>
+<p class="lead" id="telasNote"></p>
+<div id="stage" data-mode="both"></div>
+
+<h2 id="ajuste">5. Ajustar, restaurar e copiar</h2>
+<p class="lead">As barras mudam a diferença de claridade de cada cor da proposta escolhida, no claro e no escuro, e atualizam a página inteira. O CSS copiado usa as fórmulas <code>oklch(from var(--background) calc(l ± diferença) c h)</code> e traz, em comentário, o mapa do que cada nome antigo vira.</p>
+<div class="row" style="gap:8px;margin:8px 0">
+<button class="btn0" id="bReset">Restaurar esta proposta</button>
+<button class="btn0" id="bResetAll">Restaurar todas</button>
+<button class="btn0 main" id="bCopy">Copiar CSS desta proposta</button>
+<span class="small" id="copyMsg" role="status"></span>
+</div>
+<div id="sliders"></div>
+<h3 style="margin-top:16px">Conferência de contraste da proposta escolhida (todos os pares)</h3>
+<div class="tw"><table id="tPairsAll"></table></div>
+<details open style="margin-top:12px"><summary><b>CSS gerado</b> (selecione e copie à mão se o botão não funcionar)</summary>
+<textarea id="cssOut" readonly spellcheck="false" aria-label="CSS gerado"></textarea></details>
+
+<h2 id="decisoes">6. Decisões que preciso de você</h2>
+<p class="lead">As oito primeiras vêm do ticket DS35 (P1 a P8), reescritas em linguagem simples. As seguintes (N1 em diante) saíram desta auditoria. Só marco "Recomendado" quando há evidência no código ou na medição; quando não há, escrevo "sem recomendação".</p>
+<div id="decisions"></div>
+<h2>Limites desta página</h2>
+<ul id="limits" class="small"></ul>
+<p class="small" style="margin:30px 0">Fim.</p>
+</div>
+
+<script>
+/* =====================================================================
+   CONFIG: TODOS os dados da página ficam aqui. Para iterar, edite só este objeto.
+   - palettes: fundo (oklch), texto e cor primária de cada paleta/modo (valores de app/lib/palettes.ts).
+   - slots: usos concretos de cor que as telas pequenas pedem (28). Cada proposta mapeia cada uso para uma cor.
+   - proposals: tokens (nome, explicação, diferença de claridade no claro e no escuro, o que substitui, onde pode e onde não pode),
+     mapa uso→cor (map), tratamentos (hover, pressionado...), custo e resumo.
+     Valor de um uso em "map": 'nome-do-token' | 'none' | {tok, alpha} (película) | {tok, fgMix} (mistura com o texto) | {light:..., dark:...}
+   - roles, offenders, pairs, screens, decisions: conteúdo das seções.
+   ===================================================================== */
+const CONFIG = {
+  palettes: {
+    onix:    {label:'Ônix',    light:{bg:[0.96,0.002,200], fg:'oklch(0 0 0)', pr:'oklch(0 0 0)',        pf:'oklch(1 0 0)',   shd:'oklch(0.25 0.01 200)', sha:10},
+                                 dark: {bg:[0.2,0.01,250],   fg:'oklch(1 0 0)', pr:'oklch(1 0 0)',        pf:'oklch(0 0 0)',   shd:'oklch(0.1 0.01 200)',  sha:50}},
+    carbono: {label:'Carbono', light:{bg:[1,0,0],           fg:'oklch(0 0 0)', pr:'oklch(0.3 0.02 240)', pf:'oklch(1 0 0)',   shd:'oklch(0.25 0 0)',      sha:10},
+                                 dark: {bg:[0.25,0.015,240], fg:'oklch(1 0 0)', pr:'oklch(0.99 0.01 240)',pf:'oklch(0.3 0.02 240)', shd:'oklch(0.1 0 0)', sha:40}},
+    fucsia:  {label:'Fúcsia',  light:{bg:[0.98,0.02,320],   fg:'oklch(0 0 0)', pr:'oklch(0.9 0.4 350)',  pf:'oklch(0 0 0)',   shd:'oklch(0.25 0.15 350)', sha:10},
+                                 dark: {bg:[0.3,0.1,340],    fg:'oklch(1 0 0)', pr:'oklch(0.8 0.4 350)',  pf:'oklch(0 0 0)',   shd:'oklch(0.1 0.1 340)',   sha:25}}
+  },
+  /* Texto: iguais nas quatro (fora do escopo). Fórmulas de app/tailwind.css (DS28). */
+  text: {light:{ts:'calc(l - 0.512)', tsC:0.001}, dark:{ts:'calc(l + 0.549)', tsC:0.007}},
+  proposalOrder: ['hoje','A','B','C'],
+  /* usos concretos: k = chave; hover = classe leva "hover:" ; none = texto quando a proposta tira o fundo */
+  slots: [
+    {k:'page',label:'Fundo da página'},{k:'float',label:'Menu, diálogo, gaveta, balão'},
+    {k:'actionCard',label:'Cartão de ação'},{k:'actionHover',label:'Cartão de ação com mouse',hover:1},
+    {k:'field',label:'Campo de formulário'},{k:'fill',label:'Botão cinza, selo, quadradinho do avatar vazio'},
+    {k:'fillHover',label:'Botão cinza com mouse',hover:1},{k:'itemHover',label:'Item transparente com mouse (menu, lista, aba, ghost)',hover:1},
+    {k:'readHover',label:'Notificação lida com mouse',hover:1},{k:'selected',label:'Selecionado ou aberto'},
+    {k:'selectedHover',label:'Selecionado com mouse',hover:1},{k:'unread',label:'Notificação não lida'},
+    {k:'unreadHover',label:'Não lida com mouse',hover:1},{k:'softMenu',label:'Grupo Admin do menu'},
+    {k:'dropTarget',label:'Alvo ao arrastar (Kanban)'},{k:'cellHover',label:'Célula do calendário com mouse',hover:1},
+    {k:'planDrop',label:'Alvo ao arrastar (Planejamento)'},{k:'strip',label:'Faixa de cabeçalho (tabela, calendário, sino)'},
+    {k:'track',label:'Trilho de progresso'},{k:'box',label:'Caixa em volta de conteúdo'},
+    {k:'bubbleOther',label:'Comentário de outra pessoa'},{k:'alertDefault',label:'Alerta padrão'},
+    {k:'toastDefault',label:'Aviso (toast) padrão'},{k:'badgeDefault',label:'Selo padrão'},
+    {k:'radio',label:'Botão de rádio'},{k:'avatarOnCard',label:'Avatar vazio e "+N" no cartão'},
+    {k:'imageBackdrop',label:'Quadro atrás de imagem'},{k:'outsideMonth',label:'Dia fora do mês'},
+    {k:'line',label:'Borda'}
+  ],
+  proposals: {
+    hoje: {
+      id:'hoje', name:'Hoje', tag:'Como o app está', kind:'Estado atual (referência)',
+      pitch:'Oito cores neutras com nomes herdados do shadcn. Duas (accent e secondary-hover) quase não são usadas; o card virou várias coisas.',
+      /* tokens: n = nome CSS; d = [claro, escuro] em diferença de L sobre o fundo; base = é o próprio fundo */
+      tokens:[
+        {n:'background',pt:'Fundo da página',d:[0,0],base:1,rep:'—',may:'Raiz de tudo',not:'—'},
+        {n:'popover',pt:'Menus, diálogos, gaveta, balão',d:[0.02,-0.03],rep:'—',may:'Elementos que flutuam sobre a página',not:'Dentro de outro flutuante sem borda'},
+        {n:'card',pt:'"Cartão" (sem papel definido)',d:[-0.02,0.05],rep:'—',may:'Hoje: destaque de não lida, hover de linha, caixas, alerta, toast, selo, rádio',not:'Não há regra escrita'},
+        {n:'input',pt:'Campo de formulário',d:[-0.04,0.02],rep:'—',may:'Campos',not:'Sem regra'},
+        {n:'secondary',pt:'Botão cinza, selo, chips, hover de itens, faixas, trilhos, avatar vazio...',d:[-0.036,0.098],rep:'—',may:'Qualquer lugar',not:'Sem regra (por isso aparece sobre cartão de fase e imagem)'},
+        {n:'secondary-hover',pt:'Hover do botão cinza (0 usos como classe)',d:[-0.083,0.133],rep:'—',may:'—',not:'—'},
+        {n:'border',pt:'Borda',d:[-0.07,0.10],rep:'—',may:'Bordas de 1px',not:'—'},
+        {n:'action',pt:'Cartão de ação',d:[0.02,0.10],rep:'—',may:'Cartão de ação',not:'—'},
+        {n:'action-hover',pt:'Cartão de ação com mouse',d:[0.10,0.20],rep:'—',may:'Hover do cartão',not:'—'}
+      ],
+      cssName:{page:'background',line:'border'},
+      map:{page:'background',float:'popover',actionCard:'action',actionHover:'action-hover',field:'input',fill:'secondary',
+        fillHover:{tok:'secondary',fgMix:0.05},itemHover:'secondary',readHover:'card',selected:'secondary',selectedHover:'secondary',
+        unread:'card',unreadHover:'card',softMenu:{tok:'secondary',alpha:0.5},dropTarget:{tok:'secondary',alpha:0.5},
+        cellHover:{light:{tok:'secondary',alpha:0.5},dark:{tok:'secondary',alpha:0.2}},planDrop:'primary',strip:'secondary',track:'secondary',
+        box:'card',bubbleOther:'card',alertDefault:'card',toastDefault:'card',badgeDefault:'card',radio:'card',
+        avatarOnCard:'secondary',imageBackdrop:'secondary',outsideMonth:'secondary',line:'border'},
+      cls:{page:'bg-background',float:'bg-popover',actionCard:'bg-action',actionHover:'hover:bg-action-hover',field:'bg-input',fill:'bg-secondary',
+        fillHover:'hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)]',itemHover:'hover:bg-secondary',readHover:'hover:bg-card',
+        selected:'bg-secondary',selectedHover:'hover:bg-secondary',unread:'bg-card',unreadHover:'hover:bg-card',softMenu:'bg-secondary/50',
+        dropTarget:'bg-secondary/50',cellHover:'hover:bg-secondary/50 dark:hover:bg-secondary/20',planDrop:'bg-primary text-primary-foreground',
+        strip:'bg-secondary',track:'bg-secondary',box:'bg-card border border-border',bubbleOther:'bg-card',alertDefault:'bg-card border-border',
+        toastDefault:'bg-card border-border',badgeDefault:'bg-card border-foreground/20',radio:'bg-card border-input',avatarOnCard:'bg-secondary',
+        imageBackdrop:'bg-secondary ring ring-border',outsideMonth:'bg-secondary opacity-60',line:'border-border'},
+      treat:{
+        hover:'Hover de item transparente = secondary (32 usos). Hover do botão cinza = mistura escrita à mão (secondary + 5% do texto), enquanto o token secondary-hover tem 0 usos. Hover do cartão = card, que é o mesmo cinza do "não lida".',
+        pressed:'Não existe cor de pressionado. O botão desloca 1px (active:translate-y-px em button.tsx). Nenhum uso de pressed:bg-*.',
+        selected:'secondary. Em 14 lugares o hover do selecionado pede o mesmo secondary (não reage).',
+        soft:'Quatro jeitos para o mesmo papel: bg-card (não lida), hover:bg-card (celebrations), bg-secondary/50 (Admin, Kanban, calendário; 20% no escuro) e bg-primary (alvo do Planejamento).',
+        phase:'Avatar vazio, "+N", quadro atrás de imagem e miniatura usam bg-secondary opaco (9 lugares), cinza sólido sobre a cor da fase e sobre a imagem.',
+        border:'border (−0,07) mais cinco valores escritos à mão: foreground/5, /10, /15, /20 (29+7+2 usos).',
+        disabled:'opacity-50 (23 usos, sem cor própria).'},
+      cost:{tokens:'8 cores neutras (+ action e action-hover)',renames:'0 renomeações',decide:'—',visual:'—'},
+      summary:{n:8,card:'existe, sem papel',names:'background, popover, card, input, secondary, secondary-hover, border, accent',risk:'—'}
+    },
+    A: {
+      id:'A', name:'A · Cinco tons numerados', tag:'Mínima', kind:'Escala curta no estilo Radix: cada número tem um papel escrito',
+      pitch:'Cinco degraus numerados. Campo e botão cinza viram o mesmo tom (no claro já são quase iguais: −0,040 contra −0,036). A borda e o hover forte também dividem um tom.',
+      tokens:[
+        {n:'tone-1',pt:'1 · Página',d:[0,0],base:1,rep:'background',may:'Fundo de toda tela',not:'—'},
+        {n:'tone-2',pt:'2 · Flutuante',d:[0.02,-0.03],rep:'popover',may:'Menu, diálogo, gaveta, balão, aviso (toast), tooltip',not:'Sobre cartão de fase ou imagem'},
+        {n:'tone-3',pt:'3 · Suave',d:[-0.02,0.05],rep:'card, bg-secondary/50 (x4), faixas de cabeçalho, alerta padrão, comentário de outro',may:'Destaque de estado: grupo Admin, alvo de arrastar, hover de célula, não lida, faixas, alerta',not:'Caixa em volta de conteúdo; botão; campo'},
+        {n:'tone-4',pt:'4 · Controle',d:[-0.04,0.07],rep:'input, secondary, hover de item, selecionado, trilho, selo, rádio',may:'Campo, botão cinza, selo, "kbd", hover e selecionado de item transparente, trilho',not:'Sobre cartão de ação, cor de fase, imagem'},
+        {n:'tone-5',pt:'5 · Forte',d:[-0.08,0.12],rep:'secondary-hover, border',may:'Hover do tone-4, selecionado com mouse, borda de 1px, divisor',not:'Preenchimento grande'},
+        {n:'action',pt:'Cartão de ação (mantido)',d:[0.02,0.10],rep:'action (igual)',may:'Cartão de ação',not:'Nada cinza dentro'},
+        {n:'action-hover',pt:'Cartão de ação com mouse (mantido)',d:[0.10,0.20],rep:'action-hover (igual)',may:'Hover do cartão',not:'—'}
+      ],
+      cssName:{page:'tone-1',line:'tone-5'},
+      map:{page:'tone-1',float:'tone-2',actionCard:'action',actionHover:'action-hover',field:'tone-4',fill:'tone-4',fillHover:'tone-5',itemHover:'tone-4',
+        readHover:'tone-4',selected:'tone-4',selectedHover:'tone-5',unread:'tone-3',unreadHover:'tone-5',softMenu:'tone-3',dropTarget:'tone-3',
+        cellHover:'tone-3',planDrop:'tone-3',strip:'tone-3',track:'tone-4',box:'none',bubbleOther:'tone-3',alertDefault:'tone-3',toastDefault:'tone-2',
+        badgeDefault:'tone-4',radio:'tone-4',avatarOnCard:'none',imageBackdrop:'none',outsideMonth:'none',line:'tone-5'},
+      treat:{
+        hover:'Item transparente: tone-4. Item que já é tone-4 (botão cinza, selecionado): tone-5. Item sobre tone-3 (não lida): tone-5.',
+        pressed:'Sem cor. Mantém o deslocamento de 1px que já existe.',
+        selected:'tone-4; selecionado com mouse tone-5 (hoje não reage em 14 lugares).',
+        soft:'tone-3, um só: Admin do menu, alvo de arrastar (Kanban e Planejamento), hover da célula, não lida, faixas.',
+        phase:'Nenhum cinza. Avatar vazio e "+N" viram só contorno na cor do texto do cartão; quadro atrás de imagem fica sem fundo, só com a borda tone-5.',
+        border:'tone-5. As bordas de container (foreground/5 e /10, aprovadas no DS24) continuam como exceção escrita.',
+        disabled:'opacity-50, sem cor (como hoje).'},
+      cost:{tokens:'5 neutros (era 8) + action e action-hover',renames:'239 renomeações mecânicas (35 página, 19 flutuante, 16 campo, 3 border-input, 102 secondary, 64 border) + a galeria /ui',decide:'20 usos de card decididos um a um',visual:'Campo e botão cinza mudam no escuro (campo +0,02 para +0,07; botão +0,098 para +0,07). Borda e hover forte ficam no mesmo valor.'},
+      summary:{n:5,card:'morre; vira tone-3',names:'tone-1 a tone-5',risk:'Números não dizem o papel (precisa da tabela); fusão campo+botão e borda+hover num tom só'}
+    },
+    B: {
+      id:'B', name:'B · Nomes por papel', tag:'Recomendada (veja Decisões)', kind:'Cada cor tem o nome do que ela faz',
+      pitch:'Sete nomes que o proprietário reconhece: page, float, soft, field, fill, fill-hover, line. Quase os mesmos valores de hoje; o card renasce como soft com papel único.',
+      tokens:[
+        {n:'page',pt:'Página',d:[0,0],base:1,rep:'background',may:'Fundo de toda tela',not:'—'},
+        {n:'float',pt:'Flutuante',d:[0.02,-0.03],rep:'popover',may:'Menu, diálogo, gaveta, balão, aviso, tooltip',not:'Sobre cartão de fase ou imagem'},
+        {n:'soft',pt:'Destaque suave',d:[-0.02,0.05],rep:'card e bg-secondary/50 (x4)',may:'Estado de destaque: grupo Admin, alvo de arrastar, hover de célula, não lida; faixas de cabeçalho; alerta e comentário de outro',not:'Caixa em volta de conteúdo; botão; campo; hover (hover é fill)'},
+        {n:'field',pt:'Campo',d:[-0.04,0.04],rep:'input, bg do rádio',may:'Campo, caixa de seleção, rádio',not:'Cartão de ação, fase, imagem'},
+        {n:'fill',pt:'Preenchimento',d:[-0.036,0.098],rep:'secondary',may:'Botão cinza, selo, avatar vazio na página, hover e selecionado de item transparente, trilho',not:'Cartão de ação, cor de fase, imagem'},
+        {n:'fill-hover',pt:'Preenchimento com mouse',d:[-0.083,0.133],rep:'secondary-hover (e a mistura à mão do botão)',may:'Hover de tudo que já é fill ou soft; selecionado com mouse',not:'Repouso'},
+        {n:'line',pt:'Linha',d:[-0.07,0.10],rep:'border e border-input',may:'Bordas de 1px, divisores',not:'Preenchimento'},
+        {n:'action',pt:'Cartão de ação (mantido)',d:[0.02,0.10],rep:'action (igual)',may:'Cartão de ação',not:'Nada cinza dentro'},
+        {n:'action-hover',pt:'Cartão de ação com mouse (mantido)',d:[0.10,0.20],rep:'action-hover (igual)',may:'Hover do cartão',not:'—'}
+      ],
+      cssName:{page:'page',line:'line'},
+      map:{page:'page',float:'float',actionCard:'action',actionHover:'action-hover',field:'field',fill:'fill',fillHover:'fill-hover',itemHover:'fill',
+        readHover:'fill',selected:'fill',selectedHover:'fill-hover',unread:'soft',unreadHover:'fill-hover',softMenu:'soft',dropTarget:'soft',cellHover:'soft',
+        planDrop:'soft',strip:'soft',track:'fill',box:'none',bubbleOther:'soft',alertDefault:'soft',toastDefault:'float',badgeDefault:'fill',radio:'field',
+        avatarOnCard:'none',imageBackdrop:'none',outsideMonth:'none',line:'line'},
+      treat:{
+        hover:'Item transparente: fill. Item que já é fill (botão cinza, selecionado) ou soft (não lida): fill-hover. Uma regra só.',
+        pressed:'Sem cor. Mantém o deslocamento de 1px que já existe.',
+        selected:'fill; selecionado com mouse fill-hover (hoje não reage em 14 lugares).',
+        soft:'soft, um só, para todo "destaque de estado". Hover nunca usa soft.',
+        phase:'Nenhum cinza. Avatar vazio e "+N" viram só contorno na cor do texto do cartão; quadro atrás de imagem fica sem fundo, só com a linha.',
+        border:'line. As bordas de container (foreground/5 e /10, DS24) continuam como exceção escrita; /15 e /20 migram para line.',
+        disabled:'opacity-50, sem cor (como hoje).'},
+      cost:{tokens:'7 neutros (era 8) + action e action-hover',renames:'239 renomeações mecânicas (iguais às da A) + a galeria /ui',decide:'20 usos de card decididos um a um',visual:'Quase nada: só o campo no escuro (+0,02 para +0,04) e as faixas (de fill para soft, mais claras).'},
+      summary:{n:7,card:'morre; vira soft',names:'page, float, soft, field, fill, fill-hover, line',risk:'Maior número de arquivos tocados (renomeação); precisa codemod e revisão'}
+    },
+    C: {
+      id:'C', name:'C · Quase shadcn', tag:'Menos mexida', kind:'Mantém os nomes do shadcn; mata o card e dá papel ao muted e ao accent',
+      pitch:'Mantém background, popover, input, secondary, secondary-hover, border. O card é substituído por muted (destaque suave) e o accent, hoje sem uso, passa a ser o hover de item transparente.',
+      tokens:[
+        {n:'background',pt:'Fundo da página',d:[0,0],base:1,rep:'(igual)',may:'Fundo de toda tela',not:'—'},
+        {n:'popover',pt:'Flutuante',d:[0.02,-0.03],rep:'(igual)',may:'Menu, diálogo, gaveta, balão, aviso',not:'Sobre cartão de fase ou imagem'},
+        {n:'muted',pt:'Destaque suave',d:[-0.02,0.04],rep:'card e bg-secondary/50 (x4)',may:'Grupo Admin, alvo de arrastar, hover de célula, não lida, faixas, alerta, comentário de outro',not:'Caixa em volta de conteúdo; botão'},
+        {n:'input',pt:'Campo',d:[-0.04,0.04],rep:'input (dark +0,02 vira +0,04)',may:'Campo, caixa de seleção, rádio',not:'Cartão de ação, fase, imagem'},
+        {n:'accent',pt:'Hover e foco de item transparente',d:[-0.036,0.075],rep:'accent (hoje derivado do primary, 0 usos)',may:'Hover, foco e selecionado de item de menu, lista, aba, ghost',not:'Botão cinza (esse é secondary)'},
+        {n:'secondary',pt:'Botão cinza, selo, avatar vazio na página, trilho',d:[-0.036,0.098],rep:'(igual)',may:'Botão cinza, selo, trilho',not:'Cartão de ação, fase, imagem'},
+        {n:'secondary-hover',pt:'Hover do botão cinza',d:[-0.083,0.133],rep:'(igual; passa a ser usado)',may:'Hover de secondary e de muted',not:'Repouso'},
+        {n:'border',pt:'Borda',d:[-0.07,0.10],rep:'(igual)',may:'Bordas de 1px',not:'Preenchimento'},
+        {n:'action',pt:'Cartão de ação (mantido)',d:[0.02,0.10],rep:'action (igual)',may:'Cartão de ação',not:'Nada cinza dentro'},
+        {n:'action-hover',pt:'Cartão de ação com mouse (mantido)',d:[0.10,0.20],rep:'action-hover (igual)',may:'Hover do cartão',not:'—'}
+      ],
+      cssName:{page:'background',line:'border'},
+      map:{page:'background',float:'popover',actionCard:'action',actionHover:'action-hover',field:'input',fill:'secondary',fillHover:'secondary-hover',
+        itemHover:'accent',readHover:'accent',selected:'accent',selectedHover:'secondary-hover',unread:'muted',unreadHover:'secondary-hover',softMenu:'muted',
+        dropTarget:'muted',cellHover:'muted',planDrop:'muted',strip:'muted',track:'secondary',box:'none',bubbleOther:'muted',alertDefault:'muted',
+        toastDefault:'popover',badgeDefault:'secondary',radio:'input',avatarOnCard:'none',imageBackdrop:'none',outsideMonth:'none',line:'border'},
+      treat:{
+        hover:'Item transparente: accent. Botão cinza: secondary-hover. Item sobre muted (não lida): secondary-hover. Duas cores de hover para decidir por uso.',
+        pressed:'Sem cor. Mantém o deslocamento de 1px que já existe.',
+        selected:'accent; selecionado com mouse secondary-hover.',
+        soft:'muted, um só, para todo destaque de estado.',
+        phase:'Nenhum cinza. Avatar vazio e "+N" viram contorno; quadro atrás de imagem sem fundo, só com a borda.',
+        border:'border. Bordas de container (foreground/5 e /10) continuam como exceção escrita.',
+        disabled:'opacity-50, sem cor (como hoje).'},
+      cost:{tokens:'8 neutros (mesma conta de hoje) + action e action-hover',renames:'0 renomeações; muda o papel de 2 nomes',decide:'20 usos de card + 32 hovers de secondary para accent, um a um',visual:'Pouca coisa; mas muted e accent ficam muito próximos (veja a medição) e há dois cinzas de hover.'},
+      summary:{n:8,card:'morre; vira muted',names:'background, popover, muted, input, accent, secondary, secondary-hover, border',risk:'Dois cinzas de hover; muted e accent quase iguais; a regra "qual uso é accent" é por julgamento'}
+    }
+  },
+  /* roles: auditoria (contagens FORA da galeria /ui, rodadas em 18/11/2026) */
+  baseCmd:"grep -rEo --include='*.tsx' --include='*.ts' --include='*.css' --exclude-dir=ui-sections --exclude=ui.tsx --exclude=routeTree.gen.ts '<padrão>' app | wc -l",
+  roles:[
+    {r:'Fundo da página',cls:'bg-background',n:'35 em 23 arquivos',pat:'(^|[^-a-z])bg-background(/[0-9]+)?',w:'body (tailwind.css:427), rotas, portal, painéis do Admin'},
+    {r:'Flutuante (menu, diálogo, gaveta, balão, lista de seleção, tooltip)',cls:'bg-popover',n:'19 em 17 + 3 com transparência à mão (/80 /90 /95)',pat:'bg-popover(/[0-9]+)?',w:'dropdown-menu, select, combobox, command, dialog, sheet, tooltip, popover; AppBar:85 /90, DashboardMetrics:152 /80, RichTextEditor:651 /95'},
+    {r:'Campo de formulário',cls:'bg-input · border-input',n:'16 em 12 + 3 border-input',pat:'bg-input(/[0-9]+)?|border-input',w:'input, textarea, select, input-group, time-field, color-field, checkbox, comment input'},
+    {r:'Cartão de ação (e o hover dele)',cls:'bg-action · bg-action-hover',n:'4 + 7 em 4 arquivos',pat:'bg-action([^-]|$)|bg-action-hover',w:'ActionItem.tsx:152-165, UAdminItemCard, UAvatarSelector, CustomThemePanel'},
+    {r:'Cartão de fase (cor da fase)',cls:'phase-surface · phase-vivid',n:'11 em 5 arquivos',pat:'phase-(surface|vivid)',w:'tailwind.css:644-760: mistura 15% claro / 40% escuro da cor da fase com a página; não usa cinza'},
+    {r:'Preenchimento cinza em repouso (botão, selo, kbd, chips, avatar vazio, "+N")',cls:'bg-secondary',n:'≈61 de 102 (os demais são hover/selecionado). Contagem manual por papel nas linhas abaixo',pat:'bg-secondary(-hover)?(/[0-9]+)?',w:'button.tsx:28, badge.tsx:10, kbd.tsx:10, avatar.tsx:46/88, UAvatar.tsx:142, PlanningSuggestionsList:110-143, profile.tsx:1497/1510/1580, leads.tsx:246'},
+    {r:'Hover e foco de item transparente',cls:'hover:/focus:/data-focused:bg-secondary',n:'32 em 18 arquivos',pat:'(hover|focus|focus-visible|data-\\[hovered\\]|data-focused|data-\\[focused\\]|data-\\[focus-visible\\]|\\[a\\]:hover):bg-secondary(/[0-9]+)?',w:'dropdown-menu, select, combobox, command, tabs, button ghost/outline, calendar, HelpPage, ClientCalendar, LeadCard'},
+    {r:'Selecionado ou aberto',cls:'data-selected: / aria-expanded: / isOpen && bg-secondary',n:'9 com prefixo + 5 escritos em condicional (ThemeColorInspector x3, HelpPage:339, accordion:35)',pat:'(aria-expanded|data-selected|data-open|data-\\[selected\\]|data-\\[range-middle=true\\]|data-\\[today=true\\]):bg-secondary',w:'button ghost/outline toggle, calendar (faixa, hoje), accordion, Help, editor de temas'},
+    {r:'Destaque suave sem nome',cls:'bg-card (não lida, hover) · bg-secondary/50 · bg-primary (alvo)',n:'4 de card + 4 de secondary/50 (/20 no escuro) + 1 primary',pat:'bg-secondary/(50|20)|hover:bg-card|unread && "bg-card"',w:'Header.tsx:486-487/717, NotificationsPage:133, admin/celebrations:276, DnD.tsx:12, CalendarDayCell:69, PlanningCalendarView:108'},
+    {r:'Caixa com fundo em volta de conteúdo',cls:'bg-card border',n:'≈10 usos de card',pat:'bg-card(/[0-9]+)?',w:'PlanningCalendarView:79/161/260, PlanningSuggestionsList:165, planejamento:917/1010, dash/action/$id:392, CommentItem:74 (balão)'},
+    {r:'Padrão de componente que usa card',cls:'bg-card',n:'4 componentes',pat:'bg-card(/[0-9]+)?',w:'alert.tsx:11, sonner.tsx:49, badge.tsx:9, radio-group.tsx:25'},
+    {r:'Faixa de cabeçalho (tabela, calendário, sino, barra do Perfil, painel de observações)',cls:'bg-secondary',n:'8 (contagem manual)',pat:'bg-secondary',w:'Header:458/514, PlanningCalendarView:81, ClientCalendar:132, profile:272, review.$slug:254, tailwind.css:611, ObservationsTab:192'},
+    {r:'Trilho de progresso e esqueleto',cls:'bg-secondary · bg-foreground/5',n:'6 + esqueleto (contagem manual)',pat:'bg-secondary|animate-pulse',w:'slider:43, DashboardMetrics:204/221, UAIAllowanceMeter:26, UAIProgressBar:169, profile:1369, skeleton.tsx:21'},
+    {r:'Quadro atrás de imagem ou miniatura',cls:'bg-secondary',n:'5 (contagem manual)',pat:'bg-secondary',w:'Content:77, InstagramPreview:55/56, ContentReorderDialog:122, WorkFileThumbnail:48'},
+    {r:'Caixa vazia tracejada ou aviso',cls:'bg-secondary',n:'5 (contagem manual)',pat:'bg-secondary',w:'PartnersBoard:36, ContentReorderDialog:514/522, profile:1414, partner/$slug:160'},
+    {r:'Borda',cls:'border-border · border (padrão) · border-foreground/5,/10,/15,/20',n:'64 border-border; 114 "border" sem cor; 29 de container (/5 e /10); 7 de /15; 2 de /20',pat:'border-border(/[0-9]+)?',w:'todo o app; container flutuante usa foreground/5 (claro) e /10 (escuro), aprovado no DS24'},
+    {r:'Película de fundo do diálogo e botão sobre imagem',cls:'bg-overlay · bg-black/NN',n:'2 + 9',pat:'bg-overlay|bg-(black|white)/[0-9]+',w:'dialog.tsx:49, sheet.tsx:48; InstagramPreview (setas e contador sobre foto)'},
+    {r:'Preenchimento forte (ação principal, selecionado forte)',cls:'bg-primary',n:'34 em 21 arquivos',pat:'bg-primary(/[0-9]+)?',w:'botão padrão, toggle selecionado, LeadCard, balão próprio, dia hoje, alvo do Planejamento'},
+    {r:'Texto de apoio',cls:'text-secondary-foreground',n:'263 em 75 arquivos',pat:'text-secondary-foreground(/[0-9]+)?',w:'todo o app'},
+    {r:'Texto com transparência à mão',cls:'text-foreground/NN',n:'27 em 18 arquivos (16 são placeholder /40)',pat:'text-foreground/[0-9]+',w:'Header:506, combobox, time-field, editor'},
+    {r:'Preenchimento com transparência à mão',cls:'bg-foreground/NN',n:'10 em 6 arquivos, 7 valores diferentes (5, 8, 10, 15, 20, 40, 50)',pat:'bg-foreground/[0-9]+',w:'skeleton:21, combobox:318/329, review.$slug:202, UAvatarUpload:55, TimelineBoard:305/332'},
+    {r:'Desabilitado',cls:'disabled:opacity-NN',n:'23 em 19 arquivos',pat:'(disabled|data-\\[disabled\\]|data-disabled):opacity-[0-9]+',w:'primitivos do Prism; sem cor própria'},
+    {r:'Foco',cls:'ring-ring',n:'34 em 27 arquivos',pat:'ring-ring(/[0-9]+)?',w:'primitivos do Prism'},
+    {r:'Estados de erro, aviso, sucesso, informação',cls:'bg-*-background',n:'51 (fora do escopo; não são cinza)',pat:'bg-(error|warning|success|info)-background',w:'alert, badge, toast, botões'}
+  ],
+  offenders:[
+    {f:'app/components/layout/Header.tsx:486-487',t:'No menu do sino, a notificação NÃO lida usa bg-card e o hover de TODAS usa hover:bg-card. Resultado: ao passar o mouse numa lida, ela ganha a cor de "não lida"; e numa não lida o hover não muda nada (a cor é a mesma). Além disso a bolinha de não lida (linha 500) já faz o mesmo aviso.'},
+    {f:'app/components/layout/Header.tsx:717 · app/components/features/DnD.tsx:12 · app/components/features/CalendarDayCell.tsx:69',t:'Três lugares escrevem a mesma cor à mão e sem nome: bg-secondary/50 (grupo Admin do menu, alvo ao arrastar no Kanban, hover da célula; no escuro 20%). O valor dá −0,018 / +0,049 sobre a página, quase idêntico ao card (−0,020 / +0,050). O "destaque suave" já existe, só não tem nome.'},
+    {f:'app/components/prism/button.tsx:28 · app/tailwind.css:34',t:'O botão cinza escreve o hover com color-mix (secondary + 5% do texto), enquanto o token secondary-hover, que dá o mesmo valor (−0,082 contra −0,083; +0,133 nos dois), não tem nenhum uso fora da galeria. Duas fontes para a mesma cor.'},
+    {f:'app/tailwind.css:151, 161, 218 (escuro)',t:'No escuro, secondary (+0,098), border (+0,10) e o cartão de ação (+0,10) são quase o mesmo cinza. Um avatar vazio ou "+N" (bg-secondary) dentro do cartão de ação (avatar.tsx:46/88, UAvatar.tsx:142, usados por ActionItem.tsx:8) tem diferença de 0,002: invisível. No claro dá 0,056.'},
+    {f:'app/components/planning/PlanningCalendarView.tsx:79, 161, 260 · PlanningSuggestionsList.tsx:165 · routes/app/planejamento.tsx:917, 1010',t:'Seis caixas com bg-card e borda em volta de blocos do Planejamento (calendário inteiro, cada chip, bloco de sugestões, barra, item). Quebram a regra de "sem caixa com fundo em volta de conteúdo". No item da linha 1010 o hover (card para secondary) muda só 0,016: invisível.'},
+    {f:'app/routes/dash/action/$id.tsx:392 · app/components/features/ActionComments/CommentItem.tsx:74',t:'No portal do cliente, a descrição da ação fica numa caixa com bg-card e o balão de comentário de outra pessoa também. Mesmo cinza para dois papéis, e a descrição é conteúdo, não destaque.'},
+    {f:'app/components/prism/alert.tsx:11 · sonner.tsx:49 · badge.tsx:9 · radio-group.tsx:25',t:'Alerta, toast, selo e rádio padrão usam bg-card por falta de outra opção. O selo ainda soma uma borda foreground/20 escrita à mão e um hover bg-card/80. O rádio usa card enquanto a caixa de seleção ao lado (checkbox.tsx:26) usa input: o mesmo trabalho com duas cores.'},
+    {f:'app/components/features/admin/themes/ThemeColorInspector.tsx:330-331, 423-424, 895-896 · prism/sheet.tsx:89 · prism/button.tsx:44-45',t:'14 itens já são cinza em repouso e o hover pede o mesmo cinza (grupo A do DS33): editor de temas aberto, botão de fechar da gaveta, toggle selecionado. Passar o mouse não faz nada.'},
+    {f:'app/components/planning/PlanningCalendarView.tsx:108-109 · CalendarDayCell.tsx:69 · DnD.tsx:12',t:'O alvo ao arrastar tem dois visuais para o mesmo papel: no Planejamento vira bg-primary (preto sólido); no Kanban é bg-secondary/50. Dia fora do mês: aqui bg-secondary + opacity-60, na página Hoje só opacity-25 no número.'},
+    {f:'app/components/features/media/InstagramPreview.tsx:55-56 · ContentReorderDialog.tsx:122 · Content.tsx:77 · WorkFileThumbnail.tsx:48',t:'Quadro cinza sólido (bg-secondary) atrás de imagem e miniatura: cinza em cima do papel "imagem". O ticket quer nenhum cinza ali.'},
+    {f:'app/components/prism/combobox.tsx:318, 329 · prism/skeleton.tsx:21 · routes/dash/review.$slug.tsx:202',t:'Preenchimentos com transparência à mão em 7 valores diferentes (5, 8, 10, 15, 20, 40, 50) para a mesma ideia de "um tom de cinza leve": chip do combobox (borda /20, fundo /10, hover /15), esqueleto /5, bolinha numerada /8.'},
+    {f:'app/components/layout/AppBar.tsx:85 · DashboardMetrics.tsx:152 · RichTextEditor.tsx:651',t:'Flutuante com transparência à mão em três valores (/90, /80, /95) para o mesmo efeito de vidro.'},
+    {f:'app/components/features/action-drawer/ObservationsTab.tsx:192',t:'Um painel inteiro (altura toda) pintado com bg-secondary, o cinza dos botões, só para ser fundo de aba. Papel: faixa/fundo, não botão.'},
+    {f:'app/tailwind.css:133-171',t:'No escuro o campo (input, +0,02) fica a 0,02 da página: abaixo de 0,03 (quase invisível) quando o campo está direto sobre a página (ex.: admin/partner/$slug.tsx:484). No claro, input (−0,040) e secondary (−0,036) têm 0,004 de diferença: duas cores que são uma.'}
+  ],
+  /* pares medidos: a sobre b */
+  pairs:[
+    {id:'fillPage',l:'Botão cinza sobre a página',a:'fill',b:'page'},
+    {id:'fillFloat',l:'Botão cinza sobre menu ou diálogo',a:'fill',b:'float'},
+    {id:'fillCard',l:'Botão/avatar cinza sobre o cartão de ação',a:'fill',b:'actionCard',onlyHoje:1},
+    {id:'fieldPage',l:'Campo sobre a página',a:'field',b:'page'},
+    {id:'fieldFloat',l:'Campo sobre menu ou diálogo',a:'field',b:'float'},
+    {id:'floatPage',l:'Menu ou diálogo sobre a página',a:'float',b:'page'},
+    {id:'cardPage',l:'Cartão de ação sobre a página',a:'actionCard',b:'page'},
+    {id:'itemFloat',l:'Hover de item sobre o menu',a:'itemHover',b:'float'},
+    {id:'softFloat',l:'Grupo Admin sobre o menu',a:'softMenu',b:'float'},
+    {id:'unreadFloat',l:'Não lida sobre o menu do sino',a:'unread',b:'float'},
+    {id:'unreadHov',l:'Não lida com mouse sobre não lida',a:'unreadHover',b:'unread'},
+    {id:'readHov',l:'Lida com mouse sobre o menu',a:'readHover',b:'float'},
+    {id:'fillHov',l:'Botão cinza com mouse sobre repouso',a:'fillHover',b:'fill'},
+    {id:'selHov',l:'Selecionado com mouse sobre selecionado',a:'selectedHover',b:'selected'},
+    {id:'cellHov',l:'Hover da célula sobre a página',a:'cellHover',b:'page'},
+    {id:'dropPage',l:'Alvo ao arrastar (Kanban) sobre a página',a:'dropTarget',b:'page'},
+    {id:'stripFloat',l:'Faixa de cabeçalho sobre o menu',a:'strip',b:'float'},
+    {id:'trackPage',l:'Trilho de progresso sobre a página',a:'track',b:'page'},
+    {id:'linePage',l:'Borda sobre a página',a:'line',b:'page'},
+    {id:'lineFloat',l:'Borda sobre o menu',a:'line',b:'float'},
+    {id:'cardHov',l:'Cartão de ação com mouse sobre repouso',a:'actionHover',b:'actionCard'}
+  ],
+  /* telas: html é desenhado duas vezes (claro e escuro). uses: [descrição e arquivo, [usos]] */
+  screens:[
+    {id:'s1',t:'1 · Hoje: cartões de ação',d:'Cartão de ação normal, um em cor de fase (sem cinza), um com o mouse em cima, e botões cinza e transparente na página.',
+     pairs:['fillPage','cardPage','cardHov','fillCard'],
+     uses:[['Cartão de ação (ActionItem.tsx:152-165)',['actionCard','actionHover']],['Avatar vazio e "+3" dentro do cartão (avatar.tsx:46/88, UAvatar.tsx:142)',['avatarOnCard']],['Botão cinza (button.tsx:28)',['fill','fillHover']],['Botão transparente (button.tsx:30)',['itemHover']]],
+     html:`<div class="row between"><b>Hoje</b><span class="t2 s">18 de novembro</span></div>
+<div class="acard"><div class="row between"><b>Carrossel de lançamento</b><span class="badge d">Feito</span></div><div class="t2 s">Aurora · Instagram</div><div class="row"><span class="av pic">AL</span><span class="av c">MR</span><span class="av c"></span><span class="av c">+3</span></div></div>
+<div class="acard phase"><div class="row between"><b>Reels da semana</b><span class="s">Em produção</span></div><div class="t2 s">Aurora · Reels</div><div class="row"><span class="av pic">AL</span><span class="av c"></span><span class="av c">+2</span></div></div>
+<div class="acard h"><div class="row between"><b>Com o mouse em cima</b></div><div class="t2 s">estado de hover do cartão</div></div>
+<div class="row"><button class="btn sec">Nova ação +</button><button class="btn sec h">Cinza com mouse</button><button class="btn gh">Filtrar</button><button class="btn gh h">Ghost com mouse</button></div>`},
+    {id:'s2',t:'2 · Menu do avatar com o grupo Admin',d:'Menu flutuante com item sob o mouse e o grupo Admin em destaque suave, só para administradores.',
+     pairs:['floatPage','itemFloat','softFloat'],
+     uses:[['Menu (dropdown-menu.tsx:46)',['float']],['Item com mouse (dropdown-menu.tsx:94)',['itemHover']],['Grupo Admin (Header.tsx:717)',['softMenu']],['Borda do divisor',['line']]],
+     html:`<div class="fl" style="max-width:230px"><div class="mi">Minha conta</div><div class="mi h">Planejamento</div><div class="mi">Ajuda</div><hr class="sep"><div class="grp"><div class="lbl">Admin</div><div class="mi">Parceiros</div><div class="mi">Usuários</div><div class="mi">Datas comemorativas</div></div><hr class="sep"><div class="mi err">Sair</div></div>`},
+    {id:'s3',t:'3 · Gaveta de ação: campos, abas, alternador, botão cinza, selo',d:'Gaveta lateral flutuante com abas, campos, alternador, rádio, caixa de seleção, selos e botões.',
+     pairs:['fieldFloat','fillFloat','floatPage'],
+     uses:[['Gaveta (sheet.tsx:76, ActionFormDrawer.tsx:1240)',['float']],['Campo (input.tsx:9)',['field']],['Alternador selecionado (button.tsx:44-45)',['selected','selectedHover']],['Aba com mouse (tabs.tsx:29)',['itemHover']],['Botão cinza (button.tsx:28)',['fill']],['Selo padrão (badge.tsx:9)',['badgeDefault']],['Rádio (radio-group.tsx:25)',['radio']]],
+     html:`<div class="fl" style="padding:0;overflow:hidden"><div class="tabs"><div class="tab sel">Essenciais</div><div class="tab h">Instagram</div><div class="tab">Arquivos</div></div>
+<div class="col" style="padding:10px"><div class="field">Título da ação</div><div class="field area">Descrição...</div>
+<div class="row"><span class="btn gh sel">Feed</span><span class="btn gh sel h">Reels</span><span class="btn gh">Stories</span></div>
+<div class="row"><span class="radio"></span><span class="s">Padrão</span><span class="chk"></span><span class="s">Revisão</span><span class="badge d">Rascunho</span><span class="badge sec">Prioridade</span><span class="av">+4</span></div>
+<div class="row between"><button class="btn sec">Cancelar</button><button class="btn pri">Salvar</button></div></div></div>`},
+    {id:'s4',t:'4 · Planejamento: calendário, hover, hoje, alvo de arrastar',d:'Dias da semana em faixa, célula com o mouse, hoje, dia fora do mês, alvo ao arrastar (Kanban e Planejamento) e um chip de sugestão.',
+     pairs:['cellHov','dropPage','stripFloat','linePage'],
+     uses:[['Faixa dos dias da semana (PlanningCalendarView.tsx:81)',['strip']],['Hover da célula (CalendarDayCell.tsx:69)',['cellHover']],['Dia fora do mês (PlanningCalendarView.tsx:109)',['outsideMonth']],['Alvo no Planejamento (PlanningCalendarView.tsx:108)',['planDrop']],['Alvo no Kanban (DnD.tsx:12)',['dropTarget']],['Caixa do chip (PlanningCalendarView.tsx:161)',['box']],['Linhas da grade',['line']]],
+     html:`<div class="cal"><div class="wd">seg</div><div class="wd">ter</div><div class="wd">qua</div><div class="wd">qui</div><div class="wd">sex</div><div class="wd">sáb</div><div class="wd">dom</div>
+<div class="cell out">30</div><div class="cell out">31</div><div class="cell">1<span class="chip">Reels</span></div><div class="cell">2</div><div class="cell h">3<span class="chip">Post</span></div><div class="cell">4</div><div class="cell">5</div>
+<div class="cell">6</div><div class="cell"><span class="today">7</span></div><div class="cell pdrop">8 <span class="s">alvo (Plan.)</span></div><div class="cell drop">9 <span class="s">alvo (Kanban)</span></div><div class="cell">10</div><div class="cell">11</div><div class="cell">12</div></div>`},
+    {id:'s5',t:'5 · Notificações: sino e lista',d:'Menu do sino com faixa de cabeçalho e rodapé, uma notificação não lida, uma lida com o mouse em cima e uma lida. Em hoje, o mouse numa lida pinta com a cor de "não lida".',
+     pairs:['unreadFloat','unreadHov','readHov','stripFloat'],
+     uses:[['Faixa do sino (Header.tsx:458, 514)',['strip']],['Não lida (Header.tsx:487, NotificationsPage.tsx:133)',['unread']],['Hover da não lida (Header.tsx:486)',['unreadHover']],['Hover da lida (Header.tsx:486)',['readHover']]],
+     html:`<div class="fl" style="padding:0;overflow:hidden;max-width:300px"><div class="strip"><b>Notificações</b><span class="s t2">Marcar todas como lidas</span></div>
+<div class="nitem u"><span class="dot"></span><div><b>Ana</b> mencionou você em <b>Reels da semana</b><div class="t2 s">"Pode revisar a legenda?"</div></div></div>
+<div class="nitem h"><span class="dot off0"></span><div><b>Bruno</b> mencionou você em <b>Stories</b><div class="t2 s">"Aprovado, obrigado."</div></div></div>
+<div class="nitem"><span class="dot off0"></span><div><b>Carla</b> comentou em <b>Feed</b></div></div>
+<div class="strip" style="justify-content:center"><span class="s">Ver todas as notificações →</span></div></div>
+<div class="nitem u" style="border-radius:10px"><span class="dot"></span><div>Página de Notificações: linha não lida<div class="t2 s">mesma regra do sino</div></div></div>`},
+    {id:'s6',t:'6 · Perfil → Personalizado (a exceção permitida)',d:'Cada modo é um bloco com o fundo e o texto escolhidos pela pessoa, para mostrar as cores aplicadas. Dentro de cada bloco, as cores derivadas (campo, botão, menu, cartão) se calculam do fundo do próprio bloco.',
+     pairs:['fillFloat','fieldFloat'],
+     uses:[['Bloco do modo (exceção escrita no AGENTS, 12/11/2026)',[]],['Campo, botão cinza, menu e cartão dentro do bloco (CustomThemePanel.tsx:260-285)',['field','fill','float','actionCard']]],
+     html:`<div class="cb2"><div class="cblock cl" style="--bg:oklch(0.95 0.03 80);--fg:oklch(0.25 0.04 60);--primary:oklch(0.45 0.12 40);--primary-fg:#fff;--ts:oklch(0.45 0.03 60);--phase:oklch(.7 .15 150)"><b>Claro</b><div class="row"><span class="sw" style="background:var(--bg)"></span><span class="sw" style="background:var(--fg)"></span><span class="sw" style="background:var(--primary)"></span></div><div class="field">Campo</div><div class="row"><button class="btn sec">Cinza</button><button class="btn pri">Principal</button></div><div class="fl"><div class="mi">Menu</div><div class="mi h">Com mouse</div></div><div class="acard"><b class="s">Cartão de ação</b></div></div>
+<div class="cblock cd" style="--bg:oklch(0.28 0.05 255);--fg:oklch(0.96 0.01 255);--primary:oklch(0.85 0.1 200);--primary-fg:oklch(.2 .03 255);--ts:oklch(0.75 0.03 255);--phase:oklch(.7 .15 150)"><b>Escuro</b><div class="row"><span class="sw" style="background:var(--bg)"></span><span class="sw" style="background:var(--fg)"></span><span class="sw" style="background:var(--primary)"></span></div><div class="field">Campo</div><div class="row"><button class="btn sec">Cinza</button><button class="btn pri">Principal</button></div><div class="fl"><div class="mi">Menu</div><div class="mi h">Com mouse</div></div><div class="acard"><b class="s">Cartão de ação</b></div></div></div>
+<div class="srow">Os dois blocos são a exceção do proprietário (a regra "sem caixa com fundo" não se aplica a eles). Os controles dentro deles usam as cores da proposta escolhida, calculadas do fundo de cada bloco.</div>`},
+    {id:'s7',t:'7 · Portal do cliente: página de uma ação',d:'Imagem (carregando e carregada), descrição, aviso "sem legenda", comentários e botões de aprovação.',
+     pairs:['fillPage','linePage'],
+     uses:[['Quadro atrás de imagem (Content.tsx:77)',['imageBackdrop']],['Descrição (dash/action/$id.tsx:392)',['box']],['Comentário de outro (CommentItem.tsx:74)',['bubbleOther']],['Botão cinza',['fill']],['Linha',['line']]],
+     html:`<div class="row between"><b>Aprovação da ação</b><span class="badge d">Aguardando</span></div>
+<div class="row" style="align-items:stretch"><div style="flex:1;min-width:90px"><div class="img ph"></div><div class="t2 s">carregando</div></div><div style="flex:1;min-width:90px"><div class="img"></div><div class="t2 s">carregada</div></div></div>
+<div class="t2 s b" style="text-transform:uppercase;letter-spacing:.05em">Descrição</div>
+<div class="box">Postagem de lançamento com três lâminas e chamada para o site.</div>
+<div class="t2 s" style="font-style:italic">Sem legenda criada</div>
+<div class="col"><div class="bub">Pode ajustar o título da primeira lâmina?</div><div class="bub me">Ajustado, veja de novo.</div></div>
+<div class="row"><button class="btn pri">Aprovar</button><button class="btn sec">Pedir ajuste</button></div>`},
+    {id:'s8',t:'8 · Aviso (toast), alerta e diálogo',d:'Diálogo flutuante sobre a película escura, alerta padrão, toast padrão, rádio, caixa de seleção, selos e trilho de progresso.',
+     pairs:['fieldFloat','fillFloat','trackPage'],
+     uses:[['Diálogo (dialog.tsx:125)',['float']],['Alerta padrão (alert.tsx:11)',['alertDefault']],['Toast padrão (sonner.tsx:49)',['toastDefault']],['Selo padrão (badge.tsx:9)',['badgeDefault']],['Rádio (radio-group.tsx:25)',['radio']],['Trilho (UAIProgressBar.tsx:169)',['track']]],
+     html:`<div class="scrim"><div class="fl" style="width:100%;max-width:240px;padding:10px"><b>Arquivar ação?</b><div class="t2 s" style="margin:4px 0 8px">Ela sai da lista, mas pode ser restaurada.</div><div class="field">Motivo (opcional)</div><div class="row between" style="margin-top:8px"><button class="btn sec">Cancelar</button><button class="btn pri">Arquivar</button></div></div></div>
+<div class="alert"><b>Aviso.</b> <span class="t2">Alerta padrão, sem erro nem sucesso.</span></div>
+<div class="toast"><b>Ação salva</b> <span class="t2 s">Toast padrão</span></div>
+<div class="row"><span class="radio"></span><span class="s">Rádio</span><span class="chk"></span><span class="s">Caixa</span><span class="badge d">Selo padrão</span><span class="badge sec">Selo cinza</span></div>
+<div class="trk"><i></i></div>`}
+  ],
+  decisions:[
+    {id:'P1',q:'O botão cinza fica só sobre a página, ou também dentro de menus e diálogos?',
+     ev:'Medi. Sobre o menu a diferença é de 0,056 no claro e 0,128 no escuro (bem visível). O problema real é só sobre o cartão de ação (0,002 no escuro), sobre cor de fase e sobre imagem.',
+     opts:['Só sobre a página','Página e menu/diálogo; nunca sobre cartão de ação, fase ou imagem'],rec:1,why:'Proibir dentro de menu e diálogo não resolve nada medido e tiraria o botão cinza do rodapé de todo diálogo.'},
+    {id:'P2',q:'O card deixa de ser caixa e passa a ser o destaque suave, ou sai do sistema?',
+     ev:'Os três bg-secondary/50 sem nome valem quase o mesmo que o card (−0,018 contra −0,020; +0,049 contra +0,050). Ou seja: o destaque suave já existe nos dois, só falta um nome.',
+     opts:['Sai do sistema e um destaque suave com nome novo assume o valor (soft, muted ou tone-3)','Fica como card, só com o papel de destaque'],rec:0,why:'O nome "card" sugere caixa, que é exatamente o uso proibido. As três propostas fazem a opção 1.'},
+    {id:'P3',q:'O hover de itens transparentes usa o mesmo cinza do botão cinza, ou uma cor própria?',
+     ev:'Hoje são 32 lugares usando o cinza do botão; o token accent (que seria a cor própria) tem 0 usos. A proposta C cria duas cores de hover para decidir por uso.',
+     opts:['Mesmo cinza do botão (A e B)','Cor própria accent (C)'],rec:0,why:'Já é o que o app faz em 32 lugares e o princípio é ter menos cores. Ressalva: não vi o hover no escuro em tela real; use o modo escuro da página para checar se +0,098 pesa em lista longa.'},
+    {id:'P4',q:'Sobre cor de fase e imagem: nenhum cinza?',
+     ev:'Hoje há cinza sólido nesses 9 lugares (avatar, "+N", quadro de imagem). No escuro, o cinza do botão é quase igual ao cartão de ação.',
+     opts:['Nenhum cinza: avatar vazio vira contorno; quadro de imagem sem fundo','Manter como está'],rec:0,why:'Sustentado pela medição de 0,002 e pela regra de imagem que o proprietário já escreveu no AGENTS (ícones sobre imagem sem fundo).'},
+    {id:'P5',q:'Transparências escritas à mão: proibidas para fundo, com lista curta de exceções?',
+     ev:'10 usos de bg-foreground/NN em 7 valores diferentes e 3 de bg-popover/NN em 3 valores. Já aprovadas: borda de container foreground/5 e /10 (29 usos), texto /40 do placeholder (16).',
+     opts:['Proibidas para fundo; exceções: borda de container, placeholder, película do diálogo, ícone sobre imagem','Liberadas'],rec:0,why:'Sete valores para o mesmo "cinza leve" é o sintoma que o ticket descreve.'},
+    {id:'P6',q:'Estado pressionado: cor própria ou não?',
+     ev:'0 usos de pressed:bg-* no app. O botão só se desloca 1px ao pressionar (button.tsx).',
+     opts:['Sem cor própria (como hoje)','Criar uma cor de pressionado'],rec:0,why:'Não existe hoje e ninguém sentiu falta; criaria um token sem uso.'},
+    {id:'P7',q:'As caixas do Planejamento e do portal que usam bg-card: perdem o fundo ou viram exceção?',
+     ev:'≈10 caixas com bg-card e borda em volta de conteúdo (Planejamento 6, portal 2, balão 1). A regra do AGENTS proíbe esse padrão.',
+     opts:['Perdem o fundo (a borda fica onde separa região)','Viram exceção registrada'],rec:0,why:'Segue a regra escrita; as propostas assumem isso. Conferir na tela do Planejamento se a borda sozinha basta.'},
+    {id:'P8',q:'Proteção: só regra escrita, ou também uma checagem automática?',
+     ev:'Não há CI. O AGENTS pede não criar testes por rotina.',
+     opts:['Regra no contrato com o comando grep que lista os padrões proibidos, rodado à mão antes de publicar','Teste automático'],rec:0,why:'Combina com a preferência de agilidade do AGENTS e custa uma linha no contrato.'},
+    {id:'N1',q:'Hover do botão cinza: usar o token (secondary-hover / fill-hover / tone-5) em vez da mistura escrita à mão?',
+     ev:'A mistura dá −0,082 / +0,133; o token dá −0,083 / +0,133. Visualmente igual; hoje o token tem 0 usos.',
+     opts:['Usar o token e apagar a mistura','Manter a mistura'],rec:0,why:'Mesmo valor, uma fonte só.'},
+    {id:'N2',q:'accent: apagar ou dar papel?',
+     ev:'0 usos fora da galeria. Hoje é derivado do primary, não do fundo.',
+     opts:['Apagar (A e B)','Dar papel de hover (C)'],rec:0,why:'Sem uso e fora da lógica "derivado do fundo". Se escolher C, isso muda.'},
+    {id:'N3',q:'Notificação não lida: manter o fundo suave além da bolinha?',
+     ev:'A bolinha de não lida já existe no sino (Header.tsx:~500) e na página (NotificationsPage.tsx:~138). O fundo repete o aviso.',
+     opts:['Manter bolinha + fundo suave (as propostas)','Só bolinha e negrito, sem fundo'],rec:null,why:'Sem recomendação: depende de olhar uma lista longa de notificações.'},
+    {id:'N4',q:'Fundir campo e botão cinza num tom só (proposta A)?',
+     ev:'No claro já são quase iguais (−0,040 contra −0,036). No escuro são diferentes (+0,02 e +0,098) e a fusão mudaria os dois.',
+     opts:['Fundir','Manter separados (B e C)'],rec:null,why:'Sem recomendação: só se decide olhando o modo escuro na tela.'},
+    {id:'N5',q:'Que estilo de nome: números (A), papéis (B) ou os do shadcn (C)?',
+     ev:'O proprietário disse que não decora código; B é a que se lê sozinha. C é a menos mexida, mas mantém dois hovers e o par muted/accent muito próximo.',
+     opts:['A · tone-1 a tone-5','B · page, float, soft, field, fill, fill-hover, line','C · muted e accent'],rec:1,why:'Os nomes dizem o papel e quase não mudam os valores. Custo: renomear 239 classes (mecânico) e a galeria.'},
+    {id:'N6',q:'Selo padrão e selo cinza: fundir as duas variantes?',
+     ev:'Sem o card, as duas ficam com o mesmo fill. 17 selos usam o padrão (sem variante) e 5 usam secondary.',
+     opts:['Fundir em uma só','Manter as duas'],rec:0,why:'Duas variantes iguais violam "poucas cores, um papel cada".'},
+    {id:'N7',q:'Subir o campo no escuro de +0,02 para +0,04?',
+     ev:'Com +0,02 o campo sobre a página fica abaixo de 0,03 (quase invisível). Com +0,04 passa. Em menu e diálogo já passava (0,05).',
+     opts:['Subir para +0,04 (B e C); A usa +0,07','Manter +0,02'],rec:0,why:'É a medição que o próprio ticket usa como régua. Falta ver na tela.'},
+    {id:'N8',q:'Faixas de cabeçalho (8 lugares): trocar do cinza do botão para o destaque suave?',
+     ev:'Faixa não é botão. Hoje usa bg-secondary; as propostas usam o suave, mais claro.',
+     opts:['Faixa usa o suave','Manter o cinza do botão'],rec:0,why:'Um papel por cor. Visual: faixas ficam mais leves; conferir na tela.'},
+    {id:'N9',q:'Alvo ao arrastar: um visual só (suave) ou manter o preto sólido do Planejamento?',
+     ev:'O Planejamento usa bg-primary e o Kanban usa secondary/50: dois visuais para o mesmo papel.',
+     opts:['Um só: suave (com borda tracejada onde precisar de mais força)','Manter dois'],rec:0,why:'Mesmo papel, mesma cor. Falta ver o arrastar de verdade, que esta página não simula.'},
+    {id:'N10',q:'Carbono claro: popover e cartão de ação ficam iguais à página (a página é 1,00 e a conta passa de 1)?',
+     ev:'Veja o par "menu sobre a página" com a paleta Carbono no claro: diferença 0,000. Só a borda e a sombra separam.',
+     opts:['Aceitar (separam por borda e sombra)','Baixar o fundo do Carbono claro para ≈0,98'],rec:null,why:'Sem recomendação: é decisão da paleta, fora do DS35.'},
+    {id:'N11',q:'Manter action e action-hover como estão nas três propostas?',
+     ev:'Têm receita própria de relevo, sombra e mistura com a cor da fase (tailwind.css:644-760) e só 4+7 usos.',
+     opts:['Sim, fora do escopo','Incluir na reforma'],rec:0,why:'Mexer nelas mexe na cor de fase, que o ticket não pede.'}
+  ],
+  limits:[
+    'Nada aqui é o app: as telas são CSS simples redesenhado a partir das classes reais, sem o comportamento do React Aria nem das animações.',
+    'Não abri o app para comparar lado a lado. As contagens vêm de grep (comandos na seção 1); as classificações por papel foram feitas lendo cada linha.',
+    'A medição usa só a diferença de claridade (L) e ignora a pequena troca de croma da fórmula escura do secondary (−0,002) e do texto.',
+    'Alvo ao arrastar, hover real e foco por teclado não são simulados: os estados aparecem congelados nos exemplos.',
+    'Fúcsia usa valores do arquivo de paletas, mas a cor primária dela (croma 0,40) é recortada pelo navegador; trate como aproximada.',
+    'Onde a conta passa de 1 (página 1,00 do Carbono claro) a cor é recortada em branco; a medição aplica o mesmo recorte.'
+  ]
+};
+
+/* =====================================================================
+   Código (não precisa mexer para iterar)
+   ===================================================================== */
+const state = {pal:'onix', mode:'both', prop:'hoje'};
+const over = {};            // over[propId][tokenName] = [claro, escuro]
+const $ = (s, r=document) => r.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const P = () => CONFIG.proposals[state.prop];
+const clamp = x => Math.max(0, Math.min(1, x));
+const fx = (n, d=3) => (n>=0?'+':'−') + Math.abs(n).toFixed(d).replace('.', ',');
+
+function dOf(prop, tok, mi){ const o = over[prop.id] && over[prop.id][tok.n]; return o ? o[mi] : tok.d[mi]; }
+function tokOf(prop, name){ return prop.tokens.find(t => t.n === name); }
+function palBg(mode){ return CONFIG.palettes[state.pal][mode].bg; }
+function tokL(prop, name, mi){
+  if (name === 'primary') return mi === 0 ? 0.2 : 0.95;      /* só para a medição */
+  const t = tokOf(prop, name); if (!t) return palBg(mi ? 'dark' : 'light')[0];
+  return clamp(palBg(mi ? 'dark' : 'light')[0] + dOf(prop, t, mi));
+}
+function resolveSlot(v, mi){ return v && v.light ? v[mi ? 'dark' : 'light'] : v; }
+function slotL(prop, key, mi, underL){
+  const v = resolveSlot(prop.map[key], mi);
+  if (v === 'none') return underL;
+  if (typeof v === 'string') return tokL(prop, v, mi);
+  const fgL = mi ? 1 : 0;
+  if (v.alpha != null) return underL * (1 - v.alpha) + tokL(prop, v.tok, mi) * v.alpha;
+  if (v.fgMix != null) return tokL(prop, v.tok, mi) * (1 - v.fgMix) + fgL * v.fgMix;
+  return underL;
+}
+function pairDelta(prop, pair, mi){
+  const bL = slotL(prop, pair.b, mi, palBg(mi ? 'dark' : 'light')[0]);
+  const aL = slotL(prop, pair.a, mi, bL);
+  return Math.abs(aL - bL);
+}
+function slotCSS(prop, key, mi){
+  const v = resolveSlot(prop.map[key], mi);
+  if (v === 'none') return 'transparent';
+  if (typeof v === 'string') return `var(--p-${v})`;
+  if (v.alpha != null) return `color-mix(in oklab, var(--p-${v.tok}) ${(v.alpha*100).toFixed(0)}%, transparent)`;
+  return `color-mix(in oklch, var(--p-${v.tok}), var(--fg) ${(v.fgMix*100).toFixed(0)}%)`;
+}
+function tokFormula(prop, t, mi){
+  const d = dOf(prop, t, mi);
+  if (t.base || d === 0) return 'var(--bg)';
+  return `oklch(from var(--bg) calc(l ${d < 0 ? '-' : '+'} ${Math.abs(d).toFixed(3)}) c h)`;
+}
+function genCSS(){
+  const prop = P(); let css = '';
+  [['light',0,'.panel.light,.cblock.cl'],['dark',1,'.panel.dark,.cblock.cd']].forEach(([mode, mi, sel]) => {
+    const p = CONFIG.palettes[state.pal][mode], tx = CONFIG.text[mode];
+    let r = `--bg:oklch(${p.bg[0]} ${p.bg[1]} ${p.bg[2]});--fg:${p.fg};--primary:${p.pr};--primary-fg:${p.pf};--shd:${p.shd};--sha:${p.sha}%;`;
+    r += `--ts:oklch(from var(--bg) ${tx.ts} max(0, calc(c - ${tx.tsC})) h);--p-primary:var(--primary);`;
+    r += mi ? `--pm:40%;--pmh:70%;--pfg:oklch(from var(--phase) .92 .06 h);--atop:rgba(255,255,255,.1);--ash:0 1px 2px rgba(0,0,0,.4),0 6px 14px -4px rgba(0,0,0,.5);`
+            : `--pm:15%;--pmh:30%;--pfg:oklch(from var(--phase) .35 .07 h);--atop:#fff;--ash:0 1px 2px rgba(0,0,0,.14),0 4px 10px -4px rgba(0,0,0,.12);`;
+    r += `--phase:oklch(.7 .15 150);`;
+    prop.tokens.forEach(t => { r += `--p-${t.n}:${tokFormula(prop, t, mi)};`; });
+    CONFIG.slots.forEach(s => { r += `--r-${s.k}:${slotCSS(prop, s.k, mi)};`; });
+    css += `${sel}{${r}}\n`;
+  });
+  /* blocos do Perfil trazem a própria cor (--bg) inline; as fórmulas acima se recalculam neles */
+  css += '.cblock.cl{--phase:oklch(.7 .15 150)}';
+  return css;
+}
+
+/* ---- classes novas para o <pre> ---- */
+function slotClass(prop, key){
+  const s = CONFIG.slots.find(x => x.k === key), v = prop.map[key];
+  if (prop.cls && prop.id === 'hoje') return prop.cls[key];
+  const line = prop.cssName.line, hov = s.hover ? 'hover:' : '';
+  const none = {box:`border border-${line} (sem fundo)`,avatarOnCard:'border border-current/35 (sem fundo)',imageBackdrop:`ring ring-${line} (sem fundo)`,outsideMonth:'opacity-60 (sem fundo)'};
+  if (v === 'none') return none[key];
+  const tok = typeof v === 'string' ? v : v.tok;
+  if (key === 'line') return `border-${tok}`;
+  const tail = {planDrop:` outline-dashed outline-${line}`,alertDefault:` border-${line}`,toastDefault:` border-${line}`,radio:` border-${line}`}[key] || '';
+  const extra = key === 'cellHover' ? '' : '';
+  return `${hov}bg-${tok}${tail}${extra}`;
+}
+
+/* ---- contraste ---- */
+function cls(dl){ return dl < 0.03 ? (dl < 0.0005 ? 'dl bad' : 'dl bad') : (dl < 0.05 ? 'dl mid' : 'dl good'); }
+function dlTxt(dl){ return dl.toFixed(3).replace('.', ',') + (dl < 0.03 ? ' quase invisível' : ''); }
+function pairRows(prop, pairs, withHeader){
+  let h = withHeader ? '<tr><th>Par (cor sobre o que está por baixo)</th><th>Claro</th><th>Escuro</th></tr>' : '';
+  pairs.forEach(p => {
+    if (p.onlyHoje && prop.id !== 'hoje') return;
+    const a = pairDelta(prop, p, 0), b = pairDelta(prop, p, 1);
+    const nA = resolveSlot(prop.map[p.a], 0) === 'none', nB = resolveSlot(prop.map[p.a], 1) === 'none';
+    h += `<tr><td>${esc(p.l)}</td><td class="${cls(a)}">${nA ? 'sem fundo' : dlTxt(a)}</td><td class="${cls(b)}">${nB ? 'sem fundo' : dlTxt(b)}</td></tr>`;
+  });
+  return h;
+}
+
+/* ---- barra de controles ---- */
+function seg(el, items, cur, on){
+  el.innerHTML = items.map(([v, l]) => `<button type="button" aria-pressed="${v === cur}" data-v="${v}">${esc(l)}</button>`).join('');
+  el.onclick = e => { const b = e.target.closest('button'); if (b) on(b.dataset.v); };
+}
+function drawBar(){
+  seg($('#segPal'), Object.entries(CONFIG.palettes).map(([k, v]) => [k, v.label]), state.pal, v => { state.pal = v; renderAll(); });
+  seg($('#segMode'), [['both','Claro e escuro'],['light','Só claro'],['dark','Só escuro']], state.mode, v => { state.mode = v; $('#stage').dataset.mode = v; drawBar(); });
+  seg($('#segProp'), CONFIG.proposalOrder.map(k => [k, k === 'hoje' ? 'Hoje' : k]), state.prop, v => { state.prop = v; renderAll(); });
+}
+
+/* ---- seção 1 e 2 ---- */
+function drawRoles(){
+  $('#baseCmd').textContent = CONFIG.baseCmd;
+  $('#tRoles').innerHTML = '<tr><th>Papel</th><th>Classe hoje</th><th>Usos reais</th><th>Onde</th><th>Padrão do comando</th></tr>' +
+    CONFIG.roles.map(r => `<tr><td><b>${esc(r.r)}</b></td><td><code>${esc(r.cls)}</code></td><td>${esc(r.n)}</td><td class="small">${esc(r.w)}</td><td><code>${esc(r.pat)}</code></td></tr>`).join('');
+}
+function drawOffenders(){
+  $('#offenders').innerHTML = CONFIG.offenders.map((o, i) => `<div class="off"><b>${i+1}.</b> <span class="f">${esc(o.f)}</span><br>${esc(o.t)}</div>`).join('');
+}
+function drawHojiPairs(){
+  const prop = CONFIG.proposals.hoje;
+  $('#tHojePairs').innerHTML = pairRows(prop, CONFIG.pairs, true);
+  const b = [CONFIG.palettes[state.pal].light.bg[0], CONFIG.palettes[state.pal].dark.bg[0]];
+  $('#clampNote').textContent = `Paleta ${CONFIG.palettes[state.pal].label}: página ${b[0].toFixed(2).replace('.', ',')} no claro e ${b[1].toFixed(2).replace('.', ',')} no escuro. Quando a conta passa de 1,00 a cor é recortada em branco (aconteceu com o menu e o cartão de ação no Carbono claro).`;
+}
+
+/* ---- seção 3 ---- */
+function drawProps(){
+  const order = CONFIG.proposalOrder, ps = CONFIG.proposals;
+  $('#propCards').innerHTML = order.map(k => { const p = ps[k]; return `<div class="pcard${k === state.prop ? ' on' : ''}"><h3>${esc(p.name)} <span class="tag ${p.tag.startsWith('Recomendada') ? 'rec' : 'ok'}">${esc(p.tag)}</span></h3><div class="small">${esc(p.kind)}</div><p>${esc(p.pitch)}</p><p class="small"><b>${p.summary.n}</b> cores neutras: <code>${esc(p.summary.names)}</code></p><button class="btn0" data-pick="${k}">Ver nas telas</button></div>`; }).join('');
+  $('#propCards').onclick = e => { const b = e.target.closest('[data-pick]'); if (b){ state.prop = b.dataset.pick; renderAll(); location.hash = '#telas'; } };
+  const rows = [
+    ['Cores neutras', k => ps[k].summary.n + ' + action'],
+    ['O que acontece com o card', k => ps[k].summary.card],
+    ['Hover de item transparente', k => ps[k].treat.hover],
+    ['Pressionado', k => ps[k].treat.pressed],
+    ['Selecionado', k => ps[k].treat.selected],
+    ['Destaque suave', k => ps[k].treat.soft],
+    ['Cartão de fase e imagem', k => ps[k].treat.phase],
+    ['Bordas', k => ps[k].treat.border],
+    ['Desabilitado', k => ps[k].treat.disabled],
+    ['Custo: renomear', k => ps[k].cost.renames],
+    ['Custo: decidir um a um', k => ps[k].cost.decide],
+    ['Custo: muda na tela', k => ps[k].cost.visual],
+    ['Risco', k => ps[k].summary.risk]
+  ];
+  $('#tCompare').innerHTML = '<tr><th></th>' + order.map(k => `<th>${esc(ps[k].name)}</th>`).join('') + '</tr>' +
+    rows.map(r => `<tr><td><b>${esc(r[0])}</b></td>${order.map(k => `<td>${esc(r[1](k))}</td>`).join('')}</tr>`).join('');
+  drawDetail();
+}
+function drawDetail(){
+  const p = P(); $('#detTitle').textContent = 'Detalhe: ' + p.name;
+  const sw = (t, mi) => { const d = dOf(p, t, mi); return `<span class="sw0" style="background:oklch(${clamp(CONFIG.palettes[state.pal][mi ? 'dark':'light'].bg[0] + d)} ${CONFIG.palettes[state.pal][mi ? 'dark':'light'].bg[1]} ${CONFIG.palettes[state.pal][mi ? 'dark':'light'].bg[2]})"></span>`; };
+  let h = '<div class="tw"><table><tr><th>Cor</th><th>O que é</th><th>Claro</th><th>Escuro</th><th>Substitui</th><th>Pode ser usada em</th><th>Não pode</th></tr>';
+  p.tokens.forEach(t => { h += `<tr><td><code>${esc(t.n)}</code></td><td>${esc(t.pt)}</td><td>${sw(t,0)} ${t.base ? 'base' : fx(dOf(p,t,0))}</td><td>${sw(t,1)} ${t.base ? 'base' : fx(dOf(p,t,1))}</td><td class="small">${esc(t.rep)}</td><td class="small">${esc(t.may)}</td><td class="small">${esc(t.not)}</td></tr>`; });
+  h += '</table></div>';
+  h += '<h3 style="margin-top:12px">Qual cor cada uso recebe</h3><div class="tw"><table><tr><th>Uso</th><th>Hoje</th><th>' + esc(p.name) + '</th></tr>' +
+    CONFIG.slots.map(s => `<tr><td>${esc(s.label)}</td><td><code>${esc(CONFIG.proposals.hoje.cls[s.k])}</code></td><td><code>${esc(slotClass(p, s.k))}</code></td></tr>`).join('') + '</table></div>';
+  h += `<p class="small"><b>Custo:</b> ${esc(p.cost.tokens)}. ${esc(p.cost.renames)}. Decisões: ${esc(p.cost.decide)}. Muda na tela: ${esc(p.cost.visual)}</p>`;
+  $('#propDetail').innerHTML = h;
+}
+
+/* ---- seção 4 ---- */
+function drawScreens(){
+  const prop = P();
+  $('#telasNote').textContent = prop.id === 'hoje'
+    ? 'Mostrando HOJE: as cores reais do app, com os defeitos da seção 2. Troque a proposta no topo para ver a mesma tela corrigida.'
+    : `Mostrando a proposta "${prop.name}". Cada tela abaixo lista as classes antigas (vermelho) e as novas (verde) e a diferença de claridade dos pares principais.`;
+  $('#stage').innerHTML = CONFIG.screens.map(s => {
+    const html = s.html;
+    let pre = '';
+    s.uses.forEach(([lab, slots]) => {
+      if (!slots.length){ pre += `<span class="c">/* ${esc(lab)} */</span>\n`; return; }
+      const old = slots.map(k => CONFIG.proposals.hoje.cls[k]).join('  ');
+      pre += `<span class="c">/* ${esc(lab)} */</span>\n<span class="o">hoje: ${esc(old)}</span>\n`;
+      if (prop.id !== 'hoje') pre += `<span class="n">nova: ${esc(slots.map(k => slotClass(prop, k)).join('  '))}</span>\n`;
+    });
+    const used = new Set(); s.uses.forEach(u => u[1].forEach(k => { const v = prop.map[k]; const n = typeof v === 'string' ? v : v && v.tok; if (n) used.add(n); if (v && v.light){ used.add(v.light.tok); used.add(v.dark.tok); } }));
+    pre += '\n<span class="c">/* variáveis usadas (claro | escuro) */</span>\n';
+    prop.tokens.filter(t => used.has(t.n) && !t.base).forEach(t => { pre += `--${t.n}: ${esc(tokFormula(prop,t,0).replace('var(--bg)','var(--background)'))}  |  ${esc(tokFormula(prop,t,1).replace('var(--bg)','var(--background)'))}\n`; });
+    const pr = s.pairs.map(id => CONFIG.pairs.find(p => p.id === id)).filter(Boolean);
+    return `<section class="screen" id="${s.id}"><h3>${esc(s.t)}</h3><p class="small">${esc(s.d)}</p>
+      <div class="pair"><div class="panel light"><span class="mlabel">Claro</span>${html}</div><div class="panel dark"><span class="mlabel">Escuro</span>${html}</div></div>
+      <div class="ro">${pr.map(p => { if (p.onlyHoje && prop.id !== 'hoje') return ''; const a = pairDelta(prop,p,0), b = pairDelta(prop,p,1); return `<span>${esc(p.l)}</span><span class="${cls(a)}">${dlTxt(a)}</span><span class="${cls(b)}">${dlTxt(b)}</span>`; }).join('')}</div>
+      <pre>${pre}</pre></section>`;
+  }).join('');
+}
+
+/* ---- seção 5 ---- */
+function drawSliders(){
+  const p = P();
+  $('#sliders').innerHTML = p.tokens.filter(t => !t.base).map(t => {
+    const row = (mi, lab) => { const v = dOf(p, t, mi); return `<label><span>${lab}</span><input type="range" min="-0.2" max="0.25" step="0.001" value="${v}" data-t="${esc(t.n)}" data-m="${mi}" aria-label="${esc(t.n)} ${lab}"><span class="v" id="v-${esc(t.n)}-${mi}">${fx(v)}</span></label>`; };
+    return `<div class="sl"><div><code>${esc(t.n)}</code><div class="small">${esc(t.pt)}</div></div>${row(0,'claro')}${row(1,'escuro')}</div>`;
+  }).join('');
+  $('#sliders').oninput = e => {
+    const i = e.target; if (!i.dataset || i.dataset.t == null) return;
+    const id = P().id, t = tokOf(P(), i.dataset.t), cur = (over[id] && over[id][t.n]) ? over[id][t.n].slice() : t.d.slice();
+    cur[+i.dataset.m] = parseFloat(i.value); (over[id] = over[id] || {})[t.n] = cur;
+    $('#v-' + t.n + '-' + i.dataset.m).textContent = fx(cur[+i.dataset.m]);
+    refresh(true);
+  };
+}
+function buildCopy(){
+  const p = P(), L = (mi) => p.tokens.filter(t => !t.base).map(t => `  --${t.n}: ${tokFormula(p, t, mi).replace('var(--bg)','var(--background)')};`).join('\n');
+  const names = p.tokens.map(t => t.n);
+  let o = `/* DS35, proposta ${p.name}. Valores atuais dos controles da página.\n   Paleta de referência: ${CONFIG.palettes[state.pal].label}. As fórmulas partem do fundo da página (--background). */\n`;
+  o += `:root,\n[data-theme-preview="light"] {\n${L(0)}\n}\n\n.dark,\n:root[class~="dark"] {\n${L(1)}\n}\n\n`;
+  o += `@theme inline {\n${p.tokens.filter(t=>!t.base).map(t => `  --color-${t.n}: var(--${t.n});`).join('\n')}\n}\n\n`;
+  o += `/* Mapa antigo → novo\n${p.tokens.map(t => `   ${t.n}${t.base ? '  (nome do fundo da página; mesma cor)' : ''} ← ${t.rep}`).join('\n')}\n`;
+  o += `   Mortos: card (papel extinto)${p.id==='C'?'':', accent (0 usos)'}${p.id==='hoje'?'':''}\n`;
+  o += `\n   Uso → classe\n${CONFIG.slots.map(s => `   ${s.label}: ${slotClass(p, s.k)}`).join('\n')}\n*/\n`;
+  return o;
+}
+function drawOut(){ $('#cssOut').value = buildCopy(); }
+function drawPairsAll(){ $('#tPairsAll').innerHTML = pairRows(P(), CONFIG.pairs, true); }
+
+/* ---- seção 6 ---- */
+function drawDecisions(){
+  $('#decisions').innerHTML = CONFIG.decisions.map(d => `<div class="dec"><h3>${d.id} · ${esc(d.q)}</h3><p class="small"><b>Evidência:</b> ${esc(d.ev)}</p><ol type="a">${d.opts.map((o, i) => `<li class="opt${d.rec === i ? ' r' : ''}">${esc(o)}${d.rec === i ? ' <span class="tag rec">Recomendado</span>' : ''}</li>`).join('')}</ol><p class="small">${d.rec == null ? '<span class="tag warn">sem recomendação</span> ' : ''}${esc(d.why)}</p></div>`).join('');
+  $('#limits').innerHTML = CONFIG.limits.map(l => `<li>${esc(l)}</li>`).join('');
+}
+
+/* ---- orquestração ---- */
+function refresh(keepSliders){
+  $('#gen').textContent = genCSS();
+  document.body.dataset.prop = state.prop;
+  drawHojiPairs(); drawDetail(); drawScreens(); drawPairsAll(); drawOut();
+  $('#propCards').querySelectorAll('.pcard').forEach((c, i) => c.classList.toggle('on', CONFIG.proposalOrder[i] === state.prop));
+}
+function renderAll(){ drawBar(); drawProps(); drawSliders(); refresh(); }
+
+function doCopy(){
+  const ta = $('#cssOut'), txt = ta.value, msg = $('#copyMsg');
+  const fallback = () => { ta.focus(); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch(e){} msg.textContent = ok ? 'Copiado.' : 'O navegador não deixou copiar; o texto está selecionado, use Ctrl+C.'; };
+  try { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(() => { msg.textContent = 'Copiado.'; }, fallback); else fallback(); } catch(e){ fallback(); }
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const st = document.createElement('style'); st.id = 'gen'; document.head.appendChild(st);
+  drawRoles(); drawOffenders(); drawDecisions(); renderAll();
+  $('#bCopy').onclick = doCopy;
+  $('#bReset').onclick = () => { delete over[P().id]; drawSliders(); refresh(); };
+  $('#bResetAll').onclick = () => { Object.keys(over).forEach(k => delete over[k]); drawSliders(); refresh(); };
+});
+</script>
+</body>
+</html>

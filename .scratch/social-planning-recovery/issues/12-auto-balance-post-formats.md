@@ -1,13 +1,18 @@
-# T12 — Redistribuir formatos de posts automaticamente
+# T12 — Ajustar o equilíbrio entre formatos e atualizar a prévia
 
 ## Modelos sugeridos
 
-- **OpenAI** — GPT-6.1 Sol, para reproduzir o caso e verificar a solução.
-- **Anthropic** — Claude Sonnet 5.5, para conferir os contratos e os cenários de aceite.
-- **Google** — Gemini 4 Argon, conforme disponibilidade no plano, para executar o recorte e conferir o resultado.
+- **Codex — GPT-6.1 Terra, raciocínio baixo.** Comparar três sliders de quantidades interligados com os controles Prism.
+- **Codex — GPT-6.2 Sol, raciocínio médio.** Implementar redistribuição inteira após aceite e exercitar totais pequenos e desempates.
+- **Codex — GPT-6.2 Astra, raciocínio baixo.** Conferir a ligação entre composição, calendário, lista e entrada da geração.
 
-**Bloqueado por.** T03 e decisão de distribuição D3/D4. Série em espera.
+**Bloqueado por.** A bancada pode ser estudada primeiro. A implementação usa o total normalizado de T03 e depende da regra de D3; extras dependem de D3/D4. Série em espera.
 
 ## Entrega e aceite
 
-Propor três sliders inteiros, de zero ao total de posts regulares, para Estático, Carrossel e Reels. Ao mudar um valor ou o total, redistribuir automaticamente mantendo soma exata e prioridade Estático → Carrossel → Reels. Definir como a escolha recém-alterada interage com a prioridade e quais formatos cedem ou recebem a diferença. Demonstrar 12 posts com 4/4/4, aumento e redução de cada formato, limites e troca do total. Preservar a contagem separada dos extras.
+Na Mesa, a distribuição automática inicia equilibrada. Em Definir quantidades, o admin move três sliders para Estático, Carrossel e Reels. Um ajuste redistribui a diferença nos outros dois, na ordem de prioridade indicada. Na bancada, a redução de 8 para 4 Reels soma 3 Estáticos e 1 Carrossel. O total regular é preservado e os placeholders atualizam no calendário e na lista.
+
+- [ ] Aprovar na bancada a interação, o arredondamento, os empates, a possibilidade de zerar um formato e a resposta à mudança de total. A prioridade segue Estático, Carrossel e Reels, com proporção de dois para um entre os formatos restantes. Conferir como cede espaço ao aumentar uma quantidade e como tratar sobras.
+- [ ] Demonstrar composição inicialmente equilibrada, mudanças a favor de cada formato, totais menores que o número de formatos e redução de total. O resultado é inteiro e soma exatamente ao total regular.
+- [ ] Prévia, resumo e entrada de geração usam a mesma composição. Extras têm contagem própria e seguem a regra aprovada em D3/D4.
+- [ ] Controles reaproveitam o Prism e permitem operação por teclado. A validação visual ocorre nos modos claro e escuro.

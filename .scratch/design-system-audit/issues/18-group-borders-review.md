@@ -1,6 +1,8 @@
 # DS18 — Revisar e limpar os grupos do Prism (botões, toggles e campos)
 
-**Status.** Aberto em 13/11/2026 a pedido do proprietário. Estudo entregue em 13/11: [relatório](../../../docs/audits/2026-11-13-ds18-groups-study.md) e [prévia antes/depois](../comparativo-ds18-grupos.html). Grupo de botões aprovado (v4): `attached` padrão, puxão só no default e no outline, respiro de 1px só no default e no secondary. Ajuste do botão commitado em `a00ef0e`. Toggles e campo aprovados. Implementado em 13/11 e commitado em `4cf3dea`, enviado ao GitHub: variantes do toggle herdadas do botão, puxão só nas bordas opacas, ghost de toggle sempre separado por 4px, limpeza do InputGroup. Falta o aceite visual do proprietário no app.
+**Status.** Concluído pelo proprietário em 18/11/2026.
+
+**Registro anterior.** Aberto em 13/11/2026 a pedido do proprietário. Estudo entregue em 13/11: [relatório](../../../docs/audits/2026-11-13-ds18-groups-study.md) e [prévia antes/depois](../comparativo-ds18-grupos.html). Grupo de botões aprovado (v4): `attached` padrão, puxão só no default e no outline, respiro de 1px só no default e no secondary. Ajuste do botão commitado em `a00ef0e`. Toggles e campo aprovados. Implementado em 13/11 e commitado em `4cf3dea`, enviado ao GitHub: variantes do toggle herdadas do botão, puxão só nas bordas opacas, ghost de toggle sempre separado por 4px, limpeza do InputGroup. Falta o aceite visual do proprietário no app.
 
 ## O que a pessoa vê
 

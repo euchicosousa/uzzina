@@ -2,6 +2,8 @@
 
 **Status.** Aberto em 17/11/2026 a pedido do proprietário, como ticket principal de todos os assuntos de cinzas e fundos. Absorve como fases o DS23, DS30, DS31, DS32, DS33 e DS34 (os arquivos continuam como detalhe de cada fase). Começa por estudo e decisão; nenhuma alteração no código do app sem a aprovação de cada fase.
 
+**Fase 1, 19/11.** [Bancada de estudo](../ds35-bancada-de-estudo.html) disponível na `main` local. Reúne cinco comparativos do uso atual com hipóteses em Ônix e Carbono, nos dois modos, e recomendações para P1–P8. A separação de cartão neutro e flutuante sobre o fundo branco do Carbono claro merece conferência pela borda e pela sombra. Controles e larguras de 320 a 1440 px verificados no Chromium isolado. Os exemplos são maquetes. As oito decisões seguem pendentes.
+
 ## O problema, em palavras simples
 
 O mesmo tipo de coisa é pintado de jeitos diferentes em telas diferentes. Cada ajuste resolveu um caso pequeno e criou mais uma cor, mais um estado ou mais uma exceção. O resultado é um app inconsistente: o mesmo botão cinza aparece em vários tons, há destaques diferentes para o mesmo papel e cores usadas para o que nunca foram pensadas.
@@ -95,10 +97,13 @@ Perguntas em linguagem simples; a fase 1 traz a recomendação para cada uma.
 | DS33  | Fases 2 e 4          | Inventário de 433 usos, página de grupos, decisões D1 a D10             |
 | DS30  | Fase 3               | Lista de campos das paletas que saem                                    |
 | DS31  | Fase 5               | Estudo do tema Personalizado                                            |
-| DS32  | Fase 5               | Ajustes do editor de temas do Admin (depende também do destino do DS21) |
+| DS32  | Fase 5               | Ajustes do editor de temas do Admin |
 | DS34  | Fase 5               | Widget do Cloudinary (depende também do UP01)                           |
 
-Fora do DS35: [DS29](29-single-shadow-formula.md) (sombra, independente) e [DS21](21-admin-theme-colors-editor.md) (editor do Gemini, sem commit; seu destino continua em aberto e bloqueia a fase 3 nos arquivos de paleta).
+**Dependências vinculadas em 18/11 por decisão do proprietário.**
+
+- [DS21 · Editor de temas do Admin](21-admin-theme-colors-editor.md). Encerrado como frente independente. A fase 5 parte da versão preservada no commit 46a92ce para adaptar a prévia e os controles quando as regras de cores estiverem definidas.
+- [DS29 · Sombra de menus, janelas e cartões](29-single-shadow-formula.md). Dependência pendente da fase 3. A fórmula foi escolhida no laboratório. Falta aplicá-la e conferir o resultado no claro e no escuro quando essa fase for autorizada.
 
 ## Material de apoio
 

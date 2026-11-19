@@ -13,7 +13,7 @@
 **Regra de conclusão:** todos os critérios e testes deste ticket são obrigatórios. Sem evidência, usar implemented-unverified; com falha, verification-failed. Ler a regra completa no README.
 **Instrução:** não iniciar integração dependente antes de verificar os bloqueios. Caminhos e símbolos estão no mapa de referências desta série.
 
-**What to build:** Salvar só fecha o editor depois da confirmação canônica. Falha, conflito, Escape e clique externo não apagam texto sem decisão.
+**What to build:** Salvar só fecha o editor depois da confirmação canônica. Falha, conflito, Escape e clique externo preservam texto até decisão explícita. Compor o editor com o diálogo, campos e botões Prism vigentes e conferir a ordem de teclado.
 
 ## Executar nesta ordem
 

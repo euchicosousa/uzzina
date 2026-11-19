@@ -8,6 +8,8 @@ Leia antes de mexer no portal `/dash`, em `/dash/review`, em `/api/dash-*`, `/ap
 
 - `/dash` usa `/api/dash-auth`, sessão opaca em `dash_sessions` e cookie HttpOnly, separado do Auth da equipe. `/api/dash-data` autoriza leitura; `/api/dash-action` autoriza comentários públicos/anexos. Autor e audiência vêm do servidor; login/logout/mutações do portal não exigem endereço/Origin autorizado, conforme remoção explícita pelo proprietário em01/11/2026. `app/services/dash-client.ts` não acessa diretamente o SDK do banco.
 
+- A retomada da sessão, a leitura de dados e as operações de comentários e anexos consultam a mesma função `findDashSession` no servidor. Cada requisição distingue sessão ausente ou inválida de falha na consulta. Cada handler conserva sua consulta da conta ativa, a autorização da operação e suas respostas. Ao abrir o portal, sessão inválida leva ao login e indisponibilidade oferece nova tentativa.
+
 - Portal aceita o endereço solicitado sem validação de Origin/APP_ORIGIN ou redirecionamento canônico obrigatório: localhost,127.0.0.1 e IP da rede seguem o mesmo fluxo. Regra removida explicitamente pelo proprietário em01/11/2026; não reintroduzir allowlist/normalização de endereço como correção automática. Autenticação por credenciais/sessão e autorização da conta/ação permanecem.
 
 - `/dash/review/$slug?r=token` é público por token. `/api/review` verifica parceiro, expiração e revogação; IDs da URL não autorizam acesso. O layout limpa sessão/cache anterior antes de montar a revisão sem cancelar sua consulta inicial.

@@ -18,11 +18,11 @@
 ## Executar nesta ordem
 
 1. Substituir validação de data baseada só em NaN por validação civil estrita. Impedir normalização de 30/02 para março; não alterar parseU global sem necessidade.
-2. Validar frequência, IDs/deduplicação de dias e relação dias/frequência conforme D2. Período sem slot bloqueia; nunca vira tema ou seis conteúdos.
+2. Distribuir a frequência pelos dias preferidos, mantendo independência entre quantidade e número de dias. A semana começa no domingo. Até 60 dias inclusivos. A prévia lateral usa o mesmo cálculo, no calendário ou na lista de quantidade fechada. Fechar distribuição de sobras, semanas parciais e total fixo dentro de um período em D2.
 3. Resolver ocorrências de comemorações pelo contrato real do cadastro, com intervalo completo. IDs inválidos/fora do período não entram.
 4. Manter identidade do slot regular e extra mesmo se ambos caírem no mesmo dia. Aplicar D4 para colisão e agrupamento, sem reduzir regulares.
-5. Distribuir formatos sobre o total regular; escolher extras pela regra confirmada separada. Nunca passar total já acrescido ao validador manual regular.
-6. Produzir um resultado normalizado com slots/contagens/formatos e motivos de invalidação. Usar o mesmo resultado no resumo e handler; T08 usará no servidor.
+5. Normalizar o total regular e a composição inteira de formatos. O ajuste interativo das preferências usa essa base no T12. Extras usam a regra confirmada em D3/D4 e têm contagem própria.
+6. Usar um único cálculo para prévia, resumo, validação e disparo. Zero consultas a ações existentes. O servidor revalida a entrada antes de gerar.
 7. Desligar comemorações ou mudar intervalo elimina seu efeito no pedido, não só sua aparência. Não apagar configurações sem mensagem.
 8. Validar também o modo tema: quantidade inteira positiva dentro do limite aprovado, composição consistente. Não inventar limites de produto.
 
@@ -33,11 +33,11 @@
 | N01 | 2026-02-30; 2026-13-01; data textual malformada                  | Inválidas, sem normalização e sem exceção de render.                                                                  |
 | N02 | 29/02 em 2028 e em 2026                                          | Primeira válida, segunda inválida.                                                                                    |
 | N03 | Início>fim; zero ocorrência; dias vazios                         | Inválido, zero chamada de geração.                                                                                    |
-| N04 | Frequência 3 com apenas segunda-feira                            | Comportamento exato de D2; se D2 exige igualdade, rejeitar. Nunca aceitar e gerar uma por semana como se fossem três. |
+| N04 | Frequência 7 com segunda, quarta e sexta                            | A frequência não seleciona dias automaticamente. A semana completa mostra 3/2/2, conforme a regra de sobras aprovada. |
 | N05 | Intervalo 10–20/11/2026 com datas 09,10,20,21 e novembro/2025    | Somente limites/datas internas do ano correto elegíveis.                                                              |
 | N06 | Um regular, manual 1 reel, um extra em outro dia                 | Configuração válida, total 2; composição regular continua 1 reel e extra tem formato próprio.                         |
 | N07 | Extra no mesmo dia regular; duas comemorações no mesmo dia       | IDs, soma e rótulos exatamente iguais ao exemplo D4, sem resumo inflado.                                              |
-| N08 | Manual insuficiente/excessivo, negativo, decimal, NaN e infinito | Erro explícito; nenhum preenchimento/truncamento silencioso.                                                          |
+| N08 | Composição inválida ou soma diferente do total regular | Erro explícito. Quantidades inteiras válidas preservam o total exato após normalização.                                                          |
 | N09 | Alterar período ou desligar comemorações                         | Pedido/resumo sem extras obsoletos.                                                                                   |
 | N10 | Mesmas datas em UTC e America/Fortaleza                          | Mesmas datas civis e contagens, inclusive virada de mês/ano.                                                          |
 | N11 | UI configurada no cenário N06 e clicar gerar                     | Handler recebe o mesmo total/slots/formato do resumo; não basta testar funções isoladas.                              |

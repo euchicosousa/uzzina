@@ -1,4 +1,4 @@
-# Recuperação do Planejamento — série T01–T11
+# Recuperação do Planejamento — série T01–T12
 
 **Pedido de 02/11/2026:** novos tickets mais detalhados, com testes estritos e exigentes, após a revisão reprovar a conclusão integral da série C00–C10. Tracker: arquivos locais. Nesta rodada, somente documentação; nenhuma implementação/teste de app, SQL ou publicação.
 
@@ -8,8 +8,8 @@
 - Ler este README, o ticket atribuído, os contratos referenciados e os bloqueios. Trabalhar um ticket por contexto; não “resolver toda a feature” por iniciativa.
 - A referência é o [parecer de 02/11](../../docs/audits/2026-11-02-social-planning-corrections-review.md), com reproduções R1–R11. [Decisões de produto](../../docs/plans/social-planning-design-decisions.md) precisam de rastreabilidade T01.
 - Séries [original](../social-planning/README.md) e [C00–C10](../social-planning-corrections/README.md) são histórico. Seus status completed não liberam dependências desta série.
-- T01 resolve decisões por ponto: D1 libera persistência; D2–D4 cálculo; D5 conversão; D6 IA. Uma lacuna não bloqueia trabalhos independentes.
-- Preservar página interna, Header/AppBar, Mesa limpa, desktop, Prism, acessos para membros e parceiro na URL. Não alterar o app inteiro, portal, estratégias09, quota ou design global para encaixar Planejamento.
+- O [contrato revisto em 19/11](../../docs/plans/social-planning-design-decisions.md#revisão-do-proprietário--19112026) confirma acesso exclusivo a admins, isolamento das ações existentes e Direcionamento obrigatório. A série permanece em espera. Regras abertas da prévia, geração e finalização têm bloqueios próprios.
+- Preservar página interna, Header/AppBar, Mesa limpa, desktop, Prism, acesso exclusivo a administradores ativos e parceiro na URL. Não alterar o app inteiro, portal, estratégias09, quota ou design global para encaixar Planejamento.
 - Nova geração explícita é integral e independente. Retry técnico da mesma geração/finalização não duplica resultados. Revisar/mover/aprovar sugestão nunca cria ação.
 - Somente evidência permite conclusão. Não basta adicionar campo, comentário, arquivo SQL, import não usado, checkboxes ou testes que não passam pelo código ativo.
 
@@ -69,19 +69,23 @@ Nome de arquivo pode ser ajustado por convenção real do projeto, mantendo IDs 
 
 ## Índice
 
+A série está em espera. A [bancada da Mesa](prototype/mesa-planejamento.html) já permite avaliar configuração e prévia de calendário ou lista com dados fictícios. A bancada compara dias preferidos independentes, atalhos de período, sliders de quantidade e prévia. O proprietário aprovou o fluxo da prévia e a aparência final do calendário na Mesa local. Seletor ao lado do título, limite de 60 dias, Direcionamento obrigatório e sliders interligados estão integrados. O aceite visual cobre esse recorte da Mesa. A série de recuperação continua em espera.
+
+[T12 — Ajustar o equilíbrio entre formatos e atualizar a prévia](issues/12-auto-balance-post-formats.md).
+
 | Ticket                                                                                                    | Entrega                                           | Bloqueios                                                                          |
 | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | [T01 — Rastrear decisões e fechar o contrato de aceite](issues/01-confirm-decisions.md)                   | C00; decisões D1–D6 e evidência de aprovação.     | Nenhum.                                                                            |
-| [T02 — Salvar e editar propostas no banco com autorização e versão](issues/02-canonical-storage.md)       | R4, R5 e R11; C01.                                | T01/D1 e D6 confirmadas. Pode inventariar catálogo antes.                          |
+| [T02 — Salvar e editar propostas no banco com autorização e versão](issues/02-canonical-storage.md)       | R4, R5 e R11; C01.                                | Admin já decidido em D1. Retomada para revisão de acesso; D6 para o formato final da proposta.                          |
 | [T03 — Unificar datas, frequência, formatos e extras sem divergências](issues/03-normalized-input.md)     | R6 e R10; C02–C04.                                | T01/D2–D4. Independente de T02 para cálculo puro.                                  |
 | [T04 — Separar configuração nova da proposta aberta e proteger transições](issues/04-workspace-state.md)  | R8; limpeza de contexto e respostas antigas.      | T02. T01/D6 para validar entrada persistida.                                       |
 | [T05 — Conservar edição até confirmação e garantir teclado do diálogo](issues/05-editor-confirmation.md)  | R9; C08.                                          | T02 e T04 para salvamento e guardas; foco pode ser preparado antes.                |
-| [T06 — Substituir grade paralela pelo calendário real com movimento seguro](issues/06-shared-calendar.md) | R7; C07.                                          | T02 e T04; T05 para usar editor com salvamento protegido.                          |
+| [T06 — Substituir grade paralela pelo calendário real com movimento seguro](issues/06-shared-calendar.md) | R7; C07.                                          | Prévia integrada depende de T03/T12. Revisão com edição depende de T02/T04/T05.                          |
 | [T07 — Gerar proposta por tema com IA real e recuperação durável](issues/07-real-theme-ai.md)             | R3; C05, modo tema.                               | T02 e T01/D6. Independente do calendário e da finalização.                         |
 | [T08 — Gerar período por IA respeitando slots e formatos confirmados](issues/08-real-period-ai.md)        | R3/R6; integração tema/período, regulares/extras. | T03 e T07.                                                                         |
 | [T09 — Converter aprovadas em uma transação idempotente real](issues/09-transactional-finalization.md)    | R1/R2; núcleo C09.                                | T02 e T01/D5. Pode usar propostas canônicas controladas; não espera IA/calendário. |
 | [T10 — Confirmar, reconciliar e atualizar a Mesa após finalização](issues/10-finalization-ui.md)          | Conclusão de C09: resumo, falhas, sessão e cache. | T04 e T09; T05 para guarda de edição.                                              |
-| [T11 — Auditar a série por evidências e impedir conclusão falsa](issues/11-independent-acceptance.md)     | C10; todos os achados R1–R11.                     | T02–T10 verificados e decisões usadas confirmadas em T01.                          |
+| [T11 — Auditar a série por evidências e impedir conclusão falsa](issues/11-independent-acceptance.md)     | C10; todos os achados R1–R11.                     | T02–T10 e T12 verificados, conforme escopo aprovado.                          |
 
 ## Cobertura e sequência
 
@@ -102,9 +106,9 @@ Nome de arquivo pode ser ajustado por convenção real do projeto, mantendo IDs 
 
 Ordem recomendada:
 
-1. T01 identifica decisões verificadas/pendentes.
+1. Fechar no T01 o que falta, usando uma bancada visual para D2–D3.
 2. T02 e T03 podem avançar independentemente após suas decisões, em checkouts isolados.
-3. T04 após T02; T05 após T04; T06 após T05.
+3. T04 após T02; T05 após T04. Para a prévia de T06, integrar cálculo e composição de T03/T12. A revisão com escrita de T06 vem após T05.
 4. T07 após T02/D6; T08 após T03/T07.
 5. T09 após T02/D5; não precisa esperar IA nem calendário. T10 após T04/T05/T09.
 6. T11 somente após integração das entregas verificadas.

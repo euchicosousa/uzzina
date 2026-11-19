@@ -2,7 +2,7 @@
 
 **Onde abrir.** Hoje → Linha do tempo. A Home também usa o mesmo quadro.
 
-**Status.** O proprietário aprovou a galeria e autorizou aplicar a versão no componente principal. Implementado na main local em 18/11/2026, em Hoje e na Home. Aguarda conferência do proprietário e publicação.
+**Status.** Concluído e aprovado pelo proprietário em 18/11/2026. Implementado em Hoje e na Home, commit fa740ef. Verificação de navegador com dados fictícios confirmou zoom, enquadramento, régua, Agora, alças e abertura da gaveta. Publicação não realizada.
 
 **Bloqueado por.** Nenhum ticket para estudar.
 

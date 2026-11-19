@@ -17,11 +17,11 @@
 
 ## Executar nesta ordem
 
-1. Exibir resumo com parceiro, contagens aprovadas/pendentes/rejeitadas, elegíveis e datas/horários de D5. Campos obrigatórios ausentes bloqueiam confirmação com motivo.
+1. Exibir resumo com parceiro e contagens aprovadas/pendentes/rejeitadas. Mostrar de forma explícita como serão datadas as aprovadas sem data conforme D5, antes de confirmar.
 2. Conectar operação canônica T09 e distinguir confirmando, confirmado, erro, conflito e resultado ainda incerto. Não transformar erro em banner verde de sucesso.
 3. Com resultado incerto, consultar a mesma operação antes de disponibilizar retry de escrita. Troca de parceiro ou fechar UI não inicia outra conversão.
-4. Finalizado não exibe ação habilitada de nova conversão. Reabrir mostra resultado existente, respeitando acesso atual às ações.
-5. Atualizar cache somente após versão canônica. Escopo desconhecido invalida; nunca adotar resultado em sessão nova. Usar guardas de saída/edição existentes e continuidade da sessão.
+4. Finalizado não exibe comando de nova conversão. Reabrir mostra o resultado da própria finalização registrado na proposta, sem consultar nem listar ações dos clientes.
+5. Atualizar proposta e sinalizar a atualização das telas operacionais após confirmação canônica; a Mesa não busca nem exibe ações. Nunca adotar resposta em sessão nova. Preservar guardas de saída/edição.
 6. Garantir um comando acessível de finalização independente da visualização ativa, sem criar segunda operação concorrente por lista/calendário.
 7. Não marcar sugestões pendentes como rejeitadas/finalizadas se D5 não permitir; não remover dados para maquiar sucesso parcial.
 
@@ -30,7 +30,7 @@
 | ID  | Cenário                                            | Resultado                                                                                    |
 | --- | -------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | U01 | Confirmar resumo e depois cancelar                 | Zero requisição de conversão antes da confirmação final.                                     |
-| U02 | Dados obrigatórios incompletos                     | Mensagem objetiva; zero escrita; não usa hoje/horário padrão implícito.                      |
+| U02 | Dados obrigatórios incompletos                     | Resumo mostra data e hora aprovadas para cada criação. Quando faltar dado exigido por D5, apresenta o motivo e bloqueia escrita.                      |
 | U03 | Duplo clique/Enter repetido enquanto pendente      | Uma operação lógica; UI permanece coerente; T09 continua a garantia final.                   |
 | U04 | Timeout após commit e reconciliação                | Mostra resultado já existente sem reenviar geração/conversão nova.                           |
 | U05 | Erro confirmado/conflito                           | Sem sucesso falso; proposta/edições preservadas; retry usa o contrato correto.               |

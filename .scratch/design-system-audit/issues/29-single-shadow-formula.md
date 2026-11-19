@@ -1,6 +1,8 @@
 # DS29 — Sombra única por fórmula (fim da sombra por paleta)
 
-**Status.** Aberto em 17/11/2026. Decisão de valores já tomada pelo proprietário em 17/11 no laboratório [ds27-sombras.html](../ds27-sombras.html) (registrada em [DS26, seção "Decisão do proprietário: sombra"](../../../docs/audits/2026-11-16-ds26-inventario-cores.md)). Nada aplicado no app.
+**Status.** Dependência aberta do [DS35](35-unified-surfaces-and-neutrals.md) desde 18/11/2026. A fórmula já foi escolhida. Sua aplicação continua pendente e será tratada na fase de CSS e paletas.
+
+**Registro anterior.** Aberto em 17/11/2026. Decisão de valores já tomada pelo proprietário em 17/11 no laboratório [ds27-sombras.html](../ds27-sombras.html) (registrada em [DS26, seção "Decisão do proprietário: sombra"](../../../docs/audits/2026-11-16-ds26-inventario-cores.md)). Nada aplicado no app.
 
 ## O que é
 
@@ -22,7 +24,7 @@ Hoje cada paleta escolhe a cor e a força da sombra de menus, diálogos, avisos 
 ## O que será mudado
 
 1. `app/tailwind.css`: trocar `--shadow-tint`/`--shadow-alpha` e `--action-shadow-color` pela fórmula acima; atrasado e fase sobrescrevem a cor.
-2. Retirar de `palettes.ts` e de `palette-vars.ts` os campos `shadowColor`, `shadowOpacity` e o código que só existia para eles. **Esses dois arquivos têm mudanças do Gemini sem commit (DS21); só começar depois que elas forem commitadas ou descartadas pelo proprietário.** Pode ser feito junto com o [DS30](30-palette-cleanup-parent-color.md).
+2. Retirar de `palettes.ts` e de `palette-vars.ts` os campos `shadowColor`, `shadowOpacity` e o código que só existia para eles. A primeira versão do editor foi preservada no commit 46a92ce. Pode ser feito junto com o [DS30](30-palette-cleanup-parent-color.md).
 3. O tema Personalizado deixa de oferecer cor e força da sombra (fica no [DS31](31-custom-theme-parent-color.md)).
 4. Atualizar a galeria `/ui` (sombras e overlay) e o contrato de temas.
 
