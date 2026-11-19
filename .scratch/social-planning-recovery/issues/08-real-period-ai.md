@@ -6,7 +6,7 @@
 - **Anthropic** — Claude Opus 5.5, para validar geração por período e consistência de slots e formatos.
 - **Google** — Gemini 4 Argon, para validar geração por período e consistência de slots e formatos. Disponibilidade depende do plano do Antigravity.
 
-**Status:** implemented-unverified. Atualizado em 19/11: implementado e commitado na main local (`3af3ed05`). A migração `20261119223435_planning_period_batches.sql` foi aplicada em produção em 19/11 (registro `20261119231145`); falta o teste do proprietário com provedor e sessão reais. [Evidência](../../../docs/audits/social-planning-recovery/T08-evidence.md).
+**Status:** aceito pelo proprietário em 19/11, após gerar um período real na Mesa com provedor e sessão reais. Código na main local (`3af3ed05`); migração `20261119223435_planning_period_batches.sql` aplicada em produção em 19/11 (registro `20261119231145`). Frontend sem publicação. [Evidência](../../../docs/audits/social-planning-recovery/T08-evidence.md).
 **Blocked by:** T03 e T07. O aceite do fluxo com formatos da prévia usa a composição de T12.
 **Origem:** R3/R6; integração tema/período, regulares/extras.
 **Prioridade:** P2
