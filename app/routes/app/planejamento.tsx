@@ -54,7 +54,7 @@ import { UAIModelSelect } from "~/components/uzzina/UAIModelSelect";
 import { UPartnersCombobox } from "~/components/uzzina/UPartnersCombobox";
 import { useAppContext, useLeaveOpenActions } from "~/contexts/AppContext";
 import { useFillScrollViewport } from "~/hooks/useFillScrollViewport";
-import { useThemePlanningGeneration } from "~/hooks/useThemePlanningGeneration";
+import { usePlanningGeneration } from "~/hooks/usePlanningGeneration";
 import {
   getAvailableAIModels,
   isActionAIModelId,
@@ -64,10 +64,9 @@ import {
 import { getUserPreferences } from "~/lib/preferences";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { finalizeSocialPlan } from "~/lib/social-planning/finalizer";
-import { generateSocialPlan } from "~/lib/social-planning/generator";
+import { buildPlanningPeriodSlots } from "~/lib/social-planning/period-plan";
 import {
   MAX_PLANNING_PERIOD_DAYS,
-  mergeCommemorativeSlots,
   normalizePlanningFormats,
   PLANNING_FORMATS,
   redistributePlanningFormats,
@@ -85,7 +84,6 @@ import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { fetchCelebrations } from "~/lib/supabase.queries";
 import { getPartnerBySlug } from "~/models/partners";
 import {
-  createSocialPlanClient,
   listSocialPlansByPartner,
   updateSocialPlanClient,
 } from "~/models/social_plans";
@@ -129,15 +127,15 @@ function PlanningPage() {
   const navigate = useNavigate({ from: "/app/planejamento" });
   const leaveOpenActions = useLeaveOpenActions();
   const { person, partners } = useAppContext();
-  const [selectedThemeModel, setSelectedThemeModel] =
+  const [selectedPlanningModel, setSelectedPlanningModel] =
     useState<ActionAIModelId | null>(null);
   const preferences = getUserPreferences(person);
-  const themeModels = getAvailableAIModels(preferences.contentModels);
-  const preferredThemeModel =
-    selectedThemeModel ?? preferences.defaultContentModel;
-  const themeModel =
-    themeModels.find((model) => model.id === preferredThemeModel)?.id ??
-    themeModels[0]?.id ??
+  const planningModels = getAvailableAIModels(preferences.contentModels);
+  const preferredPlanningModel =
+    selectedPlanningModel ?? preferences.defaultContentModel;
+  const planningModel =
+    planningModels.find((model) => model.id === preferredPlanningModel)?.id ??
+    planningModels[0]?.id ??
     lunaModelId;
 
   const { partner: partnerSlug } = Route.useSearch();
@@ -145,7 +143,7 @@ function PlanningPage() {
     (partner) => partner.slug === partnerSlug,
   );
   const selectedPartnerSlug = selectedPartner?.slug ?? "";
-  const themeGeneration = useThemePlanningGeneration(
+  const planningGeneration = usePlanningGeneration(
     person.user_id,
     selectedPartnerSlug,
   );
@@ -245,7 +243,6 @@ function PlanningPage() {
   const currentPlan =
     openedPlan?.partner_slug === selectedPartnerSlug ? openedPlan : null;
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
-  const [isGenerating, setIsGenerating] = useState(false);
   const [isFinalizing, setIsFinalizing] = useState(false);
   const [editingSuggestion, setEditingSuggestion] =
     useState<PlanSuggestion | null>(null);
@@ -272,34 +269,33 @@ function PlanningPage() {
       : Number.isInteger(themeCount) && themeCount > 0 && themeCount <= 30
         ? themeCount
         : 0;
-  const formatMode = manualFormats ? "manual" : "auto";
+  const formatMode: "manual" | "auto" = manualFormats ? "manual" : "auto";
   const formatCounts = normalizePlanningFormats(total, manualFormats);
   const regularFormats = sequencePlanningFormats(formatCounts);
   const slots =
     mode === "period" && periodValidation.isValid
-      ? mergeCommemorativeSlots({
-          slots: periodValidation.calculatedSlots,
-          celebrations: periodCelebrations,
-          selectedCelebrationIds: considerHolidays
-            ? selectedCelebrationIds
-            : [],
-          startDate,
-          endDate,
-        })
-      : [];
-  let regularIndex = 0;
-  const formats: PlanFormat[] =
-    mode === "period"
-      ? slots.map((slot) =>
-          slot.isExtra ? "carousel" : regularFormats[regularIndex++],
+      ? buildPlanningPeriodSlots(
+          {
+            slots: periodValidation.calculatedSlots,
+            celebrations: periodCelebrations,
+            selectedCelebrationIds: considerHolidays
+              ? selectedCelebrationIds
+              : [],
+            startDate,
+            endDate,
+          },
+          formatCounts,
         )
-      : regularFormats;
+      : [];
+  const formats: PlanFormat[] =
+    mode === "period" ? slots.map((slot) => slot.format) : regularFormats;
+  const extraCount = slots.filter((slot) => slot.isExtra).length;
   const itemsByDate = new Map<string, PlanFormat[]>();
-  slots.forEach((slot, index) => {
+  for (const slot of slots) {
     const items = itemsByDate.get(slot.date) ?? [];
-    items.push(formats[index]);
+    items.push(slot.format);
     itemsByDate.set(slot.date, items);
-  });
+  }
 
   const direction = (
     mode === "period" ? periodDirection : themeDirection
@@ -397,98 +393,59 @@ function PlanningPage() {
       setSelectedCelebrationIds(input.selectedCelebrationIds as string[]);
   };
 
-  const openGeneratedTheme = (proposal: SocialPlan) => {
+  const openGeneratedPlan = (proposal: SocialPlan) => {
     handleOpenPlan(proposal);
-    setViewMode("list");
+    setViewMode(proposal.mode === "period" ? "calendar" : "list");
     void refetchSavedPlans();
   };
 
-  const verifyThemeProposal = () => {
-    if (!themeGeneration.requestId || isGenerating || savingSuggestions.current)
-      return;
-    void themeGeneration.run(
+  const verifyPlanningProposal = () => {
+    if (!planningGeneration.requestId || savingSuggestions.current) return;
+    void planningGeneration.run(
       {
         intent: "resume",
         partner: selectedPartnerSlug,
-        requestId: themeGeneration.requestId,
+        requestId: planningGeneration.requestId,
       },
-      openGeneratedTheme,
+      openGeneratedPlan,
     );
   };
 
-  // Manipulador de geração
-  const handleGenerate = async () => {
-    if (!selectedPartner || isFormInvalid || savingSuggestions.current) return;
+  const handleGenerate = () => {
+    if (
+      !selectedPartner ||
+      isFormInvalid ||
+      savingSuggestions.current ||
+      planningGeneration.requestId
+    )
+      return;
     setFeedbackMessage(null);
     setSuggestionSaveError(null);
 
-    if (mode === "theme") {
-      if (themeGeneration.requestId) return;
-      await themeGeneration.run(
-        {
-          intent: "start",
-          requestId: crypto.randomUUID(),
-          partner: selectedPartnerSlug,
-          model: themeModel,
-          formatMode,
-          direction,
-          formats,
-        },
-        openGeneratedTheme,
-      );
-      return;
-    }
-
-    try {
-      setIsGenerating(true);
-      const [staticCount, carouselCount, reelsCount] = formatCounts;
-      const inputPayload = {
-        startDate,
-        endDate,
-        postsPerWeek,
-        selectedDays,
-        periodDirection: direction,
-        formatMode,
-        reelsCount,
-        staticCount,
-        carouselCount,
-        considerHolidays,
-        selectedCelebrationIds,
-      };
-
-      const plan = generateSocialPlan({
-        partner: {
-          slug: selectedPartner.slug,
-          title: selectedPartner.title,
-          context: selectedPartner.context ?? undefined,
-          voice: selectedPartner.voice ?? undefined,
-        },
-        mode: "period",
-        input: inputPayload,
-        slots,
-        formats,
-      });
-
-      // Persistência canônica via Supabase (T02)
-      const createdPlan = await createSocialPlanClient(supabase, {
-        partner_slug: selectedPartner.slug,
-        partner_title: selectedPartner.title,
-        mode: "period",
-        input: inputPayload,
-        suggestions: plan.suggestions,
-        user_id: person.user_id,
-      });
-
-      setCurrentPlan(createdPlan);
-      refetchSavedPlans();
-    } catch (err) {
-      console.error("Erro ao gerar planejamento:", err);
-      setFeedbackMessage(
-        err instanceof Error ? err.message : "Falha ao gerar planejamento.",
-      );
-    } finally {
-      setIsGenerating(false);
-    }
+    const shared = {
+      requestId: crypto.randomUUID(),
+      partner: selectedPartnerSlug,
+      model: planningModel,
+      formatMode,
+      direction,
+    };
+    void planningGeneration.run(
+      mode === "theme"
+        ? { ...shared, intent: "start", formats }
+        : {
+            ...shared,
+            intent: "start-period",
+            startDate,
+            endDate,
+            postsPerWeek,
+            selectedDays,
+            formatCounts,
+            considerHolidays,
+            selectedCelebrationIds,
+            expectedSlots: slots,
+          },
+      openGeneratedPlan,
+    );
   };
 
   const saveSuggestions = async (
@@ -600,9 +557,9 @@ function PlanningPage() {
     }
   };
 
-  const isGenerationBusy = isGenerating || themeGeneration.isBusy;
+  const isGenerationBusy = planningGeneration.isBusy;
   const showGenerate =
-    mode !== "theme" || !themeGeneration.requestId || themeGeneration.isBusy;
+    !planningGeneration.requestId || planningGeneration.isBusy;
   const generateButton = (
     <PrismButton
       isDisabled={
@@ -655,7 +612,7 @@ function PlanningPage() {
               isDisabled={
                 !selectedPartner ||
                 isSavingSuggestions ||
-                themeGeneration.isBusy
+                planningGeneration.isBusy
               }
               variant="outline"
             >
@@ -749,7 +706,7 @@ function PlanningPage() {
           </PrismDialogTrigger>
           {currentPlan && (
             <PrismButton
-              isDisabled={isSavingSuggestions || themeGeneration.isBusy}
+              isDisabled={isSavingSuggestions || planningGeneration.isBusy}
               onClick={() => {
                 setCurrentPlan(null);
                 setSuggestionSaveError(null);
@@ -762,33 +719,27 @@ function PlanningPage() {
               <RotateCcwIcon className="size-4" />
             </PrismButton>
           )}
-          {themeGeneration.requestId && !themeGeneration.isBusy && (
+          {planningGeneration.requestId && !planningGeneration.isBusy && (
             <PrismButton
-              isDisabled={
-                !selectedPartner || isGenerating || isSavingSuggestions
-              }
-              onPress={verifyThemeProposal}
-              variant={mode === "theme" ? "default" : "outline"}
+              isDisabled={!selectedPartner || isSavingSuggestions}
+              onPress={verifyPlanningProposal}
             >
               Verificar proposta
             </PrismButton>
           )}
-          {showGenerate &&
-            (mode === "theme" ? (
-              <PrismButtonGroup aria-label="Gerar proposta por tema">
-                {generateButton}
-                <UAIModelSelect
-                  models={themeModels}
-                  value={themeModel}
-                  onChange={(id) => {
-                    if (isActionAIModelId(id)) setSelectedThemeModel(id);
-                  }}
-                  isDisabled={isGenerationBusy || isSavingSuggestions}
-                />
-              </PrismButtonGroup>
-            ) : (
-              generateButton
-            ))}
+          {showGenerate && (
+            <PrismButtonGroup aria-label="Gerar proposta">
+              {generateButton}
+              <UAIModelSelect
+                models={planningModels}
+                value={planningModel}
+                onChange={(id) => {
+                  if (isActionAIModelId(id)) setSelectedPlanningModel(id);
+                }}
+                isDisabled={isGenerationBusy || isSavingSuggestions}
+              />
+            </PrismButtonGroup>
+          )}
         </div>
       </header>
 
@@ -823,7 +774,7 @@ function PlanningPage() {
               {/* Modo de planejamento */}
               <div className="grid gap-3">
                 <PrismTabs
-                  isDisabled={themeGeneration.isBusy}
+                  isDisabled={planningGeneration.isBusy}
                   className="w-full"
                   onSelectionChange={(key) => {
                     formatEdit.current = null;
@@ -1073,29 +1024,24 @@ function PlanningPage() {
                   considerHolidays ? (
                     <div className="grid gap-3 pt-1">
                       <p className="text-sm text-secondary-foreground">
-                        Selecione as datas comemorativas do mês que deseja
+                        Selecione as datas comemorativas do período que deseja
                         incluir:
                       </p>
-                      {/* Resumo de regulares + extras (C03) */}
                       {selectedCelebrationIds.length > 0 && (
                         <p className="text-xs text-secondary-foreground">
-                          <strong className="font-medium text-foreground">
-                            {periodValidation.calculatedSlots.length} regulares
-                          </strong>{" "}
-                          +{" "}
-                          <strong className="font-medium text-foreground">
-                            {selectedCelebrationIds.length}{" "}
-                            {selectedCelebrationIds.length === 1
-                              ? "extra comemorativa"
-                              : "extras comemorativas"}
-                          </strong>{" "}
-                          ={" "}
+                          {extraCount > 0 && (
+                            <>
+                              {periodValidation.calculatedSlots.length}{" "}
+                              regulares + {extraCount}{" "}
+                              {extraCount === 1
+                                ? "carrossel extra"
+                                : "carrosséis extras"}
+                              {" · "}
+                            </>
+                          )}
                           <strong className="font-semibold text-foreground">
-                            {periodValidation.calculatedSlots.length +
-                              selectedCelebrationIds.length}{" "}
-                            publicações totais
+                            {slots.length} publicações no total
                           </strong>
-                          .
                         </p>
                       )}
                       {periodCelebrations.length > 0 ? (
@@ -1200,12 +1146,12 @@ function PlanningPage() {
               </div>
             )}
 
-            {themeGeneration.message && (
+            {planningGeneration.message && (
               <p
-                className={`border-b border-border px-6 py-2 text-sm ${themeGeneration.isError ? "text-error" : "text-secondary-foreground"}`}
-                role={themeGeneration.isError ? "alert" : "status"}
+                className={`border-b border-border px-6 py-2 text-sm ${planningGeneration.isError ? "text-error" : "text-secondary-foreground"}`}
+                role={planningGeneration.isError ? "alert" : "status"}
               >
-                {themeGeneration.message}
+                {planningGeneration.message}
               </p>
             )}
 

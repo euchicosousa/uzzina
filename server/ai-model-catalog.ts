@@ -13,6 +13,7 @@ export type AIIntent =
   | "ai-content"
   | "ai-caption"
   | "ai-planning-theme"
+  | "ai-planning-period"
   | "ai-transcribe"
   | "ai-interpret";
 
@@ -44,6 +45,7 @@ const editorialIntents = [
   "ai-content",
   "ai-caption",
   "ai-planning-theme",
+  "ai-planning-period",
 ] as const satisfies readonly AIIntent[];
 
 export const lunaModel = {
@@ -266,6 +268,7 @@ export const aiOutputLimits = {
   "ai-content": 8192,
   "ai-caption": 2048,
   "ai-planning-theme": 8192,
+  "ai-planning-period": 4096,
   "ai-transcribe": 8192,
   "ai-interpret": 4096,
 } as const;

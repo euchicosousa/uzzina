@@ -15,6 +15,12 @@ import {
 import { recordAIUsage } from "../server/ai-usage.js";
 import { extractBearerToken } from "../server/auth.js";
 import {
+  operationMode,
+  preparePlanningPeriod,
+  runPlanningPeriodBatch,
+} from "../server/planning-period.js";
+
+import {
   createServiceClient,
   getServiceConfig,
 } from "../server/supabase-admin.js";
@@ -69,7 +75,7 @@ async function saveProposal(
     !isSocialPlan(proposal) ||
     proposal.user_id !== operation.user_id ||
     proposal.partner_slug !== operation.partner_slug ||
-    proposal.mode !== "theme"
+    proposal.mode !== operationMode(operation)
   ) {
     return res.status(503).json({
       state: "ready",
@@ -134,7 +140,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({
         state: "failed",
         error:
-          "Use de 1 a 30 conteúdos e um Direcionamento de até 10.000 caracteres.",
+          "Confira o período ou a quantidade de conteúdos e o Direcionamento do planejamento.",
       });
     }
     const request = parsed.data;
@@ -197,7 +203,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    const resume = (operation: Operation) => {
+    const resume = async (operation: Operation) => {
       if (operation.state === "ready" || operation.state === "completed") {
         return saveProposal(client, operation, res);
       }
@@ -208,6 +214,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ) {
         return sendFailure(res, operation.failure_code as FailureCode);
       }
+      if (operationMode(operation) === "period") {
+        const result = await runPlanningPeriodBatch(client, operation);
+        return "operation" in result
+          ? saveProposal(client, result.operation, res)
+          : res.status(result.status).json(result.body);
+      }
       if (
         Date.now() - new Date(operation.created_at).getTime() >=
         maxRequestAge
@@ -217,30 +229,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(202).json({ state: "running" });
     };
     if (existing) return await resume(existing);
-    if (request.intent !== "start")
+    if (request.intent === "resume")
       return res.status(404).json({ error: unavailable });
 
-    const brand = partner.title.trim();
-    const text = JSON.stringify({
-      marca: brand,
-      contexto: partner.context,
-      tom_de_voz: partner.voice,
-      direcionamento: request.direction,
-      formatos_na_ordem: request.formats,
-    });
-    if (
-      !brand ||
-      brand.length > 500 ||
-      Buffer.byteLength(text, "utf8") > 60000
-    ) {
-      return res.status(422).json({
-        state: "failed",
-        error:
-          "Confira o nome, o contexto, o tom de voz e o tamanho do Direcionamento.",
-      });
-    }
     const model = findAIModel(request.model ?? defaultAIModelId);
-    if (!model?.intents.includes(intent)) {
+    const requestedIntent =
+      request.intent === "start-period" ? "ai-planning-period" : intent;
+    if (!model?.intents.includes(requestedIntent)) {
       return res.status(400).json({
         state: "failed",
         error: "Este modelo não está disponível para gerar propostas.",
@@ -265,13 +260,55 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
+    const text =
+      request.intent === "start"
+        ? JSON.stringify({
+            marca: partner.title.trim(),
+            contexto: partner.context,
+            tom_de_voz: partner.voice,
+            direcionamento: request.direction,
+            formatos_na_ordem: request.formats,
+          })
+        : "";
+    if (
+      request.intent === "start" &&
+      (!partner.title.trim() ||
+        partner.title.trim().length > 500 ||
+        Buffer.byteLength(text, "utf8") > 60000)
+    ) {
+      return res.status(422).json({
+        state: "failed",
+        error:
+          "Confira o nome, o contexto, o tom de voz e o tamanho do Direcionamento.",
+      });
+    }
+
+    let input: Operation["input"];
+    if (request.intent === "start-period") {
+      const prepared = await preparePlanningPeriod(
+        client,
+        request,
+        partner,
+        model.id,
+      );
+      if ("error" in prepared) {
+        return res
+          .status(prepared.status ?? 503)
+          .json({ state: "failed", error: prepared.error });
+      }
+      input = prepared.input;
+    } else {
+      input = proposalInput(request, model.id);
+    }
+
     const claim = await client
       .from("planning_theme_requests")
       .insert({
         id: request.requestId,
         partner_slug: partner.slug,
         user_id: userId,
-        input: proposalInput(request, model.id),
+        input,
+        ...(request.intent === "start-period" ? { progress: null } : {}),
       })
       .select("*")
       .single();
@@ -283,9 +320,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return await resume(retry.data);
       return res.status(409).json({ error: "A solicitação já existe." });
     }
+    if (
+      request.intent === "start-period" &&
+      (claim.error?.code === "PGRST204" || claim.error?.code === "42703")
+    ) {
+      return res.status(503).json({
+        state: "failed",
+        error: "A geração por período ainda não está habilitada no banco.",
+      });
+    }
     if (claim.error || !claim.data)
       return res.status(503).json({ error: unavailable });
     const operation = claim.data;
+    if (request.intent === "start-period") return await resume(operation);
 
     const fail = async (code: FailureCode) => {
       const { error } = await client

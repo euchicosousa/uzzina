@@ -314,6 +314,8 @@ export type Database = {
           input: Json;
           state: string;
           suggestions: Json | null;
+          progress: Json | null;
+          batch_started_at: string | null;
           failure_code: string | null;
           created_at: string;
         };
@@ -325,12 +327,16 @@ export type Database = {
           input: Json;
           state?: string;
           suggestions?: Json | null;
+          progress?: Json | null;
+          batch_started_at?: string | null;
           failure_code?: string | null;
           created_at?: string;
         };
         Update: {
           state?: string;
           suggestions?: Json | null;
+          progress?: Json | null;
+          batch_started_at?: string | null;
           failure_code?: string | null;
         };
         Relationships: [];

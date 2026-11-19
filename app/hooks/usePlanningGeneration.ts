@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { ThemePlanningRequest } from "~/lib/social-planning/theme-contract";
+import type { PlanningGenerationRequest } from "~/lib/social-planning/theme-contract";
 import type { SocialPlan } from "~/lib/social-planning/types";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { isSocialPlan } from "~/models/social_plans";
@@ -31,7 +31,7 @@ type GenerationState = {
   error?: boolean;
 };
 
-export function useThemePlanningGeneration(userId: string, partner: string) {
+export function usePlanningGeneration(userId: string, partner: string) {
   const scope = `uzzina-planning-theme:${JSON.stringify([userId, partner])}`;
   const [state, setState] = useState<GenerationState | null>(null);
   const activeScope = useRef<string | null>(scope);
@@ -48,7 +48,7 @@ export function useThemePlanningGeneration(userId: string, partner: string) {
   }, [scope]);
 
   const run = async (
-    request: ThemePlanningRequest,
+    request: PlanningGenerationRequest,
     onComplete: (proposal: SocialPlan) => void,
   ) => {
     if (!partner || activeRequests.current.has(scope)) return;
@@ -83,47 +83,73 @@ export function useThemePlanningGeneration(userId: string, partner: string) {
         );
         return;
       }
-      const response = await fetch("/api/planning-theme", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify(request),
-      });
-      const result: unknown = await response.json().catch(() => null);
-      if (typeof result !== "object" || result === null) {
-        finish(request.requestId, unknownResult, true);
+      let command = request;
+      let lastProgress = 0;
+      for (;;) {
+        const response = await fetch("/api/planning-theme", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify(command),
+        });
+        const result: unknown = await response.json().catch(() => null);
+        if (typeof result !== "object" || result === null) {
+          finish(request.requestId, unknownResult, true);
+          return;
+        }
+        if (
+          response.ok &&
+          "state" in result &&
+          result.state === "completed" &&
+          "proposal" in result &&
+          isSocialPlan(result.proposal) &&
+          result.proposal.partner_slug === partner &&
+          result.proposal.user_id === userId
+        ) {
+          finish(null);
+          if (activeScope.current === scope) onComplete(result.proposal);
+          return;
+        }
+        if (response.status === 202 && "state" in result) {
+          if (
+            result.state === "queued" &&
+            "progress" in result &&
+            typeof result.progress === "number" &&
+            "total" in result &&
+            typeof result.total === "number" &&
+            result.progress > lastProgress &&
+            result.progress < result.total &&
+            activeScope.current === scope
+          ) {
+            lastProgress = result.progress;
+            setState({
+              scope,
+              requestId: request.requestId,
+              message: `${lastProgress} de ${result.total} sugestões geradas.`,
+            });
+            command = {
+              intent: "resume",
+              requestId: request.requestId,
+              partner,
+            };
+            continue;
+          }
+          finish(
+            request.requestId,
+            "Use Verificar proposta para continuar de onde parou.",
+          );
+          return;
+        }
+        const message =
+          "error" in result && typeof result.error === "string"
+            ? result.error
+            : unknownResult;
+        const terminal = "state" in result && result.state === "failed";
+        finish(terminal ? null : request.requestId, message, true);
         return;
       }
-      if (
-        response.ok &&
-        "state" in result &&
-        result.state === "completed" &&
-        "proposal" in result &&
-        isSocialPlan(result.proposal) &&
-        result.proposal.mode === "theme" &&
-        result.proposal.partner_slug === partner &&
-        result.proposal.user_id === userId
-      ) {
-        finish(null);
-        if (activeScope.current === scope) onComplete(result.proposal);
-        return;
-      }
-      if (
-        response.status === 202 &&
-        "state" in result &&
-        result.state === "running"
-      ) {
-        finish(request.requestId, "A geração ainda está em andamento.");
-        return;
-      }
-      const message =
-        "error" in result && typeof result.error === "string"
-          ? result.error
-          : unknownResult;
-      const terminal = "state" in result && result.state === "failed";
-      finish(terminal ? null : request.requestId, message, true);
     } catch {
       finish(request.requestId, unknownResult, true);
     }

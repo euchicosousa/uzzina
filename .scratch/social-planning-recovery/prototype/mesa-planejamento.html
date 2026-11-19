@@ -1,0 +1,1527 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"
+    />
+    <title>Mesa de Planejamento · Bancada</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --background: oklch(0.96 0.002 200);
+        --foreground: oklch(0 0 0);
+        --card: oklch(0.94 0.002 200);
+        --input: oklch(0.92 0.002 200);
+        --border: oklch(0.89 0.002 200);
+        --secondary: oklch(0.92 0.002 200);
+        --secondary-hover: oklch(0.88 0.002 200);
+        --secondary-foreground: oklch(0.42 0.007 200);
+        --primary: oklch(0 0 0);
+        --primary-foreground: oklch(1 0 0);
+        --ring: oklch(0 0 0);
+        --error: oklch(0.46 0.17 25);
+        --error-background: color-mix(in oklab, var(--error) 13%, var(--card));
+        --format-static: oklch(0.5 0.1 240);
+        --format-carousel: oklch(0.51 0.09 145);
+        --format-reels: oklch(0.53 0.14 320);
+        font-family: system-ui, sans-serif;
+        font-size: 14px;
+      }
+
+      [data-theme="dark"] {
+        color-scheme: dark;
+        --background: oklch(0.2 0.01 250);
+        --foreground: oklch(1 0 0);
+        --card: oklch(0.25 0.01 250);
+        --input: oklch(0.22 0.01 250);
+        --border: oklch(0.3 0.01 250);
+        --secondary: oklch(0.28 0.01 250);
+        --secondary-hover: oklch(0.33 0.01 250);
+        --secondary-foreground: oklch(0.75 0.01 250);
+        --primary: oklch(1 0 0);
+        --primary-foreground: oklch(0 0 0);
+        --ring: oklch(1 0 0);
+        --error: oklch(0.78 0.14 25);
+        --error-background: color-mix(in oklab, var(--error) 14%, var(--card));
+        --format-static: oklch(0.8 0.09 240);
+        --format-carousel: oklch(0.81 0.09 145);
+        --format-reels: oklch(0.81 0.12 320);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        height: 100dvh;
+        margin: 0;
+        background: var(--background);
+        color: var(--foreground);
+        line-height: 1.5;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 18px 28px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+      h1 {
+        font-size: 24px;
+        font-weight: 650;
+        letter-spacing: -0.03em;
+      }
+      h2 {
+        font-size: 18px;
+        font-weight: 650;
+        letter-spacing: -0.02em;
+      }
+      h3,
+      legend {
+        font-size: 14px;
+        font-weight: 650;
+      }
+      small {
+        font-size: 12px;
+      }
+      .muted {
+        color: var(--secondary-foreground);
+      }
+      .caption {
+        margin-top: 4px;
+      }
+      .numeric {
+        font-variant-numeric: tabular-nums;
+      }
+      .narrow {
+        display: none;
+        padding: 24px 28px;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      .workspace {
+        display: grid;
+        flex: 1;
+        grid-template-columns: minmax(398px, 31%) minmax(0, 1fr);
+        min-height: 0;
+      }
+
+      .configuration,
+      .preview {
+        min-width: 0;
+        overflow: auto;
+        padding: 22px 28px 36px;
+        scrollbar-color: var(--border) transparent;
+      }
+
+      .configuration {
+        border-right: 1px solid var(--border);
+      }
+      .configuration > section,
+      .configuration > details {
+        margin-top: 20px;
+        padding-top: 18px;
+        border-top: 1px solid var(--border);
+      }
+
+      .configuration > section:first-of-type {
+        padding-top: 0;
+        border-top: 0;
+      }
+
+      fieldset {
+        min-width: 0;
+        margin: 0;
+        padding: 0;
+        border: 0;
+      }
+      legend {
+        padding: 0;
+      }
+      label {
+        font-weight: 500;
+      }
+      button,
+      input {
+        font: inherit;
+        color: inherit;
+      }
+      button,
+      .segment {
+        min-height: 32px;
+        padding: 0 12px;
+        border: 1px solid transparent;
+        border-radius: 16px;
+        corner-shape: squircle;
+        background: transparent;
+        cursor: pointer;
+        font-weight: 550;
+        white-space: nowrap;
+      }
+
+      button:hover,
+      .segment:hover {
+        background: var(--secondary);
+      }
+      button[aria-pressed="true"] {
+        background: var(--secondary);
+        border-color: var(--secondary);
+      }
+      button[aria-pressed="true"]:hover {
+        background: var(--secondary-hover);
+      }
+      .filled,
+      .segments input:checked + .segment {
+        background: var(--primary);
+        color: var(--primary-foreground);
+      }
+      .filled:hover,
+      .segments input:checked + .segment:hover {
+        background: color-mix(in oklab, var(--primary), var(--background) 20%);
+      }
+      .outline {
+        border-color: var(--border);
+      }
+      :is(button, input):focus-visible,
+      .segments input:focus-visible + .segment {
+        outline: 3px solid color-mix(in oklab, var(--ring) 30%, transparent);
+        border-color: color-mix(in oklab, var(--ring) 60%, transparent);
+      }
+
+      .segments {
+        display: inline-flex;
+        isolation: isolate;
+        margin-top: 6px;
+        border-radius: 16px;
+      }
+      .segments input {
+        position: absolute;
+        opacity: 0;
+        width: 1px;
+        height: 1px;
+      }
+      .segment {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 0;
+        background: var(--secondary);
+      }
+      .segment:hover {
+        background: var(--secondary-hover);
+      }
+      .segment:first-of-type {
+        border-radius: 16px 0 0 16px;
+      }
+      .segment:last-of-type {
+        border-radius: 0 16px 16px 0;
+      }
+
+      .field,
+      .days-field {
+        margin-top: 15px;
+      }
+      .dates {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      :is(input[type="date"], input[type="number"]) {
+        display: block;
+        width: 100%;
+        min-width: 0;
+        height: 40px;
+        margin-top: 4px;
+        padding: 0 11px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        corner-shape: squircle;
+        background: var(--input);
+      }
+      input[aria-invalid="true"] {
+        border-color: var(--error);
+        background: var(--error-background);
+      }
+      .error {
+        margin-top: 6px;
+        color: var(--error);
+      }
+
+      .page-title,
+      .period-options,
+      .format-modes {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .page-title {
+        gap: 14px;
+      }
+      .page-title select,
+      textarea {
+        padding: 8px 12px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--input);
+        color: var(--foreground);
+        font: inherit;
+      }
+      textarea {
+        display: block;
+        width: 100%;
+        min-height: 80px;
+        margin-top: 6px;
+      }
+      .period-options {
+        margin-top: 8px;
+      }
+      .period-options button {
+        border-color: var(--border);
+      }
+      .idea-chip + .idea-chip {
+        margin-top: 4px;
+      }
+
+      .label-line {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      input[type="range"] {
+        display: block;
+        appearance: none;
+        width: 100%;
+        height: 24px;
+        margin: 1px 0 0;
+        border: 0;
+        padding: 0;
+        background: transparent;
+        cursor: pointer;
+      }
+      input[type="range"]::-webkit-slider-runnable-track {
+        height: 8px;
+        border-radius: 8px;
+        background: linear-gradient(
+          to right,
+          var(--primary) var(--fill, 0%),
+          var(--secondary) var(--fill, 0%)
+        );
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        margin-top: -6px;
+        border: 2px solid var(--primary);
+        border-radius: 50%;
+        background: var(--background);
+      }
+      input[type="range"]::-moz-range-track {
+        height: 8px;
+        border-radius: 8px;
+        background: var(--secondary);
+      }
+      input[type="range"]::-moz-range-progress {
+        height: 8px;
+        border-radius: 8px;
+        background: var(--primary);
+      }
+      input[type="range"]::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        border: 2px solid var(--primary);
+        border-radius: 50%;
+        background: var(--background);
+      }
+      input[type="range"]:focus-visible {
+        outline: none;
+      }
+      input[type="range"]:focus-visible::-webkit-slider-thumb {
+        outline: 3px solid color-mix(in oklab, var(--ring) 30%, transparent);
+      }
+      input[type="range"]:focus-visible::-moz-range-thumb {
+        outline: 3px solid color-mix(in oklab, var(--ring) 30%, transparent);
+      }
+
+      .day-group {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px;
+        margin-top: 5px;
+      }
+      .day-group button {
+        min-width: 0;
+        padding: 0;
+      }
+      .day-group button[data-pending="true"] {
+        border-color: var(--foreground);
+      }
+      .day-status {
+        min-height: 36px;
+        margin-top: 6px;
+        font-size: 12px;
+      }
+      .formats {
+        display: grid;
+        gap: 7px;
+        margin-top: 10px;
+      }
+      .format-control {
+        display: grid;
+        grid-template-columns: 70px minmax(0, 1fr) 73px;
+        align-items: center;
+        gap: 10px;
+      }
+      .format-control output {
+        text-align: right;
+      }
+      .format-dot {
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        margin-right: 5px;
+        border-radius: 50%;
+        background: var(--format-color);
+        vertical-align: 1px;
+      }
+      [data-format="static"] {
+        --format-color: var(--format-static);
+      }
+      [data-format="carousel"] {
+        --format-color: var(--format-carousel);
+      }
+      [data-format="reels"] {
+        --format-color: var(--format-reels);
+      }
+
+      .tabs {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        margin-top: 6px;
+      }
+      .tabs button {
+        height: 40px;
+        padding: 0 6px;
+        border: 0;
+        border-bottom: 1px solid var(--border);
+        border-radius: 0;
+        font-size: 12px;
+      }
+      .tabs button[aria-selected="true"] {
+        border-bottom-color: var(--primary);
+      }
+      .tabs button:focus-visible {
+        outline: none;
+        background: var(--secondary);
+      }
+      .walkthrough {
+        padding-top: 10px;
+      }
+      .walkthrough-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 10px;
+      }
+      summary {
+        width: fit-content;
+        cursor: pointer;
+        font-weight: 550;
+      }
+      summary:focus-visible {
+        outline: none;
+        text-decoration: underline;
+      }
+      details ul {
+        display: grid;
+        gap: 7px;
+        margin: 8px 0 0;
+        padding-left: 19px;
+      }
+
+      .preview-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      .view-options {
+        margin-top: 0;
+      }
+      .totals {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 18px;
+        margin: 14px 0 16px;
+        padding: 0;
+        list-style: none;
+      }
+      .totals li {
+        white-space: nowrap;
+      }
+      .empty {
+        padding: 18px 0;
+        border-top: 1px solid var(--border);
+      }
+      .month + .month,
+      .week + .week {
+        margin-top: 19px;
+      }
+      :is(.month, .week) h3 {
+        margin-bottom: 8px;
+      }
+      .calendar {
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+      .calendar th,
+      .calendar td {
+        padding: 5px 5px 6px;
+        border: 1px solid var(--border);
+        text-align: left;
+        vertical-align: top;
+      }
+      .calendar th {
+        font-weight: 500;
+        color: var(--secondary-foreground);
+      }
+      .calendar td {
+        height: 59px;
+      }
+      .calendar td.outside {
+        color: var(--secondary-foreground);
+        background: var(--secondary);
+      }
+      .date-number {
+        display: block;
+      }
+      .idea-chip {
+        display: block;
+        width: fit-content;
+        max-width: 100%;
+        margin-top: 4px;
+        padding: 2px 5px;
+        overflow: hidden;
+        border-radius: 12px;
+        corner-shape: squircle;
+        color: var(--format-color);
+        background: color-mix(
+          in oklab,
+          var(--format-color) 12%,
+          var(--background)
+        );
+        font-weight: 600;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .ideas section + section {
+        margin-top: 19px;
+      }
+      .ideas ul {
+        padding: 0;
+        margin: 7px 0 0;
+        list-style: none;
+      }
+      .ideas li {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 9px 0;
+        border-top: 1px solid var(--border);
+      }
+
+      @media (min-width: 1500px) {
+        .configuration,
+        .preview {
+          padding-inline: 34px;
+        }
+        .calendar td {
+          height: 69px;
+        }
+      }
+      @media (max-width: 959px) {
+        body {
+          height: auto;
+        }
+        .workspace {
+          display: none;
+        }
+        .narrow {
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <div class="page-title">
+          <h1>Mesa de Planejamento</h1>
+          <select aria-label="Parceiro do planejamento">
+            <option>VA · Vale Alimentação</option>
+            <option>CL · Clínica Luz</option>
+          </select>
+        </div>
+        <p class="caption muted">
+          Bancada com dados fictícios e visual inspirado no Prism. Como
+          frequência, dias e formatos mudam a prévia?
+        </p>
+      </div>
+      <button type="button" class="outline" id="theme" aria-pressed="false">
+        Tema escuro
+      </button>
+    </header>
+
+    <p class="narrow">
+      Abra a bancada em uma janela de pelo menos 960 pixels para ver a
+      configuração e a prévia lado a lado.
+    </p>
+    <main class="workspace">
+      <div class="configuration" aria-labelledby="configuration-title">
+        <h2 id="configuration-title">Configuração</h2>
+
+        <section aria-label="Volume de ideias">
+          <fieldset>
+            <legend>Modo de planejamento</legend>
+            <div class="segments">
+              <input
+                type="radio"
+                name="mode"
+                id="mode-calendar"
+                value="calendar"
+                checked
+              />
+              <label class="segment" for="mode-calendar">Por período</label>
+              <input
+                type="radio"
+                name="mode"
+                id="mode-quantity"
+                value="quantity"
+              />
+              <label class="segment" for="mode-quantity"
+                >Quantidade fechada</label
+              >
+            </div>
+          </fieldset>
+
+          <div id="calendar-fields">
+            <fieldset class="field">
+              <legend>Período</legend>
+              <div class="dates">
+                <label
+                  >Início
+                  <input id="start" type="date" aria-describedby="period-error"
+                /></label>
+                <label
+                  >Fim
+                  <input id="end" type="date" aria-describedby="period-error"
+                /></label>
+              </div>
+              <div class="period-options" aria-label="Atalhos de período">
+                <button type="button" data-period="7">Semana</button>
+                <button type="button" data-period="15">15 dias</button>
+                <button type="button" data-period="30">Mês</button>
+                <button type="button" data-period="60">2 meses</button>
+              </div>
+              <p class="caption muted">
+                Atalhos a partir do domingo da semana de referência. Limite de
+                60 dias, contando início e fim.
+              </p>
+              <p class="error" id="period-error" hidden></p>
+            </fieldset>
+
+            <div class="field">
+              <div class="label-line">
+                <label for="frequency">Conteúdos por semana</label>
+                <output
+                  class="numeric"
+                  for="frequency"
+                  id="frequency-result"
+                ></output>
+              </div>
+              <input
+                type="range"
+                id="frequency"
+                min="1"
+                max="7"
+                step="1"
+                value="2"
+              />
+            </div>
+
+            <fieldset class="days-field">
+              <legend>Dias preferidos da semana</legend>
+              <div class="day-group" id="days"></div>
+              <p
+                class="day-status muted"
+                id="day-status"
+                aria-live="polite"
+              ></p>
+            </fieldset>
+          </div>
+
+          <div id="quantity-fields" hidden>
+            <div class="field">
+              <label for="quantity">Total de ideias</label>
+              <input
+                type="number"
+                id="quantity"
+                min="1"
+                max="100"
+                step="1"
+                value="6"
+                aria-describedby="quantity-error"
+              />
+              <p class="error" id="quantity-error" hidden></p>
+            </div>
+          </div>
+        </section>
+
+        <section aria-labelledby="formats-title">
+          <h3 id="formats-title">Formatos de conteúdo</h3>
+          <div
+            class="format-modes"
+            role="group"
+            aria-label="Distribuição de formatos"
+          >
+            <button type="button" id="formats-auto" aria-pressed="true">
+              Distribuição automática
+            </button>
+            <button type="button" id="formats-manual" aria-pressed="false">
+              Definir quantidades
+            </button>
+          </div>
+          <div class="formats" id="formats" hidden></div>
+        </section>
+
+        <section class="field">
+          <label for="direction">Direcionamento (obrigatório)</label>
+          <textarea
+            id="direction"
+            required
+            placeholder="Descreva o que será planejado"
+          ></textarea>
+          <p class="caption muted">
+            A prévia de datas e formatos já funciona. O pedido de geração exige
+            Direcionamento.
+          </p>
+        </section>
+
+        <section aria-labelledby="walkthrough-title">
+          <h3 id="walkthrough-title">Cenários guiados</h3>
+          <div class="tabs" role="tablist" aria-label="Cenários guiados">
+            <button
+              type="button"
+              role="tab"
+              id="tab-frequency"
+              aria-controls="panel-frequency"
+              aria-selected="true"
+            >
+              2 → 3 por semana
+            </button>
+            <button
+              type="button"
+              role="tab"
+              id="tab-swap"
+              aria-controls="panel-swap"
+              aria-selected="false"
+              tabindex="-1"
+            >
+              Distribuir 7 em 3 dias
+            </button>
+            <button
+              type="button"
+              role="tab"
+              id="tab-format"
+              aria-controls="panel-format"
+              aria-selected="false"
+              tabindex="-1"
+            >
+              Ajustar formatos
+            </button>
+          </div>
+          <div id="walkthroughs"></div>
+        </section>
+
+        <details>
+          <summary>Hipóteses em teste</summary>
+          <ul class="muted">
+            <li>
+              Dias preferidos são independentes da frequência. Sete conteúdos em
+              três dias resultam em 3, 2 e 2. Nas bordas do intervalo, ficam os
+              slots dos dias que caem dentro dele.
+            </li>
+            <li>
+              Semana começa no domingo. Nesta amostra, Mês significa 30 dias e 2
+              meses significa até 60 dias. A referência fictícia é quinta,
+              19/11/2026.
+            </li>
+            <li>
+              A distribuição automática parte equilibrada. Em Definir
+              quantidades, alterar um slider mantém o total. Ao liberar espaço,
+              os outros recebem em proporção de dois para um, com prioridade
+              Estático, Carrossel, Reels. Ao tirar espaço, o formato de menor
+              prioridade cede mais. Estas regras de arredondamento estão em
+              teste.
+            </li>
+            <li>
+              As datas comemorativas continuam no fluxo existente da Mesa. A
+              prévia desta bancada representa só os conteúdos regulares.
+            </li>
+          </ul>
+        </details>
+      </div>
+
+      <section
+        class="preview"
+        id="preview"
+        aria-labelledby="preview-title"
+        tabindex="-1"
+      >
+        <div class="preview-heading">
+          <div>
+            <h2 id="preview-title">Prévia do calendário</h2>
+            <p class="caption muted" id="preview-description"></p>
+          </div>
+          <fieldset id="view-options">
+            <legend class="sr-only">Exibição do calendário</legend>
+            <div class="segments view-options">
+              <input
+                type="radio"
+                name="calendar-view"
+                id="view-weeks"
+                value="weeks"
+                checked
+              />
+              <label class="segment" for="view-weeks">Semanas</label>
+              <input
+                type="radio"
+                name="calendar-view"
+                id="view-months"
+                value="months"
+              />
+              <label class="segment" for="view-months">Meses</label>
+            </div>
+          </fieldset>
+        </div>
+        <div
+          class="sr-only"
+          id="announcement"
+          role="status"
+          aria-atomic="true"
+        ></div>
+        <ul class="totals" id="totals" aria-label="Totais da prévia"></ul>
+        <div id="preview-content"></div>
+      </section>
+    </main>
+
+    <script>
+      // Planning rules. State is plain data and all transitions are independent of the page.
+      const Planning = (() => {
+        const days = [
+          ["Dom", "Domingo"],
+          ["Seg", "Segunda-feira"],
+          ["Ter", "Terça-feira"],
+          ["Qua", "Quarta-feira"],
+          ["Qui", "Quinta-feira"],
+          ["Sex", "Sexta-feira"],
+          ["Sáb", "Sábado"],
+        ];
+        const formats = [
+          { id: "static", name: "Estático", plural: "Estáticos" },
+          { id: "carousel", name: "Carrossel", plural: "Carrosséis" },
+          { id: "reels", name: "Reels", plural: "Reels" },
+        ];
+        const dayInMs = 86_400_000;
+
+        const referenceDate = "2026-11-19";
+
+        function initialState(scenario) {
+          const formatScenario = scenario === "format";
+          return {
+            mode: formatScenario ? "quantity" : "calendar",
+            start: "2026-11-15",
+            end: scenario === "swap" ? "2026-11-21" : "2026-12-05",
+            frequency: scenario === "swap" ? 7 : 2,
+            selectedDays: [1, 3, 5],
+            quantity: "6",
+            manualCounts: null,
+            formatEdit: null,
+          };
+        }
+
+        function update(state, action) {
+          if (action.type !== "format" && state.formatEdit) {
+            state = { ...state, formatEdit: null };
+          }
+          switch (action.type) {
+            case "day": {
+              const day = action.value;
+              const selectedDays = state.selectedDays.includes(day)
+                ? state.selectedDays.filter((picked) => picked !== day)
+                : [...state.selectedDays, day];
+              return { ...state, selectedDays };
+            }
+            case "preset": {
+              const today = parseDate(referenceDate);
+              const start = today - new Date(today).getUTCDay() * dayInMs;
+              const end = start + (action.value - 1) * dayInMs;
+              return { ...state, start: dateKey(start), end: dateKey(end) };
+            }
+            case "auto":
+              return { ...state, manualCounts: null };
+            case "manual": {
+              const result = derive(state);
+              return result.error
+                ? state
+                : { ...state, manualCounts: result.counts };
+            }
+            case "format": {
+              const result = derive(state);
+              if (result.error) return state;
+              const direction = Math.sign(
+                action.value - result.counts[action.index],
+              );
+              if (!direction) return state;
+              const formatEdit =
+                state.formatEdit?.index === action.index &&
+                state.formatEdit.direction === direction
+                  ? state.formatEdit
+                  : { index: action.index, direction, baseline: result.counts };
+              const counts = formatEdit.baseline.slice();
+              const other = counts
+                .map((_, index) => index)
+                .filter((index) => index !== action.index);
+              const delta = action.value - counts[action.index];
+              counts[action.index] = action.value;
+              const [first, second] = other;
+              if (delta < 0) {
+                const released = -delta;
+                const preferred = Math.round((released * 2) / 3);
+                counts[first] += preferred;
+                counts[second] += released - preferred;
+              } else {
+                const fromLower = Math.min(
+                  counts[second],
+                  Math.max(Math.round((delta * 2) / 3), delta - counts[first]),
+                );
+                counts[second] -= fromLower;
+                counts[first] -= delta - fromLower;
+              }
+              return { ...state, manualCounts: counts, formatEdit };
+            }
+            case "mode":
+            case "frequency":
+            case "start":
+            case "end":
+            case "quantity":
+              return { ...state, [action.type]: action.value };
+            default:
+              return state;
+          }
+        }
+
+        function parseDate(value) {
+          return /^\d{4}-\d{2}-\d{2}$/.test(value) ? Date.parse(value) : NaN;
+        }
+
+        function dateKey(timestamp) {
+          return new Date(timestamp).toISOString().slice(0, 10);
+        }
+
+        function calendarSlots(state) {
+          const start = parseDate(state.start);
+          const end = parseDate(state.end);
+          if (!Number.isFinite(start) || !Number.isFinite(end)) {
+            return { error: "Preencha as duas datas do período." };
+          }
+          if (end < start)
+            return {
+              error: "O fim precisa vir depois do início ou no mesmo dia.",
+            };
+          if ((end - start) / dayInMs >= 60) {
+            return { error: "Selecione um período de até 60 dias." };
+          }
+
+          const preferred = state.selectedDays.slice().sort((a, b) => a - b);
+          if (!preferred.length) return { dates: [] };
+          const base = Math.floor(state.frequency / preferred.length);
+          const remainder = state.frequency % preferred.length;
+          const extraPositions = Array.from(
+            { length: remainder },
+            (_, index) =>
+              remainder === 1
+                ? 0
+                : Math.round(
+                    (index * (preferred.length - 1)) / (remainder - 1),
+                  ),
+          );
+          const allocations = new Map(
+            preferred.map((day, index) => [
+              day,
+              base + Number(extraPositions.includes(index)),
+            ]),
+          );
+          const dates = [];
+          for (let date = start; date <= end; date += dayInMs) {
+            const amount = allocations.get(new Date(date).getUTCDay()) ?? 0;
+            for (let slot = 0; slot < amount; slot++) dates.push(dateKey(date));
+          }
+          return { dates };
+        }
+
+        function distribute(total, weights) {
+          const sum = weights.reduce((left, right) => left + right, 0);
+          const shares = weights.map((weight, index) => ({
+            index,
+            count: Math.floor((total * weight) / sum),
+            remainder: (total * weight) % sum,
+          }));
+          const unassigned =
+            total - shares.reduce((left, share) => left + share.count, 0);
+          const ranked = shares
+            .slice()
+            .sort(
+              (left, right) =>
+                right.remainder - left.remainder || left.index - right.index,
+            );
+          for (const share of ranked.slice(0, unassigned)) share.count++;
+          return shares.map(({ count }) => count);
+        }
+
+        function assignItems(dates, counts) {
+          const used = counts.map(() => 0);
+          return dates.map((date, position) => {
+            let choice = -1;
+            let bestScore = -Infinity;
+            for (let index = 0; index < counts.length; index++) {
+              if (used[index] >= counts[index]) continue;
+              const score =
+                (position + 1) * counts[index] - used[index] * dates.length;
+              if (score > bestScore) {
+                choice = index;
+                bestScore = score;
+              }
+            }
+            used[choice]++;
+            return { date, format: choice, number: position + 1 };
+          });
+        }
+
+        function derive(state) {
+          let dates;
+          if (state.mode === "calendar") {
+            const slots = calendarSlots(state);
+            if (slots.error) return { error: slots.error, field: "period" };
+            dates = slots.dates;
+          } else {
+            const total = Number(state.quantity);
+            if (!Number.isInteger(total) || total < 1 || total > 100) {
+              return {
+                error: "Escolha um total inteiro entre 1 e 100.",
+                field: "quantity",
+              };
+            }
+            dates = Array(total).fill(null);
+          }
+          const weights = state.manualCounts?.some(Boolean)
+            ? state.manualCounts
+            : [1, 1, 1];
+          const counts = distribute(dates.length, weights);
+          return { counts, items: assignItems(dates, counts) };
+        }
+
+        return {
+          days,
+          formats,
+          initialState,
+          update,
+          derive,
+          parseDate,
+          dateKey,
+          dayInMs,
+        };
+      })();
+    </script>
+    <script>
+      // Offline view and walkthroughs. Both preview layouts use the same derived ideas.
+      const scenarios = {
+        frequency: {
+          steps: [
+            {
+              text: "Segunda, quarta e sexta são dias preferidos. Aumente de dois para três conteúdos e veja a prévia preencher os três dias.",
+              label: "Subir para 3 por semana",
+              action: { type: "frequency", value: 3 },
+            },
+          ],
+          done: "Os três dias preferidos ficaram selecionados e agora recebem um conteúdo cada.",
+        },
+        swap: {
+          steps: [
+            {
+              text: "Veja como sete conteúdos cabem em segunda, quarta e sexta na semana de 15 a 21/11.",
+              label: "Conferir distribuição 3 / 2 / 2",
+              action: { type: "preset", value: 7 },
+            },
+          ],
+          done: "Segunda recebeu 3 conteúdos, quarta 2 e sexta 2. A frequência não exigiu marcar sete dias.",
+        },
+        format: {
+          steps: [
+            {
+              text: "Veja seis espaços na lista. Comece com dois por formato e ative os três sliders.",
+              label: "Definir quantidades",
+              action: { type: "manual" },
+            },
+            {
+              text: "Reduza Reels para 1 e veja os outros sliders se ajustarem.",
+              label: "Deixar 1 Reel",
+              action: { type: "format", index: 2, value: 1 },
+            },
+          ],
+          done: "A lista ficou com 3 Estáticos, 2 Carrosséis e 1 Reel. O total segue em 6.",
+        },
+      };
+
+      const byId = (id) => document.getElementById(id);
+      const dayFormatter = new Intl.DateTimeFormat("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        timeZone: "UTC",
+      });
+      const monthFormatter = new Intl.DateTimeFormat("pt-BR", {
+        month: "long",
+        year: "numeric",
+        timeZone: "UTC",
+      });
+      const weekdayList = new Intl.ListFormat("pt-BR", { type: "conjunction" });
+
+      let scenario = "frequency";
+      let step = 0;
+      let guideEdited = false;
+      let state = Planning.initialState(scenario);
+      let view = "weeks";
+
+      function countIdeas(total) {
+        return `${total} ${total === 1 ? "ideia" : "ideias"}`;
+      }
+
+      function formatCount(format, count) {
+        return `${count} ${count === 1 ? format.name : format.plural}`;
+      }
+
+      function drawRange(input, value) {
+        input.value = value;
+        const span = Number(input.max) - Number(input.min);
+        const filled = span ? ((value - Number(input.min)) / span) * 100 : 0;
+        input.style.setProperty("--fill", `${filled}%`);
+      }
+
+      function updateControls(result) {
+        const showCalendar = state.mode === "calendar";
+        byId("mode-calendar").checked = showCalendar;
+        byId("mode-quantity").checked = !showCalendar;
+        byId("calendar-fields").hidden = !showCalendar;
+        byId("quantity-fields").hidden = showCalendar;
+
+        for (const id of ["start", "end", "quantity"]) {
+          const input = byId(id);
+          if (input.value !== state[id]) input.value = state[id];
+        }
+        drawRange(byId("frequency"), state.frequency);
+        byId("frequency-result").textContent = state.frequency;
+
+        byId("period-error").hidden = result.field !== "period";
+        byId("period-error").textContent =
+          result.field === "period" ? result.error : "";
+        byId("quantity-error").hidden = result.field !== "quantity";
+        byId("quantity-error").textContent =
+          result.field === "quantity" ? result.error : "";
+        const manual = state.manualCounts !== null;
+        byId("formats").hidden = !manual;
+        byId("formats-auto").setAttribute("aria-pressed", !manual);
+        byId("formats-manual").setAttribute("aria-pressed", manual);
+        byId("start").setAttribute(
+          "aria-invalid",
+          String(result.field === "period"),
+        );
+        byId("end").setAttribute(
+          "aria-invalid",
+          String(result.field === "period"),
+        );
+        byId("quantity").setAttribute(
+          "aria-invalid",
+          String(result.field === "quantity"),
+        );
+
+        Planning.days.forEach((_, index) => {
+          byId(`day-${index}`).setAttribute(
+            "aria-pressed",
+            state.selectedDays.includes(index),
+          );
+        });
+        const selected = Planning.days
+          .filter((_, index) => state.selectedDays.includes(index))
+          .map(([, name]) => name.toLowerCase());
+        byId("day-status").textContent = selected.length
+          ? `Dias preferidos: ${weekdayList.format(selected)}.`
+          : "Marque pelo menos um dia preferido.";
+
+        Planning.formats.forEach(({ id }, index) => {
+          const input = byId(`weight-${id}`);
+          input.max = result.items?.length ?? 0;
+          input.disabled = !Number(input.max);
+          drawRange(input, result.counts?.[index] ?? 0);
+          byId(`weight-result-${id}`).textContent =
+            result.counts?.[index] ?? "—";
+        });
+      }
+
+      function getCalendarGroups(start, end) {
+        const { dayInMs } = Planning;
+        if (view === "weeks") {
+          const groups = [];
+          const firstSunday = start - new Date(start).getUTCDay() * dayInMs;
+          for (let sunday = firstSunday; sunday <= end; sunday += 7 * dayInMs) {
+            const saturday = sunday + 6 * dayInMs;
+            const title = `${dayFormatter.format(sunday)} a ${dayFormatter.format(saturday)}`;
+            groups.push({ title, first: sunday, last: saturday, month: null });
+          }
+          return groups;
+        }
+
+        const groups = [];
+        const monthStart = new Date(start);
+        monthStart.setUTCDate(1);
+        while (monthStart.getTime() <= end) {
+          const first = monthStart.getTime() - monthStart.getUTCDay() * dayInMs;
+          const title = monthFormatter.format(monthStart);
+          const month = monthStart.getUTCMonth();
+          monthStart.setUTCMonth(month + 1);
+          const monthEnd = monthStart.getTime() - dayInMs;
+          const last =
+            monthEnd + (6 - new Date(monthEnd).getUTCDay()) * dayInMs;
+          groups.push({ title, first, last, month });
+        }
+        return groups;
+      }
+
+      function calendarMarkup(items) {
+        const start = Planning.parseDate(state.start);
+        const end = Planning.parseDate(state.end);
+        const header = Planning.days
+          .map(
+            ([short, name]) =>
+              `<th scope="col" aria-label="${name}">${short}</th>`,
+          )
+          .join("");
+        const byDate = new Map();
+        for (const item of items) {
+          if (!byDate.has(item.date)) byDate.set(item.date, []);
+          byDate.get(item.date).push(item);
+        }
+        return getCalendarGroups(start, end)
+          .map(({ title, first, last, month }) => {
+            let body = "";
+            for (let date = first; date <= last; date += Planning.dayInMs) {
+              const calendarDate = new Date(date);
+              const weekday = calendarDate.getUTCDay();
+              if (weekday === 0) body += "<tr>";
+              if (month !== null && calendarDate.getUTCMonth() !== month) {
+                body += "<td class='outside'></td>";
+              } else {
+                const key = Planning.dateKey(date);
+                const inPeriod = date >= start && date <= end;
+                const dayItems = inPeriod ? (byDate.get(key) ?? []) : [];
+                const idea = dayItems
+                  .map((item) => {
+                    const format = Planning.formats[item.format];
+                    return `<span class="idea-chip" data-format="${format.id}">${format.name}</span>`;
+                  })
+                  .join("");
+                const number = calendarDate.getUTCDate();
+                body += `<td class="${inPeriod ? "" : "outside"}"><time class="date-number" datetime="${key}">${number}</time>${idea}</td>`;
+              }
+              if (weekday === 6) body += "</tr>";
+            }
+            return `<section class="${month === null ? "week" : "month"}">
+          <h3>${title}</h3>
+          <table class="calendar" aria-label="${title}">
+            <thead><tr>${header}</tr></thead><tbody>${body}</tbody>
+          </table>
+        </section>`;
+          })
+          .join("");
+      }
+
+      function listMarkup({ items, counts }) {
+        return `<div class="ideas">${Planning.formats
+          .map((format, index) => {
+            if (!counts[index]) return "";
+            const ideas = items
+              .filter((item) => item.format === index)
+              .map(({ number }) => {
+                return `<li><span>Ideia ${number}</span><small class="muted">${format.name}</small></li>`;
+              })
+              .join("");
+            return `<section>
+          <h3><span class="format-dot" data-format="${format.id}" aria-hidden="true"></span>${formatCount(format, counts[index])}</h3>
+          <ul>${ideas}</ul>
+        </section>`;
+          })
+          .join("")}</div>`;
+      }
+
+      function updatePreview(result) {
+        const showCalendar = state.mode === "calendar";
+        byId("view-options").hidden = !showCalendar;
+        byId("view-weeks").checked = view === "weeks";
+        byId("view-months").checked = view === "months";
+        byId("preview-title").textContent = showCalendar
+          ? "Prévia do calendário"
+          : "Prévia da lista";
+        byId("preview-description").textContent = showCalendar
+          ? "Ideias marcadas nos dias de publicação dentro do período."
+          : "Ideias fictícias agrupadas por formato, ainda sem data.";
+
+        const totals = byId("totals");
+        const announcement = byId("announcement");
+        const content = byId("preview-content");
+        if (result.error) {
+          totals.hidden = true;
+          announcement.textContent = result.error;
+          content.innerHTML = '<p class="empty muted"></p>';
+          content.firstElementChild.textContent = result.error;
+          return;
+        }
+
+        const count = countIdeas(result.items.length);
+        totals.hidden = false;
+        totals.innerHTML =
+          `<li><strong>${count} no total</strong></li>` +
+          Planning.formats
+            .map(
+              (format, index) =>
+                `<li><span class="format-dot" data-format="${format.id}" aria-hidden="true"></span>${formatCount(format, result.counts[index])}</li>`,
+            )
+            .join("");
+        const countAnnouncement = `${count} no total. ${Planning.formats
+          .map((format, index) => formatCount(format, result.counts[index]))
+          .join(", ")}.`;
+        if (announcement.textContent !== countAnnouncement)
+          announcement.textContent = countAnnouncement;
+
+        if (showCalendar) {
+          const empty = result.items.length
+            ? ""
+            : '<p class="empty muted">Nenhum dos dias marcados cai neste período.</p>';
+          content.innerHTML = empty + calendarMarkup(result.items);
+        } else {
+          content.innerHTML = listMarkup(result);
+        }
+      }
+
+      function render() {
+        const result = Planning.derive(state);
+        updateControls(result);
+        updatePreview(result);
+      }
+
+      function dispatch(action, guided = false) {
+        const next = Planning.update(state, action);
+        if (next !== state && !guided && !guideEdited) {
+          guideEdited = true;
+          renderWalkthrough();
+        }
+        state = next;
+        render();
+      }
+
+      function renderWalkthrough() {
+        for (const key of Object.keys(scenarios)) {
+          const active = key === scenario;
+          const tab = byId(`tab-${key}`);
+          tab.setAttribute("aria-selected", active);
+          tab.tabIndex = active ? 0 : -1;
+          byId(`panel-${key}`).hidden = !active;
+        }
+        const guide = scenarios[scenario];
+        const panel = byId(`panel-${scenario}`);
+        const instruction = guideEdited ? null : guide.steps[step];
+        panel.querySelector("p").textContent = guideEdited
+          ? "Você está explorando os controles livres. Recomece para voltar ao roteiro."
+          : (instruction?.text ?? guide.done);
+        const button = panel.querySelector("[data-action='step']");
+        button.hidden = !instruction;
+        if (instruction) button.textContent = instruction.label;
+      }
+
+      function startWalkthrough(key) {
+        scenario = key;
+        step = 0;
+        guideEdited = false;
+        state = Planning.initialState(key);
+        view = "weeks";
+        byId("preview").scrollTop = 0;
+        render();
+        renderWalkthrough();
+      }
+
+      byId("days").innerHTML = Planning.days
+        .map(
+          ([short, name], index) =>
+            `<button type="button" id="day-${index}" aria-label="${name}" aria-pressed="false" data-day="${index}">${short}</button>`,
+        )
+        .join("");
+      byId("formats").innerHTML = Planning.formats
+        .map(
+          ({ id, name }, index) =>
+            `<div class="format-control">
+        <label for="weight-${id}">${name}</label>
+        <input id="weight-${id}" type="range" min="0" max="6" step="1" value="2" data-weight="${index}" aria-label="Quantidade de ${name}">
+        <output id="weight-result-${id}" class="numeric" for="weight-${id}"></output>
+      </div>`,
+        )
+        .join("");
+      byId("walkthroughs").innerHTML = Object.keys(scenarios)
+        .map(
+          (key) =>
+            `<div class="walkthrough" role="tabpanel" id="panel-${key}" aria-labelledby="tab-${key}" hidden>
+        <p class="muted" aria-live="polite"></p>
+        <div class="walkthrough-actions">
+          <button type="button" class="filled" data-action="step"></button>
+          <button type="button" data-action="reset">Recomeçar</button>
+        </div>
+      </div>`,
+        )
+        .join("");
+
+      for (const id of ["start", "end", "quantity", "frequency"]) {
+        byId(id).addEventListener("input", ({ target }) =>
+          dispatch({
+            type: id,
+            value: id === "frequency" ? target.valueAsNumber : target.value,
+          }),
+        );
+      }
+      document.querySelectorAll("[data-weight]").forEach((input) => {
+        input.addEventListener("input", () => {
+          dispatch({
+            type: "format",
+            index: Number(input.dataset.weight),
+            value: input.valueAsNumber,
+          });
+        });
+      });
+      byId("days").addEventListener("click", ({ target }) => {
+        if (target.matches("[data-day]"))
+          dispatch({ type: "day", value: Number(target.dataset.day) });
+      });
+      byId("formats-auto").addEventListener("click", () =>
+        dispatch({ type: "auto" }),
+      );
+      byId("formats-manual").addEventListener("click", () =>
+        dispatch({ type: "manual" }),
+      );
+      document.querySelectorAll("[data-period]").forEach((button) => {
+        button.addEventListener("click", () =>
+          dispatch({ type: "preset", value: Number(button.dataset.period) }),
+        );
+      });
+
+      document.querySelectorAll("[name='mode']").forEach((input) => {
+        input.addEventListener("change", () => {
+          byId("preview").scrollTop = 0;
+          dispatch({ type: "mode", value: input.value });
+        });
+      });
+      document.querySelectorAll("[name='calendar-view']").forEach((input) => {
+        input.addEventListener("change", () => {
+          view = input.value;
+          byId("preview").scrollTop = 0;
+          render();
+        });
+      });
+
+      const keys = Object.keys(scenarios);
+      for (const [index, key] of keys.entries()) {
+        const tab = byId(`tab-${key}`);
+        const panel = byId(`panel-${key}`);
+        tab.addEventListener("click", () => startWalkthrough(key));
+        tab.addEventListener("keydown", (event) => {
+          let next;
+          switch (event.key) {
+            case "ArrowLeft":
+              next = (index + keys.length - 1) % keys.length;
+              break;
+            case "ArrowRight":
+              next = (index + 1) % keys.length;
+              break;
+            case "Home":
+              next = 0;
+              break;
+            case "End":
+              next = keys.length - 1;
+              break;
+            default:
+              return;
+          }
+          event.preventDefault();
+          startWalkthrough(keys[next]);
+          byId(`tab-${keys[next]}`).focus();
+        });
+
+        panel
+          .querySelector("[data-action='step']")
+          .addEventListener("click", () => {
+            dispatch(scenarios[key].steps[step].action, true);
+            step++;
+            renderWalkthrough();
+            if (step === scenarios[key].steps.length) {
+              panel.querySelector("[data-action='reset']").focus();
+            }
+          });
+        panel
+          .querySelector("[data-action='reset']")
+          .addEventListener("click", () => startWalkthrough(key));
+      }
+
+      byId("theme").addEventListener("click", ({ currentTarget }) => {
+        const dark = document.documentElement.dataset.theme === "light";
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
+        currentTarget.setAttribute("aria-pressed", dark);
+      });
+
+      startWalkthrough(scenario);
+    </script>
+  </body>
+</html>

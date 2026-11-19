@@ -3,9 +3,9 @@ import {
   eachDayOfInterval,
   format,
   getDay,
+  parseISO,
 } from "date-fns";
 import type { PlanFormat } from "./types";
-import { parseU } from "~/utils";
 
 // Mapeamento dos IDs de dia (domingo = 0 até sábado = 6)
 export const DAY_ID_TO_INDEX: Record<string, number> = {
@@ -76,10 +76,15 @@ export function validatePeriodInput({
     };
   }
 
-  const start = parseU(startDate);
-  const end = parseU(endDate);
+  const start = parseISO(startDate);
+  const end = parseISO(endDate);
 
-  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+  if (
+    Number.isNaN(start.getTime()) ||
+    Number.isNaN(end.getTime()) ||
+    format(start, "yyyy-MM-dd") !== startDate ||
+    format(end, "yyyy-MM-dd") !== endDate
+  ) {
     return {
       isValid: false,
       error: "Data civil inválida.",
@@ -164,8 +169,8 @@ export function calculatePeriodSlots({
 }): string[] {
   if (!startDate || !endDate) return [];
 
-  const start = parseU(startDate);
-  const end = parseU(endDate);
+  const start = parseISO(startDate);
+  const end = parseISO(endDate);
   if (start > end) return [];
 
   const targetDayIndices = new Set(
