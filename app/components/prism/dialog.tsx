@@ -88,7 +88,7 @@ function getDialogFrame(
 
 // Mounted only while the overlay is open, so closed dialogs do not listen to
 // viewport changes.
-type DialogSize = "xs" | "sm" | "default" | "lg" | "xl";
+type DialogSize = "xs" | "sm" | "default" | "lg" | "xl" | "2xl";
 // Width scale: xs 20rem, sm 24rem, default 32rem, lg 36rem, xl 42rem.
 const dialogWidths: Record<DialogSize, string> = {
   xs: "sm:max-w-xs",
@@ -96,6 +96,7 @@ const dialogWidths: Record<DialogSize, string> = {
   default: "sm:max-w-lg",
   lg: "sm:max-w-xl",
   xl: "sm:max-w-2xl",
+  "2xl": "sm:max-w-4xl",
 };
 function DialogFrame({
   className,

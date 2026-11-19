@@ -55,6 +55,7 @@ import {
   UzzinaAdminItemCardSection,
   UzzinaAvatarSelectorSection,
   UzzinaAvatarUploadSection,
+  UzzinaFileUploadSection,
   UzzinaLoaderSection,
   UzzinaAIProgressBarSection,
   UzzinaAIModelSelectSection,
@@ -269,6 +270,12 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     label: "UAvatarUpload",
     section: "uzzina",
     keywords: ["avatar", "upload", "foto", "logotipo", "cloudinary", "imagem"],
+  },
+  {
+    id: "uzzina-file-upload",
+    label: "Upload de arquivos",
+    section: "uzzina",
+    keywords: ["arquivos", "upload", "instagram", "essencial", "cloudinary"],
   },
   {
     id: "uzzina-color-picker-dropdown",
@@ -1150,6 +1157,7 @@ function UIPage() {
               <UzzinaAvatarSection />
               <UzzinaAvatarSelectorSection />
               <UzzinaAvatarUploadSection />
+              <UzzinaFileUploadSection />
               <UzzinaColorPickerDropdownSection />
               <UzzinaAIModelSelectSection />
               <UzzinaAIAllowanceMeterSection />

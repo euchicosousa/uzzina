@@ -8,7 +8,6 @@ import {
   ChevronDownIcon,
   FileIcon,
   ListIcon,
-  PlusIcon,
   SlidersHorizontalIcon,
 } from "lucide-react";
 import { ULoader } from "~/components/uzzina/ULoader";
@@ -31,7 +30,6 @@ import {
   PrismButtonGroup,
   PrismSkeleton,
 } from "~/components/prism";
-import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { INTENT } from "~/lib/CONSTANTS";
 import type { TextDraftField } from "~/components/features/action-drawer/ActionFormDrawer";
 import {
@@ -46,7 +44,7 @@ import type { Action, Partner } from "~/types";
 import { UActionDatePicker } from "~/components/uzzina/UActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";
-import { ContentReorderDialog } from "~/components/features/media/ContentReorderDialog";
+import { FileManagerDialog } from "~/components/features/media/FileManagerDialog";
 interface EssentialsTabProps {
   /** Height Essencial needs without scrolling (title + metadata + description minimum). */
   onNeededHeightChange?: (height: number) => void;
@@ -58,6 +56,7 @@ interface EssentialsTabProps {
   ) => Promise<unknown>;
   workFiles: string[];
   setWorkFiles: (files: string[]) => void;
+  onUploadActiveChange?: (active: boolean) => void;
   currentPartners: Partner[];
   cloudName: string;
   uploadPreset: string;
@@ -99,6 +98,7 @@ export function EssentialsTab({
   updateAction,
   workFiles,
   setWorkFiles,
+  onUploadActiveChange,
   currentPartners,
   cloudName,
   isAIProcessing,
@@ -169,53 +169,6 @@ export function EssentialsTab({
     observer.observe(metadata);
     return () => observer.disconnect();
   }, []);
-  const workFilesRef = useRef(workFiles);
-  workFilesRef.current = workFiles;
-  const workFilesMetaRef = useRef<
-    Record<
-      string,
-      {
-        name: string;
-        addedAt: number;
-      }
-    >
-  >({});
-  const handleUpload = async (
-    url: string,
-    meta: {
-      originalFilename?: string;
-    },
-  ) => {
-    const now = Date.now();
-    workFilesMetaRef.current[url] = {
-      name: meta.originalFilename || url,
-      addedAt: now,
-    };
-    let next = [...workFilesRef.current, url];
-    const splitIndex = next.findIndex((u) => {
-      const m = workFilesMetaRef.current[u];
-      return m && m.addedAt > now - 5000;
-    });
-    if (splitIndex !== -1) {
-      const oldUrls = next.slice(0, splitIndex);
-      const recentUrls = next.slice(splitIndex);
-      recentUrls.sort((a, b) => {
-        const nameA = workFilesMetaRef.current[a]?.name || a;
-        const nameB = workFilesMetaRef.current[b]?.name || b;
-        return nameA.localeCompare(nameB);
-      });
-      next = [...oldUrls, ...recentUrls];
-    }
-    workFilesRef.current = next;
-    setWorkFiles(next);
-    setRawAction((prev) => ({
-      ...prev,
-      work_files: next,
-    }));
-    await updateAction({
-      work_files: next,
-    });
-  };
   const handleTriggerAI = async () => {
     await triggerAIAction(INTENT.ai_strategy, { model: strategyModel });
   };
@@ -395,34 +348,16 @@ export function EssentialsTab({
           </div>
 
           <div className="flex max-w-full items-center justify-between gap-2 overflow-hidden border-b px-1 py-1">
-            <div className="flex items-center gap-2">
-              <CloudinaryUpload
-                cloudName={cloudName}
-                folder="uzzina/work"
-                multiple
-                onUpload={handleUpload}
-                outputWidth={1200}
-                resourceType="auto"
-                size="sm"
-                uploadPreset={uploadPreset}
-                variant="link"
-              >
-                Adicionar arquivo
-                <PlusIcon className="size-3.5" />
-              </CloudinaryUpload>
-            </div>
-
-            {workFiles.length > 0 && (
-              <PrismButton
-                onClick={() => setWorkFilesDialogOpen(true)}
-                size="xs"
-                type="button"
-                variant="ghost"
-              >
-                {`${workFiles.length} arquivo${workFiles.length !== 1 ? "s" : ""}`}
-                <SlidersHorizontalIcon />
-              </PrismButton>
-            )}
+            <PrismButton
+              onPress={() => setWorkFilesDialogOpen(true)}
+              size="sm"
+              type="button"
+              variant="link"
+            >
+              Arquivos
+              {workFiles.length > 0 && ` (${workFiles.length})`}
+              <SlidersHorizontalIcon />
+            </PrismButton>
           </div>
         </div>
       </div>
@@ -467,7 +402,7 @@ export function EssentialsTab({
         </Suspense>
       </div>
 
-      <ContentReorderDialog
+      <FileManagerDialog
         ai={
           RawAction.id
             ? {
@@ -480,10 +415,10 @@ export function EssentialsTab({
             : undefined
         }
         cloudName={cloudName}
+        directUpload
         files={workFiles}
+        onUploadActiveChange={onUploadActiveChange}
         onChange={async (next) => {
-          workFilesMetaRef.current = {};
-          workFilesRef.current = next;
           setWorkFiles(next);
           setRawAction((prev) => ({
             ...prev,

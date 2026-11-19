@@ -18,7 +18,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { PrismBadge, PrismButton, buttonVariants } from "~/components/prism";
 import { CommentInput } from "~/components/features/ActionComments/CommentInput";
 import { CommentList } from "~/components/features/ActionComments/CommentList";
-import { ContentReorderDialog } from "~/components/features/media/ContentReorderDialog";
+import { FileManagerDialog } from "~/components/features/media/FileManagerDialog";
 import { UPhaseIcon } from "~/components/uzzina/UPhaseIcon";
 import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { InstagramPreview } from "~/components/features/media/InstagramPreview";
@@ -450,7 +450,7 @@ function DashActionDetail({ actionId }: { actionId: string }) {
             </div>
           </div>
 
-          <ContentReorderDialog
+          <FileManagerDialog
             cloudName={cloudName}
             files={workFiles}
             onChange={(next) => {

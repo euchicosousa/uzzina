@@ -43,6 +43,7 @@ export * from "./UzzinaLoaderSection";
 export * from "./UzzinaPreferenceSwitchSection";
 export * from "./UzzinaAvatarSelectorSection";
 export * from "./UzzinaAvatarUploadSection";
+export * from "./UzzinaFileUploadSection";
 export * from "./UzzinaAdminItemCardSection";
 export * from "./UzzinaCalendarToolbarSection";
 export * from "./UzzinaPaletteEditorSection";
