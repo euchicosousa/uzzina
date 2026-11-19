@@ -54,30 +54,6 @@ export async function fetchPartnerActions(
   return data as Action[];
 }
 
-export async function fetchFlowActions(
-  partnerSlugs: string[],
-  endDateISO: string,
-  startDateISO?: string,
-) {
-  const supabase = createSupabaseBrowserClient();
-  let query = supabase
-    .from("actions")
-    .select("*")
-    .or("archived.is.false,archived.is.null")
-    .overlaps("partners", partnerSlugs)
-    .neq("phase", "finished")
-    .lte("date", endDateISO);
-
-  if (startDateISO) {
-    query = query.gte("date", startDateISO);
-  }
-
-  const { data, error } = await query.order("date", { ascending: true });
-
-  if (error) throw error;
-  return data as Action[];
-}
-
 /**
  * Fetch all late actions for all partners the user has access to
  */
@@ -137,22 +113,4 @@ export async function fetchPeople() {
 
 export async function fetchAllPeople() {
   return getAllPeople(createSupabaseBrowserClient());
-}
-
-/**
- * Fetch actions for public review page by IDs (no auth required).
- * Returns only fields needed for the approval document.
- */
-export async function fetchReviewActions(ids: string[]): Promise<Action[]> {
-  if (ids.length === 0) return [];
-  const supabase = createSupabaseBrowserClient();
-  const { data, error } = await supabase
-    .from("actions")
-    .select(
-      "id, title, content_description, instagram_caption, category, date, partners",
-    )
-    .in("id", ids)
-    .order("date", { ascending: true });
-  if (error) throw error;
-  return data as Action[];
 }
