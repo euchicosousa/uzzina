@@ -6,7 +6,7 @@
 - **Anthropic** — Claude Opus 5.5, para provar idempotência e atomicidade da conversão.
 - **Google** — Gemini 4 Argon, para provar idempotência e atomicidade da conversão. Disponibilidade depende do plano do Antigravity.
 
-**Status:** ready-for-agent. Atualizado em 19/11: não iniciado. O botão de finalizar ainda usa o laço no navegador de `app/lib/social-planning/finalizer.ts`; falta a conversão transacional e idempotente no banco, que depende da decisão D5.
+**Status:** ready-for-agent. Atualizado em 19/11: não iniciado. O botão de finalizar ainda usa o laço no navegador de `app/lib/social-planning/finalizer.ts`; falta a conversão transacional e idempotente no banco. D5 decidido em 19/11: ideia sem dia recebe a data em que foi gerada e o admin pode mudar no editor; restam hora/fuso e propostas antigas sem data.
 **Blocked by:** T02 e T01/D5. Pode usar propostas canônicas controladas; não espera IA/calendário.
 **Origem:** R1/R2; núcleo C09.
 **Prioridade:** P1
