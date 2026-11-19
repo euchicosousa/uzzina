@@ -346,7 +346,7 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
   },
   {
     id: "uzzina-timeline-preview",
-    label: "Linha do tempo (Prévia HOJE-02)",
+    label: "Linha do tempo",
     section: "uzzina",
     keywords: ["linha do tempo", "timeline", "gantt", "hoje", "hora", "previa"],
   },

@@ -143,17 +143,26 @@ export const GALLERY_QUERY_CLIENT = new QueryClient({
   },
 });
 
+GALLERY_QUERY_CLIENT.setQueryDefaults(QUERY_KEYS.people(MOCK_PERSON.user_id), {
+  gcTime: Infinity,
+  staleTime: Infinity,
+});
+
 GALLERY_QUERY_CLIENT.setQueryData(
   QUERY_KEYS.people(MOCK_PERSON.user_id),
   MOCK_PEOPLE,
 );
 
-export function GalleryAppProviders({ children }: { children: ReactNode }) {
+export function GalleryAppProviders({
+  children,
+  context = MOCK_APP_CONTEXT,
+}: {
+  children: ReactNode;
+  context?: AppContextType;
+}) {
   return (
     <QueryClientProvider client={GALLERY_QUERY_CLIENT}>
-      <AppContext.Provider value={MOCK_APP_CONTEXT}>
-        {children}
-      </AppContext.Provider>
+      <AppContext.Provider value={context}>{children}</AppContext.Provider>
     </QueryClientProvider>
   );
 }
