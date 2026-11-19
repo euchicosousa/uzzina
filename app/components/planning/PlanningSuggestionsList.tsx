@@ -4,285 +4,211 @@ import {
   CheckIcon,
   PencilIcon,
   SparklesIcon,
-  XCircleIcon,
   XIcon,
 } from "lucide-react";
-import { useMemo, useState } from "react";
-import { PrismBadge, PrismButton } from "~/components/prism";
-import type { PlanSuggestion } from "~/lib/social-planning/types";
-import { PlanningSuggestionEditor } from "./PlanningSuggestionEditor";
+import { useState } from "react";
+import {
+  PrismBadge,
+  PrismButton,
+  PrismToggleGroup,
+  PrismToggleGroupItem,
+} from "~/components/prism";
+import type {
+  PlanSuggestion,
+  PlanSuggestionStatus,
+} from "~/lib/social-planning/types";
+import { PLANNING_FORMAT_LABELS } from "./PlanningPreview";
+
+const FILTER_LABELS = {
+  all: "Todas",
+  pending: "Pendentes",
+  approved: "Aprovadas",
+  rejected: "Descartadas",
+};
+const FILTERS = ["all", "pending", "approved", "rejected"] as const;
+type SuggestionFilter = keyof typeof FILTER_LABELS;
+
+const STATUS_LABELS = {
+  pending: "Pendente",
+  approved: "Aprovada",
+  rejected: "Descartada",
+} satisfies Record<PlanSuggestionStatus, string>;
 
 interface PlanningSuggestionsListProps {
   suggestions: PlanSuggestion[];
-  onUpdateSuggestion: (id: string, patch: Partial<PlanSuggestion>) => void;
-  onApproveAllPending?: () => void;
-  onFinalize?: () => void;
-  isFinalizing?: boolean;
+  onEditSuggestion: (suggestion: PlanSuggestion) => void;
+  onChangeStatus: (id: string, status: PlanSuggestionStatus) => void;
+  onApproveAllPending: () => void;
+  onFinalize: () => void;
+  isSaving: boolean;
+  isFinalizing: boolean;
 }
 
 export function PlanningSuggestionsList({
   suggestions,
-  onUpdateSuggestion,
+  onEditSuggestion,
+  onChangeStatus,
   onApproveAllPending,
   onFinalize,
-  isFinalizing = false,
+  isSaving,
+  isFinalizing,
 }: PlanningSuggestionsListProps) {
-  const [filter, setFilter] = useState<
-    "all" | "pending" | "approved" | "rejected"
-  >("all");
-  const [editingSuggestion, setEditingSuggestion] =
-    useState<PlanSuggestion | null>(null);
-
-  const stats = useMemo(() => {
-    const total = suggestions.length;
-    const approved = suggestions.filter((s) => s.status === "approved").length;
-    const rejected = suggestions.filter((s) => s.status === "rejected").length;
-    const pending = suggestions.filter((s) => s.status === "pending").length;
-    return { total, approved, rejected, pending };
-  }, [suggestions]);
-
-  const filteredSuggestions = useMemo(() => {
-    if (filter === "all") return suggestions;
-    return suggestions.filter((s) => s.status === filter);
-  }, [suggestions, filter]);
-
-  const formatLabels: Record<string, string> = {
-    reels: "Reels",
-    carousel: "Carrossel",
-    static: "Estático",
+  const [filter, setFilter] = useState<SuggestionFilter>("all");
+  const counts = {
+    all: suggestions.length,
+    pending: 0,
+    approved: 0,
+    rejected: 0,
   };
+  for (const suggestion of suggestions) {
+    counts[suggestion.status]++;
+  }
+  const visibleSuggestions =
+    filter === "all"
+      ? suggestions
+      : suggestions.filter((suggestion) => suggestion.status === filter);
+  const isBusy = isSaving || isFinalizing;
 
   return (
-    <div className="flex flex-col gap-6 p-6 xl:p-8">
-      {/* Header com contadores e ações globais */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-5">
-        <div>
-          <h2 className="text-xl font-semibold text-foreground">
-            Sugestões geradas ({stats.total})
-          </h2>
-          <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-secondary-foreground">
-            <span className="font-medium text-success">
-              {stats.approved} aprovadas
-            </span>
-            <span>•</span>
-            <span className="font-medium text-error">
-              {stats.rejected} descartadas
-            </span>
-            <span>•</span>
-            <span>{stats.pending} pendentes</span>
-          </p>
-        </div>
+    <div className="flex flex-col gap-4 px-6 py-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <PrismToggleGroup
+          aria-label="Filtrar sugestões"
+          className="flex-wrap"
+          disallowEmptySelection
+          onSelectionChange={(keys) =>
+            setFilter(FILTERS.find((key) => keys.has(key)) ?? "all")
+          }
+          selectedKeys={[filter]}
+          selectionMode="single"
+          size="sm"
+          variant="ghost"
+        >
+          {FILTERS.map((key) => (
+            <PrismToggleGroupItem id={key} key={key}>
+              {FILTER_LABELS[key]} ({counts[key]})
+            </PrismToggleGroupItem>
+          ))}
+        </PrismToggleGroup>
 
         <div className="flex flex-wrap items-center gap-2">
-          {stats.pending > 0 && onApproveAllPending && (
+          {counts.pending > 0 && (
             <PrismButton
-              onClick={onApproveAllPending}
+              isDisabled={isBusy}
+              onPress={onApproveAllPending}
               size="sm"
               variant="outline"
             >
               Aprovar todas as pendentes
-              <CheckIcon className="size-4" />
+              <CheckIcon data-icon="inline-end" />
             </PrismButton>
           )}
-
-          {stats.approved > 0 && onFinalize && (
-            <PrismButton
-              isDisabled={isFinalizing}
-              onClick={onFinalize}
-              size="sm"
-              variant="default"
-            >
+          {counts.approved > 0 && (
+            <PrismButton isDisabled={isBusy} onPress={onFinalize} size="sm">
               {isFinalizing
-                ? "Criando ações..."
-                : `Finalizar ${stats.approved} ${stats.approved === 1 ? "ação" : "ações"}`}
-              <CheckCircle2Icon className="size-4" />
+                ? "Criando ações…"
+                : `Finalizar ${counts.approved} ${counts.approved === 1 ? "ação" : "ações"}`}
+              <CheckCircle2Icon data-icon="inline-end" />
             </PrismButton>
           )}
         </div>
       </div>
 
-      {/* Filtros rápidos */}
-      <div className="flex flex-wrap gap-2 text-sm">
-        <button
-          className={`rounded-lg px-3 py-1.5 font-medium transition-colors squircle ${
-            filter === "all"
-              ? "bg-primary text-primary-foreground"
-              : "bg-secondary text-secondary-foreground hover:text-foreground"
-          }`}
-          onClick={() => setFilter("all")}
-          type="button"
-        >
-          Todas ({stats.total})
-        </button>
-        <button
-          className={`rounded-lg px-3 py-1.5 font-medium transition-colors squircle ${
-            filter === "pending"
-              ? "bg-primary text-primary-foreground"
-              : "bg-secondary text-secondary-foreground hover:text-foreground"
-          }`}
-          onClick={() => setFilter("pending")}
-          type="button"
-        >
-          Pendentes ({stats.pending})
-        </button>
-        <button
-          className={`rounded-lg px-3 py-1.5 font-medium transition-colors squircle ${
-            filter === "approved"
-              ? "bg-success-strong text-success-strong-foreground"
-              : "bg-secondary text-secondary-foreground hover:text-foreground"
-          }`}
-          onClick={() => setFilter("approved")}
-          type="button"
-        >
-          Aprovadas ({stats.approved})
-        </button>
-        <button
-          className={`rounded-lg px-3 py-1.5 font-medium transition-colors squircle ${
-            filter === "rejected"
-              ? "border-b-2 border-error bg-error-background text-error-foreground"
-              : "bg-secondary text-secondary-foreground hover:text-foreground"
-          }`}
-          onClick={() => setFilter("rejected")}
-          type="button"
-        >
-          Descartadas ({stats.rejected})
-        </button>
-      </div>
-
-      {/* Lista de cards */}
-      <div className="grid gap-4">
-        {filteredSuggestions.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-secondary-foreground squircle">
-            Nenhuma sugestão encontrada para o filtro selecionado.
-          </div>
-        ) : (
-          filteredSuggestions.map((suggestion) => {
+      {visibleSuggestions.length === 0 ? (
+        <p className="py-4 text-sm text-secondary-foreground">
+          Nenhuma sugestão para este filtro.
+        </p>
+      ) : (
+        <ul className="divide-y divide-border border-t border-border">
+          {visibleSuggestions.map((suggestion) => {
             const isApproved = suggestion.status === "approved";
             const isRejected = suggestion.status === "rejected";
 
             return (
-              <div
-                className={`relative flex flex-col gap-3 rounded-xl border border-border bg-card p-5 shadow-xs transition-all squircle hover:border-border/80 ${
-                  isRejected ? "opacity-60" : ""
-                }`}
-                key={suggestion.id}
-              >
-                {/* Cabeçalho do Card */}
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <PrismBadge variant="secondary">
-                      {formatLabels[suggestion.format] || suggestion.format}
-                    </PrismBadge>
-
-                    {suggestion.scheduled_date && (
-                      <PrismBadge variant="outline">
-                        <CalendarIcon className="mr-1 size-3" />
-                        {suggestion.scheduled_date}
-                      </PrismBadge>
-                    )}
-
-                    {suggestion.is_commemorative && (
-                      <PrismBadge variant="warning">
-                        <SparklesIcon className="mr-1 size-3" />
-                        {suggestion.celebration_title || "Data comemorativa"}
-                      </PrismBadge>
-                    )}
-                  </div>
-
-                  {/* Status Badge */}
-                  <div>
-                    {isRejected && (
-                      <PrismBadge variant="error">
-                        <XCircleIcon className="mr-1 size-3" />
-                        Descartada
-                      </PrismBadge>
-                    )}
-                    {!isApproved && !isRejected && (
-                      <PrismBadge variant="outline">Pendente</PrismBadge>
-                    )}
-                  </div>
+              <li className="grid gap-2 py-4" key={suggestion.id}>
+                <div className="flex flex-wrap items-center gap-2 text-xs text-secondary-foreground">
+                  <span>{PLANNING_FORMAT_LABELS[suggestion.format]}</span>
+                  {suggestion.scheduled_date && (
+                    <time
+                      className="inline-flex items-center gap-1"
+                      dateTime={suggestion.scheduled_date}
+                    >
+                      <CalendarIcon className="size-3" />
+                      {suggestion.scheduled_date.split("-").reverse().join("/")}
+                    </time>
+                  )}
+                  {suggestion.is_commemorative && (
+                    <span className="inline-flex items-center gap-1">
+                      <SparklesIcon className="size-3" />
+                      {suggestion.celebration_title || "Data comemorativa"}
+                    </span>
+                  )}
+                  <PrismBadge
+                    variant={
+                      isApproved ? "success" : isRejected ? "error" : "outline"
+                    }
+                  >
+                    {STATUS_LABELS[suggestion.status]}
+                  </PrismBadge>
                 </div>
-
-                {/* Título */}
-                <h3
-                  className={`text-base font-semibold ${
-                    isRejected
-                      ? "text-secondary-foreground line-through"
-                      : "text-foreground"
-                  }`}
-                >
-                  {suggestion.title}
-                </h3>
-
-                {/* Racional / Objetivo */}
+                <h3 className="text-base font-semibold">{suggestion.title}</h3>
                 {suggestion.objective && (
-                  <p className="text-sm text-secondary-foreground italic">
-                    Objetivo: {suggestion.objective}
+                  <p className="text-sm text-secondary-foreground">
+                    {suggestion.objective}
                   </p>
                 )}
-
-                {/* Briefing / Direcionamento */}
                 {suggestion.briefing && (
-                  <p className="text-sm text-foreground/90">
+                  <p className="text-sm whitespace-pre-line">
                     {suggestion.briefing}
                   </p>
                 )}
 
-                {/* Ações individuais */}
-                <div className="mt-2 flex flex-wrap items-center justify-between gap-3 border-t border-border/60 pt-3">
+                <div className="flex flex-wrap items-center gap-1">
                   <PrismButton
-                    onClick={() => setEditingSuggestion(suggestion)}
+                    isDisabled={isBusy}
+                    onPress={() => onEditSuggestion(suggestion)}
                     size="sm"
                     variant="ghost"
                   >
                     Editar
-                    <PencilIcon className="size-3.5" />
+                    <PencilIcon data-icon="inline-end" />
                   </PrismButton>
-
-                  <div className="flex items-center gap-2">
-                    <PrismButton
-                      className={
-                        isRejected ? "bg-error-background text-error" : ""
-                      }
-                      onClick={() =>
-                        onUpdateSuggestion(suggestion.id, {
-                          status: isRejected ? "pending" : "rejected",
-                        })
-                      }
-                      size="sm"
-                      variant="ghost"
-                    >
-                      {isRejected ? "Desfazer descarte" : "Descartar"}
-                      <XIcon className="size-4" />
-                    </PrismButton>
-
-                    <PrismButton
-                      onClick={() =>
-                        onUpdateSuggestion(suggestion.id, {
-                          status: isApproved ? "pending" : "approved",
-                        })
-                      }
-                      size="sm"
-                      variant={isApproved ? "success" : "secondary"}
-                    >
-                      {isApproved ? "Aprovada" : "Aprovar"}
-                      <CheckIcon className="size-4" />
-                    </PrismButton>
-                  </div>
+                  <PrismButton
+                    aria-pressed={isApproved}
+                    isDisabled={isBusy}
+                    onPress={() =>
+                      onChangeStatus(
+                        suggestion.id,
+                        isApproved ? "pending" : "approved",
+                      )
+                    }
+                    size="sm"
+                    variant="ghost"
+                  >
+                    {isApproved ? "Desfazer aprovação" : "Aprovar"}
+                    <CheckIcon data-icon="inline-end" />
+                  </PrismButton>
+                  <PrismButton
+                    aria-pressed={isRejected}
+                    isDisabled={isBusy}
+                    onPress={() =>
+                      onChangeStatus(
+                        suggestion.id,
+                        isRejected ? "pending" : "rejected",
+                      )
+                    }
+                    size="sm"
+                    variant="ghost"
+                  >
+                    {isRejected ? "Desfazer descarte" : "Descartar"}
+                    <XIcon data-icon="inline-end" />
+                  </PrismButton>
                 </div>
-              </div>
+              </li>
             );
-          })
-        )}
-      </div>
-
-      {/* Editor Modal */}
-      <PlanningSuggestionEditor
-        isOpen={Boolean(editingSuggestion)}
-        onClose={() => setEditingSuggestion(null)}
-        onSave={onUpdateSuggestion}
-        suggestion={editingSuggestion}
-      />
+          })}
+        </ul>
+      )}
     </div>
   );
 }

@@ -19,6 +19,7 @@ import {
   PlanningPreview,
   PLANNING_FORMAT_LABELS,
 } from "~/components/planning/PlanningPreview";
+import { PlanningSuggestionEditor } from "~/components/planning/PlanningSuggestionEditor";
 import { PlanningSuggestionsList } from "~/components/planning/PlanningSuggestionsList";
 import {
   PrismBadge,
@@ -45,6 +46,8 @@ import {
   PrismTabs,
   PrismTextarea,
   PrismToggle,
+  PrismToggleGroup,
+  PrismToggleGroupItem,
 } from "~/components/prism";
 import { UPartnersCombobox } from "~/components/uzzina/UPartnersCombobox";
 import { useAppContext, useLeaveOpenActions } from "~/contexts/AppContext";
@@ -65,6 +68,7 @@ import {
 import type {
   PlanFormat,
   PlanSuggestion,
+  PlanSuggestionStatus,
   SocialPlan,
 } from "~/lib/social-planning/types";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
@@ -218,6 +222,13 @@ function PlanningPage() {
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isFinalizing, setIsFinalizing] = useState(false);
+  const [editingSuggestion, setEditingSuggestion] =
+    useState<PlanSuggestion | null>(null);
+  const [isSavingSuggestions, setIsSavingSuggestions] = useState(false);
+  const savingSuggestions = useRef(false);
+  const [suggestionSaveError, setSuggestionSaveError] = useState<string | null>(
+    null,
+  );
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
 
   // Validação estrita do período (C02, T03)
@@ -301,6 +312,8 @@ function PlanningPage() {
   useEffect(() => {
     setCurrentPlan(null);
     setIsSavedPlansOpen(false);
+    setEditingSuggestion(null);
+    setSuggestionSaveError(null);
     setFeedbackMessage(null);
     setDirectionDraft(null);
     formatEdit.current = null;
@@ -314,6 +327,8 @@ function PlanningPage() {
     }
     formatEdit.current = null;
     setFeedbackMessage(null);
+    setSuggestionSaveError(null);
+    setEditingSuggestion(null);
     setCurrentPlan(plan);
 
     if (plan.mode) setMode(plan.mode);
@@ -359,8 +374,9 @@ function PlanningPage() {
 
   // Manipulador de geração
   const handleGenerate = async () => {
-    if (!selectedPartner || isFormInvalid) return;
+    if (!selectedPartner || isFormInvalid || savingSuggestions.current) return;
     setFeedbackMessage(null);
+    setSuggestionSaveError(null);
 
     try {
       setIsGenerating(true);
@@ -450,80 +466,87 @@ function PlanningPage() {
     }
   };
 
-  // Atualização de sugestão individual com Compare-And-Swap (T02)
+  const saveSuggestions = async (
+    plan: SocialPlan,
+    suggestions: PlanSuggestion[],
+  ): Promise<string | null> => {
+    if (savingSuggestions.current || isFinalizing) {
+      return "Aguarde o salvamento em andamento.";
+    }
+    savingSuggestions.current = true;
+    setIsSavingSuggestions(true);
+    setSuggestionSaveError(null);
+    try {
+      const result = await updateSocialPlanClient(
+        supabase,
+        plan.id,
+        plan.version ?? 1,
+        { suggestions },
+      );
+      if (result.success && result.plan) {
+        const savedPlan = result.plan;
+        setCurrentPlan((opened) =>
+          opened?.id === plan.id ? savedPlan : opened,
+        );
+        void refetchSavedPlans();
+        return null;
+      }
+      if (result.conflict) {
+        void refetchSavedPlans();
+        return "A proposta mudou em outra sessão. Reabra em Propostas salvas antes de tentar novamente.";
+      }
+      return "Não foi possível salvar as alterações. Tente novamente.";
+    } catch {
+      return "Não foi possível salvar as alterações. Tente novamente.";
+    } finally {
+      savingSuggestions.current = false;
+      setIsSavingSuggestions(false);
+    }
+  };
+
   const handleUpdateSuggestion = async (
     id: string,
     patch: Partial<PlanSuggestion>,
   ) => {
-    if (!currentPlan) return;
-    const updatedSuggestions = currentPlan.suggestions.map((s) =>
-      s.id === id ? { ...s, ...patch } : s,
+    if (!currentPlan) return "Abra uma proposta para editar a sugestão.";
+    return saveSuggestions(
+      currentPlan,
+      currentPlan.suggestions.map((suggestion) =>
+        suggestion.id === id ? { ...suggestion, ...patch } : suggestion,
+      ),
     );
-
-    try {
-      const res = await updateSocialPlanClient(
-        supabase,
-        currentPlan.id,
-        currentPlan.version || 1,
-        { suggestions: updatedSuggestions },
-      );
-
-      if (res.success && res.plan) {
-        setCurrentPlan(res.plan);
-        refetchSavedPlans();
-      } else if (res.conflict) {
-        setFeedbackMessage(
-          res.error || "Conflito de versão detectado. Recarregue a proposta.",
-        );
-        refetchSavedPlans();
-      } else {
-        setFeedbackMessage(
-          res.error || "Não foi possível atualizar a sugestão.",
-        );
-      }
-    } catch (err) {
-      setFeedbackMessage(
-        err instanceof Error ? err.message : "Erro ao atualizar sugestão.",
-      );
-    }
   };
 
-  // Aprovar todas as pendentes com Compare-And-Swap (T02)
+  const changeSuggestionStatus = async (
+    id: string,
+    status: PlanSuggestionStatus,
+  ) => {
+    setSuggestionSaveError(await handleUpdateSuggestion(id, { status }));
+  };
+
+  const moveSuggestion = async (id: string, date: string) => {
+    setSuggestionSaveError(
+      await handleUpdateSuggestion(id, { scheduled_date: date }),
+    );
+  };
+
   const handleApproveAllPending = async () => {
     if (!currentPlan) return;
-    const updatedSuggestions = currentPlan.suggestions.map((s) =>
-      s.status === "pending" ? { ...s, status: "approved" as const } : s,
+    setSuggestionSaveError(
+      await saveSuggestions(
+        currentPlan,
+        currentPlan.suggestions.map((suggestion) =>
+          suggestion.status === "pending"
+            ? { ...suggestion, status: "approved" }
+            : suggestion,
+        ),
+      ),
     );
-
-    try {
-      const res = await updateSocialPlanClient(
-        supabase,
-        currentPlan.id,
-        currentPlan.version || 1,
-        { suggestions: updatedSuggestions },
-      );
-
-      if (res.success && res.plan) {
-        setCurrentPlan(res.plan);
-        refetchSavedPlans();
-      } else if (res.conflict) {
-        setFeedbackMessage(
-          res.error || "Conflito de versão ao salvar aprovações.",
-        );
-        refetchSavedPlans();
-      } else {
-        setFeedbackMessage(res.error || "Erro ao salvar aprovações.");
-      }
-    } catch (err) {
-      setFeedbackMessage(
-        err instanceof Error ? err.message : "Erro ao aprovar sugestões.",
-      );
-    }
   };
 
   // Finalizar sugestões aprovadas em ações reais (C09)
   const handleFinalize = async () => {
-    if (!currentPlan) return;
+    if (!currentPlan || savingSuggestions.current) return;
     setIsFinalizing(true);
     setFeedbackMessage(null);
     try {
@@ -563,6 +586,7 @@ function PlanningPage() {
             Planejamento
           </h1>
           <UPartnersCombobox
+            disabled={isSavingSuggestions}
             selectedPartners={selectedPartner ? [selectedPartner.slug] : []}
             selectionMode="single"
             showText
@@ -584,7 +608,10 @@ function PlanningPage() {
             isOpen={isSavedPlansOpen}
             onOpenChange={setIsSavedPlansOpen}
           >
-            <PrismButton isDisabled={!selectedPartner} variant="outline">
+            <PrismButton
+              isDisabled={!selectedPartner || isSavingSuggestions}
+              variant="outline"
+            >
               <FolderOpenIcon data-icon="inline-start" />
               Propostas salvas
             </PrismButton>
@@ -675,8 +702,10 @@ function PlanningPage() {
           </PrismDialogTrigger>
           {currentPlan && (
             <PrismButton
+              isDisabled={isSavingSuggestions}
               onClick={() => {
                 setCurrentPlan(null);
+                setSuggestionSaveError(null);
                 setDirectionDraft(null);
               }}
               size="sm"
@@ -687,7 +716,12 @@ function PlanningPage() {
             </PrismButton>
           )}
           <PrismButton
-            isDisabled={!selectedPartner || isGenerating || isFormInvalid}
+            isDisabled={
+              !selectedPartner ||
+              isGenerating ||
+              isFormInvalid ||
+              isSavingSuggestions
+            }
             onClick={handleGenerate}
           >
             {isGenerating ? "Gerando sugestões..." : "Gerar planejamento"}
@@ -1072,38 +1106,27 @@ function PlanningPage() {
           >
             {/* Barra de controle da visualização quando há proposta ativa */}
             {currentPlan && (
-              <div className="flex shrink-0 items-center justify-between border-b border-border bg-card/60 px-6 py-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold tracking-wider text-secondary-foreground uppercase">
-                    Visualização:
-                  </span>
-                  <div className="flex items-center rounded-lg border border-border bg-secondary p-0.5 squircle">
-                    <button
-                      className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors squircle ${
-                        viewMode === "list"
-                          ? "bg-primary text-primary-foreground shadow-xs"
-                          : "text-secondary-foreground hover:text-foreground"
-                      }`}
-                      onClick={() => setViewMode("list")}
-                      type="button"
-                    >
-                      Lista
-                      <ListIcon className="size-3.5" />
-                    </button>
-                    <button
-                      className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors squircle ${
-                        viewMode === "calendar"
-                          ? "bg-primary text-primary-foreground shadow-xs"
-                          : "text-secondary-foreground hover:text-foreground"
-                      }`}
-                      onClick={() => setViewMode("calendar")}
-                      type="button"
-                    >
-                      Calendário
-                      <CalendarIcon className="size-3.5" />
-                    </button>
-                  </div>
-                </div>
+              <div className="flex shrink-0 items-center justify-between border-b border-border px-6 py-3">
+                <PrismToggleGroup
+                  aria-label="Visualização das sugestões"
+                  disallowEmptySelection
+                  onSelectionChange={(keys) =>
+                    setViewMode(keys.has("calendar") ? "calendar" : "list")
+                  }
+                  selectedKeys={[viewMode]}
+                  selectionMode="single"
+                  size="sm"
+                  variant="ghost"
+                >
+                  <PrismToggleGroupItem id="list">
+                    <ListIcon data-icon="inline-start" />
+                    Lista
+                  </PrismToggleGroupItem>
+                  <PrismToggleGroupItem id="calendar">
+                    <CalendarIcon data-icon="inline-start" />
+                    Calendário
+                  </PrismToggleGroupItem>
+                </PrismToggleGroup>
 
                 <div className="text-xs text-secondary-foreground">
                   {currentPlan.suggestions.length}{" "}
@@ -1112,6 +1135,15 @@ function PlanningPage() {
                     : "sugestões"}
                 </div>
               </div>
+            )}
+
+            {suggestionSaveError && (
+              <p
+                className="border-b border-border px-6 py-2 text-sm text-error"
+                role="alert"
+              >
+                {suggestionSaveError}
+              </p>
             )}
 
             {/* Mensagem de feedback (ex: ações criadas) */}
@@ -1129,16 +1161,31 @@ function PlanningPage() {
                   viewMode === "list" ? (
                     <PlanningSuggestionsList
                       isFinalizing={isFinalizing}
+                      isSaving={isSavingSuggestions}
+                      key={currentPlan.id}
                       onApproveAllPending={handleApproveAllPending}
+                      onChangeStatus={changeSuggestionStatus}
+                      onEditSuggestion={setEditingSuggestion}
                       onFinalize={handleFinalize}
-                      onUpdateSuggestion={handleUpdateSuggestion}
                       suggestions={currentPlan.suggestions}
                     />
                   ) : (
                     <PlanningCalendarView
-                      endDate={endDate}
-                      onUpdateSuggestion={handleUpdateSuggestion}
-                      startDate={startDate}
+                      endDate={
+                        typeof currentPlan.input?.endDate === "string"
+                          ? currentPlan.input.endDate
+                          : undefined
+                      }
+                      isSaving={isSavingSuggestions || isFinalizing}
+                      key={currentPlan.id}
+                      onChangeStatus={changeSuggestionStatus}
+                      onEditSuggestion={setEditingSuggestion}
+                      onMoveSuggestion={moveSuggestion}
+                      startDate={
+                        typeof currentPlan.input?.startDate === "string"
+                          ? currentPlan.input.startDate
+                          : undefined
+                      }
                       suggestions={currentPlan.suggestions}
                     />
                   )
@@ -1159,6 +1206,14 @@ function PlanningPage() {
           </section>
         </div>
       </div>
+      {currentPlan && editingSuggestion && (
+        <PlanningSuggestionEditor
+          key={editingSuggestion.id}
+          onClose={() => setEditingSuggestion(null)}
+          onSave={handleUpdateSuggestion}
+          suggestion={editingSuggestion}
+        />
+      )}
     </div>
   );
 }
