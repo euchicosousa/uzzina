@@ -74,7 +74,7 @@ export function PlanningPreview({
                     const category = calendarCategories[item];
                     return (
                       <li
-                        className="flex aspect-4/5 w-full max-w-24 min-w-0 flex-col items-center justify-center gap-1 rounded-xl border border-(--category-color) bg-[color-mix(in_srgb,var(--category-color)_20%,transparent)] px-0.5 text-center text-(--category-ink) [--category-ink:color-mix(in_srgb,var(--category-color)_80%,black)] squircle dark:[--category-ink:color-mix(in_srgb,var(--category-color)_80%,white)]"
+                        className="flex aspect-square w-full max-w-24 min-w-0 flex-col items-center justify-center gap-1 rounded-xl border border-(--category-color)/50 bg-[color-mix(in_srgb,var(--category-color)_10%,transparent)] px-0.5 text-center text-(--category-ink) [--category-ink:color-mix(in_srgb,var(--category-color)_80%,black)] squircle dark:[--category-ink:color-mix(in_srgb,var(--category-color)_80%,white)]"
                         // biome-ignore lint/suspicious/noArrayIndexKey: placeholders have no persistent identity.
                         key={index}
                         style={
