@@ -581,6 +581,7 @@ export type Database = {
           id: string;
           image: string | null;
           instagram_caption_tail: string | null;
+          planning_instructions: string | null;
           short: string;
           slug: string;
           sow: Database["public"]["Enums"]["sow"];
@@ -596,6 +597,7 @@ export type Database = {
           id?: string;
           image?: string | null;
           instagram_caption_tail?: string | null;
+          planning_instructions?: string | null;
           short: string;
           slug: string;
           sow?: Database["public"]["Enums"]["sow"];
@@ -611,6 +613,7 @@ export type Database = {
           id?: string;
           image?: string | null;
           instagram_caption_tail?: string | null;
+          planning_instructions?: string | null;
           short?: string;
           slug?: string;
           sow?: Database["public"]["Enums"]["sow"];

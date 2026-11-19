@@ -60,6 +60,7 @@ import type {
 } from "~/lib/social-planning/types";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { fetchCelebrations } from "~/lib/supabase.queries";
+import { getPartnerBySlug } from "~/models/partners";
 import {
   createSocialPlanClient,
   listSocialPlansByPartner,
@@ -73,6 +74,12 @@ export const Route = createFileRoute("/app/planejamento")({
 });
 
 const EMPTY_CELEBRATIONS: Awaited<ReturnType<typeof fetchCelebrations>> = [];
+
+type DirectionDraft = {
+  scope: string;
+  period?: string;
+  theme?: string;
+};
 
 const DAYS_OF_WEEK = [
   { id: "dom", label: "Dom", full: "Domingo" },
@@ -94,6 +101,12 @@ function PlanningPage() {
   const selectedPartner = partners.find(
     (partner) => partner.slug === partnerSlug,
   );
+  const selectedPartnerSlug = selectedPartner?.slug ?? "";
+  const directionScope = JSON.stringify([
+    person.user_id,
+    selectedPartner?.id,
+    selectedPartnerSlug,
+  ]);
 
   // Month period based on today, aligned with the app's monthly calendar bounds
   const [initialPeriod] = useState(() => getMonthCalendarPeriod());
@@ -108,10 +121,10 @@ function PlanningPage() {
     "qua",
     "sex",
   ]);
-  const [periodDirection, setPeriodDirection] = useState("");
-
   const [themeCount, setThemeCount] = useState(6);
-  const [themeDirection, setThemeDirection] = useState("");
+  const [directionDraft, setDirectionDraft] = useState<DirectionDraft | null>(
+    null,
+  );
 
   const [manualFormats, setManualFormats] =
     useState<PlanningFormatCounts | null>(null);
@@ -159,6 +172,25 @@ function PlanningPage() {
   }, [periodCelebrations, considerHolidays]);
 
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
+  const partnerDetail = useQuery({
+    queryKey: ["partner", "team", person.user_id, selectedPartnerSlug] as const,
+    queryFn: ({ queryKey: [, , , slug] }) => getPartnerBySlug(supabase, slug),
+    enabled: Boolean(selectedPartnerSlug),
+  });
+  const defaultDirection =
+    partnerDetail.data?.id === selectedPartner?.id
+      ? (partnerDetail.data?.planning_instructions ?? "")
+      : "";
+  const activeDraft =
+    directionDraft?.scope === directionScope ? directionDraft : null;
+  const periodDirection = activeDraft?.period ?? defaultDirection;
+  const themeDirection = activeDraft?.theme ?? defaultDirection;
+  const changeDirection = (mode: "period" | "theme", value: string) =>
+    setDirectionDraft((previous) => ({
+      ...(previous?.scope === directionScope ? previous : null),
+      scope: directionScope,
+      [mode]: value,
+    }));
 
   // Planejamento atual e lista de propostas canônicas no banco (T02)
   const [currentPlan, setCurrentPlan] = useState<SocialPlan | null>(null);
@@ -253,8 +285,9 @@ function PlanningPage() {
   useEffect(() => {
     setCurrentPlan(null);
     setFeedbackMessage(null);
+    setDirectionDraft(null);
     formatEdit.current = null;
-  }, [selectedPartner?.slug]);
+  }, [directionScope]);
 
   // Reabertura canônica de proposta anterior com restauração completa (C06)
   const handleOpenPlan = (plan: SocialPlan) => {
@@ -274,11 +307,18 @@ function PlanningPage() {
       setPostsPerWeek(input.postsPerWeek);
     if (Array.isArray(input.selectedDays))
       setSelectedDays(input.selectedDays as string[]);
-    if (typeof input.periodDirection === "string")
-      setPeriodDirection(input.periodDirection);
     if (typeof input.themeCount === "number") setThemeCount(input.themeCount);
-    if (typeof input.themeDirection === "string")
-      setThemeDirection(input.themeDirection);
+    setDirectionDraft({
+      scope: directionScope,
+      period:
+        typeof input.periodDirection === "string"
+          ? input.periodDirection
+          : undefined,
+      theme:
+        typeof input.themeDirection === "string"
+          ? input.themeDirection
+          : undefined,
+    });
     const savedCounts = [
       input.staticCount,
       input.carouselCount,
@@ -525,7 +565,10 @@ function PlanningPage() {
         <div className="flex items-center gap-2">
           {currentPlan && (
             <PrismButton
-              onClick={() => setCurrentPlan(null)}
+              onClick={() => {
+                setCurrentPlan(null);
+                setDirectionDraft(null);
+              }}
               size="sm"
               variant="secondary"
             >
@@ -559,6 +602,17 @@ function PlanningPage() {
                   outro parceiro autorizado no cabeçalho.
                 </p>
               )}
+              {selectedPartner &&
+                (partnerDetail.isPending || partnerDetail.isLoadingError) && (
+                  <p
+                    role="status"
+                    className="text-sm text-secondary-foreground"
+                  >
+                    {partnerDetail.isPending
+                      ? "Carregando o direcionamento do parceiro…"
+                      : "O direcionamento padrão não pôde ser carregado. Você pode preenchê-lo nesta proposta."}
+                  </p>
+                )}
 
               {/* Modo de planejamento */}
               <div className="grid gap-3">
@@ -691,7 +745,9 @@ function PlanningPage() {
                         className="min-h-24"
                         id="planning-period-direction"
                         required
-                        onChange={(e) => setPeriodDirection(e.target.value)}
+                        onChange={(e) =>
+                          changeDirection("period", e.target.value)
+                        }
                         placeholder="Orientações estratégicas, foco do período ou campanhas a enfatizar"
                         value={periodDirection}
                       />
@@ -729,7 +785,9 @@ function PlanningPage() {
                         className="min-h-28"
                         id="planning-theme-direction"
                         required
-                        onChange={(e) => setThemeDirection(e.target.value)}
+                        onChange={(e) =>
+                          changeDirection("theme", e.target.value)
+                        }
                         placeholder="Descreva o tema, campanha ou assuntos a abordar neste lote de propostas"
                         value={themeDirection}
                       />

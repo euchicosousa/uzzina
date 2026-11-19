@@ -41,11 +41,11 @@ import {
   createPartner,
   getPartnerBySlug,
   getPartnerHolidayIds,
+  type PartnerFormValues,
   partnerSlugExists,
   updatePartnerBySlug,
   updatePartnerHolidays,
 } from "~/models/partners";
-import type { Partner } from "~/types";
 import { CloudIcon } from "lucide-react";
 import { AdminGuard } from "~/components/features/AdminGuard";
 import { PartnerTopicsEditor } from "~/components/features/PartnerTopicsEditor";
@@ -54,9 +54,10 @@ export const Route = createFileRoute("/app/admin/partner/$slug")({
 });
 
 function AdminPartnerEditPageWrapper() {
+  const { slug } = Route.useParams();
   return (
     <AdminGuard>
-      <AdminPartnerEditPage />
+      <AdminPartnerEditPage key={slug} />
     </AdminGuard>
   );
 }
@@ -77,8 +78,13 @@ function AdminPartnerEditPage() {
     queryKey: ["people", "team", appData.person.user_id, "visible"],
     queryFn: fetchPeople,
   });
-  const { data: partner, isLoading: isLoadingPartner } = useQuery({
-    queryKey: ["partner", "team", appData.person.user_id, slug],
+  const partnerQueryKey = ["partner", "team", appData.person.user_id, slug];
+  const {
+    data: partner,
+    isLoading: isLoadingPartner,
+    refetch: refetchPartner,
+  } = useQuery({
+    queryKey: partnerQueryKey,
     queryFn: async () => {
       if (isNew) return null;
       return getPartnerBySlug(supabase, slug || "");
@@ -88,6 +94,9 @@ function AdminPartnerEditPage() {
   const [contextValue, setContextValue] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [voiceValue, setVoiceValue] = useState("");
+  const [planningInstructionsDraft, setPlanningInstructionsDraft] = useState<
+    string | null
+  >(null);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [brandColors, setBrandColors] = useState<string[]>([]);
 
@@ -215,7 +224,7 @@ function AdminPartnerEditPage() {
 
   // Mutation para salvar
   const saveMutation = useMutation({
-    mutationFn: async (partnerData: Omit<Partner, "id" | "created_at">) => {
+    mutationFn: async (partnerData: PartnerFormValues) => {
       if (partnerData.users_ids.length === 0) {
         throw new Error("Selecione pelo menos um responsável para o parceiro.");
       }
@@ -234,10 +243,10 @@ function AdminPartnerEditPage() {
         await updatePartnerBySlug(supabase, slug || "", partnerData);
       }
     },
-    onSuccess: () => {
+    onSuccess: async (_, partnerData) => {
       if (!isCurrentSession()) return;
-      queryClient.invalidateQueries({
-        queryKey: ["partner", "team", appData.person.user_id, slug],
+      const refreshPartner = queryClient.invalidateQueries({
+        queryKey: partnerQueryKey,
       });
       queryClient.invalidateQueries({
         queryKey: ["partners"],
@@ -249,6 +258,19 @@ function AdminPartnerEditPage() {
         navigate({
           to: "/app/admin/partners",
         });
+      } else if (partnerData.planning_instructions !== undefined) {
+        const savedInstructions = partnerData.planning_instructions;
+        await refreshPartner;
+        if (!isCurrentSession()) return;
+        if (
+          queryClient.getQueryData<typeof partner>(partnerQueryKey)
+            ?.planning_instructions === savedInstructions
+        ) {
+          setPlanningInstructionsDraft((draft) =>
+            (draft?.trim() || null) === savedInstructions ? null : draft,
+          );
+        }
+        toast.success("Direcionamento salvo.");
       }
     },
     onError: (err: unknown) => {
@@ -261,7 +283,7 @@ function AdminPartnerEditPage() {
 
   // Função auxiliar para disparar salvamento automático de campos individuais (apenas na edição)
   const triggerAutoSave = async (
-    patch: Partial<Omit<Partner, "id" | "created_at">>,
+    patch: Partial<Omit<PartnerFormValues, "planning_instructions">>,
   ) => {
     if (isNew) return; // Não salvar automaticamente na tela de novo parceiro
 
@@ -322,7 +344,13 @@ function AdminPartnerEditPage() {
     const updates = Object.fromEntries(formData);
     const colors =
       brandColors.length > 0 ? brandColors : ["#000000", "#ffffff"];
-    const partnerData = {
+    const savedInstructions = partner?.planning_instructions ?? null;
+    const nextInstructions = planningInstructionsDraft?.trim() || null;
+    const updateInstructions =
+      isNew ||
+      (planningInstructionsDraft !== null &&
+        nextInstructions !== savedInstructions);
+    const partnerData: PartnerFormValues = {
       title: updates.title as string,
       slug: (isNew ? updates.slug : slug) as string,
       colors,
@@ -335,8 +363,11 @@ function AdminPartnerEditPage() {
       instagram_caption_tail:
         (updates.instagram_caption_tail as string) || null,
       sow: stateRef.current.sow,
+      ...(updateInstructions
+        ? { planning_instructions: nextInstructions }
+        : {}),
     };
-    await saveMutation.mutateAsync(partnerData);
+    saveMutation.mutate(partnerData);
   };
   if (isLoadingPartner) {
     return (
@@ -345,6 +376,16 @@ function AdminPartnerEditPage() {
         <p className="animate-pulse text-sm font-medium text-secondary-foreground">
           Carregando parceiro...
         </p>
+      </div>
+    );
+  }
+  if (!isNew && !partner) {
+    return (
+      <div className="mx-auto flex max-w-3xl flex-col items-start gap-4 p-8">
+        <p role="alert">Não foi possível carregar o parceiro.</p>
+        <PrismButton onPress={() => refetchPartner()} variant="outline">
+          Tentar novamente
+        </PrismButton>
       </div>
     );
   }
@@ -529,6 +570,33 @@ function AdminPartnerEditPage() {
                 />
               </Suspense>
             </div>
+          </div>
+
+          <div className="grid gap-4">
+            <div className="flex flex-col gap-1">
+              <PrismLabel htmlFor="planning-instructions">
+                Direcionamento
+              </PrismLabel>
+              <p
+                className="text-xs text-secondary-foreground"
+                id="planning-instructions-description"
+              >
+                Orientações padrão da marca para o planejamento de conteúdo.
+              </p>
+            </div>
+            <PrismTextarea
+              aria-describedby="planning-instructions-description"
+              className="min-h-20"
+              id="planning-instructions"
+              onChange={(event) =>
+                setPlanningInstructionsDraft(event.target.value)
+              }
+              value={
+                planningInstructionsDraft ??
+                partner?.planning_instructions ??
+                ""
+              }
+            />
           </div>
 
           <div className="grid gap-4">

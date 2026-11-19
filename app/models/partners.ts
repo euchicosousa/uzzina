@@ -2,7 +2,10 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "types/database";
 import type { Partner, PartnerTopic } from "~/types";
 
-export async function getPartnerBySlug(supabase: SupabaseClient, slug: string) {
+export async function getPartnerBySlug(
+  supabase: SupabaseClient<Database>,
+  slug: string,
+) {
   const { data, error } = await supabase
     .from("partners")
     .select("*")
@@ -10,8 +13,13 @@ export async function getPartnerBySlug(supabase: SupabaseClient, slug: string) {
     .single();
 
   if (error) throw error;
-  return data as Partner;
+  return data;
 }
+
+export type PartnerFormValues = Omit<
+  Database["public"]["Tables"]["partners"]["Insert"],
+  "id" | "created_at"
+>;
 
 export async function getAllPartners(supabase: SupabaseClient) {
   const { data, error } = await supabase
@@ -65,8 +73,8 @@ export async function partnerSlugExists(
 }
 
 export async function createPartner(
-  supabase: SupabaseClient,
-  partner: Omit<Partner, "id" | "created_at">,
+  supabase: SupabaseClient<Database>,
+  partner: PartnerFormValues,
 ): Promise<Partner> {
   const { data, error } = await supabase
     .from("partners")
@@ -74,18 +82,20 @@ export async function createPartner(
     .select()
     .single();
   if (error) throw error;
-  return data as Partner;
+  return data;
 }
 
 export async function updatePartnerBySlug(
-  supabase: SupabaseClient,
+  supabase: SupabaseClient<Database>,
   slug: string,
-  partner: Omit<Partner, "id" | "created_at">,
+  partner: PartnerFormValues,
 ) {
   const { error } = await supabase
     .from("partners")
     .update(partner)
-    .eq("slug", slug);
+    .eq("slug", slug)
+    .select("id")
+    .single();
   if (error) throw error;
 }
 
