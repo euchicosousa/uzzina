@@ -24,6 +24,7 @@ import { PlanningSuggestionsList } from "~/components/planning/PlanningSuggestio
 import {
   PrismBadge,
   PrismButton,
+  PrismButtonGroup,
   PrismCheckbox,
   PrismDateRangePicker,
   PrismDialog,
@@ -49,9 +50,18 @@ import {
   PrismToggleGroup,
   PrismToggleGroupItem,
 } from "~/components/prism";
+import { UAIModelSelect } from "~/components/uzzina/UAIModelSelect";
 import { UPartnersCombobox } from "~/components/uzzina/UPartnersCombobox";
 import { useAppContext, useLeaveOpenActions } from "~/contexts/AppContext";
 import { useFillScrollViewport } from "~/hooks/useFillScrollViewport";
+import { useThemePlanningGeneration } from "~/hooks/useThemePlanningGeneration";
+import {
+  getAvailableAIModels,
+  isActionAIModelId,
+  lunaModelId,
+  type ActionAIModelId,
+} from "~/lib/action-ai-models";
+import { getUserPreferences } from "~/lib/preferences";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { finalizeSocialPlan } from "~/lib/social-planning/finalizer";
 import { generateSocialPlan } from "~/lib/social-planning/generator";
@@ -119,11 +129,26 @@ function PlanningPage() {
   const navigate = useNavigate({ from: "/app/planejamento" });
   const leaveOpenActions = useLeaveOpenActions();
   const { person, partners } = useAppContext();
+  const [selectedThemeModel, setSelectedThemeModel] =
+    useState<ActionAIModelId | null>(null);
+  const preferences = getUserPreferences(person);
+  const themeModels = getAvailableAIModels(preferences.contentModels);
+  const preferredThemeModel =
+    selectedThemeModel ?? preferences.defaultContentModel;
+  const themeModel =
+    themeModels.find((model) => model.id === preferredThemeModel)?.id ??
+    themeModels[0]?.id ??
+    lunaModelId;
+
   const { partner: partnerSlug } = Route.useSearch();
   const selectedPartner = partners.find(
     (partner) => partner.slug === partnerSlug,
   );
   const selectedPartnerSlug = selectedPartner?.slug ?? "";
+  const themeGeneration = useThemePlanningGeneration(
+    person.user_id,
+    selectedPartnerSlug,
+  );
   const directionScope = JSON.stringify([
     person.user_id,
     selectedPartner?.id,
@@ -372,90 +397,90 @@ function PlanningPage() {
       setSelectedCelebrationIds(input.selectedCelebrationIds as string[]);
   };
 
+  const openGeneratedTheme = (proposal: SocialPlan) => {
+    handleOpenPlan(proposal);
+    setViewMode("list");
+    void refetchSavedPlans();
+  };
+
+  const verifyThemeProposal = () => {
+    if (!themeGeneration.requestId || isGenerating || savingSuggestions.current)
+      return;
+    void themeGeneration.run(
+      {
+        intent: "resume",
+        partner: selectedPartnerSlug,
+        requestId: themeGeneration.requestId,
+      },
+      openGeneratedTheme,
+    );
+  };
+
   // Manipulador de geração
   const handleGenerate = async () => {
     if (!selectedPartner || isFormInvalid || savingSuggestions.current) return;
     setFeedbackMessage(null);
     setSuggestionSaveError(null);
 
+    if (mode === "theme") {
+      if (themeGeneration.requestId) return;
+      await themeGeneration.run(
+        {
+          intent: "start",
+          requestId: crypto.randomUUID(),
+          partner: selectedPartnerSlug,
+          model: themeModel,
+          formatMode,
+          direction,
+          formats,
+        },
+        openGeneratedTheme,
+      );
+      return;
+    }
+
     try {
       setIsGenerating(true);
       const [staticCount, carouselCount, reelsCount] = formatCounts;
-      if (mode === "period") {
-        const inputPayload = {
-          startDate,
-          endDate,
-          postsPerWeek,
-          selectedDays,
-          periodDirection: direction,
-          formatMode,
-          reelsCount,
-          staticCount,
-          carouselCount,
-          considerHolidays,
-          selectedCelebrationIds,
-        };
+      const inputPayload = {
+        startDate,
+        endDate,
+        postsPerWeek,
+        selectedDays,
+        periodDirection: direction,
+        formatMode,
+        reelsCount,
+        staticCount,
+        carouselCount,
+        considerHolidays,
+        selectedCelebrationIds,
+      };
 
-        const plan = generateSocialPlan({
-          partner: {
-            slug: selectedPartner.slug,
-            title: selectedPartner.title,
-            context: selectedPartner.context ?? undefined,
-            voice: selectedPartner.voice ?? undefined,
-          },
-          mode: "period",
-          input: inputPayload,
-          slots,
-          formats,
-        });
+      const plan = generateSocialPlan({
+        partner: {
+          slug: selectedPartner.slug,
+          title: selectedPartner.title,
+          context: selectedPartner.context ?? undefined,
+          voice: selectedPartner.voice ?? undefined,
+        },
+        mode: "period",
+        input: inputPayload,
+        slots,
+        formats,
+      });
 
-        // Persistência canônica via Supabase (T02)
-        const createdPlan = await createSocialPlanClient(supabase, {
-          partner_slug: selectedPartner.slug,
-          partner_title: selectedPartner.title,
-          mode: "period",
-          input: inputPayload,
-          suggestions: plan.suggestions,
-          user_id: person.user_id,
-        });
+      // Persistência canônica via Supabase (T02)
+      const createdPlan = await createSocialPlanClient(supabase, {
+        partner_slug: selectedPartner.slug,
+        partner_title: selectedPartner.title,
+        mode: "period",
+        input: inputPayload,
+        suggestions: plan.suggestions,
+        user_id: person.user_id,
+      });
 
-        setCurrentPlan(createdPlan);
-        refetchSavedPlans();
-      } else {
-        const inputPayload = {
-          themeCount,
-          themeDirection: direction,
-          formatMode,
-          reelsCount,
-          staticCount,
-          carouselCount,
-        };
-
-        const plan = generateSocialPlan({
-          partner: {
-            slug: selectedPartner.slug,
-            title: selectedPartner.title,
-            context: selectedPartner.context ?? undefined,
-            voice: selectedPartner.voice ?? undefined,
-          },
-          mode: "theme",
-          input: inputPayload,
-          formats,
-        });
-
-        // Persistência canônica via Supabase (T02)
-        const createdPlan = await createSocialPlanClient(supabase, {
-          partner_slug: selectedPartner.slug,
-          partner_title: selectedPartner.title,
-          mode: "theme",
-          input: inputPayload,
-          suggestions: plan.suggestions,
-          user_id: person.user_id,
-        });
-
-        setCurrentPlan(createdPlan);
-        refetchSavedPlans();
-      }
+      setCurrentPlan(createdPlan);
+      refetchSavedPlans();
     } catch (err) {
       console.error("Erro ao gerar planejamento:", err);
       setFeedbackMessage(
@@ -575,6 +600,24 @@ function PlanningPage() {
     }
   };
 
+  const isGenerationBusy = isGenerating || themeGeneration.isBusy;
+  const showGenerate =
+    mode !== "theme" || !themeGeneration.requestId || themeGeneration.isBusy;
+  const generateButton = (
+    <PrismButton
+      isDisabled={
+        !selectedPartner ||
+        isGenerationBusy ||
+        isFormInvalid ||
+        isSavingSuggestions
+      }
+      onPress={handleGenerate}
+    >
+      {isGenerationBusy ? "Gerando sugestões…" : "Gerar planejamento"}
+      <SparklesIcon data-icon="inline-end" />
+    </PrismButton>
+  );
+
   return (
     <div
       ref={pageRef}
@@ -609,7 +652,11 @@ function PlanningPage() {
             onOpenChange={setIsSavedPlansOpen}
           >
             <PrismButton
-              isDisabled={!selectedPartner || isSavingSuggestions}
+              isDisabled={
+                !selectedPartner ||
+                isSavingSuggestions ||
+                themeGeneration.isBusy
+              }
               variant="outline"
             >
               <FolderOpenIcon data-icon="inline-start" />
@@ -702,7 +749,7 @@ function PlanningPage() {
           </PrismDialogTrigger>
           {currentPlan && (
             <PrismButton
-              isDisabled={isSavingSuggestions}
+              isDisabled={isSavingSuggestions || themeGeneration.isBusy}
               onClick={() => {
                 setCurrentPlan(null);
                 setSuggestionSaveError(null);
@@ -715,18 +762,33 @@ function PlanningPage() {
               <RotateCcwIcon className="size-4" />
             </PrismButton>
           )}
-          <PrismButton
-            isDisabled={
-              !selectedPartner ||
-              isGenerating ||
-              isFormInvalid ||
-              isSavingSuggestions
-            }
-            onClick={handleGenerate}
-          >
-            {isGenerating ? "Gerando sugestões..." : "Gerar planejamento"}
-            <SparklesIcon className="size-4" />
-          </PrismButton>
+          {themeGeneration.requestId && !themeGeneration.isBusy && (
+            <PrismButton
+              isDisabled={
+                !selectedPartner || isGenerating || isSavingSuggestions
+              }
+              onPress={verifyThemeProposal}
+              variant={mode === "theme" ? "default" : "outline"}
+            >
+              Verificar proposta
+            </PrismButton>
+          )}
+          {showGenerate &&
+            (mode === "theme" ? (
+              <PrismButtonGroup aria-label="Gerar proposta por tema">
+                {generateButton}
+                <UAIModelSelect
+                  models={themeModels}
+                  value={themeModel}
+                  onChange={(id) => {
+                    if (isActionAIModelId(id)) setSelectedThemeModel(id);
+                  }}
+                  isDisabled={isGenerationBusy || isSavingSuggestions}
+                />
+              </PrismButtonGroup>
+            ) : (
+              generateButton
+            ))}
         </div>
       </header>
 
@@ -761,6 +823,7 @@ function PlanningPage() {
               {/* Modo de planejamento */}
               <div className="grid gap-3">
                 <PrismTabs
+                  isDisabled={themeGeneration.isBusy}
                   className="w-full"
                   onSelectionChange={(key) => {
                     formatEdit.current = null;
@@ -1135,6 +1198,15 @@ function PlanningPage() {
                     : "sugestões"}
                 </div>
               </div>
+            )}
+
+            {themeGeneration.message && (
+              <p
+                className={`border-b border-border px-6 py-2 text-sm ${themeGeneration.isError ? "text-error" : "text-secondary-foreground"}`}
+                role={themeGeneration.isError ? "alert" : "status"}
+              >
+                {themeGeneration.message}
+              </p>
             )}
 
             {suggestionSaveError && (

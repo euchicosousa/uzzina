@@ -12,6 +12,7 @@ export type AIIntent =
   | "ai-strategy"
   | "ai-content"
   | "ai-caption"
+  | "ai-planning-theme"
   | "ai-transcribe"
   | "ai-interpret";
 
@@ -38,16 +39,17 @@ export type AIModel = PublicAIModel & {
   };
 };
 
+const editorialIntents = [
+  "ai-strategy",
+  "ai-content",
+  "ai-caption",
+  "ai-planning-theme",
+] as const satisfies readonly AIIntent[];
+
 export const lunaModel = {
   ...findPublicAIModel("gpt-6-luna"),
   capabilities: ["chat-completions", "text", "json", "reasoning", "vision"],
-  intents: [
-    "ai-strategy",
-    "ai-content",
-    "ai-caption",
-    "ai-transcribe",
-    "ai-interpret",
-  ],
+  intents: [...editorialIntents, "ai-transcribe", "ai-interpret"],
   reservationRates: { input: 250, output: 750 },
   tariffs: [
     {
@@ -76,7 +78,7 @@ export const lunaModel = {
 const terraModel = {
   ...findPublicAIModel("gpt-6.1-terra"),
   capabilities: ["chat-completions", "text", "json", "reasoning", "vision"],
-  intents: ["ai-strategy", "ai-content", "ai-caption", "ai-interpret"],
+  intents: [...editorialIntents, "ai-interpret"],
   reservationRates: { input: 2500, output: 7500 },
   tariffs: [
     {
@@ -105,7 +107,7 @@ const terraModel = {
 const solModel = {
   ...findPublicAIModel("gpt-6.1-sol"),
   capabilities: ["chat-completions", "text", "json", "reasoning"],
-  intents: ["ai-strategy", "ai-content", "ai-caption"],
+  intents: editorialIntents,
   reservationRates: { input: 5000, output: 15000 },
   tariffs: [
     {
@@ -134,7 +136,7 @@ const solModel = {
 const astraModel = {
   ...findPublicAIModel("gpt-6-astra"),
   capabilities: ["chat-completions", "text", "json", "reasoning"],
-  intents: ["ai-strategy", "ai-content", "ai-caption"],
+  intents: editorialIntents,
   reservationRates: { input: 25000, output: 75000 },
   tariffs: [
     {
@@ -169,7 +171,7 @@ const claudePricing =
 export const claudeHaikuModel = {
   ...findPublicAIModel("claude-haiku-5-5"),
   capabilities: ["messages", "text"],
-  intents: ["ai-strategy", "ai-content", "ai-caption"],
+  intents: editorialIntents,
   reservationRates: { input: 625, output: 2500 },
   tariffs: [
     {
@@ -198,7 +200,7 @@ export const claudeHaikuModel = {
 export const claudeSonnetModel = {
   ...findPublicAIModel("claude-sonnet-5-5"),
   capabilities: ["messages", "text"],
-  intents: ["ai-strategy", "ai-content", "ai-caption"],
+  intents: editorialIntents,
   reservationRates: { input: 2500, output: 10000 },
   tariffs: [
     {
@@ -217,7 +219,7 @@ export const claudeSonnetModel = {
 export const claudeOpusModel = {
   ...findPublicAIModel("claude-opus-5-5"),
   capabilities: ["messages", "text"],
-  intents: ["ai-strategy", "ai-content", "ai-caption"],
+  intents: editorialIntents,
   reservationRates: { input: 5000, output: 20000 },
   tariffs: [
     {
@@ -263,6 +265,7 @@ export const aiOutputLimits = {
   "ai-strategy": 8192,
   "ai-content": 8192,
   "ai-caption": 2048,
+  "ai-planning-theme": 8192,
   "ai-transcribe": 8192,
   "ai-interpret": 4096,
 } as const;

@@ -305,6 +305,36 @@ export type Database = {
         };
         Relationships: [];
       };
+      planning_theme_requests: {
+        Row: {
+          id: string;
+          user_id: string;
+          partner_slug: string;
+          proposal_id: string;
+          input: Json;
+          state: string;
+          suggestions: Json | null;
+          failure_code: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id: string;
+          user_id: string;
+          partner_slug: string;
+          proposal_id?: string;
+          input: Json;
+          state?: string;
+          suggestions?: Json | null;
+          failure_code?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          state?: string;
+          suggestions?: Json | null;
+          failure_code?: string | null;
+        };
+        Relationships: [];
+      };
       partner_topics: {
         Row: {
           color: string;
@@ -756,6 +786,10 @@ export type Database = {
           p_cached_tokens?: number | null;
         };
         Returns: string;
+      };
+      complete_planning_theme_request: {
+        Args: { p_id: string; p_user_id: string };
+        Returns: Json;
       };
       reserve_ai_monthly: {
         Args: {

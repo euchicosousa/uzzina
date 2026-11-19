@@ -57,6 +57,7 @@ const { FileFsRef } = require("@vercel/build-utils");
   try {
     const sources = [
       "api/ai.ts",
+      "api/planning-theme.ts",
       "api/strategy-operations.ts",
       "api/strategy-worker.ts",
       "api/dash-auth.ts",
@@ -69,6 +70,9 @@ const { FileFsRef } = require("@vercel/build-utils");
       "app/lib/ai-contract.ts",
       "app/lib/ai-model-registry.ts",
       "app/lib/strategy-operation-contract.ts",
+      "app/lib/social-planning/theme-contract.ts",
+      "app/lib/social-planning/types.ts",
+      "app/models/social_plans.ts",
       "server/strategy-generation.ts",
       "server/ai-generation.ts",
       "server/ai-usage.ts",
@@ -132,7 +136,7 @@ const { FileFsRef } = require("@vercel/build-utils");
           if (expected === 405) assert.ok(response.headers.Allow);
         };
         await request('OPTIONS', 405);
-        ${entrypoint === "api/ai.ts" ? "await request('POST', 401);" : ""}
+        ${["api/ai.ts", "api/planning-theme.ts"].includes(entrypoint) ? "await request('POST', 401);" : ""}
         ${
           entrypoint === "api/ai.ts" && staging.SUPABASE_URL
             ? `

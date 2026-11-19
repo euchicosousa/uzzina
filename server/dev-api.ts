@@ -4,6 +4,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 type Handler = (req: VercelRequest, res: VercelResponse) => unknown;
 const HANDLERS: Record<string, string> = {
   "/api/ai": "./api/ai.ts",
+  "/api/planning-theme": "./api/planning-theme.ts",
   "/api/strategy-operations": "./api/strategy-operations.ts",
   "/api/strategy-worker": "./api/strategy-worker.ts",
   "/api/dash-auth": "./api/dash-auth.ts",
