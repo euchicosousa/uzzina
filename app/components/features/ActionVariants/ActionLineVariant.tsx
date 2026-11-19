@@ -11,7 +11,7 @@ import {
   ActionItemPriority,
   ActionItemResponsibles,
   ActionItemSprint,
-} from "../ActionItem";
+} from "../ActionItemDetails";
 import { AlertCircleIcon } from "lucide-react";
 export function ActionLineVariant({
   action,

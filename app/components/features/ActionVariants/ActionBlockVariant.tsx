@@ -8,7 +8,7 @@ import {
   ActionItemPartners,
   ActionItemResponsibles,
   ActionItemSprint,
-} from "../ActionItem";
+} from "../ActionItemDetails";
 
 export function ActionBlockVariant({
   action,
