@@ -6,7 +6,7 @@
 - **Anthropic** — Claude Opus 5.5, para validar execução durável, quota e recuperação da geração por tema.
 - **Google** — Gemini 4 Argon, para validar execução durável, quota e recuperação da geração por tema. Disponibilidade depende do plano do Antigravity.
 
-**Status:** ready-for-agent
+**Status:** accepted (encerrado em 19/11 com aceite do proprietário para Por tema). Migração aplicada em produção em 19/11 (`20261119220639`); modelo escolhido, quota e retomada verificados em ambiente isolado. Frontend na main local, sem publicação. [Evidência](../../../docs/audits/social-planning-recovery/T07-evidence.md).
 **Blocked by:** T02 e T01/D6. Independente do calendário e da finalização.
 **Origem:** R3; C05, modo tema.
 **Prioridade:** P1

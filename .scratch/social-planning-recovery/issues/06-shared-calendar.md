@@ -6,7 +6,7 @@
 - **Anthropic** — Claude Sonnet 5.5, para integrar calendário compartilhado e proteger movimentações.
 - **Google** — Gemini 4 Argon, para integrar calendário compartilhado e proteger movimentações. Disponibilidade depende do plano do Antigravity.
 
-**Status:** ready-for-agent
+**Status:** accepted (encerrado em 19/11). O proprietário aprovou o calendário compartilhado e a lista na revisão das sugestões, com edição e arraste de data gravando na proposta com a versão esperada. Sem publicação.
 **Blocked by:** A prévia pode ser estudada imediatamente. Para integrar a prévia, usar o cálculo de T03 e a composição de T12. A revisão com escrita depende de T02/T04 e do editor protegido de T05.
 **Origem:** R7; C07.
 **Prioridade:** P2

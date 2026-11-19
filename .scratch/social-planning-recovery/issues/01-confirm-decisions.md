@@ -6,7 +6,7 @@
 - **Anthropic** — Claude Haiku 5.5, para rastrear decisões existentes e consolidar o contrato de aceite.
 - **Google** — Gemini 3.8 Flash, para rastrear decisões existentes e consolidar o contrato de aceite.
 
-**Status:** needs-product-decision. D1 confirmado. D2–D6 têm direções confirmadas e regras em discussão. [Revisão vigente de 19/11](../../../docs/plans/social-planning-design-decisions.md#revisão-do-proprietário--19112026).
+**Status:** needs-product-decision. Atualizado em 19/11: D1 e D6 estão decididos; D2 a D5 seguem abertos (D5 = data das sugestões aprovadas sem data na finalização). [Revisão vigente de 19/11](../../../docs/plans/social-planning-design-decisions.md#revisão-do-proprietário--19112026).
 **Blocked by:** Nenhum.
 **Origem:** C00; decisões D1–D6 e evidência de aprovação.
 **Prioridade:** P2

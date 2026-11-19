@@ -6,7 +6,7 @@
 - **Anthropic** — Claude Sonnet 5.5, para validar confirmação, retry e foco no diálogo.
 - **Google** — Gemini 4 Argon, para validar confirmação, retry e foco no diálogo. Disponibilidade depende do plano do Antigravity.
 
-**Status:** ready-for-agent
+**Status:** accepted (encerrado em 19/11). O proprietário aprovou a revisão das sugestões na main local: rascunho mantido em falha, nova tentativa, aprovação, descarte e conflito de versão. Sem publicação.
 **Blocked by:** T02 e T04 para salvamento e guardas; foco pode ser preparado antes.
 **Origem:** R9; C08.
 **Prioridade:** P2

@@ -8,6 +8,8 @@ Atualizado em 19/11/2026. [Contratos](../../AGENTS.md) · [Operação](../../REA
 
 ## Pendências reais
 
+- **Reconciliação dos tickets do Planejamento, 19/11:** statuses e tracker alinhados ao que está registrado abaixo. T02, T05, T06 e T07 aceitos e arquivados. T03 e T12 seguem abertos pelas regras de arredondamento, sobras, durações dos atalhos e extras (D2/D3). T08 implementado e commitado (`3af3ed05`), com migração não aplicada e teste real pendente. T01 com D2 a D5 abertos, T04 parcialmente coberto e T09 a T11 não iniciados (a finalização ainda usa o laço do navegador). Só documentação; commits locais, sem publicação.
+
 - **Seletor de modelos de IA — substituir o anel de intensidade por fundo na cor do modelo (IA-M10).** Visível no Planejamento → Por tema, na gaveta, em Minha Conta e na galeria /ui. A inspeção de código confirmou que a cor atual é por nível e que o hover depende da variante Prism. A mudança foi registrada na main local, sem implementação, para retomada pelo proprietário. Na validação visual, conferir contraste claro/escuro e decidir se o próprio fundo do ícone também deverá mudar no hover. [Ticket](../../.scratch/ai-models/issues/10-fixed-model-color-in-picker.md)
 
 - **Admin → Parceiros, Direcionamento padrão:** campo implementado no cadastro, abaixo de Tom de Voz. Salvar Tudo persiste as orientações no campo opcional já aplicado no banco. Limpar envia `NULL` e os salvamentos automáticos de outros campos preservam o texto. Typecheck, lint focado e Chromium isolado com respostas simuladas passaram para carregar, salvar, reabrir, limpar, preservar rascunho após falha e trocar de parceiro durante um salvamento. O proprietário confirmou o funcionamento em Editar parceiro. Código na main local, sem SQL ou publicação nesta rodada.

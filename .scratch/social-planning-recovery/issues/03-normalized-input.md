@@ -6,7 +6,7 @@
 - **Anthropic** — Claude Sonnet 5.5, para normalizar datas, frequência e formatos sem divergência.
 - **Google** — Gemini 4 Argon, para normalizar datas, frequência e formatos sem divergência. Disponibilidade depende do plano do Antigravity.
 
-**Status:** ready-for-agent
+**Status:** ready-for-agent. Atualizado em 19/11: a prévia foi aprovada pelo proprietário e a geração usa o mesmo cálculo. Seguem abertas as regras de arredondamento da semana parcial, sobras, durações dos atalhos e extras (D2/D3).
 **Blocked by:** T01/D2–D4. Independente de T02 para cálculo puro.
 **Origem:** R6 e R10; C02–C04.
 **Prioridade:** P2

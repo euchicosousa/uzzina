@@ -6,6 +6,8 @@
 - **Codex — GPT-6.2 Sol, raciocínio médio.** Implementar redistribuição inteira após aceite e exercitar totais pequenos e desempates.
 - **Codex — GPT-6.2 Astra, raciocínio baixo.** Conferir a ligação entre composição, calendário, lista e entrada da geração.
 
+**Status:** ready-for-agent. Atualizado em 19/11: a prévia com os sliders foi aprovada pelo proprietário e está na main local. Permanecem abertas as regras de arredondamento da semana parcial, sobras, durações dos atalhos e extras (D2/D3).
+
 **Bloqueado por.** A bancada pode ser estudada primeiro. A implementação usa o total normalizado de T03 e depende da regra de D3; extras dependem de D3/D4. Série em espera.
 
 ## Entrega e aceite

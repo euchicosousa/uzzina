@@ -6,6 +6,10 @@ Os documentos completos abaixo substituem os antigos arquivos individuais. Nenhu
 
 ## Encerramentos de 19/11/2026
 
+- [T02 · Salvar e editar propostas no banco com autorização e versão](../social-planning-recovery/issues/02-canonical-storage.md) — aceito pelo proprietário após testar. Migração aplicada em produção em 19/11 (`20261119205503`), acesso restrito a administrador ativo, verificado em PostgreSQL isolado. Frontend na main local, sem publicação.
+- [T05 · Conservar edição até confirmação e garantir teclado do diálogo](../social-planning-recovery/issues/05-editor-confirmation.md) — aprovado pelo proprietário na revisão das sugestões, na main local.
+- [T06 · Calendário compartilhado com movimento seguro](../social-planning-recovery/issues/06-shared-calendar.md) — aprovado pelo proprietário junto com a revisão das sugestões, na main local.
+- [T07 · Gerar proposta por tema com IA real e recuperação durável](../social-planning-recovery/issues/07-real-theme-ai.md) — aprovado pelo proprietário. Migração aplicada em produção em 19/11 (`20261119220639`). Frontend na main local, sem publicação.
 - [ARQ-02 · Separar os detalhes compartilhados dos cartões Linha e Bloco](../structural-audit/issues/02-shared-line-and-block-details.md) — encerrado com aceite do proprietário. Detalhes compartilhados (data, parceiros, responsáveis, prioridade e Sprint) movidos para `app/components/features/ActionItemDetails.tsx`, eliminando o ciclo entre `ActionItem.tsx`, `ActionLineVariant.tsx` e `ActionBlockVariant.tsx`. Verificados `tsc --noEmit`, `biome check`, `vite build`, grafo sem ciclos e 33 testes focados; commit local `c03cd77`, sem publicação.
 - [ARQ-01 · Auditoria da estrutura da UZZINA](../structural-audit/issues/01-app-structure-and-simplification.md) — encerrado pelo proprietário. Limpeza de consultas no commit local `98a81e9`. Ajustes de teclado da janela Arquivos e da consulta de sessão do Portal do cliente, documentação e testes verificados localmente, com commit e publicação pendentes. Teclado e altura dos cartões encerrados. [Reorganização de Linha e Bloco](../structural-audit/issues/02-shared-line-and-block-details.md) encerrada acima.
 

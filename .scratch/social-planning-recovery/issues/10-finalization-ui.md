@@ -6,7 +6,7 @@
 - **Anthropic** — Claude Sonnet 5.5, para reconciliar a finalização com o estado da Mesa.
 - **Google** — Gemini 4 Argon, para reconciliar a finalização com o estado da Mesa. Disponibilidade depende do plano do Antigravity.
 
-**Status:** ready-for-agent
+**Status:** ready-for-agent. Atualizado em 19/11: não iniciado; depende de T09.
 **Blocked by:** T04 e T09; T05 para guarda de edição.
 **Origem:** Conclusão de C09: resumo, falhas, sessão e cache.
 **Prioridade:** P2

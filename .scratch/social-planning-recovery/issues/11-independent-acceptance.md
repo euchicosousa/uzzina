@@ -6,7 +6,7 @@
 - **Anthropic** — Claude Opus 5.5, para auditar evidências e critérios de aceite de toda a série.
 - **Google** — Gemini 4 Argon, para auditar evidências e critérios de aceite de toda a série. Disponibilidade depende do plano do Antigravity.
 
-**Status:** ready-for-agent
+**Status:** ready-for-agent. Atualizado em 19/11: não iniciado; depende de T09 e T10.
 **Blocked by:** T02–T10 e T12 verificados conforme escopo aprovado, com decisões registradas em T01.
 **Origem:** C10; todos os achados R1–R11.
 **Prioridade:** P2

@@ -6,7 +6,7 @@
 - **Anthropic** — Claude Opus 5.5, para validar autorização, concorrência de versão e reabertura.
 - **Google** — Gemini 4 Argon, para validar autorização, concorrência de versão e reabertura. Disponibilidade depende do plano do Antigravity.
 
-**Status:** implemented-unverified. A versão preparada segue a proposta antiga de acesso de membros. D1 agora exige admin ativo e requer revisão da implementação, dos testes e do SQL preparado. A evidência de 06/11 é histórica.
+**Status:** accepted (encerrado em 19/11 com aceite do proprietário). O proprietário testou salvar, reabrir e editar propostas; a migração foi aplicada em produção em 19/11 (`20261119205503`) com acesso restrito a administrador ativo, verificada em PostgreSQL isolado e no catálogo. Frontend na main local, sem publicação. [Evidência](../../../docs/audits/social-planning-recovery/T02-evidence.md).
 **Blocked by:** Retomada da série. D1 já foi definido, então a revisão de acesso pode avançar independentemente. A validação de toda a proposta usa a saída ainda pendente de D6.
 **Origem:** R4, R5 e R11; C01.
 **Prioridade:** P1
