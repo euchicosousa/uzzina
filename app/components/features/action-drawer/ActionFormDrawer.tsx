@@ -410,7 +410,19 @@ export function ActionFormDrawer({
     [updateAction],
   );
 
+  const uploadActiveRef = useRef(false);
+  const handleUploadActiveChange = useCallback((active: boolean) => {
+    uploadActiveRef.current = active;
+  }, []);
+  const canLeaveUpload = useCallback(() => {
+    if (!uploadActiveRef.current) return true;
+    toast.info(
+      "Aguarde o envio dos arquivos ou cancele o envio na janela Arquivos.",
+    );
+    return false;
+  }, []);
   const handleSave = useCallback(async (): Promise<boolean> => {
+    if (!canLeaveUpload()) return false;
     flushTextDrafts();
     const current = rawActionRef.current;
     const coordinator = coordinatorRef.current;
@@ -440,7 +452,7 @@ export function ActionFormDrawer({
     const remote = coordinator.getState().remoteVersion;
     if (!saved && remote && mountedRef.current) setComparison(remote);
     return saved;
-  }, [flushTextDrafts]);
+  }, [canLeaveUpload, flushTextDrafts]);
 
   // Ref always points to the latest handleSave to avoid stale closures in event listeners
   const handleSaveRef = useRef(handleSave);
@@ -917,6 +929,7 @@ export function ActionFormDrawer({
     }
   };
   const prepareLeave = useCallback(async (): Promise<boolean> => {
+    if (!canLeaveUpload()) return false;
     if (aiProcessingRef.current) {
       toast.info(
         "Aguarde a geração terminar antes de trocar ou fechar a ação.",
@@ -928,12 +941,14 @@ export function ActionFormDrawer({
     flushTextDrafts();
     const current = rawActionRef.current;
     if (!current.id && (current.title || "").trim().length < 2) {
-      const hasText = Boolean(
+      const hasDraft = Boolean(
         current.title?.trim() ||
         descriptionRef.current ||
-        contentDescriptionRef.current,
+        contentDescriptionRef.current ||
+        current.work_files?.length ||
+        current.content_files?.length,
       );
-      return !hasText || window.confirm("Descartar este rascunho incompleto?");
+      return !hasDraft || window.confirm("Descartar este rascunho incompleto?");
     }
     const canLeave = await coordinator.safeClose({
       snapshot: !current.id ? current : undefined,
@@ -951,7 +966,7 @@ export function ActionFormDrawer({
       );
     if (remoteVersion && mountedRef.current) setComparison(remoteVersion);
     return false;
-  }, [aiProcessingRef, flushTextDrafts]);
+  }, [aiProcessingRef, canLeaveUpload, flushTextDrafts]);
   useEffect(() => {
     registerLeaveGuard?.(prepareLeave);
     return () => registerLeaveGuard?.(null);
@@ -1169,9 +1184,11 @@ export function ActionFormDrawer({
           keyboardActivation="manual"
           onSelectionChange={(key) => {
             if (
-              key === "essential" ||
-              key === "instagram" ||
-              key === "observations"
+              (key === "essential" ||
+                key === "instagram" ||
+                key === "observations") &&
+              key !== view &&
+              canLeaveUpload()
             )
               setView(key);
           }}
@@ -1265,6 +1282,7 @@ export function ActionFormDrawer({
                     onDescriptionChange={handleDescriptionChange}
                     onOpenStrategyModal={() => setIsStrategyModalOpen(true)}
                     onTitleBlur={handleTitleBlur}
+                    onUploadActiveChange={handleUploadActiveChange}
                     onTextDraft={setTextDraft}
                     onTextCommit={commitTextDraft}
                     RawAction={RawAction}
@@ -1303,6 +1321,7 @@ export function ActionFormDrawer({
                       contentDescriptionRef.current = html;
                     }}
                     onOpenStrategyModal={() => setIsStrategyModalOpen(true)}
+                    onUploadActiveChange={handleUploadActiveChange}
                     onTextDraft={setTextDraft}
                     onTextCommit={commitTextDraft}
                     RawAction={RawAction}
@@ -1659,7 +1678,11 @@ export function ActionFormDrawer({
                       <PrismButton
                         isDisabled={strategyControlsBlocked || isAIProcessing}
                         onClick={async () => {
-                          if (!(await selectStrategy(i, true))) return;
+                          if (
+                            !canLeaveUpload() ||
+                            !(await selectStrategy(i, true))
+                          )
+                            return;
                           void triggerAIAction(INTENT.ai_content, {
                             model: contentModel,
                             headline: strat.headline,

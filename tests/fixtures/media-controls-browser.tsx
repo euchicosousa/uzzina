@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { useState } from "react";
-import { ContentReorderDialog } from "~/components/features/media/ContentReorderDialog";
+import { FileManagerDialog } from "~/components/features/media/FileManagerDialog";
 import "~/tailwind.css";
 
 const FILE = "https://media.test.invalid/first.jpg";
@@ -20,7 +20,7 @@ function Fixture() {
         Gerenciar conteúdo da ação
       </button>
       <output data-testid="files">{JSON.stringify(files)}</output>
-      <ContentReorderDialog
+      <FileManagerDialog
         open={open}
         onOpenChange={setOpen}
         files={files}

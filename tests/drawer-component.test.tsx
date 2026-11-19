@@ -1731,6 +1731,153 @@ it("navigation from search respects both real form guards when a save fails", as
   expect(screen.getByRole("searchbox")).toBeTruthy();
 });
 
+it("keeps direct work uploads alive across dialog close and saves successful files once", async () => {
+  const requests: FakeUpload[] = [];
+  class FakeUpload extends window.EventTarget {
+    upload = new window.EventTarget();
+    status = 0;
+    response: unknown;
+    url = "";
+    method = "";
+    body: FormData | undefined;
+    canceled = false;
+    open(method: string, url: string) {
+      this.method = method;
+      this.url = url;
+    }
+    send(body: FormData) {
+      this.body = body;
+      requests.push(this);
+    }
+    abort() {
+      this.canceled = true;
+      this.dispatchEvent(new window.Event("abort"));
+    }
+    finish(status: number, response: unknown) {
+      this.status = status;
+      this.response = response;
+      this.dispatchEvent(new window.Event("load"));
+    }
+  }
+  const descriptor = Object.getOwnPropertyDescriptor(
+    globalThis,
+    "XMLHttpRequest",
+  );
+  Object.defineProperty(globalThis, "XMLHttpRequest", {
+    configurable: true,
+    value: FakeUpload,
+  });
+  try {
+    const user = userEvent.setup();
+    const mounted = mount();
+    await descriptionEditor();
+    await user.click(screen.getByRole("button", { name: /^Arquivos/ }));
+    const dialog = await screen.findByRole("dialog", { name: "Arquivos" });
+    const input = dialog.querySelector<HTMLInputElement>('input[type="file"]');
+    if (!input) throw new Error("File input not found");
+    const first = new window.File(["file"], "primeiro.pdf", {
+      type: "application/pdf",
+    });
+    const second = new window.File(["file"], "segundo.mov", {
+      type: "video/quicktime",
+    });
+    const oversized = new window.File(["file"], "grande.png", {
+      type: "image/png",
+    });
+    Object.defineProperty(oversized, "size", { value: 10_000_001 });
+    fireEvent.change(input, { target: { files: [first, second, oversized] } });
+    const [firstRequest] = requests;
+    if (!firstRequest) throw new Error("First upload did not start");
+    expect(requests).toHaveLength(1);
+    expect(firstRequest.method).toBe("POST");
+    expect(firstRequest.url).toBe(
+      "https://api.cloudinary.com/v1_1/test/auto/upload",
+    );
+    expect(firstRequest.body?.get("asset_folder")).toBe("uzzina/work");
+    expect(firstRequest.body?.get("upload_preset")).toBe("test");
+    expect(within(dialog).getByText("O arquivo excede 10 MB.")).toBeTruthy();
+    act(() => {
+      firstRequest.upload.dispatchEvent(
+        new window.ProgressEvent("progress", {
+          lengthComputable: true,
+          loaded: 1,
+          total: 2,
+        }),
+      );
+    });
+    expect(within(dialog).getByRole("progressbar").getAttribute("value")).toBe(
+      "50",
+    );
+
+    await user.click(
+      within(dialog).getByRole("button", { name: "Fechar janela" }),
+    );
+    expect(screen.queryByRole("dialog", { name: "Arquivos" })).toBeNull();
+    let left: boolean | undefined;
+    await act(async () => {
+      left = await mounted.panels().closeAllActions();
+    });
+    expect(left).toBe(false);
+
+    const pdfUrl = "https://res.cloudinary.com/test/image/upload/primeiro.pdf";
+    act(() =>
+      firstRequest.finish(200, { secure_url: pdfUrl, resource_type: "image" }),
+    );
+    await waitFor(() => expect(writes.at(-1)?.work_files).toEqual([pdfUrl]));
+    await user.click(screen.getByRole("button", { name: /^Arquivos/ }));
+    const reopened = await screen.findByRole("dialog", { name: "Arquivos" });
+    expect(within(reopened).getByRole("progressbar")).toBeTruthy();
+    const [, failedRequest] = requests;
+    if (!failedRequest) throw new Error("Second upload did not start");
+    act(() => failedRequest.finish(400, {}));
+    await user.click(
+      within(reopened).getByRole("button", {
+        name: "Tentar novamente: segundo.mov",
+      }),
+    );
+    expect(requests).toHaveLength(3);
+    const finalRequest = requests[2];
+    if (!finalRequest) throw new Error("Retry did not start");
+    const videoUrl = "https://res.cloudinary.com/test/video/upload/segundo.mov";
+    act(() =>
+      finalRequest.finish(200, {
+        secure_url: videoUrl,
+        resource_type: "video",
+      }),
+    );
+    await waitFor(() =>
+      expect(writes.at(-1)?.work_files).toEqual([pdfUrl, videoUrl]),
+    );
+    expect(writes).toHaveLength(2);
+
+    const dropped = new window.File(["file"], "cancelar.mp4", {
+      type: "video/mp4",
+    });
+    fireEvent.drop(within(reopened).getAllByRole("checkbox")[0], {
+      dataTransfer: { types: ["Files"], files: [dropped] },
+    });
+    const canceledRequest = requests[3];
+    if (!canceledRequest) throw new Error("Dropped file did not start");
+    await user.click(
+      within(reopened).getByRole("button", {
+        name: "Cancelar envio de cancelar.mp4",
+      }),
+    );
+    expect(canceledRequest.canceled).toBe(true);
+    act(() =>
+      canceledRequest.finish(200, {
+        secure_url: videoUrl,
+        resource_type: "video",
+      }),
+    );
+    expect(writes).toHaveLength(2);
+  } finally {
+    if (descriptor)
+      Object.defineProperty(globalThis, "XMLHttpRequest", descriptor);
+    else Reflect.deleteProperty(globalThis, "XMLHttpRequest");
+  }
+});
+
 describe("phone-width action panel", () => {
   // Layout is the controlled boundary: jsdom has no CSS layout or ResizeObserver.
   let panelWidth = 390;
@@ -1960,9 +2107,7 @@ describe("phone-width action panel", () => {
     const idCommand = screen.getByRole("button", { name: "Ver ID da ação" });
     expect(details.contains(idCommand)).toBe(false);
     expect(screen.getByRole("button", { name: /estratégia/i })).toBeTruthy();
-    expect(
-      screen.getByRole("button", { name: /Adicionar arquivo/ }),
-    ).toBeTruthy();
+    expect(screen.getByRole("button", { name: /^Arquivos/ })).toBeTruthy();
     const expanded = await visitUntilEditor();
     expect(expanded.includes(responsibles)).toBe(true);
 
@@ -2209,7 +2354,7 @@ describe("phone-width action panel", () => {
       .setup()
       .click(media.getByRole("button", { name: "Gerenciar" }));
     expect(
-      await screen.findByRole("heading", { name: /Gerenciar conteúdo/ }),
+      await screen.findByRole("heading", { name: "Arquivos" }),
     ).toBeTruthy();
     expect(writes).toEqual([]);
   });
@@ -2220,10 +2365,12 @@ describe("phone-width action panel", () => {
       content_files: [IMAGE, IMAGE, last],
     });
     const user = userEvent.setup();
-    const manage = within(scroller).getByRole("button", { name: "Gerenciar" });
+    const manage = within(scroller).getByRole("button", {
+      name: "Gerenciar arquivos",
+    });
     await user.click(manage);
     const dialog = await screen.findByRole("dialog", {
-      name: /Gerenciar conteúdo/,
+      name: "Arquivos",
     });
     // The two files with the same address are told apart by position.
     await user.click(within(dialog).getAllByRole("checkbox")[1]);
@@ -2239,7 +2386,7 @@ describe("phone-width action panel", () => {
     );
     await user.click(manage);
     const reopened = await screen.findByRole("dialog", {
-      name: /Gerenciar conteúdo/,
+      name: "Arquivos",
     });
     expect(within(reopened).getAllByRole("checkbox")).toHaveLength(2);
     await user.click(
@@ -2255,51 +2402,188 @@ describe("phone-width action panel", () => {
     ).toBeTruthy();
   });
 
-  it("the upload control stays the same mounted widget while files arrive", async () => {
-    let deliver: ((error: unknown, result: unknown) => void) | null = null;
-    let destroyed = 0;
-    Object.assign(window, {
-      cloudinary: {
-        createUploadWidget: (
-          _options: object,
-          callback: (error: unknown, result: unknown) => void,
-        ) => {
-          deliver = callback;
-          return { open: () => {}, destroy: () => destroyed++ };
-        },
-      },
+  it.each(["Essencial", "Instagram"])(
+    "previews files in %s without changing selection or order",
+    async (tab) => {
+      const VIDEO = "https://res.cloudinary.com/test/video/upload/v1/reel.mp4";
+      const DOCUMENT =
+        "https://res.cloudinary.com/test/raw/upload/v1/brief.txt";
+      const files = [IMAGE, IMAGE, VIDEO, DOCUMENT];
+      const user = userEvent.setup();
+      if (tab === "Instagram") {
+        const scroller = await openInstagram({ content_files: files });
+        await user.click(
+          within(scroller).getByRole("button", { name: "Gerenciar arquivos" }),
+        );
+      } else {
+        mount(draft({ work_files: files }));
+        await descriptionEditor();
+        await user.click(
+          screen.getByRole("button", { name: "Detalhes da ação" }),
+        );
+        await user.click(screen.getByRole("button", { name: /^Arquivos/ }));
+      }
+      const dialog = within(
+        await screen.findByRole("dialog", { name: "Arquivos" }),
+      );
+      const photos = dialog.getAllByRole("button", {
+        name: "Visualizar post.jpg",
+      });
+      const checks = dialog.getAllByRole("checkbox", {
+        name: "Selecionar post.jpg",
+      });
+      await user.click(checks[0]);
+      expect(dialog.queryByRole("complementary")).toBeNull();
+      await user.click(photos[1]);
+      expect(photos.map((photo) => photo.getAttribute("aria-pressed"))).toEqual(
+        ["false", "true"],
+      );
+      expect(
+        checks.map(
+          (checkbox) =>
+            checkbox instanceof HTMLInputElement && checkbox.checked,
+        ),
+      ).toEqual([true, false]);
+      const panel = () =>
+        within(
+          dialog.getByRole("complementary", { name: "Prévia do arquivo" }),
+        );
+      const image = panel().getByRole("img", { name: "post.jpg" });
+      expect(image.getAttribute("src")).toBe(IMAGE);
+      fireEvent.error(image);
+      expect(
+        panel()
+          .getByRole("link", { name: "Abrir original" })
+          .getAttribute("href"),
+      ).toBe(IMAGE);
+
+      await user.click(
+        dialog.getByRole("button", { name: "Visualizar reel.mp4" }),
+      );
+      const video = panel().getByLabelText("reel.mp4");
+      expect(video.getAttribute("src")).toBe(VIDEO);
+      expect(video.hasAttribute("controls")).toBe(true);
+      expect(video.hasAttribute("autoplay")).toBe(false);
+
+      await user.click(
+        dialog.getByRole("button", { name: "Visualizar brief.txt" }),
+      );
+      expect(
+        panel().getByText("Não foi possível visualizar este arquivo."),
+      ).toBeTruthy();
+      expect(
+        panel()
+          .getByRole("link", { name: "Abrir original" })
+          .getAttribute("href"),
+      ).toBe(DOCUMENT);
+      await user.click(panel().getByRole("button", { name: "Fechar prévia" }));
+      expect(document.activeElement).toBe(
+        dialog.getByRole("button", { name: "Visualizar brief.txt" }),
+      );
+
+      await user.click(photos[1]);
+      await user.keyboard("{Escape}");
+      expect(dialog.queryByRole("complementary")).toBeNull();
+      await user.click(photos[1]);
+      act(() => resizeViewport(700));
+      expect(dialog.queryByRole("complementary")).toBeNull();
+      expect(
+        dialog.queryByRole("button", { name: "Visualizar post.jpg" }),
+      ).toBeNull();
+      expect(writes).toEqual([]);
+    },
+  );
+
+  it("orders each Instagram upload batch by natural filename after it settles", async () => {
+    const requests: FakeUpload[] = [];
+    class FakeUpload extends window.EventTarget {
+      upload = new window.EventTarget();
+      status = 0;
+      response: unknown;
+      fileName = "";
+      open() {}
+      send(body: FormData) {
+        const file = body.get("file");
+        this.fileName = typeof file === "object" && file ? file.name : "";
+        requests.push(this);
+      }
+      abort() {}
+      finish(status: number, url?: string) {
+        this.status = status;
+        this.response = { secure_url: url, resource_type: "image" };
+        this.dispatchEvent(new window.Event("load"));
+      }
+    }
+    const descriptor = Object.getOwnPropertyDescriptor(
+      globalThis,
+      "XMLHttpRequest",
+    );
+    Object.defineProperty(globalThis, "XMLHttpRequest", {
+      configurable: true,
+      value: FakeUpload,
     });
     try {
-      const scroller = await openInstagram();
-      const add = within(scroller).getByRole("button", {
-        name: "Adicionar conteúdo",
-      });
-      await userEvent.setup().click(add);
-      const success = (url: string, name: string) =>
-        act(() =>
-          deliver?.(null, {
-            event: "success",
-            info: { secure_url: url, public_id: name, original_filename: name },
-          }),
-        );
-      success(IMAGE, "a");
-      success(IMAGE.replace("post", "second"), "b");
-      expect(
-        within(scroller).getByRole("button", { name: "Adicionar conteúdo" }) ===
-          add,
-      ).toBe(true);
-      expect(destroyed).toBe(0);
-      expect(
-        within(scroller).getByRole("button", { name: "Gerenciar" }),
-      ).toBeTruthy();
+      const url = (name: string) => IMAGE.replace("post.jpg", name);
+      const previous = [url("z.jpg"), url("a.jpg")];
+      const scroller = await openInstagram({ content_files: previous });
+      const user = userEvent.setup();
+      await user.click(
+        within(scroller).getByRole("button", { name: "Adicionar conteúdo" }),
+      );
+      const dialog = await screen.findByRole("dialog", { name: "Arquivos" });
+      const input =
+        dialog.querySelector<HTMLInputElement>('input[type="file"]');
+      if (!input) throw new Error("File input not found");
+      const choose = (...names: string[]) =>
+        fireEvent.change(input, {
+          target: {
+            files: names.map(
+              (name) => new window.File(["file"], name, { type: "image/jpeg" }),
+            ),
+          },
+        });
+      const finish = (index: number, status = 200) => {
+        const request = requests[index];
+        if (!request) throw new Error("Upload did not start");
+        act(() => request.finish(status, url(request.fileName)));
+      };
+
+      choose("slide-10.jpg", "slide-2.jpg", "slide-1.jpg");
+      finish(0);
+      finish(1, 500);
+      expect(writes).toEqual([]);
+      finish(2);
+      const first = [...previous, url("slide-1.jpg"), url("slide-10.jpg")];
+      await waitFor(() => expect(writes.at(-1)?.content_files).toEqual(first));
+
+      choose("novo-2.jpg", "novo-1.jpg");
+      finish(3);
+      expect(writes.at(-1)?.content_files).toEqual(first);
+      finish(4);
+      const later = [url("novo-1.jpg"), url("novo-2.jpg")];
+      await waitFor(() =>
+        expect(writes.at(-1)?.content_files).toEqual([...first, ...later]),
+      );
+
+      await user.click(
+        within(dialog).getByRole("button", {
+          name: "Tentar novamente: slide-2.jpg",
+        }),
+      );
+      finish(5);
       await waitFor(() =>
         expect(writes.at(-1)?.content_files).toEqual([
-          IMAGE,
-          IMAGE.replace("post", "second"),
+          ...previous,
+          url("slide-1.jpg"),
+          url("slide-2.jpg"),
+          url("slide-10.jpg"),
+          ...later,
         ]),
       );
     } finally {
-      Reflect.deleteProperty(window, "cloudinary");
+      if (descriptor)
+        Object.defineProperty(globalThis, "XMLHttpRequest", descriptor);
+      else Reflect.deleteProperty(globalThis, "XMLHttpRequest");
     }
   });
 

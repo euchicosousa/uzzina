@@ -41,6 +41,7 @@ interface InstagramTabProps {
   currentPartners: Partner[];
   cloudName: string;
   uploadPreset: string;
+  onUploadActiveChange?: (active: boolean) => void;
   isAIProcessing: boolean;
   strategiesBlocked?: boolean;
   activeAIIntent?: string | null;
@@ -114,6 +115,7 @@ export function InstagramTab({
   currentPartners,
   cloudName,
   uploadPreset,
+  onUploadActiveChange,
   isAIProcessing,
   strategiesBlocked = false,
   activeAIIntent,
@@ -171,9 +173,9 @@ export function InstagramTab({
         )}
         <ContentFilesManager
           cloudName={cloudName}
-          compact={writingLayout}
           files={contentFiles}
           onChange={updateContentFiles}
+          onUploadActiveChange={onUploadActiveChange}
           uploadPreset={uploadPreset}
         />
       </div>

@@ -1,6 +1,6 @@
 # UP01 — Estudar um envio de arquivos próprio, com arrastar e soltar, no lugar do widget do Cloudinary
 
-**Status.** Aberto em 16/11/2026 a pedido do proprietário, como ticket de **estudo**, e deixado **preparado, em espera**: o proprietário decidiu não executá-lo agora. Nasceu do [INF01](../../backend-platform/issues/01-appwrite-migration-study.md), encerrado no mesmo dia. Desenho e decisões registrados abaixo; nada foi testado e nenhum arquivo do app foi alterado. Quando for liberado, a entrega é relatório, prévia e plano; nada é implementado sem aprovação explícita.
+**Status.** Estudo concluído em 18/11/2026. O proprietário autorizou a etapa 1 e relatou funcionamento normal na versão local. A galeria /ui → Uzzina → Upload de arquivos mostra a janela real para Essencial e Instagram com envio simulado, escala por largura e prévia lateral em desktop. Typecheck e três verificações focadas com transporte simulado passaram. Publicação e etapas seguintes pendentes. Nasceu do [INF01](../../backend-platform/issues/01-appwrite-migration-study.md), encerrado no mesmo dia. A análise foi documental e estática, com inspeção somente leitura do Console: nenhum arquivo do app foi alterado e nenhum upload real foi feito. Entregas: [relatório técnico](../up01-study-report.md) e [prévia fictícia](../up01-preview.html), verificada em DOM e viewport móvel simulada; o drop de arquivos reais ainda não foi ensaiado. O Console confirma o preset unsigned `bussola_unsigned` e plano Free; a captura do painel da conta confirma os limites por tipo. A conferência do preset confirmou ausência de transformações e de uma lista explícita de formatos. Consulte o relatório antes de definir validações. Implementação requer aprovação explícita em escopo próprio.
 
 ## O que a pessoa vê hoje
 
@@ -22,23 +22,23 @@ Estudar um **envio próprio**, sem a janela do Cloudinary, com arrastar e soltar
 
 Fora do escopo, por decisão dele em 16/11: trocar o Supabase, self-hosting e mudar de fornecedor de arquivos. O plano pago do Cloudinary ele avalia depois, por conta própria.
 
-## O que o levantamento já mostra
+## O que o estudo confirmou
 
-- **É possível sem o widget.** O Cloudinary aceita envio direto do navegador por uma chamada simples, usando a mesma configuração pública que o widget já usa hoje (nome da conta e "upload preset"). Não passa pela Vercel, então o limite de 4,5 MB dela não entra na história.
-- **Os limites de tamanho não mudam.** Continuam os do plano gratuito do Cloudinary (10 MB por imagem, 100 MB por vídeo, 10 MB para outros arquivos). Além disso, o código do widget hoje barra qualquer arquivo acima de 50 MB. O envio próprio deve avisar com clareza quando o arquivo passar do limite, antes de tentar enviar.
-- **Arquivos grandes** (acima de 100 MB, só possíveis em plano pago) exigem envio em partes; o estudo deve dizer se isso entra agora ou fica preparado para depois.
-- **Barra de progresso** é viável, com a miniatura aparecendo na hora, antes de o envio terminar.
-- **A janela de organizar já tem a estrutura.** Ela mostra as miniaturas em grade, já permite arrastar para reordenar e tem o estado "Nenhum arquivo adicionado ainda". Soltar um arquivo vindo do computador é um gesto diferente de arrastar uma miniatura, e os dois podem conviver; o estudo precisa provar isso na prática, inclusive no celular.
+- **É tecnicamente possível sem o widget.** O Cloudinary documenta upload direto do navegador com preset unsigned, sem passar pela Vercel. O cliente usa apenas cloud name e preset públicos; o preset controla as opções não aceitas na chamada unsigned.
+- **O preset e os limites da conta foram identificados.** O Console mostra `bussola_unsigned` em modo unsigned, com sobrescrita desativada, uso do nome original, nome único e prefixo da pasta de ativos habilitados. A configuração local de produção aponta para o mesmo preset. O painel da conta confirma 10 MB por imagem, 100 MB por vídeo e 10 MB por raw. O widget aplica 50 MB na seleção local. A proposta inicial usa o menor teto por tipo para preservar a política do app. A aba General confirma que o preset não fixa uma pasta de ativos. O widget informa `uzzina/work` ou `uzzina/content` conforme o contexto. A aba Transform não tem transformações de entrada ou antecipadas configuradas. Advanced mostra envio assíncrono desligado e URL de notificação vazia. Optimize and Deliver mostra os campos de conversão e formatos permitidos vazios. Fonte dos limites da conta: captura de Settings → Account → Usage limits.
+- **Arquivos acima de 100 MB** exigem upload em partes segundo a documentação; a conta aceita até 100 MB por vídeo e tem tetos menores para imagem e raw. A primeira etapa não precisa de envio em partes.
+- **Barra de progresso e cancelamento da transmissão** são viáveis com XMLHttpRequest. Cancelar a conexão não remove um ativo que o Cloudinary já concluiu.
+- **A janela de organizar já tem miniaturas e reordenação.** É plausível separar drop externo do drag interno, mas a prévia estática não prova essa convivência no navegador ou no celular; ela exige validação durante a implementação.
 - **O que o widget faz e o envio próprio perderia:**
   - **Recorte do avatar:** o quadrado é escolhido dentro da janela do Cloudinary. Sem ela, é preciso um recorte próprio ou manter o widget só no avatar.
   - **Enviar por link e pela câmera:** o widget oferece "endereço da web" e "câmera". No celular, o seletor de arquivo do próprio aparelho já oferece a câmera; o envio por link deixaria de existir, salvo se for refeito.
 - **O resultado do envio continua igual.** Cada arquivo enviado devolve o mesmo endereço do Cloudinary que hoje é gravado na ação, então a gaveta, a leitura por IA e o portal não mudam.
 
-Arquivos envolvidos: `app/components/features/media/CloudinaryUpload.tsx` (o widget), `ContentReorderDialog.tsx` (janela de organizar), `InstagramContent.tsx`, `action-drawer/EssentialsTab.tsx`, `app/components/uzzina/UAvatarUpload.tsx` e `app/routes/dash/action/$id.tsx`.
+Arquivos envolvidos: `app/components/features/media/CloudinaryUpload.tsx` (o widget), `FileManagerDialog.tsx` (janela Arquivos), `InstagramContent.tsx`, `action-drawer/EssentialsTab.tsx`, `app/components/uzzina/UAvatarUpload.tsx` e `app/routes/dash/action/$id.tsx`.
 
 ## O que o estudo precisa entregar
 
-1. **Confirmação técnica do envio direto:** quais parâmetros o envio sem assinatura aceita (pasta, tipo automático), como medir o progresso, como cancelar e como tratar erro de tamanho, de rede e de tipo de arquivo. Conferir na documentação oficial do Cloudinary e nas configurações do "upload preset" da conta (só leitura).
+1. **Confirmação técnica do envio direto:** concluída com documentação oficial do Cloudinary e conferência do Console. O preset unsigned existente e o plano Free foram identificados; a captura do painel confirmou os limites da conta. Transformações e formatos conferidos no Console.
 2. **Proposta de desenho,** em linguagem simples e com imagem de antes e depois:
    - a janela de organizar com a área de miniaturas recebendo arquivos soltos, o estado vazio virando convite ("Arraste arquivos aqui ou clique para escolher") e o progresso por arquivo;
    - se vale soltar direto na gaveta (na prévia do Instagram e na área de arquivos de trabalho), sem abrir a janela;
@@ -46,7 +46,7 @@ Arquivos envolvidos: `app/components/features/media/CloudinaryUpload.tsx` (o wid
    - como fica no celular, onde não existe arrastar do computador.
 3. **Um componente só para os cinco lugares,** ou quais ficam com o widget (avatar, portal) na primeira etapa.
 4. **Riscos e regras do app a respeitar:** convivência com o arrastar de reordenar; envio em andamento quando a pessoa fecha a janela ou salva a ação (contrato da gaveta em `docs/contracts/action-drawer.md`); foco e teclado (a área de soltar precisa de um botão equivalente, sem virar parada de foco extra); o portal não usa os provedores privados da equipe (`docs/contracts/portal-and-review.md`); regra de superfícies do Prism (sem caixa em volta) e entrada na galeria `/ui`.
-5. **Prévia para o proprietário conferir.** Uma página isolada ou um exemplo na `/ui`. Atenção: o app local usa a conta real do Cloudinary; qualquer teste de envio grava arquivo de verdade lá, então a prévia usa uma pasta de teste e o estudo diz como limpar.
+5. **Prévia para o proprietário conferir.** Concluída em página isolada com dados fictícios; sem input funcional e sem chamada ao Cloudinary. Não houve upload nem necessidade de limpeza de ativos.
 6. **Plano de implementação em etapas,** com o que entra em cada uma e o roteiro de validação.
 
 ## Desenho pedido pelo proprietário (16/11/2026)
@@ -69,11 +69,13 @@ A ideia é **simplificar**: um envio próprio, um componente só, sem a janela d
 
 ## Critérios de conclusão
 
-- [ ] Relatório com a confirmação técnica, os limites e o que se perde do widget.
-- [ ] Proposta de desenho com antes e depois, incluindo celular, teclado e erros.
-- [ ] Prévia para conferir, com roteiro curto.
-- [ ] Plano em etapas e as decisões acima respondidas pelo proprietário.
-- [ ] Implementação só em ticket próprio, depois da aprovação.
+- [x] Relatório com confirmação técnica, limites conhecidos/desconhecidos e o que se perde do widget.
+- [x] Proposta de fluxo com celular, teclado e erros no relatório; conferir a prévia fictícia. Testes de interação real permanecem para implementação.
+- [x] Prévia isolada e roteiro curto.
+- [x] Plano em etapas alinhado às decisões anteriores do proprietário.
+- [x] Etapa 1 autorizada e implementada na main local.
+
+**Próxima decisão do proprietário:** definir quando iniciar a etapa de arrastar direto na prévia do Instagram. A conferência em aparelho e a publicação da etapa 1 ficam pendentes.
 
 ## Modelos sugeridos
 

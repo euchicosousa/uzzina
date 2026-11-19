@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UP01 — Prévia de Arquivos</title>
+<style>
+:root{font:15px/1.5 system-ui,sans-serif;color:#242b28;background:#f6f7f5}*{box-sizing:border-box}body{margin:0;padding:clamp(12px,4vw,40px)}main{max-width:880px;margin:auto}h1{font-size:26px;letter-spacing:-.035em;margin:0}p{margin:5px 0 18px;color:#59635d}.surface{background:white;border:1px solid #e0e5e1;border-radius:16px;padding:20px}.tabs,.toolbar,.actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.tabs{border-bottom:1px solid #e5e8e5;margin-bottom:16px}.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:transparent;padding:8px 12px}.tabs button[aria-selected=true]{border-color:#347a5c;color:#24553e}.toolbar{justify-content:space-between;margin:10px 0}.toolbar label{display:flex;gap:8px;align-items:center}button{font:inherit;cursor:pointer;color:inherit;background:white;border:1px solid #cbd3cd;border-radius:9px;padding:8px 12px}button.primary{background:#27684c;color:white;border-color:#27684c}.drop{min-height:200px;padding:18px;border:1px dashed #aab8ae;border-radius:12px;display:flex;align-items:center;justify-content:center;transition:.15s}.drop.empty{flex-direction:column;gap:8px}.drop.drag{background:#eef7f0;border-color:#347a5c;outline:3px solid #d7eadc}.items{width:100%;display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:12px}.file{min-width:0;border:1px solid #e1e5e2;border-radius:10px;overflow:hidden;background:white}.thumb{height:90px;display:grid;place-items:center;background:#edf2ee;font-size:24px}.meta{padding:8px}.name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}.status{font-size:12px;color:#647068}.progress{height:4px;background:#e7ece8;margin-top:6px}.progress i{display:block;height:100%;background:#36815b}.actions{justify-content:space-between;margin-top:14px}.hint{font-size:13px;color:#65716a;margin-top:12px}.sr{position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden}.pill{font-size:12px;background:#edf2ee;padding:3px 8px;border-radius:999px}@media(max-width:520px){.surface{padding:14px}.drop{min-height:180px}.items{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+<body><main>
+<h1>Arquivos</h1><p>Prévia de interface para revisar envio e organização de arquivos.</p>
+<section class="surface" aria-label="Gerenciar arquivos">
+<div class="tabs" role="tablist"><button role="tab" aria-selected="true">Conteúdo do Instagram</button><button role="tab" aria-selected="false">Arquivos de trabalho</button></div>
+<div class="toolbar"><span id="count" class="pill">3 itens · 20 permitidos</span><div><button id="emptyState" type="button">Testar estado vazio</button><label><input id="paste" type="checkbox" checked> Colar imagens nesta área</label></div></div>
+<div class="drop" id="drop" tabindex="-1" aria-label="Arquivos em envio e enviados">
+<div id="empty" class="empty" hidden><strong>Nenhum arquivo adicionado</strong><span>Arraste arquivos para esta área ou escolha pelo botão abaixo.</span></div><div class="items" id="items"></div>
+</div>
+<div class="actions"><button id="add" type="button">Adicionar arquivos</button><span class="status" aria-live="polite" id="announcement">1 de 3 enviando</span><button class="primary" type="button" id="done">Concluir</button></div>
+<p class="hint">Você também pode escolher arquivos pelo botão. A prévia usa itens fictícios e não envia arquivos.</p>
+</section>
+<p class="hint" id="notice" aria-live="polite"></p>
+</main>
+<script>
+const initialFiles = [
+  { name: "campanha-feed.png", kind: "Imagem", status: "Enviado", progress: 100, icon: "▧" },
+  { name: "bastidores-reels.mp4", kind: "Vídeo", status: "Enviando · 62%", progress: 62, icon: "▶" },
+  { name: "briefing.pdf", kind: "Documento", status: "Falhou · tentar novamente", progress: 0, icon: "PDF" },
+];
+let files = initialFiles.map((file) => ({ ...file }));
+let draggingIndex = null;
+let emptyState = false;
+
+const items = document.querySelector("#items");
+const drop = document.querySelector("#drop");
+const empty = document.querySelector("#empty");
+const announcement = document.querySelector("#announcement");
+const notice = document.querySelector("#notice");
+
+function announce(message) {
+  announcement.textContent = message;
+}
+
+function render() {
+  items.replaceChildren();
+  empty.hidden = files.length > 0;
+  items.hidden = files.length === 0;
+
+  files.forEach((file, index) => {
+    const item = document.createElement("article");
+    item.className = "file";
+    item.draggable = true;
+    item.dataset.index = String(index);
+    item.innerHTML = '<div class="thumb"></div><div class="meta"><div class="name"></div><div class="status"></div><div class="progress"><i></i></div><div class="actions"><button type="button" class="retry">Tentar novamente</button><button type="button" class="remove">Remover</button></div><button type="button" class="up">Mover para cima</button><button type="button" class="down">Mover para baixo</button></div>';
+    item.querySelector(".thumb").textContent = file.icon;
+    item.querySelector(".name").textContent = file.name;
+    item.querySelector(".status").textContent = file.status;
+    item.querySelector(".progress i").style.width = file.progress + "%";
+    item.querySelector(".retry").hidden = !file.status.startsWith("Falhou");
+    item.querySelector(".up").hidden = index === 0;
+    item.querySelector(".down").hidden = index === files.length - 1;
+    item.querySelector(".retry").onclick = () => {
+      file.status = "Enviando · 0%";
+      file.progress = 0;
+      render();
+      announce("Reenvio iniciado para " + file.name);
+    };
+    item.querySelector(".remove").onclick = () => {
+      files.splice(index, 1);
+      render();
+      announce("Arquivo removido da prévia");
+    };
+    item.querySelector(".up").onclick = () => move(index, index - 1);
+    item.querySelector(".down").onclick = () => move(index, index + 1);
+    item.addEventListener("dragstart", (event) => {
+      draggingIndex = index;
+      event.dataTransfer?.setData("text/plain", String(index));
+      if (event.dataTransfer) event.dataTransfer.effectAllowed = "move";
+    });
+    item.addEventListener("dragover", (event) => event.preventDefault());
+    item.addEventListener("drop", (event) => {
+      event.preventDefault();
+      const source = Number(event.dataTransfer?.getData("text/plain") ?? draggingIndex);
+      if (Number.isInteger(source)) move(source, index);
+    });
+    items.append(item);
+  });
+
+  const limit = document.querySelector('[aria-selected="true"]').textContent.includes("Instagram") ? 20 : 100;
+  document.querySelector("#count").textContent = files.length + " itens · " + limit + " permitidos";
+  if (files.length === 0) document.querySelector("#count").textContent = "0 itens · " + limit + " permitidos";
+}
+
+function move(from, to) {
+  if (from < 0 || to < 0 || from >= files.length || to >= files.length) return;
+  const [file] = files.splice(from, 1);
+  files.splice(to, 0, file);
+  render();
+  announce("Ordem atualizada");
+}
+
+render();
+
+document.querySelector("#add").onclick = () => {
+  notice.textContent = "O seletor do aparelho seria aberto aqui. Esta prévia não lê arquivos reais.";
+};
+
+document.querySelector("#done").onclick = () => {
+  const pending = files.filter((file) => file.status.startsWith("Enviando")).length;
+  notice.textContent = pending
+    ? pending + " envio(s) pendente(s). No fluxo real, aguardar ou confirmar saída."
+    : "A prévia fecharia preservando os arquivos já enviados e informando falhas restantes.";
+};
+
+document.querySelector("#emptyState").onclick = (event) => {
+  if (files.length) {
+    files = [];
+    event.currentTarget.textContent = "Restaurar itens fictícios";
+  } else {
+    files = initialFiles.map((file) => ({ ...file }));
+    event.currentTarget.textContent = "Testar estado vazio";
+  }
+  render();
+};
+
+for (const eventName of ["dragenter", "dragover"]) {
+  drop.addEventListener(eventName, (event) => {
+    event.preventDefault();
+    drop.classList.add("drag");
+  });
+}
+
+for (const eventName of ["dragleave", "drop"]) {
+  drop.addEventListener(eventName, (event) => {
+    event.preventDefault();
+    drop.classList.remove("drag");
+    if (eventName === "drop") notice.textContent = "Drop simulado. Nenhum arquivo é lido ou enviado nesta prévia.";
+  });
+}
+
+document.addEventListener("paste", (event) => {
+  const hasImage = [...(event.clipboardData?.items ?? [])].some((item) => item.type.startsWith("image/"));
+  if (document.querySelector("#paste").checked && hasImage) {
+    notice.textContent = "Colagem de imagem simulada. A prévia não lê nem envia o clipboard.";
+  }
+});
+
+document.querySelectorAll('[role="tab"]').forEach((tab) => {
+  tab.onclick = () => {
+    document.querySelectorAll('[role="tab"]').forEach((candidate) => {
+      candidate.setAttribute("aria-selected", String(candidate === tab));
+    });
+    render();
+  };
+});
+</script></body></html>

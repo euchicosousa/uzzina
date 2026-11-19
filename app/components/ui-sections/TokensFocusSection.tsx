@@ -44,6 +44,10 @@ import {
 import { UComboboxTrigger } from "~/components/uzzina/UComboboxTrigger";
 import { RichTextEditor } from "~/components/features/RichTextEditor";
 import {
+  FileUploadQueue,
+  type FileUploadQueueRow,
+} from "~/components/features/media/FileUploadQueue";
+import {
   GallerySection,
   GallerySectionHeader,
   GallerySectionContent,
@@ -120,6 +124,54 @@ function RichTextEditorFocusExample() {
   );
 }
 
+const fileUploadExamples: FileUploadQueueRow[] = [
+  {
+    id: 1,
+    name: "prévia.mp4",
+    status: "uploading",
+    progress: 60,
+    canRetry: false,
+  },
+  {
+    id: 2,
+    name: "roteiro.pdf",
+    status: "failed",
+    progress: 0,
+    error: "Não foi possível enviar o arquivo.",
+    canRetry: true,
+  },
+];
+
+function FileUploadFocusExample() {
+  const [entries, setEntries] = React.useState(fileUploadExamples);
+  return (
+    <div className="w-96 max-w-full">
+      <FileUploadQueue
+        entries={entries}
+        onRemove={(id) =>
+          setEntries((items) => items.filter((entry) => entry.id !== id))
+        }
+        onRetry={(id) =>
+          setEntries((items) =>
+            items.map((entry) =>
+              entry.id === id
+                ? { ...entry, status: "queued", error: undefined }
+                : entry,
+            ),
+          )
+        }
+      />
+      <PrismButton
+        onPress={() => setEntries(fileUploadExamples)}
+        size="xs"
+        variant="ghost"
+      >
+        Restaurar exemplo
+      </PrismButton>
+    </div>
+  );
+}
+
 export function TokensFocusSection() {
   return (
     <div id="tokens-focus">
@@ -142,13 +194,20 @@ export function TokensFocusSection() {
               "features/ComboboxTrigger.tsx (ghost icon-lg no rodapé da gaveta: anel padrão do PrismButton)",
               "features/action-drawer/ActionDatePicker.tsx (data da gaveta: ghost sm com anel padrão do PrismButton)",
               "features/PartnersCombobox.tsx e busca global (filtro de parceiros: foco padrão do Prism)",
-              "features/media/ContentReorderDialog.tsx (alça e caixa de seleção, classe image-icon) e WorkFileThumbnail.tsx (remover e link da miniatura)",
+              "features/media/FileManagerDialog.tsx (alça e caixa de seleção, classe image-icon) e WorkFileThumbnail.tsx (remover e link da miniatura)",
               "features/ActionItem.tsx (cartão: focus-within:outline-2 outline-primary, exceção aprovada)",
               "routes/app/admin/partner/$slug.tsx (editores de texto: focus-within)",
             ]}
           >
             <Example label="Botão" source="Prism real">
               <PrismButton>Botão</PrismButton>
+            </Example>
+            <Example
+              hint="Arquivos fictícios"
+              label="Fila da janela Arquivos"
+              source="Componente do app"
+            >
+              <FileUploadFocusExample />
             </Example>
             <Example label="Input" source="Prism real">
               <PrismInput
@@ -230,7 +289,7 @@ export function TokensFocusSection() {
             </Example>
             <Example
               label="Ícones sobre imagem (image-icon)"
-              source="Réplica de features/media/ContentReorderDialog.tsx"
+              source="Réplica de features/media/FileManagerDialog.tsx"
             >
               <div className="flex gap-2">
                 {["bg-white", "bg-black", "bg-neutral-500", "bg-amber-300"].map(
