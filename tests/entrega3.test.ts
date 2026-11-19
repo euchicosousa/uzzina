@@ -67,6 +67,7 @@ interface MockAction {
   responsibles?: string[];
 }
 
+let failSessionRead = false;
 const mockDb = {
   clients: [] as MockClient[],
   sessions: [] as MockSession[],
@@ -99,7 +100,7 @@ interface MockChain {
   ) => Promise<{ data: Record<string, unknown>[]; error: null }>;
   single: () => Promise<{
     data: Record<string, unknown> | null;
-    error: { message: string } | null;
+    error: { code: string; message: string } | null;
   }>;
   then: (
     resolve: (val: { data: Record<string, unknown>[]; error: null }) => void,
@@ -202,6 +203,12 @@ mock.module("@supabase/supabase-js", () => ({
           return { data: rows.slice(from, to + 1), error: null };
         },
         single: async () => {
+          if (table === "dash_sessions" && failSessionRead) {
+            return {
+              data: null,
+              error: { code: "XX000", message: "Database unavailable" },
+            };
+          }
           const rows = getFilteredRows();
           if (rows.length === 0) {
             return {
@@ -286,6 +293,7 @@ describe("Ticket 03 - API /api/dash-data & Isolamento de Dados do Portal", () =>
   const pastIso = new Date(Date.now() - 86400000).toISOString();
 
   beforeEach(() => {
+    failSessionRead = false;
     tokenA = generateSessionToken();
     tokenB = generateSessionToken();
 
@@ -458,6 +466,23 @@ describe("Ticket 03 - API /api/dash-data & Isolamento de Dados do Portal", () =>
 
       expect(res._status()).toBe(401);
       expect(res._body()?.error).toBe("Sessão inválida ou expirada.");
+    });
+
+    it("retorna 503 quando o banco não pode consultar a sessão", async () => {
+      failSessionRead = true;
+      const req = createMockReq({
+        headers: { cookie: `${SESSION_COOKIE_NAME}=${tokenA}` },
+        query: { op: "partners" },
+      });
+      const res = createMockRes();
+
+      await dashDataHandler(req, res);
+
+      expect(res._status()).toBe(503);
+      expect(res._body()?.error).toBe(
+        "Não foi possível consultar a sessão. Tente novamente.",
+      );
+      expect(res.getHeader("cache-control")).toBe("no-store");
     });
 
     it("retorna 401 quando a sessão está expirada", async () => {

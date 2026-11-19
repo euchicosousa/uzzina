@@ -8,6 +8,7 @@ import {
   SESSION_COOKIE_NAME,
   SESSION_TTL_SECONDS,
   extractCookie,
+  findDashSession,
   generateSessionToken,
   hashLegacyPassword,
   hashSessionToken,
@@ -44,32 +45,16 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
 
   // 1. Verificação / Retomada de sessão via Cookie HttpOnly
   if (action === "verify") {
-    const rawCookie = req.headers.cookie;
-    const sessionToken = extractCookie(rawCookie, SESSION_COOKIE_NAME);
-
-    if (!sessionToken) {
+    const session = await findDashSession(supabaseAdmin, req.headers.cookie);
+    if (session.status === "missing") {
       return res.status(401).json({ error: "Sessão não fornecida." });
     }
-
-    const tokenHash = hashSessionToken(sessionToken);
-    const nowIso = new Date().toISOString();
-
-    // Busca a sessão válida (não revogada e não expirada)
-    const { data: session, error: sessionError } = await supabaseAdmin
-      .from("dash_sessions")
-      .select("id, client_id, expires_at, revoked_at")
-      .eq("token_hash", tokenHash)
-      .is("revoked_at", null)
-      .gt("expires_at", nowIso)
-      .single();
-
-    if (sessionError && sessionError.code !== "PGRST116") {
+    if (session.status === "unavailable") {
       return res.status(503).json({
         error: "Não foi possível consultar a sessão. Tente novamente.",
       });
     }
-
-    if (sessionError || !session) {
+    if (session.status === "invalid") {
       return res.status(401).json({ error: "Sessão inválida ou expirada." });
     }
 
@@ -77,7 +62,7 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
     const { data: client, error: clientError } = await supabaseAdmin
       .from("clients")
       .select("id, created_at, name, email, partners, image, active")
-      .eq("id", session.client_id)
+      .eq("id", session.clientId)
       .eq("active", true)
       .single();
 

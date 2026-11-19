@@ -6,6 +6,7 @@ type Row = Record<string, unknown>;
 const db: Record<string, Row[]> = {};
 let writes = 0;
 let failWrite = false;
+let failSessionRead = false;
 let loseWrite = false;
 mock.module("@supabase/supabase-js", () => ({
   createClient: () => ({
@@ -94,6 +95,9 @@ mock.module("@supabase/supabase-js", () => ({
           return chain;
         },
         single: async () => {
+          if (table === "dash_sessions" && failSessionRead) {
+            return { data: null, error: { code: "XX000" } };
+          }
           const result = execute();
           return result.error
             ? result
@@ -117,6 +121,7 @@ beforeEach(() => {
   process.env.APP_ORIGIN = "https://portal.example";
   writes = 0;
   failWrite = false;
+  failSessionRead = false;
   loseWrite = false;
   db.dash_sessions = [
     {
@@ -416,6 +421,17 @@ it("mutações autorizadas pela sessão não dependem da origem", async () => {
     ).toBe(201);
   }
   expect(writes).toBe(2);
+});
+it("falha ao consultar a sessão do portal não grava comentário", async () => {
+  failSessionRead = true;
+
+  const response = await request("POST", "comment", {
+    actionId: "action-a",
+    content: "Texto",
+  });
+
+  expect(response.status).toBe(503);
+  expect(writes).toBe(0);
 });
 it("sessões ausentes, expiradas e revogadas não escrevem", async () => {
   expect(

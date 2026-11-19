@@ -1,4 +1,6 @@
 import crypto from "node:crypto";
+import type { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "../types/database";
 
 export const SESSION_COOKIE_NAME = "uzzina_dash_session";
 export const SESSION_TTL_SECONDS = 7 * 24 * 60 * 60; // 7 dias em segundos
@@ -43,6 +45,35 @@ export function extractCookie(
     .find((c) => c.startsWith(`${name}=`));
   if (!match) return null;
   return match.slice(name.length + 1).trim();
+}
+
+type DashSessionLookup =
+  | { status: "missing" }
+  | { status: "invalid" }
+  | { status: "unavailable"; error: PostgrestError }
+  | { status: "valid"; clientId: string };
+
+export async function findDashSession(
+  db: SupabaseClient<Database>,
+  cookieHeader: string | undefined,
+): Promise<DashSessionLookup> {
+  const token = extractCookie(cookieHeader, SESSION_COOKIE_NAME);
+  if (!token) return { status: "missing" };
+
+  const { data, error } = await db
+    .from("dash_sessions")
+    .select("client_id")
+    .eq("token_hash", hashSessionToken(token))
+    .is("revoked_at", null)
+    .gt("expires_at", new Date().toISOString())
+    .single();
+
+  if (error && error.code !== "PGRST116") {
+    return { status: "unavailable", error };
+  }
+  if (error || !data) return { status: "invalid" };
+
+  return { status: "valid", clientId: data.client_id };
 }
 
 export interface CookieSerializeOptions {

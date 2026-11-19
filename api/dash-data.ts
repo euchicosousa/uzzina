@@ -4,11 +4,7 @@ import {
   createServiceClient,
   getServiceConfig,
 } from "../server/supabase-admin.js";
-import {
-  SESSION_COOKIE_NAME,
-  extractCookie,
-  hashSessionToken,
-} from "../server/dash-session.js";
+import { findDashSession } from "../server/dash-session.js";
 import { pickActionColor } from "../app/lib/action-color.js";
 
 const MAX_PERIOD_DAYS = 62;
@@ -119,38 +115,23 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
   const supabaseAdmin = createServiceClient(serviceConfig);
 
   // 1. Validação estrita de sessão via cookie HttpOnly
-  const rawCookie = req.headers.cookie;
-  const sessionToken = extractCookie(rawCookie, SESSION_COOKIE_NAME);
-
-  if (!sessionToken) {
+  const session = await findDashSession(supabaseAdmin, req.headers.cookie);
+  if (session.status === "missing") {
     return res.status(401).json({ error: "Sessão não fornecida." });
   }
-
-  const tokenHash = hashSessionToken(sessionToken);
-  const nowIso = new Date().toISOString();
-
-  const { data: session, error: sessionError } = await supabaseAdmin
-    .from("dash_sessions")
-    .select("client_id, expires_at, revoked_at")
-    .eq("token_hash", tokenHash)
-    .is("revoked_at", null)
-    .gt("expires_at", nowIso)
-    .single();
-
-  if (sessionError && sessionError.code !== "PGRST116") {
+  if (session.status === "unavailable") {
     return res
       .status(503)
       .json({ error: "Não foi possível consultar a sessão. Tente novamente." });
   }
-
-  if (sessionError || !session) {
+  if (session.status === "invalid") {
     return res.status(401).json({ error: "Sessão inválida ou expirada." });
   }
 
   const { data: client, error: clientError } = await supabaseAdmin
     .from("clients")
     .select("id, partners, active")
-    .eq("id", session.client_id)
+    .eq("id", session.clientId)
     .eq("active", true)
     .single();
 

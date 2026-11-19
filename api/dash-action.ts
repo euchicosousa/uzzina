@@ -4,11 +4,7 @@ import {
   getServiceConfig,
 } from "../server/supabase-admin.js";
 import type { Database } from "../types/database";
-import {
-  extractCookie,
-  hashSessionToken,
-  SESSION_COOKIE_NAME,
-} from "../server/dash-session.js";
+import { findDashSession } from "../server/dash-session.js";
 
 async function handleRequest(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Cache-Control", "no-store");
@@ -22,23 +18,14 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
       .status(503)
       .json({ error: "Portal temporariamente indisponível." });
   const db = createServiceClient(serviceConfig);
-  const token = extractCookie(req.headers.cookie, SESSION_COOKIE_NAME);
-  if (!token)
-    return res.status(401).json({ error: "Sessão inválida ou expirada." });
-  const { data: session, error: sessionError } = await db
-    .from("dash_sessions")
-    .select("client_id")
-    .eq("token_hash", hashSessionToken(token))
-    .is("revoked_at", null)
-    .gt("expires_at", new Date().toISOString())
-    .single();
-  if (sessionError && sessionError.code !== "PGRST116") throw sessionError;
-  if (!session)
+  const session = await findDashSession(db, req.headers.cookie);
+  if (session.status === "unavailable") throw session.error;
+  if (session.status !== "valid")
     return res.status(401).json({ error: "Sessão inválida ou expirada." });
   const { data: client, error: clientError } = await db
     .from("clients")
     .select("id, name, image, partners")
-    .eq("id", session.client_id)
+    .eq("id", session.clientId)
     .eq("active", true)
     .single();
   if (clientError && clientError.code !== "PGRST116") throw clientError;
