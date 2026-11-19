@@ -307,12 +307,16 @@ function GlobalSearchContent({
       Icon: CalendarIcon,
       run: () => navigateCommand("/app/today"),
     },
-    {
-      id: "planning",
-      label: "Planejamento",
-      Icon: CalendarRangeIcon,
-      run: navigateToPlanning,
-    },
+    ...(person.admin && person.visible
+      ? [
+          {
+            id: "planning",
+            label: "Planejamento",
+            Icon: CalendarRangeIcon,
+            run: navigateToPlanning,
+          },
+        ]
+      : []),
     {
       id: "notifications",
       label: "Notificações",

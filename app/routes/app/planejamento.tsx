@@ -2,14 +2,17 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { format } from "date-fns";
 import {
+  ArrowRightIcon,
   CalendarIcon,
   CheckCircle2Icon,
+  FolderOpenIcon,
   ListIcon,
   RotateCcwIcon,
   SparklesIcon,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { z } from "zod";
+import { AdminGuard } from "~/components/features/AdminGuard";
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { PlanningCalendarView } from "~/components/planning/PlanningCalendarView";
 import {
@@ -22,6 +25,12 @@ import {
   PrismButton,
   PrismCheckbox,
   PrismDateRangePicker,
+  PrismDialog,
+  PrismDialogBody,
+  PrismDialogDescription,
+  PrismDialogHeader,
+  PrismDialogTitle,
+  PrismDialogTrigger,
   PrismInput,
   PrismLabel,
   PrismRadio,
@@ -70,8 +79,17 @@ import { getMonthCalendarPeriod, parseU } from "~/utils";
 
 export const Route = createFileRoute("/app/planejamento")({
   validateSearch: z.object({ partner: z.string().optional() }),
-  component: PlanningPage,
+  component: AdminPlanningPage,
 });
+
+function AdminPlanningPage() {
+  const { person } = useAppContext();
+  return (
+    <AdminGuard>
+      <PlanningPage key={person.user_id} />
+    </AdminGuard>
+  );
+}
 
 const EMPTY_CELEBRATIONS: Awaited<ReturnType<typeof fetchCelebrations>> = [];
 
@@ -193,7 +211,10 @@ function PlanningPage() {
     }));
 
   // Planejamento atual e lista de propostas canônicas no banco (T02)
-  const [currentPlan, setCurrentPlan] = useState<SocialPlan | null>(null);
+  const [openedPlan, setCurrentPlan] = useState<SocialPlan | null>(null);
+  const [isSavedPlansOpen, setIsSavedPlansOpen] = useState(false);
+  const currentPlan =
+    openedPlan?.partner_slug === selectedPartnerSlug ? openedPlan : null;
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isFinalizing, setIsFinalizing] = useState(false);
@@ -263,27 +284,23 @@ function PlanningPage() {
     setManualFormats(redistributePlanningFormats(baseline, index, quantity));
   };
 
-  // Propostas salvas no Supabase com autorização real por parceiro (T02)
-  const { data: savedPlans = [], refetch: refetchSavedPlans } = useQuery({
-    queryKey: QUERY_KEYS.socialPlans(
-      person.user_id,
-      selectedPartner?.slug || "",
-    ),
-    queryFn: async () => {
-      if (!selectedPartner?.slug) return [];
-      try {
-        return await listSocialPlansByPartner(supabase, selectedPartner.slug);
-      } catch (err) {
-        console.warn("Falha ao carregar propostas do banco:", err);
-        return [];
-      }
-    },
-    enabled: Boolean(selectedPartner?.slug),
+  const {
+    data: savedPlans = [],
+    isError: savedPlansError,
+    isLoading: savedPlansLoading,
+    isFetching: savedPlansFetching,
+    refetch: refetchSavedPlans,
+  } = useQuery({
+    queryKey: QUERY_KEYS.socialPlans(person.user_id, selectedPartnerSlug),
+    queryFn: () => listSocialPlansByPartner(supabase, selectedPartnerSlug),
+    enabled: Boolean(selectedPartnerSlug),
+    retry: false,
   });
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: changing partners invalidates the open plan and its feedback.
   useEffect(() => {
     setCurrentPlan(null);
+    setIsSavedPlansOpen(false);
     setFeedbackMessage(null);
     setDirectionDraft(null);
     formatEdit.current = null;
@@ -563,6 +580,99 @@ function PlanningPage() {
           )}
         </div>
         <div className="flex items-center gap-2">
+          <PrismDialogTrigger
+            isOpen={isSavedPlansOpen}
+            onOpenChange={setIsSavedPlansOpen}
+          >
+            <PrismButton isDisabled={!selectedPartner} variant="outline">
+              <FolderOpenIcon data-icon="inline-start" />
+              Propostas salvas
+            </PrismButton>
+            <PrismDialog>
+              <PrismDialogHeader>
+                <PrismDialogTitle>Propostas salvas</PrismDialogTitle>
+                <PrismDialogDescription>
+                  {selectedPartner?.title}
+                </PrismDialogDescription>
+              </PrismDialogHeader>
+              <PrismDialogBody className="pb-4">
+                {savedPlansError ? (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="text-sm text-error" role="alert">
+                      Não foi possível carregar as propostas.
+                    </p>
+                    <PrismButton
+                      isDisabled={savedPlansFetching}
+                      onPress={() => void refetchSavedPlans()}
+                      size="sm"
+                      variant="secondary"
+                    >
+                      Tentar novamente
+                    </PrismButton>
+                  </div>
+                ) : savedPlansLoading ? (
+                  <p className="text-secondary-foreground" role="status">
+                    Carregando propostas…
+                  </p>
+                ) : (
+                  savedPlans.length === 0 && (
+                    <p className="text-secondary-foreground">
+                      Nenhuma proposta salva para este parceiro.
+                    </p>
+                  )
+                )}
+                {savedPlans.length > 0 && (
+                  <ul className="divide-y divide-border">
+                    {savedPlans.map((plan) => {
+                      const modeLabel =
+                        plan.mode === "period" ? "Por período" : "Por tema";
+                      const savedAt = format(
+                        new Date(plan.updated_at || plan.created_at),
+                        "dd/MM/yyyy HH:mm",
+                      );
+
+                      return (
+                        <li
+                          className="flex items-center justify-between gap-3 py-2"
+                          key={plan.id}
+                        >
+                          <div className="min-w-0">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="font-medium">{modeLabel}</span>
+                              {plan.status === "finalized" && (
+                                <PrismBadge variant="success">
+                                  Finalizado
+                                </PrismBadge>
+                              )}
+                            </div>
+                            <p className="text-xs text-secondary-foreground">
+                              {plan.suggestions.length}{" "}
+                              {plan.suggestions.length === 1
+                                ? "sugestão"
+                                : "sugestões"}{" "}
+                              · {savedAt}
+                            </p>
+                          </div>
+                          <PrismButton
+                            aria-label={`Abrir proposta ${modeLabel.toLowerCase()} de ${savedAt}`}
+                            onPress={() => {
+                              handleOpenPlan(plan);
+                              setIsSavedPlansOpen(false);
+                            }}
+                            size="sm"
+                            variant="ghost"
+                          >
+                            Abrir
+                            <ArrowRightIcon data-icon="inline-end" />
+                          </PrismButton>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </PrismDialogBody>
+            </PrismDialog>
+          </PrismDialogTrigger>
           {currentPlan && (
             <PrismButton
               onClick={() => {
@@ -572,7 +682,7 @@ function PlanningPage() {
               size="sm"
               variant="secondary"
             >
-              Novo / Trocar proposta
+              Nova proposta
               <RotateCcwIcon className="size-4" />
             </PrismButton>
           )}
@@ -1033,65 +1143,15 @@ function PlanningPage() {
                     />
                   )
                 ) : (
-                  <div>
-                    <PlanningPreview
-                      formats={formats}
-                      itemsByDate={itemsByDate}
-                      period={
-                        mode === "period"
-                          ? { start: startDate, end: endDate }
-                          : null
-                      }
-                    />
-                    <div className="px-6 pb-4">
-                      {/* Lista de propostas salvas para reabertura (Ticket 01) */}
-                      {savedPlans.length > 0 && (
-                        <div className="mt-8 border-t border-border pt-6 text-left">
-                          <h3 className="text-xs font-semibold tracking-wider text-secondary-foreground uppercase">
-                            Propostas anteriores salvas
-                          </h3>
-                          <div className="mt-3 grid gap-2">
-                            {savedPlans.slice(0, 5).map((plan) => (
-                              <button
-                                className="flex items-center justify-between rounded-lg border border-border bg-card p-3 text-left transition-colors squircle hover:border-primary/50 hover:bg-secondary"
-                                key={plan.id}
-                                onClick={() => handleOpenPlan(plan)}
-                                type="button"
-                              >
-                                <div>
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-sm font-semibold text-foreground">
-                                      {plan.mode === "period"
-                                        ? "Planejamento por período"
-                                        : "Planejamento por tema"}
-                                    </span>
-                                    {plan.status === "finalized" && (
-                                      <PrismBadge variant="success">
-                                        Finalizado
-                                      </PrismBadge>
-                                    )}
-                                  </div>
-                                  <span className="text-xs text-secondary-foreground">
-                                    {plan.suggestions.length} sugestões • Salvo
-                                    em{" "}
-                                    {format(
-                                      new Date(
-                                        plan.updated_at || plan.created_at,
-                                      ),
-                                      "dd/MM/yyyy HH:mm",
-                                    )}
-                                  </span>
-                                </div>
-                                <span className="text-xs font-medium text-primary hover:underline">
-                                  Abrir proposta →
-                                </span>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                  <PlanningPreview
+                    formats={formats}
+                    itemsByDate={itemsByDate}
+                    period={
+                      mode === "period"
+                        ? { start: startDate, end: endDate }
+                        : null
+                    }
+                  />
                 )}
                 <AppBarSpacer />
               </div>

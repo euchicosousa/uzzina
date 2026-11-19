@@ -90,3 +90,21 @@ D1 não está confirmada pelo proprietário; P02–P05 e P10 permanecem provisó
 **Status:** permanece `implemented-unverified`.
 
 Decisão do proprietário em 06/11/2026: não instalar PostgreSQL local nesta máquina. A verificação P01–P10 continua pendente de outro ambiente isolado.
+
+## Acesso e propostas salvas em 19/11/2026
+
+A listagem de tabelas do conector Supabase para o esquema público do projeto usado pelo app retornou as tabelas conhecidas de parceiros e ações e não retornou `public.social_plans`. A ausência no catálogo explica a falha da consulta capturada como HTTP 404. Não houve reprodução de HTTP em produção com uma conta do app, leitura de propostas ou alteração remota.
+
+O código local exige administrador ativo no menu, na busca, na página do parceiro e na rota. A lista da Mesa mostra carregamento, vazio ou falha com nova tentativa e usa as linhas da consulta do parceiro selecionado para reabrir. O SQL antes preparado permitia acesso de membros vinculados. A versão atual exige administrador ativo e parceiro não arquivado e conserva autoria e parceiro após a criação. A atualização versionada executa com as permissões do chamador e condiciona a escrita à versão esperada.
+
+Chromium isolado com os componentes reais e HTTP simulado passou para 404 (`PGRST205`), nova tentativa, geração e gravação de proposta, recarga e reabertura com o Direcionamento original preservado. Foram verificados menu, busca, página do parceiro e URL direta como administrador ativo, membro e administrador inativo. A URL direta sem permissão não disparou consulta de propostas.
+
+Em PostgreSQL isolado (PGlite), a migration foi executada duas vezes sobre um esquema mínimo com os predicados reais de administrador ativo e membro ativo, RLS de parceiros e gatilho de timestamp. Foram verificados a criação e a reabertura por administrador, atualização por outro admin, bloqueio de versão antiga, de mudança de autoria/parceiro e de proposta de parceiro arquivado. Membro associado ao parceiro, administrador inativo e anônimo ficaram sem acesso à leitura e escrita. A aplicação posterior no Supabase hospedado está registrada abaixo. Typecheck, lint e os cinco testes do model também passaram.
+
+### Aplicação em produção em 19/11/2026
+
+Com autorização do proprietário, o conector Supabase aplicou `20261102120000_social_plans.sql` no projeto usado pelo app. O histórico remoto registra `20261119205503` com o nome `social_plans`. Antes da aplicação, a tabela e a RPC não existiam. As tabelas referenciadas, a unicidade do slug de parceiro, as funções de autorização e timestamp e os papéis da API estavam disponíveis.
+
+Depois da aplicação, a consulta de verificação confirmou zero propostas, RLS ativa, regra restritiva de administrador ativo para parceiro não arquivado, autoria e parceiro sem permissão de alteração por usuários autenticados, e RPC executada com permissões do chamador. A Data API respondeu HTTP 401 e `42501` à leitura sem sessão. Nenhuma proposta foi criada na verificação. Após o teste do proprietário, uma consulta somente leitura confirmou uma proposta gravada em produção em 19/11 às 18:26 (America/Fortaleza), no modo Por período, com 15 sugestões. O proprietário confirmou acesso ao diálogo no localhost. Na versão original, o histórico abaixo da prévia ficava oculto enquanto uma proposta estava aberta. Após o retorno do proprietário, o histórico foi para o botão Propostas salvas no cabeçalho. Chromium isolado com HTTP simulado confirmou nova tentativa após falha, fechamento com Escape e retorno de foco, troca de proposta com outra aberta e reabertura após recarga. Typecheck e lint passaram. O frontend do recorte está local, sem commit ou publicação.
+
+Para aceitar, abra Planejamento no localhost com um administrador ativo, selecione um parceiro, gere uma proposta, recarregue e use Propostas salvas no cabeçalho para reabrir. Com uma conta comum, confira a ausência de Planejamento no menu, na busca e na página do parceiro e a recusa da URL direta.

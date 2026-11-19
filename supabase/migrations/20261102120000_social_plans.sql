@@ -15,9 +15,10 @@ CREATE TABLE IF NOT EXISTS public.social_plans (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
--- 2. Grants
-REVOKE ALL ON TABLE public.social_plans FROM anon;
-GRANT SELECT, INSERT, UPDATE, DELETE ON public.social_plans TO authenticated;
+-- 2. Data API grants. RLS further limits authenticated access to active admins.
+REVOKE ALL ON TABLE public.social_plans FROM PUBLIC, anon, authenticated;
+GRANT SELECT, INSERT, DELETE ON public.social_plans TO authenticated;
+GRANT UPDATE (mode, status, input, suggestions, version) ON public.social_plans TO authenticated;
 GRANT ALL ON TABLE public.social_plans TO service_role;
 
 -- 3. Indexes
@@ -25,81 +26,50 @@ CREATE INDEX IF NOT EXISTS idx_social_plans_partner_slug ON public.social_plans(
 CREATE INDEX IF NOT EXISTS idx_social_plans_user_id ON public.social_plans(user_id);
 CREATE INDEX IF NOT EXISTS idx_social_plans_updated_at ON public.social_plans(updated_at DESC);
 
--- 4. Partner authorization helper for RLS
-CREATE OR REPLACE FUNCTION public.can_access_partner(p_partner_slug text) RETURNS boolean
-LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
-  SELECT (
-    public.is_active_admin()
-    OR (
-      public.is_active_member()
-      AND EXISTS (
-        SELECT 1 FROM public.partners p
-        WHERE p.slug = p_partner_slug
-          AND p.archived = false
-          AND p.users_ids @> ARRAY[auth.uid()]
-      )
-    )
-  );
-$$;
-
-REVOKE ALL ON FUNCTION public.can_access_partner(text) FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.can_access_partner(text) TO authenticated, service_role;
-
--- 5. Row Level Security policies
+-- 4. Scope planning to active administrators and operational partners.
 ALTER TABLE public.social_plans ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS social_plans_select_policy ON public.social_plans;
 DROP POLICY IF EXISTS social_plans_insert_policy ON public.social_plans;
 DROP POLICY IF EXISTS social_plans_update_policy ON public.social_plans;
 DROP POLICY IF EXISTS social_plans_delete_policy ON public.social_plans;
+DROP POLICY IF EXISTS social_plans_admin_scope ON public.social_plans;
 
--- Read: Active admins or active members authorized to the partner
+CREATE POLICY social_plans_admin_scope ON public.social_plans
+  AS RESTRICTIVE
+  FOR ALL TO authenticated
+  USING (
+    (SELECT public.is_active_admin())
+    AND EXISTS (
+      SELECT 1 FROM public.partners AS partner
+      WHERE partner.slug = social_plans.partner_slug AND partner.archived = false
+    )
+  );
+
 CREATE POLICY social_plans_select_policy ON public.social_plans
-  FOR SELECT
-  TO authenticated
-  USING (
-    public.can_access_partner(partner_slug)
-  );
+  FOR SELECT TO authenticated
+  USING (true);
 
--- Insert: Must be the authenticated user and authorized to the partner
 CREATE POLICY social_plans_insert_policy ON public.social_plans
-  FOR INSERT
-  TO authenticated
-  WITH CHECK (
-    user_id = auth.uid()
-    AND public.can_access_partner(partner_slug)
-  );
+  FOR INSERT TO authenticated
+  WITH CHECK (user_id = (SELECT auth.uid()));
 
--- Update: Author or admin can update; cannot alter ownership or move to unauthorized partner
 CREATE POLICY social_plans_update_policy ON public.social_plans
-  FOR UPDATE
-  TO authenticated
-  USING (
-    public.is_active_admin()
-    OR (public.is_active_member() AND user_id = auth.uid() AND public.can_access_partner(partner_slug))
-  )
-  WITH CHECK (
-    user_id = auth.uid()
-    AND public.can_access_partner(partner_slug)
-  );
+  FOR UPDATE TO authenticated
+  USING (true) WITH CHECK (true);
 
--- Delete: Author or admin can delete
 CREATE POLICY social_plans_delete_policy ON public.social_plans
-  FOR DELETE
-  TO authenticated
-  USING (
-    public.is_active_admin()
-    OR (public.is_active_member() AND user_id = auth.uid())
-  );
+  FOR DELETE TO authenticated
+  USING (true);
 
--- 6. Trigger to automatically update updated_at timestamp
+-- 5. Track the server time of the last update.
 DROP TRIGGER IF EXISTS trg_touch_social_plans_updated_at ON public.social_plans;
 CREATE TRIGGER trg_touch_social_plans_updated_at
   BEFORE UPDATE ON public.social_plans
   FOR EACH ROW
   EXECUTE FUNCTION public.update_updated_at();
 
--- 7. Compare-And-Swap (CAS) versioned update function for atomic updates
+-- 6. Use the caller's permissions and compare the version in the update itself.
 CREATE OR REPLACE FUNCTION public.update_social_plan_versioned(
   p_id uuid,
   p_expected_version integer,
@@ -108,47 +78,36 @@ CREATE OR REPLACE FUNCTION public.update_social_plan_versioned(
   p_input jsonb DEFAULT NULL,
   p_suggestions jsonb DEFAULT NULL
 ) RETURNS public.social_plans
-LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+LANGUAGE plpgsql SECURITY INVOKER SET search_path = '' AS $$
 DECLARE
   v_plan public.social_plans;
+  v_current_version integer;
 BEGIN
-  -- Verify plan exists
-  SELECT * INTO v_plan FROM public.social_plans WHERE id = p_id;
+  IF NOT (SELECT public.is_active_admin()) THEN
+    RAISE EXCEPTION 'FORBIDDEN' USING ERRCODE = '42501';
+  END IF;
+
+  UPDATE public.social_plans AS plan
+  SET
+    mode = COALESCE(p_mode, plan.mode),
+    status = COALESCE(p_status, plan.status),
+    input = COALESCE(p_input, plan.input),
+    suggestions = COALESCE(p_suggestions, plan.suggestions),
+    version = plan.version + 1
+  WHERE plan.id = p_id AND plan.version = p_expected_version
+  RETURNING plan.* INTO v_plan;
+
+  IF FOUND THEN
+    RETURN v_plan;
+  END IF;
+
+  SELECT version INTO v_current_version FROM public.social_plans WHERE id = p_id;
   IF NOT FOUND THEN
     RAISE EXCEPTION 'PLAN_NOT_FOUND' USING ERRCODE = 'P0002';
   END IF;
 
-  -- Verify access according to RLS permissions
-  IF NOT (
-    public.is_active_admin()
-    OR (
-      public.is_active_member()
-      AND v_plan.user_id = auth.uid()
-      AND public.can_access_partner(v_plan.partner_slug)
-    )
-  ) THEN
-    RAISE EXCEPTION 'FORBIDDEN' USING ERRCODE = '42501';
-  END IF;
-
-  -- Version verification (Compare-And-Swap)
-  IF v_plan.version <> p_expected_version THEN
-    RAISE EXCEPTION 'VERSION_CONFLICT: current version is %', v_plan.version
-      USING ERRCODE = 'P0001', HINT = v_plan.version::text;
-  END IF;
-
-  -- Atomic update with incremented version
-  UPDATE public.social_plans
-  SET
-    mode = COALESCE(p_mode, v_plan.mode),
-    status = COALESCE(p_status, v_plan.status),
-    input = COALESCE(p_input, v_plan.input),
-    suggestions = COALESCE(p_suggestions, v_plan.suggestions),
-    version = v_plan.version + 1,
-    updated_at = now()
-  WHERE id = p_id
-  RETURNING * INTO v_plan;
-
-  RETURN v_plan;
+  RAISE EXCEPTION 'VERSION_CONFLICT: current version is %', v_current_version
+    USING ERRCODE = 'P0001', HINT = v_current_version::text;
 END;
 $$;
 

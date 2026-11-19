@@ -16,7 +16,7 @@ interface AdminGuardProps {
 export function AdminGuard({ children }: AdminGuardProps) {
   const { person } = useAppContext();
 
-  if (!person?.admin) {
+  if (!person?.admin || !person.visible) {
     return (
       <div className="mx-auto flex h-[70vh] w-full max-w-md flex-col items-center justify-center gap-4 p-8 text-center">
         <div className="flex size-14 items-center justify-center rounded-2xl bg-error-background text-error squircle">

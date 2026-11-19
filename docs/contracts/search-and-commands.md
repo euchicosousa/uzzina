@@ -14,6 +14,8 @@ Leia antes de mexer na busca global (filtros, resultados, comandos), em `PrismCo
 
 ## Comandos da busca
 
+- O comando Planejamento só aparece para administradores ativos. Preserva o parceiro autorizado do contexto e respeita as guardas de saída.
+
 Comandos da busca: conta, light/dark/system, início/Hoje/notificações/leads/ajuda e Sair ficam abaixo dos resultados. Administração somente para person.admin, usando cadastros/listas existentes. Navegação por comando e Sair validam closeAllActions; bloqueio mantém busca/ações. Persistência de tema pertence ao wrapper montado e usa usePreferencePersistence com retry, sem alterar paleta.
 
 Os comandos “Usar paleta” exibem a amostra da cor primária de cada paleta à esquerda do nome, no modo claro ou escuro ativo.

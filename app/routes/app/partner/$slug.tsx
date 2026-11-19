@@ -201,21 +201,23 @@ function PartnerPage() {
             <div className="hidden truncate p-0 py-2 text-lg font-medium sm:block">
               {partner.title}
             </div>
-            <PrismButton
-              aria-label={`Planejar conteúdo para ${partner.title}`}
-              className="shrink-0"
-              onClick={async () => {
-                if (!(await leaveOpenActions())) return;
-                await navigate({
-                  to: "/app/planejamento",
-                  search: { partner: partner.slug },
-                });
-              }}
-              size="icon-sm"
-              variant="ghost"
-            >
-              <CalendarRangeIcon />
-            </PrismButton>
+            {person.admin && person.visible && (
+              <PrismButton
+                aria-label={`Planejar conteúdo para ${partner.title}`}
+                className="shrink-0"
+                onClick={async () => {
+                  if (!(await leaveOpenActions())) return;
+                  await navigate({
+                    to: "/app/planejamento",
+                    search: { partner: partner.slug },
+                  });
+                }}
+                size="icon-sm"
+                variant="ghost"
+              >
+                <CalendarRangeIcon />
+              </PrismButton>
+            )}
             <Link
               params={{
                 slug: partner.slug,

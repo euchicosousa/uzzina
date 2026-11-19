@@ -22,7 +22,7 @@ export function isSocialPlan(data: unknown): data is SocialPlan {
 
 /**
  * Lists all social plans for a specific partner from Supabase.
- * RLS enforces that only authorized members/admins can read them.
+ * RLS limits access to active administrators and operational partners.
  */
 export async function listSocialPlansByPartner(
   supabase: SupabaseClient,
@@ -68,7 +68,7 @@ export async function getSocialPlanById(
 
 /**
  * Creates a new social plan in Supabase.
- * RLS enforces that the creator's user_id matches auth.uid().
+ * RLS requires an active administrator whose user_id matches auth.uid().
  */
 export async function createSocialPlanClient(
   supabase: SupabaseClient,

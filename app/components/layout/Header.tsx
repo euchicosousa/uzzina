@@ -676,13 +676,15 @@ export const HeaderMenu = ({
             Leads
           </PrismMenuItem>
 
-          <PrismMenuItem
-            onAction={() => onNavigate(planningTo)}
-            textValue="Planejamento"
-          >
-            <CalendarRangeIcon className="size-4" />
-            Planejamento
-          </PrismMenuItem>
+          {person.admin && person.visible && (
+            <PrismMenuItem
+              onAction={() => onNavigate(planningTo)}
+              textValue="Planejamento"
+            >
+              <CalendarRangeIcon className="size-4" />
+              Planejamento
+            </PrismMenuItem>
+          )}
 
           <PrismMenuItem
             onAction={() => onNavigate("/app/profile")}
