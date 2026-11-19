@@ -337,6 +337,16 @@ function mount(
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
   client.setQueryData(QUERY_KEYS.people("test-user"), []);
+  client.setQueryData(QUERY_KEYS.partnerTopics("test-user"), [
+    {
+      id: "topic",
+      partner_id: partner.id,
+      title: "Fixture",
+      color: "#666666",
+      position: 0,
+      created_at: "2026-10-06T10:00:00Z",
+    },
+  ]);
   const router = createRouter({
     routeTree: createRootRoute(),
     history: createMemoryHistory({ initialEntries: ["/app"] }),
@@ -536,14 +546,16 @@ it("Alt+F10 keeps every auxiliary control reachable with ordinary Tab", async ()
   await user.keyboard("{Alt>}{F10}{/Alt}");
   await user.tab();
   expect(document.activeElement === editor).toBe(true);
-  // The admin ID command moved to the footer; all-controls mode still reaches it.
+  // All-controls mode still reaches the auxiliary footer commands.
   await user.keyboard("{Alt>}{F10}{/Alt}");
-  const idCommand = screen.getByRole("button", { name: "Ver ID da ação" });
+  const duplicate = screen.getByRole("button", {
+    name: "Duplicar ação (Shift+D)",
+  });
   for (let step = 0; step < 15; step++) {
-    if (document.activeElement === idCommand) break;
+    if (document.activeElement === duplicate) break;
     await user.tab();
   }
-  expect(document.activeElement === idCommand).toBe(true);
+  expect(document.activeElement === duplicate).toBe(true);
 });
 
 it("a draft keeps title autofocus and reaches Create without a color field", async () => {
@@ -2102,10 +2114,10 @@ describe("phone-width action panel", () => {
     await user.click(expand);
     expect(expand.getAttribute("aria-expanded")).toBe("true");
     const responsibles = screen.getByRole("button", { name: "Responsáveis" });
-    // The ID command now lives in the footer strip (admin only), not in the
-    // collapsible details, and opens a dialog instead of toggling inline.
-    const idCommand = screen.getByRole("button", { name: "Ver ID da ação" });
-    expect(details.contains(idCommand)).toBe(false);
+    const duplicate = screen.getByRole("button", {
+      name: "Duplicar ação (Shift+D)",
+    });
+    expect(details.contains(duplicate)).toBe(false);
     expect(screen.getByRole("button", { name: /estratégia/i })).toBeTruthy();
     expect(screen.getByRole("button", { name: /^Arquivos/ })).toBeTruthy();
     const expanded = await visitUntilEditor();
@@ -2119,7 +2131,8 @@ describe("phone-width action panel", () => {
       screen.getByRole("button", { name: "Responsáveis" }) === responsibles,
     ).toBe(true);
     expect(
-      screen.getByRole("button", { name: "Ver ID da ação" }) === idCommand,
+      screen.getByRole("button", { name: "Duplicar ação (Shift+D)" }) ===
+        duplicate,
     ).toBe(true);
     expect(writes).toEqual([]);
   });
@@ -2163,7 +2176,6 @@ describe("phone-width action panel", () => {
       screen.getByRole("button", { name: /^Categoria:/ }),
       screen.getByRole("button", { name: /^Tópico:/ }),
       screen.getByRole("button", { name: "Sprints" }),
-      screen.getByRole("button", { name: "Ver ID da ação" }),
       screen.getByRole("button", { name: "Duplicar ação (Shift+D)" }),
       screen.getByRole("button", { name: "Arquivar ação" }),
     ]);
@@ -2176,9 +2188,8 @@ describe("phone-width action panel", () => {
     mount(draft({ archived: true, description: "<p></p>" }));
     await descriptionEditor();
     expectSameElements(
-      within(footerStrip().strip).getAllByRole("button").slice(-3),
+      within(footerStrip().strip).getAllByRole("button").slice(-2),
       [
-        screen.getByRole("button", { name: "Ver ID da ação" }),
         screen.getByRole("button", { name: "Duplicar ação (Shift+D)" }),
         screen.getByRole("button", { name: "Desarquivar ação" }),
       ],
@@ -2352,7 +2363,7 @@ describe("phone-width action panel", () => {
     ).toBeTruthy();
     await userEvent
       .setup()
-      .click(media.getByRole("button", { name: "Gerenciar" }));
+      .click(media.getByRole("button", { name: "Gerenciar arquivos" }));
     expect(
       await screen.findByRole("heading", { name: "Arquivos" }),
     ).toBeTruthy();
@@ -2674,7 +2685,7 @@ describe("phone-width action panel", () => {
     expect(instagramEditor(scroller) === editor).toBe(true);
     expect(within(scroller).getByText("Nenhum conteúdo")).toBeTruthy();
     expect(
-      within(scroller).getByRole("button", { name: "Gerenciar" }),
+      within(scroller).getByRole("button", { name: "Adicionar conteúdo" }),
     ).toBeTruthy();
   });
 

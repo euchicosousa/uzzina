@@ -9,7 +9,6 @@ import {
 import { AppContext } from "~/contexts/AppContext";
 import { TodayPageView } from "~/components/features/today/TodayPageView";
 import { HomeTodayView } from "~/components/features/home/HomeTodayView";
-import { WorkFileThumbnail } from "~/components/features/media/WorkFileThumbnail";
 import {
   CalendarTestProviders,
   calendarAction,
@@ -44,20 +43,6 @@ const partner: Partner = {
 function Fixture() {
   const [opened, setOpened] = useState<Action[]>([]);
   const [day, setDay] = useState(new Date(2026, 9, 30, 12));
-  const [removed, setRemoved] = useState(false);
-  if (params.has("inventory"))
-    return (
-      <div className="p-8">
-        <button type="button">Before</button>
-        {!removed && (
-          <WorkFileThumbnail
-            url="https://files.test.invalid/example.pdf"
-            onRemove={() => setRemoved(true)}
-          />
-        )}
-        <output data-testid="removed">{String(removed)}</output>
-      </div>
-    );
   const actions = params.has("empty")
     ? []
     : Array.from({ length: 35 }, (_, i) =>

@@ -185,28 +185,6 @@ const engines = require(process.env.PLAYWRIGHT_MODULE || "playwright");
         );
         groups++;
       }
-    await freshPage(390);
-    await page.goto(`${base}/__today-focus-check?inventory`);
-    await page.getByRole("link", { name: "Abrir anexo" }).waitFor();
-    await page.waitForLoadState("networkidle");
-    await page.mouse.move(0, 0);
-    await page.getByRole("link", { name: "Abrir anexo" }).focus();
-    const remove = page.getByRole("button", { name: "Remover anexo" });
-    check(
-      await remove.isVisible(),
-      "WorkFileThumbnail does not reveal removal on link focus",
-    );
-    await page.keyboard.press("Tab");
-    check(
-      await remove.evaluate((el) => el === document.activeElement),
-      "WorkFileThumbnail removal is skipped by Tab",
-    );
-    await page.keyboard.press("Enter");
-    check(
-      (await page.getByTestId("removed").textContent()) === "true",
-      "WorkFileThumbnail keyboard removal failed",
-    );
-    groups++;
     assert.deepEqual(errors, []);
     assert.deepEqual(failures, []);
     console.log(

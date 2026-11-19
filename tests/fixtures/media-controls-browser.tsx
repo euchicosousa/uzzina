@@ -3,6 +3,7 @@ import { useState } from "react";
 import { FileManagerDialog } from "~/components/features/media/FileManagerDialog";
 import "~/tailwind.css";
 
+const mode = new URLSearchParams(location.search).get("mode");
 const FILE = "https://media.test.invalid/first.jpg";
 window.cloudinary = {
   createUploadWidget: () => ({ open() {}, destroy() {} }),
@@ -27,6 +28,8 @@ function Fixture() {
         onChange={setFiles}
         cloudName="test"
         uploadPreset="test"
+        directUpload={mode !== "portal"}
+        workFiles={mode !== "instagram"}
       />
     </>
   );

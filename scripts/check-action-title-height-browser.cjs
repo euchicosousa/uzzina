@@ -112,7 +112,10 @@ await import('/tests/fixtures/action-title-height-browser.tsx');
           if (JSON.stringify(editing) !== JSON.stringify(before)) {
             failures.push({ label, before, editing });
           }
-          assert.match(await card.getAttribute("class"), /focus-within:ring-2/);
+          assert.match(
+            await card.getAttribute("class"),
+            /focus-within:outline-2/,
+          );
           await input.fill("Changed title");
           await input.press("Escape");
           await card

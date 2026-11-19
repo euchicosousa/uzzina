@@ -181,6 +181,14 @@ function SortableThumbnail({
           "absolute top-1 left-1 z-10 cursor-grab touch-none bg-transparent image-icon transition-opacity hover:bg-transparent hover:no-underline active:cursor-grabbing",
           showHandle,
         )}
+        onKeyDown={(event) => {
+          listeners?.onKeyDown?.(event);
+          event.continuePropagation();
+        }}
+        // Keep the document-level drag sensor reachable for Space and Enter.
+        onPressStart={(event) => {
+          if (event.pointerType === "keyboard") event.continuePropagation();
+        }}
         size={"icon-xs"}
         variant={"link"}
       >
@@ -400,6 +408,7 @@ export function FileManagerDialog({
   }, [directUpload, files, open, resetVersion, resetReading]);
 
   const addRef = useRef<HTMLDivElement>(null);
+  const finishRef = useRef<HTMLButtonElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const inputId = useId();
   const [dragging, setDragging] = useState(false);
@@ -543,6 +552,7 @@ export function FileManagerDialog({
   function undoDelete() {
     if (!undo) return;
     const restored = undo.items;
+    finishRef.current?.focus();
     setUndo(null);
     commit(restored);
   }
@@ -979,7 +989,11 @@ export function FileManagerDialog({
             </PrismToggleGroup>
           )}
           {!selecting && (
-            <PrismButton size="sm" onClick={() => onOpenChange(false)}>
+            <PrismButton
+              ref={finishRef}
+              size="sm"
+              onClick={() => onOpenChange(false)}
+            >
               {directUpload && uploads.entries.some((entry) => !entry.error)
                 ? "Fechar janela"
                 : "Concluir"}

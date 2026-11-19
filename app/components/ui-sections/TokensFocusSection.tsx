@@ -194,7 +194,7 @@ export function TokensFocusSection() {
               "features/ComboboxTrigger.tsx (ghost icon-lg no rodapé da gaveta: anel padrão do PrismButton)",
               "features/action-drawer/ActionDatePicker.tsx (data da gaveta: ghost sm com anel padrão do PrismButton)",
               "features/PartnersCombobox.tsx e busca global (filtro de parceiros: foco padrão do Prism)",
-              "features/media/FileManagerDialog.tsx (alça e caixa de seleção, classe image-icon) e WorkFileThumbnail.tsx (remover e link da miniatura)",
+              "features/media/FileManagerDialog.tsx (alça e caixa de seleção, classe image-icon)",
               "features/ActionItem.tsx (cartão: focus-within:outline-2 outline-primary, exceção aprovada)",
               "routes/app/admin/partner/$slug.tsx (editores de texto: focus-within)",
             ]}
@@ -337,17 +337,6 @@ export function TokensFocusSection() {
                   ),
                 )}
               </div>
-            </Example>
-            <Example
-              label="Miniatura de anexo"
-              source="Réplica de features/media/WorkFileThumbnail.tsx"
-            >
-              <a
-                className="block size-20 rounded-2xl border border-transparent bg-secondary outline-none squircle focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30"
-                href="#tokens-focus"
-              >
-                Arquivo
-              </a>
             </Example>
             <Example
               label="Editor de texto (focus-within)"
