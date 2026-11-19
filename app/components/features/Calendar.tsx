@@ -44,31 +44,48 @@ export function CalendarActions({
     reserveAppBarSpace,
   } = layoutOptions;
   return (
+    <CalendarGrid reserveAppBarSpace={reserveAppBarSpace}>
+      {calendar.map((day, i) => {
+        const isLastRow = i >= Math.floor((calendar.length - 1) / 7) * 7;
+        return (
+          <CalendarDayCell
+            key={format(day.date, "yyyy-MM-dd")}
+            actions={day.actions || []}
+            celebrations={day.celebrations}
+            partnerCelebrations={layoutOptions.partnerCelebrations}
+            currentDay={currentDay}
+            day={day.date}
+            highlightThisWeek={highlightThisWeek}
+            onCreateAction={onCreateAction}
+            renderDayLabel={renderDayLabel}
+            showBorder={hideBorderOnLastRow && isLastRow ? false : showBorder}
+            viewOptions={viewOptions}
+          />
+        );
+      })}
+    </CalendarGrid>
+  );
+}
+
+export function CalendarGrid({
+  children,
+  compact = false,
+  reserveAppBarSpace = false,
+}: {
+  children: ReactNode;
+  compact?: boolean;
+  reserveAppBarSpace?: boolean;
+}) {
+  return (
     <div className="w-full shrink-0 overflow-x-auto">
-      <div className="flex w-full min-w-375 flex-col lg:min-w-225">
+      <div
+        className={cn(
+          "flex w-full flex-col",
+          compact ? "min-w-120" : "min-w-375 lg:min-w-225",
+        )}
+      >
         <WeekHeader />
-        <div className="grid grid-cols-7 items-stretch">
-          {calendar.map((day, i) => {
-            const isLastRow = i >= Math.floor((calendar.length - 1) / 7) * 7;
-            return (
-              <CalendarDayCell
-                key={format(day.date, "yyyy-MM-dd")}
-                actions={day.actions || []}
-                celebrations={day.celebrations}
-                partnerCelebrations={layoutOptions.partnerCelebrations}
-                currentDay={currentDay}
-                day={day.date}
-                highlightThisWeek={highlightThisWeek}
-                onCreateAction={onCreateAction}
-                renderDayLabel={renderDayLabel}
-                showBorder={
-                  hideBorderOnLastRow && isLastRow ? false : showBorder
-                }
-                viewOptions={viewOptions}
-              />
-            );
-          })}
-        </div>
+        <div className="grid grid-cols-7 items-stretch">{children}</div>
         {reserveAppBarSpace && <AppBarSpacer />}
       </div>
     </div>

@@ -12,6 +12,10 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { z } from "zod";
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { PlanningCalendarView } from "~/components/planning/PlanningCalendarView";
+import {
+  PlanningPreview,
+  PLANNING_FORMAT_LABELS,
+} from "~/components/planning/PlanningPreview";
 import { PlanningSuggestionsList } from "~/components/planning/PlanningSuggestionsList";
 import {
   PrismBadge,
@@ -22,11 +26,6 @@ import {
   PrismLabel,
   PrismRadio,
   PrismRadioGroup,
-  PrismSelect,
-  PrismSelectContent,
-  PrismSelectItem,
-  PrismSelectTrigger,
-  PrismSelectValue,
   PrismSlider,
   PrismSliderFill,
   PrismSliderThumb,
@@ -38,18 +37,27 @@ import {
   PrismTextarea,
   PrismToggle,
 } from "~/components/prism";
+import { UPartnersCombobox } from "~/components/uzzina/UPartnersCombobox";
 import { useAppContext, useLeaveOpenActions } from "~/contexts/AppContext";
 import { useFillScrollViewport } from "~/hooks/useFillScrollViewport";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { finalizeSocialPlan } from "~/lib/social-planning/finalizer";
 import { generateSocialPlan } from "~/lib/social-planning/generator";
 import {
-  distributeFormats,
+  MAX_PLANNING_PERIOD_DAYS,
   mergeCommemorativeSlots,
-  validateFormatDistribution,
+  normalizePlanningFormats,
+  PLANNING_FORMATS,
+  redistributePlanningFormats,
+  sequencePlanningFormats,
+  type PlanningFormatCounts,
   validatePeriodInput,
 } from "~/lib/social-planning/slot-calculator";
-import type { PlanSuggestion, SocialPlan } from "~/lib/social-planning/types";
+import type {
+  PlanFormat,
+  PlanSuggestion,
+  SocialPlan,
+} from "~/lib/social-planning/types";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { fetchCelebrations } from "~/lib/supabase.queries";
 import {
@@ -63,6 +71,8 @@ export const Route = createFileRoute("/app/planejamento")({
   validateSearch: z.object({ partner: z.string().optional() }),
   component: PlanningPage,
 });
+
+const EMPTY_CELEBRATIONS: Awaited<ReturnType<typeof fetchCelebrations>> = [];
 
 const DAYS_OF_WEEK = [
   { id: "dom", label: "Dom", full: "Domingo" },
@@ -103,10 +113,14 @@ function PlanningPage() {
   const [themeCount, setThemeCount] = useState(6);
   const [themeDirection, setThemeDirection] = useState("");
 
-  const [formatMode, setFormatMode] = useState<string>("auto");
-  const [reelsCount, setReelsCount] = useState(2);
-  const [staticCount, setStaticCount] = useState(2);
-  const [carouselCount, setCarouselCount] = useState(2);
+  const [manualFormats, setManualFormats] =
+    useState<PlanningFormatCounts | null>(null);
+  const formatEdit = useRef<{
+    index: number;
+    direction: number;
+    total: number;
+    baseline: PlanningFormatCounts;
+  } | null>(null);
 
   const [considerHolidays, setConsiderHolidays] = useState(false);
   const [selectedCelebrationIds, setSelectedCelebrationIds] = useState<
@@ -114,7 +128,7 @@ function PlanningPage() {
   >([]);
 
   // Query celebrations
-  const { data: celebrations = [] } = useQuery({
+  const { data: celebrations = EMPTY_CELEBRATIONS } = useQuery({
     queryKey: QUERY_KEYS.celebrations(person.user_id),
     queryFn: fetchCelebrations,
     staleTime: 30 * 60 * 1000,
@@ -134,11 +148,14 @@ function PlanningPage() {
   // Limpa IDs de celebrações fora do período ou quando a opção é desmarcada (C03)
   useEffect(() => {
     if (!considerHolidays) {
-      setSelectedCelebrationIds([]);
+      setSelectedCelebrationIds((prev) => (prev.length ? [] : prev));
       return;
     }
     const validIds = new Set(periodCelebrations.map((c) => c.id));
-    setSelectedCelebrationIds((prev) => prev.filter((id) => validIds.has(id)));
+    setSelectedCelebrationIds((prev) => {
+      const next = prev.filter((id) => validIds.has(id));
+      return next.length === prev.length ? prev : next;
+    });
   }, [periodCelebrations, considerHolidays]);
 
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
@@ -160,31 +177,59 @@ function PlanningPage() {
     });
   }, [startDate, endDate, postsPerWeek, selectedDays]);
 
-  // Validação estrita de formatos (C04, T03)
-  const formatValidation = useMemo(() => {
-    const regularTarget =
-      mode === "period" ? periodValidation.calculatedSlots.length : themeCount;
-    return validateFormatDistribution({
-      formatMode: formatMode as "auto" | "manual",
-      targetCount: regularTarget,
-      reelsCount,
-      staticCount,
-      carouselCount,
-    });
-  }, [
-    mode,
-    periodValidation.calculatedSlots.length,
-    themeCount,
-    formatMode,
-    reelsCount,
-    staticCount,
-    carouselCount,
-  ]);
-
-  const isFormInvalid =
+  const total =
     mode === "period"
-      ? !periodValidation.isValid || !formatValidation.isValid
-      : !themeCount || themeCount <= 0 || !formatValidation.isValid;
+      ? periodValidation.calculatedSlots.length
+      : Number.isInteger(themeCount) && themeCount > 0 && themeCount <= 30
+        ? themeCount
+        : 0;
+  const formatMode = manualFormats ? "manual" : "auto";
+  const formatCounts = normalizePlanningFormats(total, manualFormats);
+  const regularFormats = sequencePlanningFormats(formatCounts);
+  const slots =
+    mode === "period" && periodValidation.isValid
+      ? mergeCommemorativeSlots({
+          slots: periodValidation.calculatedSlots,
+          celebrations: periodCelebrations,
+          selectedCelebrationIds: considerHolidays
+            ? selectedCelebrationIds
+            : [],
+          startDate,
+          endDate,
+        })
+      : [];
+  let regularIndex = 0;
+  const formats: PlanFormat[] =
+    mode === "period"
+      ? slots.map((slot) =>
+          slot.isExtra ? "carousel" : regularFormats[regularIndex++],
+        )
+      : regularFormats;
+  const itemsByDate = new Map<string, PlanFormat[]>();
+  slots.forEach((slot, index) => {
+    const items = itemsByDate.get(slot.date) ?? [];
+    items.push(formats[index]);
+    itemsByDate.set(slot.date, items);
+  });
+
+  const direction = (
+    mode === "period" ? periodDirection : themeDirection
+  ).trim();
+  const isFormInvalid = !total || !direction;
+
+  const changeFormatQuantity = (index: 0 | 1 | 2, quantity: number) => {
+    const direction = Math.sign(quantity - formatCounts[index]);
+    if (!direction) return;
+    const edit = formatEdit.current;
+    const baseline =
+      edit?.index === index &&
+      edit.direction === direction &&
+      edit.total === total
+        ? edit.baseline
+        : formatCounts;
+    formatEdit.current = { index, direction, total, baseline };
+    setManualFormats(redistributePlanningFormats(baseline, index, quantity));
+  };
 
   // Propostas salvas no Supabase com autorização real por parceiro (T02)
   const { data: savedPlans = [], refetch: refetchSavedPlans } = useQuery({
@@ -204,10 +249,11 @@ function PlanningPage() {
     enabled: Boolean(selectedPartner?.slug),
   });
 
-  // Limpa estado da proposta aberta ao trocar de parceiro (C06)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: changing partners invalidates the open plan and its feedback.
   useEffect(() => {
     setCurrentPlan(null);
     setFeedbackMessage(null);
+    formatEdit.current = null;
   }, [selectedPartner?.slug]);
 
   // Reabertura canônica de proposta anterior com restauração completa (C06)
@@ -216,6 +262,7 @@ function PlanningPage() {
       setFeedbackMessage("Esta proposta não pertence ao parceiro selecionado.");
       return;
     }
+    formatEdit.current = null;
     setFeedbackMessage(null);
     setCurrentPlan(plan);
 
@@ -232,12 +279,21 @@ function PlanningPage() {
     if (typeof input.themeCount === "number") setThemeCount(input.themeCount);
     if (typeof input.themeDirection === "string")
       setThemeDirection(input.themeDirection);
-    if (typeof input.formatMode === "string") setFormatMode(input.formatMode);
-    if (typeof input.reelsCount === "number") setReelsCount(input.reelsCount);
-    if (typeof input.staticCount === "number")
-      setStaticCount(input.staticCount);
-    if (typeof input.carouselCount === "number")
-      setCarouselCount(input.carouselCount);
+    const savedCounts = [
+      input.staticCount,
+      input.carouselCount,
+      input.reelsCount,
+    ].map((count) =>
+      typeof count === "number" && Number.isSafeInteger(count) && count >= 0
+        ? count
+        : 0,
+    );
+    setManualFormats(
+      input.formatMode === "manual"
+        ? [savedCounts[0], savedCounts[1], savedCounts[2]]
+        : null,
+    );
+
     if (typeof input.considerHolidays === "boolean")
       setConsiderHolidays(input.considerHolidays);
     if (Array.isArray(input.selectedCelebrationIds))
@@ -246,59 +302,19 @@ function PlanningPage() {
 
   // Manipulador de geração
   const handleGenerate = async () => {
-    if (!selectedPartner) return;
+    if (!selectedPartner || isFormInvalid) return;
     setFeedbackMessage(null);
 
     try {
+      setIsGenerating(true);
+      const [staticCount, carouselCount, reelsCount] = formatCounts;
       if (mode === "period") {
-        const validation = validatePeriodInput({
-          startDate,
-          endDate,
-          postsPerWeek,
-          selectedDays,
-        });
-
-        if (!validation.isValid) {
-          setFeedbackMessage(
-            validation.error || "Configuração de período inválida.",
-          );
-          return;
-        }
-
-        if (!formatValidation.isValid) {
-          setFeedbackMessage(
-            formatValidation.error || "Distribuição de formatos inválida.",
-          );
-          return;
-        }
-
-        setIsGenerating(true);
-        const rawSlots = validation.calculatedSlots;
-
-        const slots = considerHolidays
-          ? mergeCommemorativeSlots({
-              slots: rawSlots,
-              celebrations: periodCelebrations,
-              selectedCelebrationIds,
-              startDate,
-              endDate,
-            })
-          : rawSlots.map((d) => ({ date: d }));
-
-        const formats = distributeFormats({
-          totalCount: slots.length,
-          formatMode: formatMode as "auto" | "manual",
-          reelsCount,
-          staticCount,
-          carouselCount,
-        });
-
         const inputPayload = {
           startDate,
           endDate,
           postsPerWeek,
           selectedDays,
-          periodDirection,
+          periodDirection: direction,
           formatMode,
           reelsCount,
           staticCount,
@@ -333,17 +349,9 @@ function PlanningPage() {
         setCurrentPlan(createdPlan);
         refetchSavedPlans();
       } else {
-        const formats = distributeFormats({
-          totalCount: themeCount,
-          formatMode: formatMode as "auto" | "manual",
-          reelsCount,
-          staticCount,
-          carouselCount,
-        });
-
         const inputPayload = {
           themeCount,
-          themeDirection,
+          themeDirection: direction,
           formatMode,
           reelsCount,
           staticCount,
@@ -493,10 +501,21 @@ function PlanningPage() {
       className="relative mx-2 flex min-h-0 flex-col overflow-hidden border-x lg:mx-8"
     >
       <header className="flex shrink-0 items-center justify-between gap-4 border-b px-4 py-3 lg:px-8">
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 flex-wrap items-center gap-3">
           <h1 className="truncate text-2xl font-semibold text-foreground">
             Planejamento
           </h1>
+          <UPartnersCombobox
+            selectedPartners={selectedPartner ? [selectedPartner.slug] : []}
+            selectionMode="single"
+            showText
+            size="sm"
+            onSelect={async ([partner]) => {
+              if (partner === partnerSlug || !(await leaveOpenActions()))
+                return;
+              await navigate({ search: { partner } });
+            }}
+          />
           {currentPlan && (
             <PrismBadge variant="secondary">
               {currentPlan.mode === "period" ? "Por período" : "Por tema"}
@@ -534,52 +553,21 @@ function PlanningPage() {
             className="min-h-0 overflow-y-auto overscroll-contain px-6 py-6 xl:px-8"
           >
             <div className="grid gap-8">
-              {/* Parceiro */}
-              <div className="grid gap-2.5">
-                <PrismLabel htmlFor="planning-partner">Parceiro</PrismLabel>
-                <PrismSelect
-                  aria-label="Parceiro do planejamento"
-                  className="w-full min-w-0"
-                  onSelectionChange={async (key) => {
-                    if (!(await leaveOpenActions())) return;
-                    await navigate({
-                      search: key
-                        ? { partner: String(key) }
-                        : { partner: undefined },
-                    });
-                  }}
-                  selectedKey={selectedPartner?.slug ?? null}
-                >
-                  <PrismSelectTrigger className="w-full" id="planning-partner">
-                    <PrismSelectValue>
-                      {({ selectedItems, selectedText }) =>
-                        selectedItems.length > 0
-                          ? selectedText
-                          : "Escolha um parceiro"
-                      }
-                    </PrismSelectValue>
-                  </PrismSelectTrigger>
-                  <PrismSelectContent>
-                    {partners.map((partner) => (
-                      <PrismSelectItem key={partner.slug} id={partner.slug}>
-                        {partner.title}
-                      </PrismSelectItem>
-                    ))}
-                  </PrismSelectContent>
-                </PrismSelect>
-                {partnerSlug && !selectedPartner && (
-                  <p className="text-sm text-secondary-foreground">
-                    Esse parceiro não está disponível para sua conta. Escolha
-                    outro parceiro autorizado.
-                  </p>
-                )}
-              </div>
+              {partnerSlug && !selectedPartner && (
+                <p className="text-sm text-secondary-foreground">
+                  Esse parceiro não está disponível para sua conta. Escolha
+                  outro parceiro autorizado no cabeçalho.
+                </p>
+              )}
 
               {/* Modo de planejamento */}
               <div className="grid gap-3">
                 <PrismTabs
                   className="w-full"
-                  onSelectionChange={(key) => setMode(String(key))}
+                  onSelectionChange={(key) => {
+                    formatEdit.current = null;
+                    setMode(String(key));
+                  }}
                   selectedKey={mode}
                 >
                   <PrismTabList
@@ -599,7 +587,9 @@ function PlanningPage() {
                     <Field id="planning-period" label="Período">
                       <PrismDateRangePicker
                         id="planning-period"
+                        maxRangeDays={MAX_PLANNING_PERIOD_DAYS}
                         onChange={(range) => {
+                          formatEdit.current = null;
                           setStartDate(range.startDateString);
                           setEndDate(range.endDateString);
                         }}
@@ -627,7 +617,9 @@ function PlanningPage() {
                         maxValue={7}
                         minValue={1}
                         onChange={(val) => {
-                          if (typeof val === "number") setPostsPerWeek(val);
+                          if (typeof val !== "number") return;
+                          formatEdit.current = null;
+                          setPostsPerWeek(val);
                         }}
                         value={postsPerWeek}
                       >
@@ -657,6 +649,7 @@ function PlanningPage() {
                               isSelected={isSelected}
                               key={day.id}
                               onChange={() => {
+                                formatEdit.current = null;
                                 setSelectedDays((prev) =>
                                   prev.includes(day.id)
                                     ? prev.filter((d) => d !== day.id)
@@ -692,11 +685,12 @@ function PlanningPage() {
                     {/* Direcionamento explícito (período) */}
                     <Field
                       id="planning-period-direction"
-                      label="Direcionamento (opcional)"
+                      label="Direcionamento (obrigatório)"
                     >
                       <PrismTextarea
                         className="min-h-24"
                         id="planning-period-direction"
+                        required
                         onChange={(e) => setPeriodDirection(e.target.value)}
                         placeholder="Orientações estratégicas, foco do período ou campanhas a enfatizar"
                         value={periodDirection}
@@ -718,9 +712,10 @@ function PlanningPage() {
                         id="planning-theme-count"
                         max={30}
                         min={1}
-                        onChange={(e) =>
-                          setThemeCount(Number(e.target.value) || 1)
-                        }
+                        onChange={(e) => {
+                          formatEdit.current = null;
+                          setThemeCount(Number(e.target.value) || 1);
+                        }}
                         type="number"
                         value={themeCount}
                       />
@@ -728,11 +723,12 @@ function PlanningPage() {
 
                     <Field
                       id="planning-theme-direction"
-                      label="Tema e direcionamento"
+                      label="Tema e direcionamento (obrigatório)"
                     >
                       <PrismTextarea
                         className="min-h-28"
                         id="planning-theme-direction"
+                        required
                         onChange={(e) => setThemeDirection(e.target.value)}
                         placeholder="Descreva o tema, campanha ou assuntos a abordar neste lote de propostas"
                         value={themeDirection}
@@ -750,7 +746,10 @@ function PlanningPage() {
                 <PrismRadioGroup
                   aria-label="Distribuição de formatos"
                   className="flex flex-row flex-wrap gap-5 text-sm"
-                  onChange={(val) => setFormatMode(String(val))}
+                  onChange={(val) => {
+                    formatEdit.current = null;
+                    setManualFormats(val === "manual" ? formatCounts : null);
+                  }}
                   value={formatMode}
                 >
                   <PrismRadio value="auto">Distribuição automática</PrismRadio>
@@ -758,46 +757,37 @@ function PlanningPage() {
                 </PrismRadioGroup>
 
                 {formatMode === "manual" && (
-                  <div className="grid grid-cols-3 gap-3 pt-2">
-                    <Field id="format-reels" label="Reels">
-                      <PrismInput
-                        id="format-reels"
-                        min={0}
-                        onChange={(e) =>
-                          setReelsCount(Number(e.target.value) || 0)
-                        }
-                        type="number"
-                        value={reelsCount}
-                      />
-                    </Field>
-                    <Field id="format-static" label="Estáticos">
-                      <PrismInput
-                        id="format-static"
-                        min={0}
-                        onChange={(e) =>
-                          setStaticCount(Number(e.target.value) || 0)
-                        }
-                        type="number"
-                        value={staticCount}
-                      />
-                    </Field>
-                    <Field id="format-carousel" label="Carrosséis">
-                      <PrismInput
-                        id="format-carousel"
-                        min={0}
-                        onChange={(e) =>
-                          setCarouselCount(Number(e.target.value) || 0)
-                        }
-                        type="number"
-                        value={carouselCount}
-                      />
-                    </Field>
+                  <div className="grid gap-2">
+                    {PLANNING_FORMATS.map((item, index) => {
+                      const sliderIndex = index as 0 | 1 | 2;
+                      const label = PLANNING_FORMAT_LABELS[item];
+                      return (
+                        <PrismSlider
+                          key={item}
+                          aria-label={label}
+                          isDisabled={!total}
+                          maxValue={total || 1}
+                          minValue={0}
+                          onChange={(value) => {
+                            if (typeof value === "number")
+                              changeFormatQuantity(sliderIndex, value);
+                          }}
+                          value={formatCounts[sliderIndex]}
+                        >
+                          <div className="flex justify-between gap-2 text-sm">
+                            <PrismLabel>{label}</PrismLabel>
+                            <span className="tabular-nums">
+                              {formatCounts[sliderIndex]}
+                            </span>
+                          </div>
+                          <PrismSliderTrack>
+                            <PrismSliderFill />
+                            <PrismSliderThumb />
+                          </PrismSliderTrack>
+                        </PrismSlider>
+                      );
+                    })}
                   </div>
-                )}
-                {formatMode === "manual" && !formatValidation.isValid && (
-                  <p className="text-xs font-medium text-error">
-                    {formatValidation.error}
-                  </p>
                 )}
               </div>
 
@@ -985,19 +975,17 @@ function PlanningPage() {
                     />
                   )
                 ) : (
-                  <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
-                    <div className="max-w-md">
-                      <h2 className="text-base font-semibold text-foreground">
-                        Mesa de Planejamento
-                      </h2>
-                      <p className="mt-2 text-sm text-secondary-foreground">
-                        Defina as configurações na coluna à esquerda e clique em{" "}
-                        <strong className="text-foreground">
-                          Gerar planejamento
-                        </strong>{" "}
-                        para criar sugestões inteligentes.
-                      </p>
-
+                  <div>
+                    <PlanningPreview
+                      formats={formats}
+                      itemsByDate={itemsByDate}
+                      period={
+                        mode === "period"
+                          ? { start: startDate, end: endDate }
+                          : null
+                      }
+                    />
+                    <div className="px-6 pb-4">
                       {/* Lista de propostas salvas para reabertura (Ticket 01) */}
                       {savedPlans.length > 0 && (
                         <div className="mt-8 border-t border-border pt-6 text-left">

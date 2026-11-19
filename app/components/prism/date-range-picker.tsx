@@ -35,6 +35,7 @@ export interface PrismDateRangePickerProps {
   onChange?: (range: DateRangeValue) => void;
   isDisabled?: boolean;
   numberOfMonths?: number;
+  maxRangeDays?: number;
   placeholder?: string;
   size?: "sm" | "default" | "lg";
   cellSize?: "sm" | "default" | "lg";
@@ -71,6 +72,7 @@ export function PrismDateRangePicker({
   onChange,
   isDisabled = false,
   numberOfMonths = 1,
+  maxRangeDays,
   placeholder = "Selecione o período",
   size = "default",
   cellSize,
@@ -145,6 +147,17 @@ export function PrismDateRangePicker({
         >
           <PrismRangeCalendar
             cellSize={cellSize}
+            isDateUnavailable={
+              maxRangeDays
+                ? (date, anchorDate) =>
+                    anchorDate !== null &&
+                    (date.compare(
+                      anchorDate.subtract({ days: maxRangeDays - 1 }),
+                    ) < 0 ||
+                      date.compare(anchorDate.add({ days: maxRangeDays - 1 })) >
+                        0)
+                : undefined
+            }
             numberOfMonths={numberOfMonths}
             onChange={(range) => {
               if (range?.start && range?.end) {

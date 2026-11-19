@@ -1,4 +1,9 @@
-import { addDays, eachDayOfInterval, format, getDay } from "date-fns";
+import {
+  differenceInCalendarDays,
+  eachDayOfInterval,
+  format,
+  getDay,
+} from "date-fns";
 import type { PlanFormat } from "./types";
 import { parseU } from "~/utils";
 
@@ -27,6 +32,13 @@ export interface PeriodValidationResult {
   isValid: boolean;
   error?: string;
   calculatedSlots: string[];
+}
+
+export const MAX_PLANNING_PERIOD_DAYS = 60;
+export const PLANNING_PERIOD_LIMIT_MESSAGE = `Selecione um período de até ${MAX_PLANNING_PERIOD_DAYS} dias.`;
+
+export function isPlanningPeriodTooLong(start: Date, end: Date) {
+  return differenceInCalendarDays(end, start) >= MAX_PLANNING_PERIOD_DAYS;
 }
 
 /**
@@ -79,6 +91,14 @@ export function validatePeriodInput({
     return {
       isValid: false,
       error: "A data de início não pode ser posterior à data de fim.",
+      calculatedSlots: [],
+    };
+  }
+
+  if (isPlanningPeriodTooLong(start, end)) {
+    return {
+      isValid: false,
+      error: PLANNING_PERIOD_LIMIT_MESSAGE,
       calculatedSlots: [],
     };
   }
@@ -156,39 +176,98 @@ export function calculatePeriodSlots({
 
   if (targetDayIndices.size === 0) return [];
 
-  // Agrupa dias por semana calendário (começando no domingo)
-  const allDays = eachDayOfInterval({ start, end });
-  const weeklyBuckets: Map<string, Date[]> = new Map();
+  const preferredDays = [...targetDayIndices].sort((a, b) => a - b);
+  const base = Math.floor(postsPerWeek / preferredDays.length);
+  const remainder = postsPerWeek % preferredDays.length;
+  const extraPositions = new Set(
+    Array.from({ length: remainder }, (_, index) =>
+      remainder === 1
+        ? 0
+        : Math.round((index * (preferredDays.length - 1)) / (remainder - 1)),
+    ),
+  );
+  const countsByDay = new Map(
+    preferredDays.map((day, index) => [
+      day,
+      base + Number(extraPositions.has(index)),
+    ]),
+  );
 
-  for (const day of allDays) {
-    const dayOfWeek = getDay(day);
-    if (!targetDayIndices.has(dayOfWeek)) continue;
+  return eachDayOfInterval({ start, end }).flatMap((day) =>
+    Array.from({ length: countsByDay.get(getDay(day)) ?? 0 }, () =>
+      format(day, "yyyy-MM-dd"),
+    ),
+  );
+}
 
-    // Chave da semana civil (domingo correspondente)
-    const sundayOffset = dayOfWeek;
-    const weekSunday = addDays(day, -sundayOffset);
-    const weekKey = format(weekSunday, "yyyy-MM-dd");
+export const PLANNING_FORMATS = ["static", "carousel", "reels"] as const;
+export type PlanningFormatCounts = [number, number, number];
 
-    if (!weeklyBuckets.has(weekKey)) {
-      weeklyBuckets.set(weekKey, []);
-    }
-    weeklyBuckets.get(weekKey)?.push(day);
+export function normalizePlanningFormats(
+  total: number,
+  previous: PlanningFormatCounts | null,
+): PlanningFormatCounts {
+  const weights: PlanningFormatCounts = previous?.some(Boolean)
+    ? previous
+    : [1, 1, 1];
+  const sum = weights.reduce((result, weight) => result + weight, 0);
+  const amounts = weights.map((weight) => (total * weight) / sum);
+  const counts: PlanningFormatCounts = [
+    Math.floor(amounts[0]),
+    Math.floor(amounts[1]),
+    Math.floor(amounts[2]),
+  ];
+  const remainder = total - counts.reduce((result, count) => result + count, 0);
+  const ranked = ([0, 1, 2] as const)
+    .slice()
+    .sort((a, b) => amounts[b] - counts[b] - (amounts[a] - counts[a]) || a - b);
+  for (const index of ranked.slice(0, remainder)) counts[index]++;
+  return counts;
+}
+
+export function redistributePlanningFormats(
+  baseline: PlanningFormatCounts,
+  index: 0 | 1 | 2,
+  quantity: number,
+): PlanningFormatCounts {
+  const counts: PlanningFormatCounts = [...baseline];
+  const [higher, lower] = ([0, 1, 2] as const).filter(
+    (candidate) => candidate !== index,
+  );
+  const delta = quantity - counts[index];
+  counts[index] = quantity;
+  if (delta < 0) {
+    const higherShare = Math.round((-delta * 2) / 3);
+    counts[higher] += higherShare;
+    counts[lower] += -delta - higherShare;
+  } else {
+    const lowerShare = Math.min(
+      counts[lower],
+      Math.max(Math.round((delta * 2) / 3), delta - counts[higher]),
+    );
+    counts[lower] -= lowerShare;
+    counts[higher] -= delta - lowerShare;
   }
+  return counts;
+}
 
-  const selectedDates: string[] = [];
-
-  // Para cada semana, pega até postsPerWeek dias
-  for (const [, daysInWeek] of weeklyBuckets) {
-    // Ordena os dias cronologicamente
-    daysInWeek.sort((a, b) => a.getTime() - b.getTime());
-    const capped = daysInWeek.slice(0, postsPerWeek);
-    for (const d of capped) {
-      selectedDates.push(format(d, "yyyy-MM-dd"));
-    }
-  }
-
-  // Ordena todas as datas resultantes
-  return selectedDates.sort();
+export function sequencePlanningFormats(
+  counts: PlanningFormatCounts,
+): PlanFormat[] {
+  const total = counts.reduce((result, count) => result + count, 0);
+  const used: PlanningFormatCounts = [0, 0, 0];
+  return Array.from({ length: total }, (_, position) => {
+    const ranked = ([0, 1, 2] as const).filter(
+      (index) => used[index] < counts[index],
+    );
+    const [choice] = ranked.sort(
+      (a, b) =>
+        (position + 1) * (counts[b] - counts[a]) -
+          total * (used[b] - used[a]) || a - b,
+    );
+    used[choice]++;
+    return PLANNING_FORMATS[choice];
+  });
 }
 
 /**
@@ -380,8 +459,12 @@ export function mergeCommemorativeSlots({
   const result: MergedSlot[] = [];
 
   // Slots regulares (podem coincidir com comemoração)
+  const scheduledCelebrations = new Set<string>();
   for (const slot of slots) {
-    const holidayTitle = holidayByDate.get(slot);
+    const holidayTitle = scheduledCelebrations.has(slot)
+      ? undefined
+      : holidayByDate.get(slot);
+    if (holidayTitle) scheduledCelebrations.add(slot);
     result.push({
       date: slot,
       isCommemorative: Boolean(holidayTitle),

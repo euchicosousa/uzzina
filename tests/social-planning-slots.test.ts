@@ -3,6 +3,9 @@ import {
   calculatePeriodSlots,
   distributeFormats,
   mergeCommemorativeSlots,
+  normalizePlanningFormats,
+  redistributePlanningFormats,
+  sequencePlanningFormats,
   validateFormatDistribution,
   validatePeriodInput,
 } from "~/lib/social-planning/slot-calculator";
@@ -18,16 +21,32 @@ describe("Social Planning - Slot & Format Calculator", () => {
         selectedDays: ["seg", "qua", "sex"],
       });
 
-      // Em cada semana com 3 dias elegíveis (seg, qua, sex), limita a 2 dias por semana
-      expect(slots.length).toBe(4);
-      // Primeira semana: 02/11 (seg) e 04/11 (qua)
-      expect(slots[0]).toBe("2026-11-02");
-      expect(slots[1]).toBe("2026-11-04");
-      // Segunda semana: 09/11 (seg) e 11/11 (qua)
-      expect(slots[2]).toBe("2026-11-09");
-      expect(slots[3]).toBe("2026-11-11");
+      expect(slots).toEqual([
+        "2026-11-02",
+        "2026-11-06",
+        "2026-11-09",
+        "2026-11-13",
+      ]);
     });
 
+    it("places seven posts on three preferred days as 3, 2 and 2", () => {
+      expect(
+        calculatePeriodSlots({
+          startDate: "2026-11-15",
+          endDate: "2026-11-21",
+          postsPerWeek: 7,
+          selectedDays: ["seg", "qua", "sex"],
+        }),
+      ).toEqual([
+        "2026-11-16",
+        "2026-11-16",
+        "2026-11-16",
+        "2026-11-18",
+        "2026-11-18",
+        "2026-11-20",
+        "2026-11-20",
+      ]);
+    });
     test("handles partial start and end weeks accurately", () => {
       // Começa quarta 04/11/2026, termina sexta 13/11/2026
       const slots = calculatePeriodSlots({
@@ -101,6 +120,18 @@ describe("Social Planning - Slot & Format Calculator", () => {
         }),
       ).toEqual([]);
     });
+  });
+
+  it("keeps the total while redistributing formats in the planning preview", () => {
+    expect(normalizePlanningFormats(6, null)).toEqual([2, 2, 2]);
+    expect(redistributePlanningFormats([2, 2, 2], 2, 1)).toEqual([3, 2, 1]);
+    const counts = redistributePlanningFormats([4, 2, 8], 2, 4);
+    expect(counts).toEqual([7, 3, 4]);
+    const items = sequencePlanningFormats(counts);
+    expect(items).toHaveLength(14);
+    expect(items.filter((item) => item === "static")).toHaveLength(7);
+    expect(items.filter((item) => item === "carousel")).toHaveLength(3);
+    expect(items.filter((item) => item === "reels")).toHaveLength(4);
   });
 
   describe("distributeFormats", () => {

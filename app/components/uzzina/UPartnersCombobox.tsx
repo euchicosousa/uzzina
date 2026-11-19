@@ -30,6 +30,7 @@ export interface UPartnersComboboxProps {
   size?: UComboboxTriggerProps["size"];
   disabled?: boolean;
   allowAll?: boolean;
+  selectionMode?: "single" | "multiple";
 }
 
 export function UPartnersCombobox({
@@ -41,6 +42,7 @@ export function UPartnersCombobox({
   size,
   disabled = false,
   allowAll = false,
+  selectionMode = "multiple",
 }: UPartnersComboboxProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { partners } = useAppContext();
@@ -49,12 +51,17 @@ export function UPartnersCombobox({
     .filter((partner): partner is Partner => partner !== undefined);
   const hasSelection = currentPartners.length > 0;
   const footerAvatarSize = getTriggerAvatarSize(size);
-  const emptyLabel = allowAll ? "Todos os parceiros" : "Parceiros";
+  const emptyLabel =
+    selectionMode === "single"
+      ? "Escolher parceiro"
+      : allowAll
+        ? "Todos os parceiros"
+        : "Parceiros";
   const selectionLabel =
     getFormattedPartnersName(currentPartners) || emptyLabel;
   const handleSelect = (slug: string, isShiftPressed: boolean) => {
     let newPartners: string[];
-    if (isShiftPressed) {
+    if (selectionMode === "single" || isShiftPressed) {
       newPartners = [slug];
       setIsOpen(false);
     } else {
