@@ -197,6 +197,120 @@ export async function updateSocialPlanClient(
   };
 }
 
+export interface SocialPlanActionLink {
+  suggestionId: string;
+  actionId: string;
+}
+
+export type FinalizeSocialPlanResult =
+  | {
+      status: "success";
+      plan: SocialPlan;
+      /** Actions created by this call; empty when everything was already converted. */
+      created: SocialPlanActionLink[];
+      /** Every suggestion of the proposal that has an action, canonical. */
+      links: SocialPlanActionLink[];
+    }
+  | { status: "conflict"; currentVersion?: number }
+  | {
+      status: "error";
+      /** False when the outcome is unknown (network): retrying is safe and never duplicates. */
+      certain: boolean;
+      message: string;
+    };
+
+const FINALIZE_ERRORS: Record<string, string> = {
+  PLANNING_ADMIN_REQUIRED:
+    "Somente administradores ativos podem finalizar propostas.",
+  PLANNING_PROPOSAL_UNAVAILABLE: "Esta proposta não está mais disponível.",
+  PLANNING_PARTNER_UNAVAILABLE: "O parceiro desta proposta está arquivado.",
+  PLANNING_NOTHING_APPROVED:
+    "Nenhuma sugestão aprovada para finalizar. Aprove ao menos uma sugestão.",
+  PLANNING_SUGGESTION_UNDATED:
+    "Há sugestão aprovada sem data válida. Defina a data e finalize de novo.",
+  PLANNING_SUGGESTION_INVALID:
+    "Há sugestão aprovada sem título ou formato válido. Revise e finalize de novo.",
+};
+
+function parseLinks(value: unknown): SocialPlanActionLink[] | null {
+  if (!Array.isArray(value)) return null;
+  const links: SocialPlanActionLink[] = [];
+  for (const item of value) {
+    if (typeof item !== "object" || item === null) return null;
+    const { suggestion_id: suggestionId, action_id: actionId } = item as Record<
+      string,
+      unknown
+    >;
+    if (typeof suggestionId !== "string" || typeof actionId !== "string")
+      return null;
+    links.push({ suggestionId, actionId });
+  }
+  return links;
+}
+
+/**
+ * Converts the approved suggestions of a proposal into actions with the
+ * `finalize_social_plan` RPC: one transaction, at most one action per
+ * suggestion. The database derives actor, partner, suggestions, dates and
+ * defaults; the client sends only the proposal and the version it shows.
+ */
+export async function finalizeSocialPlanClient(
+  supabase: SupabaseClient,
+  id: string,
+  expectedVersion: number,
+): Promise<FinalizeSocialPlanResult> {
+  const { data, error } = await supabase.rpc("finalize_social_plan", {
+    p_plan_id: id,
+    p_expected_version: expectedVersion,
+  });
+
+  if (error) {
+    const message = error.message ?? "";
+    if (error.code === "P0001" || message.includes("VERSION_CONFLICT")) {
+      const hinted = Number(error.hint);
+      return {
+        status: "conflict",
+        currentVersion: Number.isInteger(hinted) ? hinted : undefined,
+      };
+    }
+    const known = Object.keys(FINALIZE_ERRORS).find((code) =>
+      message.includes(code),
+    );
+    if (known) {
+      return {
+        status: "error",
+        certain: true,
+        message: FINALIZE_ERRORS[known],
+      };
+    }
+    console.error("Erro ao finalizar proposta:", error);
+    return {
+      status: "error",
+      // A database error code means the transaction was rolled back.
+      certain: Boolean(error.code),
+      message: error.code
+        ? "Não foi possível finalizar. Nenhuma ação foi criada."
+        : "Não foi possível confirmar a finalização. Tente de novo: ações já criadas não se repetem.",
+    };
+  }
+
+  const result =
+    typeof data === "object" && data !== null
+      ? (data as Record<string, unknown>)
+      : null;
+  const created = parseLinks(result?.created);
+  const links = parseLinks(result?.links);
+  if (!result || !isSocialPlan(result.plan) || !created || !links) {
+    return {
+      status: "error",
+      certain: false,
+      message:
+        "Resposta inesperada ao finalizar. Reabra a proposta para conferir.",
+    };
+  }
+  return { status: "success", plan: result.plan, created, links };
+}
+
 /**
  * Deletes a social plan by ID.
  */

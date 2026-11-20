@@ -341,6 +341,24 @@ export type Database = {
         };
         Relationships: [];
       };
+      social_plan_action_links: {
+        Row: {
+          plan_id: string;
+          suggestion_id: string;
+          action_id: string;
+          created_by: string;
+          created_at: string;
+        };
+        Insert: {
+          plan_id: string;
+          suggestion_id: string;
+          action_id: string;
+          created_by: string;
+          created_at?: string;
+        };
+        Update: Record<string, never>;
+        Relationships: [];
+      };
       partner_topics: {
         Row: {
           color: string;
@@ -795,6 +813,10 @@ export type Database = {
       };
       complete_planning_theme_request: {
         Args: { p_id: string; p_user_id: string };
+        Returns: Json;
+      };
+      finalize_social_plan: {
+        Args: { p_plan_id: string; p_expected_version: number };
         Returns: Json;
       };
       reserve_ai_monthly: {

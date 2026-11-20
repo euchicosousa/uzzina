@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { format } from "date-fns";
 import {
@@ -65,7 +65,6 @@ import {
 import { getUserPreferences } from "~/lib/preferences";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { cn } from "~/lib/utils";
-import { finalizeSocialPlan } from "~/lib/social-planning/finalizer";
 import { buildPlanningPeriodSlots } from "~/lib/social-planning/period-plan";
 import {
   MAX_PLANNING_PERIOD_DAYS,
@@ -86,6 +85,7 @@ import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { fetchCelebrations } from "~/lib/supabase.queries";
 import { getPartnerBySlug } from "~/models/partners";
 import {
+  finalizeSocialPlanClient,
   listSocialPlansByPartner,
   updateSocialPlanClient,
 } from "~/models/social_plans";
@@ -528,33 +528,42 @@ function PlanningPage() {
     );
   };
 
-  // Finalizar sugestões aprovadas em ações reais (C09)
+  // Approved suggestions become actions in one database transaction (T09).
+  const queryClient = useQueryClient();
   const handleFinalize = async () => {
     if (!currentPlan || savingSuggestions.current) return;
+    const plan = currentPlan;
     setIsFinalizing(true);
     setFeedbackMessage(null);
+    setSuggestionSaveError(null);
     try {
-      const res = await finalizeSocialPlan({
-        plan: currentPlan,
-        userId: person.user_id,
-      });
-      if (res.alreadyFinalized) {
-        setFeedbackMessage("Esta proposta já foi finalizada anteriormente.");
-      } else if (res.errorCount > 0) {
+      const result = await finalizeSocialPlanClient(
+        supabase,
+        plan.id,
+        plan.version ?? 1,
+      );
+      if (result.status === "success") {
+        setCurrentPlan((opened) =>
+          opened?.id === plan.id ? result.plan : opened,
+        );
+        void queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.actions.all(),
+        });
+        const count = result.created.length;
         setFeedbackMessage(
-          `${res.createdCount} ${res.createdCount === 1 ? "ação criada" : "ações criadas"}, mas ${res.errorCount} falharam. Erros: ${res.errors.join("; ")}`,
+          count === 0
+            ? "Nenhuma ação nova: as sugestões aprovadas já tinham virado ações."
+            : `${count} ${count === 1 ? "ação criada" : "ações criadas"} na fase Ideia.`,
+        );
+      } else if (result.status === "conflict") {
+        setSuggestionSaveError(
+          "A proposta mudou em outra sessão. Reabra em Propostas salvas antes de finalizar.",
         );
       } else {
-        setFeedbackMessage(
-          `${res.createdCount} ${res.createdCount === 1 ? "ação criada" : "ações criadas"} com sucesso no UZZINA na fase de Ideia!`,
-        );
+        setSuggestionSaveError(result.message);
       }
-      refetchSavedPlans();
-    } catch (err) {
-      const msg =
-        err instanceof Error ? err.message : "Erro ao finalizar ações.";
-      setFeedbackMessage(msg);
     } finally {
+      void refetchSavedPlans();
       setIsFinalizing(false);
     }
   };
