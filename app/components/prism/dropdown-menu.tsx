@@ -91,11 +91,11 @@ const dropdownMenuItemVariants = cva(
   {
     variants: {
       selectionMode: {
-        none: "min-h-7 gap-2 rounded-xl px-3 py-1.5 text-sm squircle focus:bg-secondary focus:text-foreground focus:**:text-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
+        none: "min-h-7 gap-2 rounded-xl px-3 py-1.5 text-sm squircle focus:bg-secondary focus:text-foreground not-data-[variant=error]:focus:[&_*:not(svg):not(svg_*)]:text-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
         single:
-          "min-h-7 gap-2 rounded-xl py-1.5 pr-8 pl-3 text-sm squircle focus:bg-secondary focus:text-foreground focus:**:text-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
+          "min-h-7 gap-2 rounded-xl py-1.5 pr-8 pl-3 text-sm squircle focus:bg-secondary focus:text-foreground not-data-[variant=error]:focus:[&_*:not(svg):not(svg_*)]:text-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
         multiple:
-          "min-h-7 gap-2 rounded-xl py-1.5 pr-8 pl-3 text-sm squircle focus:bg-secondary focus:text-foreground focus:**:text-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
+          "min-h-7 gap-2 rounded-xl py-1.5 pr-8 pl-3 text-sm squircle focus:bg-secondary focus:text-foreground not-data-[variant=error]:focus:[&_*:not(svg):not(svg_*)]:text-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
       },
     },
   },
@@ -160,7 +160,7 @@ function DropdownMenuSubTrigger({
   return (
     <MenuItemPrimitive
       className={cn(
-        "flex min-h-7 cursor-default items-center gap-2 rounded-xl px-3 py-1.5 text-sm outline-hidden select-none squircle focus:bg-secondary focus:text-foreground not-data-[variant=error]:focus:**:text-foreground data-inset:pl-7 data-open:bg-secondary data-open:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:opacity-50 [&_svg:not([class*='size-'])]:size-4",
+        "flex min-h-7 cursor-default items-center gap-2 rounded-xl px-3 py-1.5 text-sm outline-hidden select-none squircle focus:bg-secondary focus:text-foreground data-inset:pl-7 data-open:bg-secondary data-open:text-foreground not-data-[variant=error]:focus:[&_*:not(svg):not(svg_*)]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:opacity-50 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       data-inset={inset}

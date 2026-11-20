@@ -88,6 +88,7 @@ import { fetchCelebrations } from "~/lib/supabase.queries";
 import { getPartnerBySlug } from "~/models/partners";
 import {
   finalizeSocialPlanClient,
+  releaseSocialPlanSuggestionClient,
   listSocialPlansByPartner,
   updateSocialPlanClient,
 } from "~/models/social_plans";
@@ -559,6 +560,39 @@ function PlanningPage() {
       } else if (result.status === "conflict") {
         setSuggestionSaveError(
           "A proposta mudou em outra sessão. Reabra em Propostas salvas antes de finalizar.",
+        );
+      } else {
+        setSuggestionSaveError(result.message);
+      }
+    } finally {
+      void refetchSavedPlans();
+      setIsFinalizing(false);
+    }
+  };
+
+  // Frees a finalized suggestion; its action stays as it is.
+  const handleRelease = async (suggestionId: string) => {
+    if (!currentPlan || savingSuggestions.current) return;
+    const plan = currentPlan;
+    setIsFinalizing(true);
+    setSuggestionSaveError(null);
+    try {
+      const result = await releaseSocialPlanSuggestionClient(
+        supabase,
+        plan.id,
+        suggestionId,
+        plan.version ?? 1,
+      );
+      if (result.status === "success") {
+        setCurrentPlan((opened) =>
+          opened?.id === plan.id ? result.plan : opened,
+        );
+        toast.success(
+          "Sugestão liberada. Ela voltou a Aprovada e pode ser finalizada de novo; a ação anterior não foi alterada.",
+        );
+      } else if (result.status === "conflict") {
+        setSuggestionSaveError(
+          "A proposta mudou em outra sessão. Reabra em Propostas salvas antes de liberar.",
         );
       } else {
         setSuggestionSaveError(result.message);
@@ -1269,6 +1303,7 @@ function PlanningPage() {
                       onChangeStatus={changeSuggestionStatus}
                       onEditSuggestion={setEditingSuggestion}
                       onFinalize={handleFinalize}
+                      onRelease={handleRelease}
                       suggestions={currentPlan.suggestions}
                     />
                   ) : (

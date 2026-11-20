@@ -230,6 +230,7 @@ const FINALIZE_ERRORS: Record<string, string> = {
     "Há sugestão aprovada sem data válida. Defina a data e finalize de novo.",
   PLANNING_SUGGESTION_INVALID:
     "Há sugestão aprovada sem título ou formato válido. Revise e finalize de novo.",
+  PLANNING_NOT_FINALIZED: "Esta sugestão não tem ação criada para liberar.",
 };
 
 function parseLinks(value: unknown): SocialPlanActionLink[] | null {
@@ -309,6 +310,61 @@ export async function finalizeSocialPlanClient(
     };
   }
   return { status: "success", plan: result.plan, created, links };
+}
+
+export type ReleaseSocialPlanSuggestionResult =
+  | { status: "success"; plan: SocialPlan }
+  | { status: "conflict"; currentVersion?: number }
+  | { status: "error"; message: string };
+
+/**
+ * Frees one finalized suggestion so it can be finalized again. Only the
+ * suggestion's link goes away; the action it created is not touched.
+ */
+export async function releaseSocialPlanSuggestionClient(
+  supabase: SupabaseClient,
+  id: string,
+  suggestionId: string,
+  expectedVersion: number,
+): Promise<ReleaseSocialPlanSuggestionResult> {
+  const { data, error } = await supabase.rpc("release_social_plan_suggestion", {
+    p_plan_id: id,
+    p_suggestion_id: suggestionId,
+    p_expected_version: expectedVersion,
+  });
+
+  if (error) {
+    const message = error.message ?? "";
+    if (error.code === "P0001" || message.includes("VERSION_CONFLICT")) {
+      const hinted = Number(error.hint);
+      return {
+        status: "conflict",
+        currentVersion: Number.isInteger(hinted) ? hinted : undefined,
+      };
+    }
+    const known = Object.keys(FINALIZE_ERRORS).find((code) =>
+      message.includes(code),
+    );
+    if (known) return { status: "error", message: FINALIZE_ERRORS[known] };
+    console.error("Erro ao liberar sugestão:", error);
+    return {
+      status: "error",
+      message: "Não foi possível liberar a sugestão. Tente de novo.",
+    };
+  }
+
+  const result =
+    typeof data === "object" && data !== null
+      ? (data as Record<string, unknown>)
+      : null;
+  if (!result || !isSocialPlan(result.plan)) {
+    return {
+      status: "error",
+      message:
+        "Resposta inesperada ao liberar. Reabra a proposta para conferir.",
+    };
+  }
+  return { status: "success", plan: result.plan };
 }
 
 /**

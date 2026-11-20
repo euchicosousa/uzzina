@@ -273,7 +273,7 @@ function CommandItem<T extends object>({
         onAction?.({ shiftKey });
       }}
       className={cn(
-        "group/command-item relative flex h-8 min-h-7 cursor-default items-center gap-2 rounded-xl px-3 outline-hidden select-none squircle data-focused:bg-secondary data-focused:text-foreground data-[checked=true]:bg-secondary data-[checked=true]:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-[selected=true]:bg-secondary data-[selected=true]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-5 data-focused:*:[svg]:text-foreground data-[checked=true]:*:[svg]:text-foreground data-[selected=true]:*:[svg]:text-foreground",
+        "group/command-item relative flex h-8 min-h-7 cursor-default items-center gap-2 rounded-xl px-3 outline-hidden select-none squircle data-focused:bg-secondary data-focused:text-foreground data-[checked=true]:bg-secondary data-[checked=true]:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-[selected=true]:bg-secondary data-[selected=true]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-5",
         className,
       )}
       data-checked={selected ? "true" : undefined}

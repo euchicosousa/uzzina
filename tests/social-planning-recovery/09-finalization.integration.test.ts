@@ -308,6 +308,7 @@ beforeAll(async () => {
     "20261119215026_planning_theme_requests.sql",
     "20261119223435_planning_period_batches.sql",
     "20261120120000_social_plan_finalization.sql",
+    "20261120140000_social_plan_release.sql",
   ]) {
     await db.exec(migration(name));
   }
@@ -719,6 +720,85 @@ describe("T09 finalization (isolated PostgreSQL)", () => {
     });
     const result = await finalize(admin, planId, 1);
     expect(result.created).toHaveLength(2);
+  });
+
+  test("L01 release frees one finalized suggestion, keeps its action and lets it be finalized again", async () => {
+    await resetActions();
+    const planId = await createPlan([suggestion("A"), suggestion("B")]);
+    const done = await finalize(admin, planId, 1);
+    const target = done.created[0]?.suggestion_id;
+    const keptAction = done.created[0]?.action_id;
+    const released = await asCaller("authenticated", admin, async (tx) => {
+      const { rows } = await tx.query(
+        "SELECT public.release_social_plan_suggestion($1, $2, $3) AS result",
+        [planId, target, 2],
+      );
+      return rows[0]?.result as { plan: { version: number; status: string } };
+    });
+    expect(released.plan).toMatchObject({ version: 3, status: "draft" });
+    const state = await counts(planId);
+    // Only the link goes; both actions stay.
+    expect(state).toMatchObject({ actions: 2, links: 1, status: "draft" });
+    const freed = state.suggestions.find((item) => item.id === target);
+    expect(freed?.status).toBe("approved");
+    expect(freed?.created_action_id).toBeUndefined();
+    expect(
+      (
+        await first(
+          "SELECT count(*)::int AS n FROM public.actions WHERE id = $1",
+          [keptAction],
+        )
+      ).n,
+    ).toBe(1);
+    // Finalizing again converts only the released one.
+    const again = await finalize(admin, planId, 3);
+    expect(again.created).toHaveLength(1);
+    expect(again.created[0]?.suggestion_id).toBe(target);
+    expect(await counts(planId)).toMatchObject({ actions: 3, links: 2 });
+  });
+
+  test("L02 release rejects non-admins, stale versions and suggestions without an action, writing nothing", async () => {
+    await resetActions();
+    const planId = await createPlan([
+      suggestion("A"),
+      suggestion("B", { status: "pending" }),
+    ]);
+    const done = await finalize(admin, planId, 1);
+    const target = done.created[0]?.suggestion_id;
+    const release = (
+      user: string | null,
+      id: string,
+      version: number,
+      role: "authenticated" | "anon" = "authenticated",
+    ) =>
+      asCaller(role, user, (tx) =>
+        tx.query("SELECT public.release_social_plan_suggestion($1, $2, $3)", [
+          planId,
+          id,
+          version,
+        ]),
+      );
+    expect(await errorOf(release(member, String(target), 2))).toContain(
+      "PLANNING_ADMIN_REQUIRED",
+    );
+    expect(await errorOf(release(inactiveAdmin, String(target), 2))).toContain(
+      "PLANNING_ADMIN_REQUIRED",
+    );
+    expect(await errorOf(release(null, String(target), 2, "anon"))).toContain(
+      "permission denied",
+    );
+    expect(await errorOf(release(admin, String(target), 1))).toContain(
+      "VERSION_CONFLICT",
+    );
+    expect(await errorOf(release(admin, "not-a-suggestion", 2))).toContain(
+      "PLANNING_NOT_FINALIZED",
+    );
+    expect(await counts(planId)).toMatchObject({
+      actions: 1,
+      links: 1,
+      version: 2,
+      status: "finalized",
+    });
   });
 
   test("R1 regression: one INSERT per request (old browser loop) leaves a partial result", async () => {
