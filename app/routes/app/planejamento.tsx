@@ -66,7 +66,10 @@ import { getUserPreferences } from "~/lib/preferences";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { cn } from "~/lib/utils";
 import { finalizeSocialPlan } from "~/lib/social-planning/finalizer";
-import { buildPlanningPeriodSlots } from "~/lib/social-planning/period-plan";
+import {
+  buildPlanningPeriodSlots,
+  PLANNING_PERIOD_BATCH_SIZE,
+} from "~/lib/social-planning/period-plan";
 import {
   MAX_PLANNING_PERIOD_DAYS,
   normalizePlanningFormats,
@@ -572,7 +575,19 @@ function PlanningPage() {
     }
     wasGenerationBusy.current = isGenerationBusy;
   }, [isGenerationBusy]);
-  const batchProgress = planningGeneration.batchProgress;
+  const generationTotal = planningGeneration.total;
+  const generationDone = planningGeneration.progress ?? 0;
+  const generationText = !generationTotal
+    ? "Gerando sugestões…"
+    : planningGeneration.progress !== undefined
+      ? generationDone > 0
+        ? `Gerando ${generationTotal} sugestões: ${generationDone} de ${generationTotal} prontas`
+        : `Gerando ${generationTotal} sugestões`
+      : `Gerando ${generationTotal} ${generationTotal === 1 ? "ideia" : "ideias"} para ${selectedPartner?.title ?? "o parceiro"}…`;
+  const generationDurationMs =
+    planningGeneration.progress !== undefined && generationTotal
+      ? Math.ceil(generationTotal / PLANNING_PERIOD_BATCH_SIZE) * 30000
+      : undefined;
   const showGenerate =
     !planningGeneration.requestId || planningGeneration.isBusy;
   const generateButton = (
@@ -1216,22 +1231,12 @@ function PlanningPage() {
                     aria-live="polite"
                   >
                     <p className="text-sm font-medium text-foreground">
-                      {batchProgress
-                        ? batchProgress.from === batchProgress.to
-                          ? `Gerando sugestão ${batchProgress.to} de ${planningGeneration.total}`
-                          : `Gerando sugestões ${batchProgress.from} a ${batchProgress.to} de ${planningGeneration.total}`
-                        : planningGeneration.total
-                          ? `Gerando ${planningGeneration.total} ${planningGeneration.total === 1 ? "ideia" : "ideias"} para ${selectedPartner?.title ?? "o parceiro"}…`
-                          : "Gerando sugestões…"}
+                      {generationText}
                     </p>
-                    {batchProgress ? (
-                      <UAIProgressBar
-                        isGenerating
-                        value={batchProgress.percent}
-                      />
-                    ) : (
-                      <UAIProgressBar isGenerating />
-                    )}
+                    <UAIProgressBar
+                      durationMs={generationDurationMs}
+                      isGenerating
+                    />
                     <p className="text-xs text-secondary-foreground">
                       Você pode sair desta página: a geração continua e a
                       proposta pode ser recuperada em Verificar proposta.
