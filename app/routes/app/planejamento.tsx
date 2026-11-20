@@ -628,106 +628,110 @@ function PlanningPage() {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <PrismDialogTrigger
-            isOpen={isSavedPlansOpen}
-            onOpenChange={setIsSavedPlansOpen}
-          >
-            <PrismButton
-              isDisabled={
-                !selectedPartner ||
-                isSavingSuggestions ||
-                planningGeneration.isBusy
-              }
-              variant="outline"
+          {/* Only offer saved proposals when there is one, or when the list
+              failed to load so the dialog can retry. */}
+          {(savedPlans.length > 0 || savedPlansError) && (
+            <PrismDialogTrigger
+              isOpen={isSavedPlansOpen}
+              onOpenChange={setIsSavedPlansOpen}
             >
-              <FolderOpenIcon data-icon="inline-start" />
-              Propostas salvas
-            </PrismButton>
-            <PrismDialog>
-              <PrismDialogHeader>
-                <PrismDialogTitle>Propostas salvas</PrismDialogTitle>
-                <PrismDialogDescription>
-                  {selectedPartner?.title}
-                </PrismDialogDescription>
-              </PrismDialogHeader>
-              <PrismDialogBody className="pb-4">
-                {savedPlansError ? (
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-sm text-error" role="alert">
-                      Não foi possível carregar as propostas.
+              <PrismButton
+                isDisabled={
+                  !selectedPartner ||
+                  isSavingSuggestions ||
+                  planningGeneration.isBusy
+                }
+                variant="outline"
+              >
+                <FolderOpenIcon data-icon="inline-start" />
+                Propostas salvas
+              </PrismButton>
+              <PrismDialog>
+                <PrismDialogHeader>
+                  <PrismDialogTitle>Propostas salvas</PrismDialogTitle>
+                  <PrismDialogDescription>
+                    {selectedPartner?.title}
+                  </PrismDialogDescription>
+                </PrismDialogHeader>
+                <PrismDialogBody className="pb-4">
+                  {savedPlansError ? (
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="text-sm text-error" role="alert">
+                        Não foi possível carregar as propostas.
+                      </p>
+                      <PrismButton
+                        isDisabled={savedPlansFetching}
+                        onPress={() => void refetchSavedPlans()}
+                        size="sm"
+                        variant="secondary"
+                      >
+                        Tentar novamente
+                      </PrismButton>
+                    </div>
+                  ) : savedPlansLoading ? (
+                    <p className="text-secondary-foreground" role="status">
+                      Carregando propostas…
                     </p>
-                    <PrismButton
-                      isDisabled={savedPlansFetching}
-                      onPress={() => void refetchSavedPlans()}
-                      size="sm"
-                      variant="secondary"
-                    >
-                      Tentar novamente
-                    </PrismButton>
-                  </div>
-                ) : savedPlansLoading ? (
-                  <p className="text-secondary-foreground" role="status">
-                    Carregando propostas…
-                  </p>
-                ) : (
-                  savedPlans.length === 0 && (
-                    <p className="text-secondary-foreground">
-                      Nenhuma proposta salva para este parceiro.
-                    </p>
-                  )
-                )}
-                {savedPlans.length > 0 && (
-                  <ul className="divide-y divide-border">
-                    {savedPlans.map((plan) => {
-                      const modeLabel =
-                        plan.mode === "period" ? "Por período" : "Por tema";
-                      const savedAt = format(
-                        new Date(plan.updated_at || plan.created_at),
-                        "dd/MM/yyyy HH:mm",
-                      );
+                  ) : (
+                    savedPlans.length === 0 && (
+                      <p className="text-secondary-foreground">
+                        Nenhuma proposta salva para este parceiro.
+                      </p>
+                    )
+                  )}
+                  {savedPlans.length > 0 && (
+                    <ul className="divide-y divide-border">
+                      {savedPlans.map((plan) => {
+                        const modeLabel =
+                          plan.mode === "period" ? "Por período" : "Por tema";
+                        const savedAt = format(
+                          new Date(plan.updated_at || plan.created_at),
+                          "dd/MM/yyyy HH:mm",
+                        );
 
-                      return (
-                        <li
-                          className="flex items-center justify-between gap-3 py-2"
-                          key={plan.id}
-                        >
-                          <div className="min-w-0">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span className="font-medium">{modeLabel}</span>
-                              {plan.status === "finalized" && (
-                                <PrismBadge variant="success">
-                                  Finalizado
-                                </PrismBadge>
-                              )}
-                            </div>
-                            <p className="text-xs text-secondary-foreground">
-                              {plan.suggestions.length}{" "}
-                              {plan.suggestions.length === 1
-                                ? "sugestão"
-                                : "sugestões"}{" "}
-                              · {savedAt}
-                            </p>
-                          </div>
-                          <PrismButton
-                            aria-label={`Abrir proposta ${modeLabel.toLowerCase()} de ${savedAt}`}
-                            onPress={() => {
-                              handleOpenPlan(plan);
-                              setIsSavedPlansOpen(false);
-                            }}
-                            size="sm"
-                            variant="ghost"
+                        return (
+                          <li
+                            className="flex items-center justify-between gap-3 py-2"
+                            key={plan.id}
                           >
-                            Abrir
-                            <ArrowRightIcon data-icon="inline-end" />
-                          </PrismButton>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )}
-              </PrismDialogBody>
-            </PrismDialog>
-          </PrismDialogTrigger>
+                            <div className="min-w-0">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="font-medium">{modeLabel}</span>
+                                {plan.status === "finalized" && (
+                                  <PrismBadge variant="success">
+                                    Finalizado
+                                  </PrismBadge>
+                                )}
+                              </div>
+                              <p className="text-xs text-secondary-foreground">
+                                {plan.suggestions.length}{" "}
+                                {plan.suggestions.length === 1
+                                  ? "sugestão"
+                                  : "sugestões"}{" "}
+                                · {savedAt}
+                              </p>
+                            </div>
+                            <PrismButton
+                              aria-label={`Abrir proposta ${modeLabel.toLowerCase()} de ${savedAt}`}
+                              onPress={() => {
+                                handleOpenPlan(plan);
+                                setIsSavedPlansOpen(false);
+                              }}
+                              size="sm"
+                              variant="ghost"
+                            >
+                              Abrir
+                              <ArrowRightIcon data-icon="inline-end" />
+                            </PrismButton>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </PrismDialogBody>
+              </PrismDialog>
+            </PrismDialogTrigger>
+          )}
           {currentPlan && (
             <PrismButton
               isDisabled={isSavingSuggestions || planningGeneration.isBusy}
