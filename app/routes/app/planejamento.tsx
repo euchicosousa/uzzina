@@ -1,10 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { format } from "date-fns";
 import {
   ArrowRightIcon,
   CalendarIcon,
-  CheckCircle2Icon,
   FolderOpenIcon,
   ListIcon,
   RotateCcwIcon,
@@ -48,6 +47,7 @@ import {
   PrismToggle,
   PrismToggleGroup,
   PrismToggleGroupItem,
+  toast,
 } from "~/components/prism";
 import { UAIModelSelect } from "~/components/uzzina/UAIModelSelect";
 import { UAIProgressBar } from "~/components/uzzina/UAIProgressBar";
@@ -64,7 +64,6 @@ import {
 import { getUserPreferences } from "~/lib/preferences";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { cn } from "~/lib/utils";
-import { finalizeSocialPlan } from "~/lib/social-planning/finalizer";
 import {
   buildPlanningPeriodSlots,
   PLANNING_PERIOD_BATCH_SIZE,
@@ -88,6 +87,7 @@ import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { fetchCelebrations } from "~/lib/supabase.queries";
 import { getPartnerBySlug } from "~/models/partners";
 import {
+  finalizeSocialPlanClient,
   listSocialPlansByPartner,
   updateSocialPlanClient,
 } from "~/models/social_plans";
@@ -255,7 +255,6 @@ function PlanningPage() {
   const [suggestionSaveError, setSuggestionSaveError] = useState<string | null>(
     null,
   );
-  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
 
   // Validação estrita do período (C02, T03)
   const periodValidation = useMemo(() => {
@@ -339,7 +338,6 @@ function PlanningPage() {
     setIsSavedPlansOpen(false);
     setEditingSuggestion(null);
     setSuggestionSaveError(null);
-    setFeedbackMessage(null);
     setDirectionDraft(null);
     formatEdit.current = null;
   }, [directionScope]);
@@ -347,11 +345,10 @@ function PlanningPage() {
   // Reabertura canônica de proposta anterior com restauração completa (C06)
   const handleOpenPlan = (plan: SocialPlan) => {
     if (!selectedPartner || plan.partner_slug !== selectedPartner.slug) {
-      setFeedbackMessage("Esta proposta não pertence ao parceiro selecionado.");
+      toast.error("Esta proposta não pertence ao parceiro selecionado.");
       return;
     }
     formatEdit.current = null;
-    setFeedbackMessage(null);
     setSuggestionSaveError(null);
     setEditingSuggestion(null);
     setCurrentPlan(plan);
@@ -423,7 +420,6 @@ function PlanningPage() {
       planningGeneration.requestId
     )
       return;
-    setFeedbackMessage(null);
     setSuggestionSaveError(null);
 
     const shared = {
@@ -530,38 +526,58 @@ function PlanningPage() {
     );
   };
 
-  // Finalizar sugestões aprovadas em ações reais (C09)
+  // Approved suggestions become actions in one database transaction (T09).
+  const queryClient = useQueryClient();
   const handleFinalize = async () => {
     if (!currentPlan || savingSuggestions.current) return;
+    const plan = currentPlan;
     setIsFinalizing(true);
-    setFeedbackMessage(null);
+    setSuggestionSaveError(null);
     try {
-      const res = await finalizeSocialPlan({
-        plan: currentPlan,
-        userId: person.user_id,
-      });
-      if (res.alreadyFinalized) {
-        setFeedbackMessage("Esta proposta já foi finalizada anteriormente.");
-      } else if (res.errorCount > 0) {
-        setFeedbackMessage(
-          `${res.createdCount} ${res.createdCount === 1 ? "ação criada" : "ações criadas"}, mas ${res.errorCount} falharam. Erros: ${res.errors.join("; ")}`,
+      const result = await finalizeSocialPlanClient(
+        supabase,
+        plan.id,
+        plan.version ?? 1,
+      );
+      if (result.status === "success") {
+        setCurrentPlan((opened) =>
+          opened?.id === plan.id ? result.plan : opened,
+        );
+        void queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.actions.all(),
+        });
+        const count = result.created.length;
+        if (count === 0) {
+          toast.info(
+            "Nenhuma ação nova: as sugestões aprovadas já tinham virado ações.",
+          );
+        } else {
+          toast.success(
+            `${count} ${count === 1 ? "ação criada" : "ações criadas"} na fase Fazer.`,
+          );
+        }
+      } else if (result.status === "conflict") {
+        setSuggestionSaveError(
+          "A proposta mudou em outra sessão. Reabra em Propostas salvas antes de finalizar.",
         );
       } else {
-        setFeedbackMessage(
-          `${res.createdCount} ${res.createdCount === 1 ? "ação criada" : "ações criadas"} com sucesso no UZZINA na fase de Ideia!`,
-        );
+        setSuggestionSaveError(result.message);
       }
-      refetchSavedPlans();
-    } catch (err) {
-      const msg =
-        err instanceof Error ? err.message : "Erro ao finalizar ações.";
-      setFeedbackMessage(msg);
     } finally {
+      void refetchSavedPlans();
       setIsFinalizing(false);
     }
   };
 
   const isGenerationBusy = planningGeneration.isBusy;
+  const generationMessage = planningGeneration.message;
+  const generationIsError = planningGeneration.isError;
+  // Generation outcomes are reported as toasts, not as a banner bar.
+  useEffect(() => {
+    if (!generationMessage || isGenerationBusy) return;
+    if (generationIsError) toast.error(generationMessage);
+    else toast(generationMessage);
+  }, [generationMessage, generationIsError, isGenerationBusy]);
   const headerRef = useRef<HTMLElement>(null);
   const wasGenerationBusy = useRef(false);
   // While the Mesa is locked its controls are inert, so focus would fall to
@@ -1213,15 +1229,6 @@ function PlanningPage() {
               </div>
             )}
 
-            {planningGeneration.message && !isGenerationBusy && (
-              <p
-                className={`border-b border-border px-6 py-2 text-sm ${planningGeneration.isError ? "text-error" : "text-secondary-foreground"}`}
-                role={planningGeneration.isError ? "alert" : "status"}
-              >
-                {planningGeneration.message}
-              </p>
-            )}
-
             {suggestionSaveError && (
               <p
                 className="border-b border-border px-6 py-2 text-sm text-error"
@@ -1229,14 +1236,6 @@ function PlanningPage() {
               >
                 {suggestionSaveError}
               </p>
-            )}
-
-            {/* Mensagem de feedback (ex: ações criadas) */}
-            {feedbackMessage && (
-              <div className="flex items-center gap-2 border-b border-success bg-success-background px-6 py-2.5 text-xs font-medium text-success">
-                <CheckCircle2Icon className="size-4 shrink-0 text-success" />
-                <span>{feedbackMessage}</span>
-              </div>
             )}
 
             {/* Conteúdo rolável */}

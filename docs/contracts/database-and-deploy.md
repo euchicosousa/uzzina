@@ -32,6 +32,8 @@ Leia antes de mexer em migrations, RPCs, permissões, triggers, tabelas, `bun ru
 
 - Por período reaproveita a tabela e a RPC de geração Por tema. A [migração de lotes](../../supabase/migrations/20261119223435_planning_period_batches.sql) guarda o progresso e estende a RPC ao modo período. A RPC mantém as permissões de execução e remove o contexto editorial interno da proposta salva. SQL verificado em PGlite, sem aplicação remota.
 
+- Finalização do Planejamento (T09): a [migração preparada](../../supabase/migrations/20261120120000_social_plan_finalization.sql) cria `social_plan_action_links` (PK `plan_id, suggestion_id`; `action_id` único e sem FK, para o vínculo sobreviver à exclusão da ação; RLS herdada de `social_plans`; `authenticated` só SELECT/INSERT) e a RPC `finalize_social_plan(uuid, integer)` com SECURITY INVOKER (RLS de ações, propostas e vínculos aplicada ao chamador), EXECUTE para `authenticated` e `service_role`, sem `anon`. Exercitada em PGlite (`tests/social-planning-recovery/09-finalization.integration.test.ts`); sem aplicação remota.
+
 - As migrations incrementam o catálogo existente; não constituem sozinhas um schema inicial completo. SQL versionado não confirma aplicação. Consulte CURRENT e o manifest do rollout antes de publicar ou alterar permissões.
 
 - Catálogo de produção verificado em31/10/2026: PostgreSQL17.11; staging cloud também usa17. Registros anteriores de produção15 são históricos. `supabase/config.toml` major15 configura o ambiente local, não os serviços cloud. Bootstrap/manifest em supabase/staging são exclusivos do staging; versões remotas diferem dos nomes locais.
