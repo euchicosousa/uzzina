@@ -51,6 +51,7 @@ import {
   PrismToggleGroupItem,
 } from "~/components/prism";
 import { UAIModelSelect } from "~/components/uzzina/UAIModelSelect";
+import { UAIProgressBar } from "~/components/uzzina/UAIProgressBar";
 import { UPartnersCombobox } from "~/components/uzzina/UPartnersCombobox";
 import { useAppContext, useLeaveOpenActions } from "~/contexts/AppContext";
 import { useFillScrollViewport } from "~/hooks/useFillScrollViewport";
@@ -63,6 +64,8 @@ import {
 } from "~/lib/action-ai-models";
 import { getUserPreferences } from "~/lib/preferences";
 import { QUERY_KEYS } from "~/lib/query-keys";
+import { cn } from "~/lib/utils";
+import { withPlanningDates } from "~/lib/social-planning/dates";
 import { finalizeSocialPlan } from "~/lib/social-planning/finalizer";
 import { buildPlanningPeriodSlots } from "~/lib/social-planning/period-plan";
 import {
@@ -350,7 +353,12 @@ function PlanningPage() {
     setFeedbackMessage(null);
     setSuggestionSaveError(null);
     setEditingSuggestion(null);
-    setCurrentPlan(plan);
+    // Legacy proposals may have undated ideas: show them as today; the date
+    // is persisted with the next versioned save of this proposal.
+    setCurrentPlan({
+      ...plan,
+      suggestions: withPlanningDates(plan.suggestions),
+    });
 
     if (plan.mode) setMode(plan.mode);
     const input = plan.input || {};
@@ -558,10 +566,29 @@ function PlanningPage() {
   };
 
   const isGenerationBusy = planningGeneration.isBusy;
+  const headerRef = useRef<HTMLElement>(null);
+  const wasGenerationBusy = useRef(false);
+  // While the Mesa is locked its controls are inert, so focus would fall to
+  // the page. When the lock lifts, send it to the main header action.
+  useEffect(() => {
+    if (wasGenerationBusy.current && !isGenerationBusy) {
+      headerRef.current
+        ?.querySelector<HTMLElement>("[data-planning-primary]")
+        ?.focus();
+    }
+    wasGenerationBusy.current = isGenerationBusy;
+  }, [isGenerationBusy]);
+  const generationProgress =
+    planningGeneration.total && planningGeneration.progress !== undefined
+      ? Math.round(
+          (planningGeneration.progress / planningGeneration.total) * 100,
+        )
+      : null;
   const showGenerate =
     !planningGeneration.requestId || planningGeneration.isBusy;
   const generateButton = (
     <PrismButton
+      data-planning-primary
       isDisabled={
         !selectedPartner ||
         isGenerationBusy ||
@@ -580,7 +607,15 @@ function PlanningPage() {
       ref={pageRef}
       className="relative mx-2 flex min-h-0 flex-col overflow-hidden border-x lg:mx-8"
     >
-      <header className="flex shrink-0 items-center justify-between gap-4 border-b px-4 py-3 lg:px-8">
+      <header
+        aria-busy={isGenerationBusy}
+        className={cn(
+          "flex shrink-0 items-center justify-between gap-4 border-b px-4 py-3 lg:px-8",
+          isGenerationBusy && "opacity-50",
+        )}
+        inert={isGenerationBusy}
+        ref={headerRef}
+      >
         <div className="flex min-w-0 flex-wrap items-center gap-3">
           <h1 className="truncate text-2xl font-semibold text-foreground">
             Planejamento
@@ -721,6 +756,7 @@ function PlanningPage() {
           )}
           {planningGeneration.requestId && !planningGeneration.isBusy && (
             <PrismButton
+              data-planning-primary
               isDisabled={!selectedPartner || isSavingSuggestions}
               onPress={verifyPlanningProposal}
             >
@@ -749,8 +785,13 @@ function PlanningPage() {
         </p>
         <div className="hidden h-full min-h-0 lg:grid lg:grid-cols-[minmax(21rem,0.85fr)_minmax(0,1.55fr)]">
           <section
+            aria-busy={isGenerationBusy}
             aria-label="Configuração do planejamento"
-            className="min-h-0 overflow-y-auto overscroll-contain px-6 py-6 xl:px-8"
+            className={cn(
+              "min-h-0 overflow-y-auto overscroll-contain px-6 py-6 xl:px-8",
+              isGenerationBusy && "opacity-50",
+            )}
+            inert={isGenerationBusy}
           >
             <div className="grid gap-8">
               {partnerSlug && !selectedPartner && (
@@ -1114,7 +1155,7 @@ function PlanningPage() {
             className="flex min-h-0 min-w-0 flex-col overflow-hidden border-l border-border"
           >
             {/* Barra de controle da visualização quando há proposta ativa */}
-            {currentPlan && (
+            {currentPlan && !isGenerationBusy && (
               <div className="flex shrink-0 items-center justify-between border-b border-border px-6 py-3">
                 <PrismToggleGroup
                   aria-label="Visualização das sugestões"
@@ -1146,7 +1187,7 @@ function PlanningPage() {
               </div>
             )}
 
-            {planningGeneration.message && (
+            {planningGeneration.message && !isGenerationBusy && (
               <p
                 className={`border-b border-border px-6 py-2 text-sm ${planningGeneration.isError ? "text-error" : "text-secondary-foreground"}`}
                 role={planningGeneration.isError ? "alert" : "status"}
@@ -1175,7 +1216,30 @@ function PlanningPage() {
             {/* Conteúdo rolável */}
             <div className="flex min-h-0 min-w-0 flex-1 overflow-auto overscroll-contain">
               <div className="flex min-h-full min-w-full flex-col">
-                {currentPlan ? (
+                {isGenerationBusy ? (
+                  <div
+                    className="grid gap-3 px-6 py-8"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    <p className="text-sm font-medium text-foreground">
+                      {generationProgress !== null
+                        ? `Gerando ${planningGeneration.progress} de ${planningGeneration.total} sugestões`
+                        : planningGeneration.total
+                          ? `Gerando ${planningGeneration.total} ${planningGeneration.total === 1 ? "ideia" : "ideias"} para ${selectedPartner?.title ?? "o parceiro"}…`
+                          : "Gerando sugestões…"}
+                    </p>
+                    {generationProgress !== null ? (
+                      <UAIProgressBar isGenerating value={generationProgress} />
+                    ) : (
+                      <UAIProgressBar isGenerating />
+                    )}
+                    <p className="text-xs text-secondary-foreground">
+                      Você pode sair desta página: a geração continua e a
+                      proposta pode ser recuperada em Verificar proposta.
+                    </p>
+                  </div>
+                ) : currentPlan ? (
                   viewMode === "list" ? (
                     <PlanningSuggestionsList
                       isFinalizing={isFinalizing}

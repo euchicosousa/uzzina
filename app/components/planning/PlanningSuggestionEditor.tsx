@@ -17,6 +17,7 @@ import {
   PrismTextarea,
 } from "~/components/prism";
 import type { PlanFormat, PlanSuggestion } from "~/lib/social-planning/types";
+import { planningToday } from "~/lib/social-planning/dates";
 import { PLANNING_FORMAT_LABELS } from "./PlanningPreview";
 
 export type SavePlanningSuggestion = (
@@ -37,7 +38,9 @@ export function PlanningSuggestionEditor({
 }: PlanningSuggestionEditorProps) {
   const [title, setTitle] = useState(suggestion.title);
   const [format, setFormat] = useState<PlanFormat>(suggestion.format);
-  const [date, setDate] = useState(suggestion.scheduled_date ?? "");
+  const [date, setDate] = useState(
+    suggestion.scheduled_date || planningToday(),
+  );
   const [objective, setObjective] = useState(suggestion.objective ?? "");
   const [briefing, setBriefing] = useState(suggestion.briefing ?? "");
   const [error, setError] = useState<string | null>(null);
@@ -53,13 +56,18 @@ export function PlanningSuggestionEditor({
       return;
     }
 
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      setError("A data prevista é obrigatória.");
+      return;
+    }
+
     setError(null);
     setIsSaving(true);
     try {
       const saveError = await onSave(suggestion.id, {
         title: trimmedTitle,
         format,
-        scheduled_date: date || undefined,
+        scheduled_date: date,
         objective: objective.trim(),
         briefing: briefing.trim(),
       });
@@ -142,6 +150,7 @@ export function PlanningSuggestionEditor({
                 <PrismLabel htmlFor="edit-date">Data prevista</PrismLabel>
                 <PrismInput
                   id="edit-date"
+                  required
                   onChange={(event) => setDate(event.target.value)}
                   type="date"
                   value={date}

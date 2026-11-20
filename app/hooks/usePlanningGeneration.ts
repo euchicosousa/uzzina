@@ -29,6 +29,10 @@ type GenerationState = {
   requestId: string | null;
   message?: string;
   error?: boolean;
+  /** Suggestions already generated (period mode only). */
+  progress?: number;
+  /** Suggestions requested by the running generation, when known. */
+  total?: number;
 };
 
 export function usePlanningGeneration(userId: string, partner: string) {
@@ -59,7 +63,15 @@ export function usePlanningGeneration(userId: string, partner: string) {
     }
     activeRequests.current.add(scope);
     rememberRequest(scope, request.requestId);
-    setState({ scope, requestId: request.requestId });
+    setState({
+      scope,
+      requestId: request.requestId,
+      ...(request.intent === "start-period"
+        ? { progress: 0, total: request.expectedSlots.length }
+        : request.intent === "start"
+          ? { total: request.formats.length }
+          : {}),
+    });
 
     const finish = (id: string | null, message?: string, error?: boolean) => {
       activeRequests.current.delete(scope);
@@ -128,6 +140,8 @@ export function usePlanningGeneration(userId: string, partner: string) {
               scope,
               requestId: request.requestId,
               message: `${lastProgress} de ${result.total} sugestões geradas.`,
+              progress: lastProgress,
+              total: result.total,
             });
             command = {
               intent: "resume",
@@ -160,6 +174,8 @@ export function usePlanningGeneration(userId: string, partner: string) {
     isBusy,
     message: current?.message,
     isError: current?.error,
+    progress: current?.progress,
+    total: current?.total,
     run,
   };
 }

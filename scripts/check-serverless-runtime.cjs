@@ -71,6 +71,7 @@ const { FileFsRef } = require("@vercel/build-utils");
       "app/lib/ai-model-registry.ts",
       "app/lib/strategy-operation-contract.ts",
       "app/lib/social-planning/theme-contract.ts",
+      "app/lib/social-planning/dates.ts",
       "app/lib/social-planning/period-plan.ts",
       "app/lib/social-planning/slot-calculator.ts",
       "app/lib/social-planning/types.ts",

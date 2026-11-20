@@ -80,6 +80,7 @@ export function AIProgressBarPlayground() {
 export function UzzinaAIProgressBarSection() {
   const [demoLineGenerating, setDemoLineGenerating] = useState(false);
   const [demoCircleGenerating, setDemoCircleGenerating] = useState(false);
+  const [demoValue, setDemoValue] = useState(14);
 
   return (
     <div id="uzzina-ai-progress-bar">
@@ -148,6 +149,28 @@ export function UzzinaAIProgressBarSection() {
                   </span>
                 </div>
               </div>
+            </div>
+          </GalleryItem>
+
+          <GalleryItem label="Progresso real (value)">
+            <div className="flex flex-col gap-3 rounded-2xl border bg-card/40 p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold">
+                  Gerando {Math.round((demoValue / 100) * 29)} de 29 sugestões
+                </span>
+                <PrismButton
+                  size="xs"
+                  variant="outline"
+                  onClick={() => setDemoValue((v) => (v >= 100 ? 0 : v + 25))}
+                >
+                  Avançar
+                </PrismButton>
+              </div>
+              <UAIProgressBar isGenerating value={demoValue} />
+              <p className="text-xs text-secondary-foreground">
+                Com a prop opcional value (0 a 100), a barra mostra o avanço
+                real informado pelo servidor, sem a simulação por tempo.
+              </p>
             </div>
           </GalleryItem>
         </GallerySectionContent>

@@ -5,6 +5,7 @@ import {
   themePlanningResultSchema,
   type ThemePlanningInput,
 } from "../app/lib/social-planning/theme-contract.js";
+import { planningToday } from "../app/lib/social-planning/dates.js";
 import { isSocialPlan } from "../app/models/social_plans.js";
 import { generateAI } from "../server/ai-generation.js";
 import {
@@ -408,10 +409,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return await fail("invalid");
     }
 
+    // Every idea has a date: undated theme ideas get the generation day.
+    const generatedOn = planningToday();
     const suggestions = output.data.suggestions.map((suggestion) => ({
       ...suggestion,
       id: randomUUID(),
       status: "pending",
+      scheduled_date: generatedOn,
     }));
     const retained = await client
       .from("planning_theme_requests")

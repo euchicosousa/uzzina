@@ -6,6 +6,8 @@ export interface UAIProgressBarProps {
   isGenerating: boolean;
   /** Variante visual: linha ultra fina (h-px) ou círculo SVG */
   variant?: "line" | "circle";
+  /** Progresso real (0 a 100). Quando informado, a barra é determinada e ignora `isGenerating`/`durationMs` */
+  value?: number;
   /** Duração prevista em ms para atingir ~90% (padrão fixo: 30000ms / 30s) */
   durationMs?: number;
   /** Callback opcional quando a barra atinge 100% e conclui */
@@ -21,6 +23,7 @@ const MAX_PROGRESS_LIMIT = 99;
 export function UAIProgressBar({
   isGenerating,
   variant = "line",
+  value,
   durationMs = DEFAULT_DURATION_MS,
   onComplete,
   className,
@@ -37,7 +40,10 @@ export function UAIProgressBar({
   const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
 
+  const isControlled = value !== undefined;
+
   useEffect(() => {
+    if (isControlled) return;
     const wasGenerating = prevGeneratingRef.current;
     prevGeneratingRef.current = isGenerating;
 
@@ -102,10 +108,32 @@ export function UAIProgressBar({
 
       return () => clearTimeout(fadeTimeout);
     }
-  }, [isGenerating, durationMs]);
+  }, [isGenerating, durationMs, isControlled]);
 
   // Se não estiver visível e nem gerando, não renderiza nada no DOM
-  if (!visible && !isGenerating) return null;
+  if (!isControlled && !visible && !isGenerating) return null;
+
+  if (isControlled) {
+    const clamped = Math.min(100, Math.max(0, value));
+    return (
+      <div
+        aria-label="Progresso da geração com inteligência artificial"
+        aria-valuemax={100}
+        aria-valuemin={0}
+        aria-valuenow={Math.round(clamped)}
+        className={cn(
+          "relative h-0.5 w-full overflow-hidden bg-secondary",
+          className,
+        )}
+        role="progressbar"
+      >
+        <div
+          className="h-full bg-primary transition-[width] duration-300 ease-out"
+          style={{ width: `${clamped}%` }}
+        />
+      </div>
+    );
+  }
 
   if (variant === "circle") {
     const radius = 9;

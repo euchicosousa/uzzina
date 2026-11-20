@@ -1,5 +1,7 @@
+import { getCleanAction } from "~/utils/factory";
 import { createActionClient } from "~/lib/supabase.mutations";
 import type { ActionCreateInput } from "~/utils/validation";
+import { planningToday } from "./dates";
 import { saveSocialPlan } from "./storage";
 import type { PlanFormat, SocialPlan } from "./types";
 
@@ -59,16 +61,15 @@ export async function finalizeSocialPlan({
       continue;
     }
 
-    if (!suggestion.scheduled_date) {
-      errorCount++;
-      errors.push(
-        `Sugestão "${suggestion.title}" não possui data prevista definida e não pôde ser convertida.`,
-      );
-      continue;
-    }
-
     try {
-      const scheduledDate = suggestion.scheduled_date;
+      // Every idea has a date; undated ones use today. Time follows "Nova ação".
+      const [year, month, day] = (suggestion.scheduled_date || planningToday())
+        .split("-")
+        .map(Number);
+      const scheduledDate = getCleanAction({
+        user_id: userId,
+        date: new Date(year, month - 1, day),
+      }).date;
 
       const description = suggestion.objective
         ? `${suggestion.briefing}\n\nObjetivo: ${suggestion.objective}`
