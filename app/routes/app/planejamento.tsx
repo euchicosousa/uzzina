@@ -65,7 +65,6 @@ import {
 import { getUserPreferences } from "~/lib/preferences";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { cn } from "~/lib/utils";
-import { withPlanningDates } from "~/lib/social-planning/dates";
 import { finalizeSocialPlan } from "~/lib/social-planning/finalizer";
 import { buildPlanningPeriodSlots } from "~/lib/social-planning/period-plan";
 import {
@@ -353,12 +352,7 @@ function PlanningPage() {
     setFeedbackMessage(null);
     setSuggestionSaveError(null);
     setEditingSuggestion(null);
-    // Legacy proposals may have undated ideas: show them as today; the date
-    // is persisted with the next versioned save of this proposal.
-    setCurrentPlan({
-      ...plan,
-      suggestions: withPlanningDates(plan.suggestions),
-    });
+    setCurrentPlan(plan);
 
     if (plan.mode) setMode(plan.mode);
     const input = plan.input || {};
@@ -578,12 +572,7 @@ function PlanningPage() {
     }
     wasGenerationBusy.current = isGenerationBusy;
   }, [isGenerationBusy]);
-  const generationProgress =
-    planningGeneration.total && planningGeneration.progress !== undefined
-      ? Math.round(
-          (planningGeneration.progress / planningGeneration.total) * 100,
-        )
-      : null;
+  const batchProgress = planningGeneration.batchProgress;
   const showGenerate =
     !planningGeneration.requestId || planningGeneration.isBusy;
   const generateButton = (
@@ -1223,14 +1212,19 @@ function PlanningPage() {
                     aria-live="polite"
                   >
                     <p className="text-sm font-medium text-foreground">
-                      {generationProgress !== null
-                        ? `Gerando ${planningGeneration.progress} de ${planningGeneration.total} sugestões`
+                      {batchProgress
+                        ? batchProgress.from === batchProgress.to
+                          ? `Gerando sugestão ${batchProgress.to} de ${planningGeneration.total}`
+                          : `Gerando sugestões ${batchProgress.from} a ${batchProgress.to} de ${planningGeneration.total}`
                         : planningGeneration.total
                           ? `Gerando ${planningGeneration.total} ${planningGeneration.total === 1 ? "ideia" : "ideias"} para ${selectedPartner?.title ?? "o parceiro"}…`
                           : "Gerando sugestões…"}
                     </p>
-                    {generationProgress !== null ? (
-                      <UAIProgressBar isGenerating value={generationProgress} />
+                    {batchProgress ? (
+                      <UAIProgressBar
+                        isGenerating
+                        value={batchProgress.percent}
+                      />
                     ) : (
                       <UAIProgressBar isGenerating />
                     )}

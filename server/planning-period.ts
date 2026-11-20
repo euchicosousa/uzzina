@@ -1,5 +1,8 @@
 import { createHash, randomUUID } from "node:crypto";
-import { buildPlanningPeriodSlots } from "../app/lib/social-planning/period-plan.js";
+import {
+  buildPlanningPeriodSlots,
+  PLANNING_PERIOD_BATCH_SIZE,
+} from "../app/lib/social-planning/period-plan.js";
 import {
   normalizePlanningFormats,
   validatePeriodInput,
@@ -28,7 +31,6 @@ type PartnerSource = Pick<
 >;
 
 const intent = "ai-planning-period";
-const batchSize = 14;
 const maxBatchAge = 4 * 60_000;
 const unavailable = "Não foi possível verificar a geração. Tente novamente.";
 const periodChanged =
@@ -290,7 +292,10 @@ export async function runPlanningPeriodBatch(
     );
   }
   const offset = prior.data.length;
-  const batch = generationSlots.slice(offset, offset + batchSize);
+  const batch = generationSlots.slice(
+    offset,
+    offset + PLANNING_PERIOD_BATCH_SIZE,
+  );
   const prompt = JSON.stringify({
     ...editorialSource,
     direcionamento: periodDirection,

@@ -17,7 +17,6 @@ import {
   PrismTextarea,
 } from "~/components/prism";
 import type { PlanFormat, PlanSuggestion } from "~/lib/social-planning/types";
-import { planningToday } from "~/lib/social-planning/dates";
 import { PLANNING_FORMAT_LABELS } from "./PlanningPreview";
 
 export type SavePlanningSuggestion = (
@@ -38,9 +37,7 @@ export function PlanningSuggestionEditor({
 }: PlanningSuggestionEditorProps) {
   const [title, setTitle] = useState(suggestion.title);
   const [format, setFormat] = useState<PlanFormat>(suggestion.format);
-  const [date, setDate] = useState(
-    suggestion.scheduled_date || planningToday(),
-  );
+  const [date, setDate] = useState(suggestion.scheduled_date ?? "");
   const [objective, setObjective] = useState(suggestion.objective ?? "");
   const [briefing, setBriefing] = useState(suggestion.briefing ?? "");
   const [error, setError] = useState<string | null>(null);

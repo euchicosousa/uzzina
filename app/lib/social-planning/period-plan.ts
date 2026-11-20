@@ -5,6 +5,9 @@ import {
 } from "./slot-calculator.js";
 import type { PeriodPlanningSlot } from "./theme-contract.js";
 
+/** Suggestions generated per server batch; the Mesa uses it to estimate progress. */
+export const PLANNING_PERIOD_BATCH_SIZE = 14;
+
 export function buildPlanningPeriodSlots(
   options: Parameters<typeof mergeCommemorativeSlots>[0],
   formatCounts: PlanningFormatCounts,
