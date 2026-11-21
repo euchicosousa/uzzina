@@ -117,9 +117,9 @@ function ForgotPassword() {
                 <PrismInputGroup>
                   <PrismInputGroupAddon
                     align="inline-start"
-                    className="pr-1 pl-4 [&_svg]:text-foreground/40"
+                    className="pr-1 pl-4"
                   >
-                    <AtSignIcon className="size-5" />
+                    <AtSignIcon className="size-5 opacity-40" />
                   </PrismInputGroupAddon>
                   <PrismInputGroupInput
                     className="h-full px-3"

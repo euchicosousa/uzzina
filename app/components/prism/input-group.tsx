@@ -67,7 +67,7 @@ function InputGroup({
 }
 
 const inputGroupAddonVariants = cva(
-  "flex h-auto cursor-text items-center justify-center gap-2 text-sm select-none font-medium text-secondary-foreground [&_svg]:text-foreground [&_svg:not([class*='opacity-'])]:opacity-60 group-data-[disabled=true]/input-group:opacity-50 **:data-[slot=kbd]:rounded-full **:data-[slot=kbd]:bg-secondary **:data-[slot=kbd]:px-1.5",
+  "flex h-auto cursor-text items-center justify-center gap-2 text-sm select-none font-medium text-secondary-foreground [&_svg:not([class*='opacity-'])]:opacity-60 group-data-[disabled=true]/input-group:opacity-50 **:data-[slot=kbd]:rounded-full **:data-[slot=kbd]:bg-secondary **:data-[slot=kbd]:px-1.5",
   {
     variants: {
       size: {

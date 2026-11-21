@@ -112,7 +112,7 @@ export function PlanningCalendarView({
         <div className="flex items-start gap-0.5">
           <GripVerticalIcon
             aria-hidden="true"
-            className="mt-1.5 size-3 shrink-0 cursor-grab text-secondary-foreground"
+            className="mt-1.5 size-3 shrink-0 cursor-grab"
           />
           <PrismButton
             className="h-auto min-h-6 min-w-0 shrink justify-start px-0 text-left whitespace-normal"

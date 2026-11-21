@@ -99,7 +99,7 @@ export function CommentInput({
               ) : (
                 <>
                   <span>Mensagem ao parceiro</span>
-                  <GlobeIcon className="size-3 text-primary" />
+                  <GlobeIcon className="size-3" />
                 </>
               )}
             </PrismButton>
@@ -173,7 +173,7 @@ export function CommentInput({
                         </span>
                         <CheckIcon
                           className={cn(
-                            "ml-auto size-3.5 text-primary",
+                            "ml-auto size-3.5",
                             isSelected ? "opacity-100" : "opacity-0",
                           )}
                         />

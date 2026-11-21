@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { format } from "date-fns";
 import {
+  CheckCircle2Icon,
   ArrowRightIcon,
   CalendarIcon,
   FolderOpenIcon,
@@ -19,7 +20,13 @@ import {
   PLANNING_FORMAT_LABELS,
 } from "~/components/planning/PlanningPreview";
 import { PlanningSuggestionEditor } from "~/components/planning/PlanningSuggestionEditor";
-import { PlanningSuggestionsList } from "~/components/planning/PlanningSuggestionsList";
+import {
+  countSuggestions,
+  PlanningFilterTabs,
+  PlanningSuggestionsList,
+  resolveSuggestionFilter,
+  type SuggestionFilter,
+} from "~/components/planning/PlanningSuggestionsList";
 import {
   PrismBadge,
   PrismButton,
@@ -248,6 +255,8 @@ function PlanningPage() {
   const currentPlan =
     openedPlan?.partner_slug === selectedPartnerSlug ? openedPlan : null;
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
+  const [suggestionFilterChoice, setSuggestionFilter] =
+    useState<SuggestionFilter>("all");
   const [isFinalizing, setIsFinalizing] = useState(false);
   const [editingSuggestion, setEditingSuggestion] =
     useState<PlanSuggestion | null>(null);
@@ -602,6 +611,17 @@ function PlanningPage() {
       setIsFinalizing(false);
     }
   };
+
+  const suggestionCounts = countSuggestions(currentPlan?.suggestions ?? []);
+  const suggestionFilter = resolveSuggestionFilter(
+    suggestionFilterChoice,
+    suggestionCounts,
+  );
+  const openPlanId = currentPlan?.id;
+  // biome-ignore lint/correctness/useExhaustiveDependencies: a different proposal starts on "Todas".
+  useEffect(() => {
+    setSuggestionFilter("all");
+  }, [openPlanId]);
 
   const isGenerationBusy = planningGeneration.isBusy;
   const generationMessage = planningGeneration.message;
@@ -1230,9 +1250,9 @@ function PlanningPage() {
             aria-label="Prévia do planejamento"
             className="flex min-h-0 min-w-0 flex-col overflow-hidden border-l border-border"
           >
-            {/* Barra de controle da visualização quando há proposta ativa */}
+            {/* Barra única: visualização, filtros (só na lista) e Finalizar */}
             {currentPlan && !isGenerationBusy && (
-              <div className="flex shrink-0 items-center justify-between border-b border-border px-6 py-3">
+              <div className="flex shrink-0 items-center gap-3 border-b border-border px-6 py-3">
                 <PrismToggleGroup
                   aria-label="Visualização das sugestões"
                   disallowEmptySelection
@@ -1241,25 +1261,43 @@ function PlanningPage() {
                   }
                   selectedKeys={[viewMode]}
                   selectionMode="single"
-                  size="sm"
+                  size="icon-sm"
                   variant="ghost"
                 >
-                  <PrismToggleGroupItem id="list">
-                    <ListIcon data-icon="inline-start" />
-                    Lista
+                  <PrismToggleGroupItem aria-label="Lista" id="list">
+                    <ListIcon />
                   </PrismToggleGroupItem>
-                  <PrismToggleGroupItem id="calendar">
-                    <CalendarIcon data-icon="inline-start" />
-                    Calendário
+                  <PrismToggleGroupItem aria-label="Calendário" id="calendar">
+                    <CalendarIcon />
                   </PrismToggleGroupItem>
                 </PrismToggleGroup>
 
-                <div className="text-xs text-secondary-foreground">
-                  {currentPlan.suggestions.length}{" "}
-                  {currentPlan.suggestions.length === 1
-                    ? "sugestão"
-                    : "sugestões"}
-                </div>
+                {viewMode === "list" ? (
+                  <PlanningFilterTabs
+                    counts={suggestionCounts}
+                    filter={suggestionFilter}
+                    onChange={setSuggestionFilter}
+                  />
+                ) : (
+                  <div className="flex-1" />
+                )}
+
+                {suggestionCounts.approved > 0 && (
+                  <PrismButton
+                    className="min-w-0 shrink"
+                    isDisabled={isSavingSuggestions || isFinalizing}
+                    onPress={handleFinalize}
+                    size="sm"
+                    variant="success"
+                  >
+                    <span className="truncate">
+                      {isFinalizing
+                        ? "Criando ações…"
+                        : `Finalizar ${suggestionCounts.approved} ${suggestionCounts.approved === 1 ? "ação" : "ações"}`}
+                    </span>
+                    <CheckCircle2Icon data-icon="inline-end" />
+                  </PrismButton>
+                )}
               </div>
             )}
 
@@ -1296,13 +1334,13 @@ function PlanningPage() {
                 ) : currentPlan ? (
                   viewMode === "list" ? (
                     <PlanningSuggestionsList
+                      filter={suggestionFilter}
                       isFinalizing={isFinalizing}
                       isSaving={isSavingSuggestions}
                       key={currentPlan.id}
                       onApproveAllPending={handleApproveAllPending}
                       onChangeStatus={changeSuggestionStatus}
                       onEditSuggestion={setEditingSuggestion}
-                      onFinalize={handleFinalize}
                       onRelease={handleRelease}
                       suggestions={currentPlan.suggestions}
                     />

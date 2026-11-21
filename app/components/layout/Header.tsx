@@ -605,7 +605,7 @@ export const HeaderMenu = ({
               <Icon className="size-4" />
               <span>{`Tema ${label.toLowerCase()}`}</span>
               {themePreference === id ? (
-                <CheckIcon className="ml-auto size-4 text-primary" />
+                <CheckIcon className="ml-auto size-4" />
               ) : null}
             </PrismMenuItem>
           ))}

@@ -1364,10 +1364,7 @@ export function ActionFormDrawer({
           className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-background p-6 text-center"
           role="status"
         >
-          <SmartphoneIcon
-            aria-hidden="true"
-            className="size-8 text-secondary-foreground"
-          />
+          <SmartphoneIcon aria-hidden="true" className="size-8" />
           <p className="text-base font-medium text-foreground">
             Gire o telefone
           </p>

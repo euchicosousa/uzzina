@@ -1,13 +1,11 @@
 import {
   CalendarIcon,
-  CheckCircle2Icon,
   CheckIcon,
   PencilIcon,
   Undo2Icon,
   SparklesIcon,
   XIcon,
 } from "lucide-react";
-import { useState } from "react";
 import {
   PrismBadge,
   PrismButton,
@@ -29,21 +27,82 @@ import type {
 import { cn } from "~/lib/utils";
 import { PLANNING_FORMAT_LABELS } from "./PlanningPreview";
 
-const FILTER_LABELS = {
+export const FILTER_LABELS = {
   all: "Todas",
   pending: "Pendentes",
   approved: "Aprovadas",
   rejected: "Descartadas",
   finalized: "Finalizadas",
 };
-const FILTERS = [
+export const FILTERS = [
   "all",
   "pending",
   "approved",
   "rejected",
   "finalized",
 ] as const;
-type SuggestionFilter = keyof typeof FILTER_LABELS;
+export type SuggestionFilter = (typeof FILTERS)[number];
+
+/** A suggestion that already became an action is "finalized". */
+export const isSuggestionFinalized = (suggestion: PlanSuggestion) =>
+  Boolean(suggestion.created_action_id);
+
+export function countSuggestions(suggestions: PlanSuggestion[]) {
+  const counts: Record<SuggestionFilter, number> = {
+    all: suggestions.length,
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+    finalized: 0,
+  };
+  for (const suggestion of suggestions) {
+    if (isSuggestionFinalized(suggestion)) counts.finalized++;
+    else counts[suggestion.status]++;
+  }
+  return counts;
+}
+
+/** Falls back to "all" when the chosen filter has nothing left to show. */
+export function resolveSuggestionFilter(
+  filter: SuggestionFilter,
+  counts: Record<SuggestionFilter, number>,
+): SuggestionFilter {
+  return filter !== "all" && counts[filter] === 0 ? "all" : filter;
+}
+
+/** Filter tabs: filters with nothing in them are hidden, "Todas" always shows. */
+export function PlanningFilterTabs({
+  counts,
+  filter,
+  onChange,
+}: {
+  counts: Record<SuggestionFilter, number>;
+  filter: SuggestionFilter;
+  onChange: (filter: SuggestionFilter) => void;
+}) {
+  return (
+    <PrismToggleGroup
+      aria-label="Filtrar sugestões"
+      className="min-w-0 flex-1"
+      disallowEmptySelection
+      onSelectionChange={(keys) =>
+        onChange(FILTERS.find((key) => keys.has(key)) ?? "all")
+      }
+      selectedKeys={[filter]}
+      selectionMode="single"
+      size="sm"
+      variant="ghost"
+    >
+      {FILTERS.filter((key) => key === "all" || counts[key] > 0).map((key) => (
+        <PrismToggleGroupItem className="shrink" id={key} key={key}>
+          <span className="truncate">
+            {FILTER_LABELS[key]} {counts[key]}
+          </span>
+        </PrismToggleGroupItem>
+      ))}
+    </PrismToggleGroup>
+  );
+}
 
 const STATUS_LABELS = {
   pending: "Pendente",
@@ -52,42 +111,28 @@ const STATUS_LABELS = {
 } satisfies Record<PlanSuggestionStatus, string>;
 
 interface PlanningSuggestionsListProps {
+  filter: SuggestionFilter;
   suggestions: PlanSuggestion[];
   onEditSuggestion: (suggestion: PlanSuggestion) => void;
   onChangeStatus: (id: string, status: PlanSuggestionStatus) => void;
   onApproveAllPending: () => void;
-  onFinalize: () => void;
   onRelease: (suggestionId: string) => void;
   isSaving: boolean;
   isFinalizing: boolean;
 }
 
 export function PlanningSuggestionsList({
+  filter,
   suggestions,
   onEditSuggestion,
   onChangeStatus,
   onApproveAllPending,
-  onFinalize,
   onRelease,
   isSaving,
   isFinalizing,
 }: PlanningSuggestionsListProps) {
-  const [filter, setFilter] = useState<SuggestionFilter>("all");
-  // A suggestion that already became an action is "finalized": it leaves the
-  // pending/approved counts and the Finalizar button until it is released.
-  const isFinalized = (suggestion: PlanSuggestion) =>
-    Boolean(suggestion.created_action_id);
-  const counts = {
-    all: suggestions.length,
-    pending: 0,
-    approved: 0,
-    rejected: 0,
-    finalized: 0,
-  };
-  for (const suggestion of suggestions) {
-    if (isFinalized(suggestion)) counts.finalized++;
-    else counts[suggestion.status]++;
-  }
+  const isFinalized = isSuggestionFinalized;
+  const pendingCount = countSuggestions(suggestions).pending;
   const visibleSuggestions = suggestions.filter((suggestion) => {
     if (filter === "all") return true;
     if (filter === "finalized") return isFinalized(suggestion);
@@ -97,53 +142,20 @@ export function PlanningSuggestionsList({
 
   return (
     <div className="flex flex-col">
-      <div className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-2 border-b border-border bg-background px-6 py-3">
-        <PrismToggleGroup
-          aria-label="Filtrar sugestões"
-          className="flex-wrap"
-          disallowEmptySelection
-          onSelectionChange={(keys) =>
-            setFilter(FILTERS.find((key) => keys.has(key)) ?? "all")
-          }
-          selectedKeys={[filter]}
-          selectionMode="single"
-          size="sm"
-          variant="ghost"
-        >
-          {FILTERS.map((key) => (
-            <PrismToggleGroupItem id={key} key={key}>
-              {FILTER_LABELS[key]} ({counts[key]})
-            </PrismToggleGroupItem>
-          ))}
-        </PrismToggleGroup>
-
-        <div className="flex flex-wrap items-center gap-2">
-          {counts.pending > 0 && (
-            <PrismButton
-              isDisabled={isBusy}
-              onPress={onApproveAllPending}
-              size="sm"
-              variant="outline"
-            >
-              Aprovar todas as pendentes
-              <CheckIcon data-icon="inline-end" />
-            </PrismButton>
-          )}
-          {counts.approved > 0 && (
-            <PrismButton
-              isDisabled={isBusy}
-              onPress={onFinalize}
-              size="sm"
-              variant="success"
-            >
-              {isFinalizing
-                ? "Criando ações…"
-                : `Finalizar ${counts.approved} ${counts.approved === 1 ? "ação" : "ações"}`}
-              <CheckCircle2Icon data-icon="inline-end" />
-            </PrismButton>
-          )}
+      {filter === "pending" && pendingCount > 0 && (
+        <div className="flex px-6 pt-3">
+          <PrismButton
+            className="min-w-0 shrink"
+            isDisabled={isBusy}
+            onPress={onApproveAllPending}
+            size="sm"
+            variant="outline"
+          >
+            <span className="truncate">Aprovar todas as pendentes</span>
+            <CheckIcon data-icon="inline-end" />
+          </PrismButton>
         </div>
-      </div>
+      )}
 
       {visibleSuggestions.length === 0 ? (
         <p className="px-6 py-4 text-sm text-secondary-foreground">

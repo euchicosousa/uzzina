@@ -1,4 +1,4 @@
-import { LayersIcon, PipetteIcon, RotateCcwIcon } from "lucide-react";
+import { RotateCcwIcon } from "lucide-react";
 import {
   PrismButton,
   PrismLabel,
@@ -83,7 +83,6 @@ export function CustomThemePanel({
     <div className="flex flex-col gap-6 border-t border-border/40 pt-5">
       {/* Cabeçalho da seção */}
       <div className="flex items-center gap-2">
-        <PipetteIcon className="size-4 text-primary" />
         <span className="text-sm font-semibold">Editar Cores do Tema</span>
       </div>
 
@@ -193,7 +192,6 @@ export function CustomThemePanel({
       {/* Controles de Relevo e Acabamento dos Cartões (DS06) */}
       <div className="flex flex-col gap-4 border-t border-border/40 pt-4">
         <div className="flex items-center gap-2">
-          <LayersIcon className="size-4 text-primary" />
           <span className="text-sm font-semibold">
             Relevo e Acabamento das Ações
           </span>
