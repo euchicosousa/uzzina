@@ -126,7 +126,7 @@ export function PlanningCalendarView({
             </span>
           </PrismButton>
         </div>
-        <p className="text-xs break-words text-secondary-foreground">
+        <p className="text-sm break-words text-secondary-foreground">
           {PLANNING_FORMAT_LABELS[suggestion.format]}
           {suggestion.is_commemorative && (
             <span className="block">
@@ -216,7 +216,7 @@ export function PlanningCalendarView({
 
       {unscheduled.length > 0 && (
         <section>
-          <h3 className="mb-1 text-sm font-semibold">Sugestões sem data</h3>
+          <h3 className="mb-1 text-base font-semibold">Sugestões sem data</h3>
           <ul className="divide-y divide-border">
             {unscheduled.map(suggestionItem)}
           </ul>

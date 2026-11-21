@@ -742,7 +742,7 @@ function PlanningPage() {
                     <PrismDialogBody className="pb-4">
                       {savedPlansError ? (
                         <div className="flex flex-wrap items-center gap-2">
-                          <p className="text-sm text-error" role="alert">
+                          <p className="text-base text-error" role="alert">
                             Não foi possível carregar as propostas.
                           </p>
                           <PrismButton
@@ -793,7 +793,7 @@ function PlanningPage() {
                                       </PrismBadge>
                                     )}
                                   </div>
-                                  <p className="text-xs text-secondary-foreground">
+                                  <p className="text-sm text-secondary-foreground">
                                     {plan.suggestions.length}{" "}
                                     {plan.suggestions.length === 1
                                       ? "sugestão"
@@ -864,7 +864,7 @@ function PlanningPage() {
       </header>
 
       <div className="min-h-0 flex-1">
-        <p className="m-4 text-sm text-secondary-foreground lg:hidden">
+        <p className="m-4 text-base text-secondary-foreground lg:hidden">
           O planejamento está disponível em telas amplas.
         </p>
         <div className="hidden h-full min-h-0 lg:grid lg:grid-cols-[minmax(21rem,0.85fr)_minmax(0,1.55fr)]">
@@ -879,7 +879,7 @@ function PlanningPage() {
           >
             <div className="grid gap-8">
               {partnerSlug && !selectedPartner && (
-                <p className="text-sm text-secondary-foreground">
+                <p className="text-base text-secondary-foreground">
                   Esse parceiro não está disponível para sua conta. Escolha
                   outro parceiro autorizado no cabeçalho.
                 </p>
@@ -888,7 +888,7 @@ function PlanningPage() {
                 (partnerDetail.isPending || partnerDetail.isLoadingError) && (
                   <p
                     role="status"
-                    className="text-sm text-secondary-foreground"
+                    className="text-base text-secondary-foreground"
                   >
                     {partnerDetail.isPending
                       ? "Carregando o direcionamento do parceiro…"
@@ -1003,7 +1003,7 @@ function PlanningPage() {
                       </div>
                       {/* Resumo de slots calculados / validação (C02) */}
                       {periodValidation.isValid ? (
-                        <p className="text-xs text-secondary-foreground">
+                        <p className="text-sm text-secondary-foreground">
                           <strong className="font-semibold text-foreground">
                             {periodValidation.calculatedSlots.length}{" "}
                             {periodValidation.calculatedSlots.length === 1
@@ -1013,7 +1013,7 @@ function PlanningPage() {
                           no período selecionado.
                         </p>
                       ) : (
-                        <p className="text-xs font-medium text-error">
+                        <p className="text-base font-medium text-error">
                           {periodValidation.error}
                         </p>
                       )}
@@ -1160,12 +1160,12 @@ function PlanningPage() {
                 {mode === "period" ? (
                   considerHolidays ? (
                     <div className="grid gap-3 pt-1">
-                      <p className="text-sm text-secondary-foreground">
+                      <p className="text-base text-secondary-foreground">
                         Selecione as datas comemorativas do período que deseja
                         incluir:
                       </p>
                       {selectedCelebrationIds.length > 0 && (
-                        <p className="text-xs text-secondary-foreground">
+                        <p className="text-sm text-secondary-foreground">
                           {extraCount > 0 && (
                             <>
                               {periodValidation.calculatedSlots.length}{" "}
@@ -1216,19 +1216,19 @@ function PlanningPage() {
                           })}
                         </div>
                       ) : (
-                        <p className="text-sm text-secondary-foreground">
+                        <p className="text-base text-secondary-foreground">
                           Nenhuma data comemorativa cadastrada para este mês.
                         </p>
                       )}
                     </div>
                   ) : (
-                    <p className="text-sm text-secondary-foreground">
+                    <p className="text-base text-secondary-foreground">
                       Marque para exibir e escolher as datas comemorativas do
                       mês.
                     </p>
                   )
                 ) : (
-                  <p className="text-sm text-secondary-foreground">
+                  <p className="text-base text-secondary-foreground">
                     Disponível no modo por período.
                   </p>
                 )}
@@ -1236,7 +1236,7 @@ function PlanningPage() {
 
               {/* Referência ao contexto e tom */}
               <div>
-                <p className="text-sm text-secondary-foreground">
+                <p className="text-base text-secondary-foreground">
                   {selectedPartner
                     ? `Contexto e tom de voz definidos no perfil de ${selectedPartner.title} serão considerados na criação.`
                     : "Selecione um parceiro para carregar contexto e tom de voz personalizados."}
@@ -1303,7 +1303,7 @@ function PlanningPage() {
 
             {suggestionSaveError && (
               <p
-                className="border-b border-border px-6 py-2 text-sm text-error"
+                className="border-b border-border px-6 py-2 text-base text-error"
                 role="alert"
               >
                 {suggestionSaveError}
@@ -1319,14 +1319,14 @@ function PlanningPage() {
                     role="status"
                     aria-live="polite"
                   >
-                    <p className="text-sm font-medium text-foreground">
+                    <p className="text-base font-medium text-foreground">
                       {generationText}
                     </p>
                     <UAIProgressBar
                       durationMs={generationDurationMs}
                       isGenerating
                     />
-                    <p className="text-xs text-secondary-foreground">
+                    <p className="text-sm text-secondary-foreground">
                       Você pode sair desta página: a geração continua e a
                       proposta pode ser recuperada em Verificar proposta.
                     </p>

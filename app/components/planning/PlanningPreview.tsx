@@ -43,7 +43,7 @@ export function PlanningPreview({
         <h2 className="text-base font-semibold">
           {period ? "Prévia do calendário" : "Prévia da lista"}
         </h2>
-        <p className="text-sm text-secondary-foreground">
+        <p className="text-base text-secondary-foreground">
           {formats.length} {formats.length === 1 ? "conteúdo" : "conteúdos"}
         </p>
       </div>

@@ -94,7 +94,7 @@ export function PlanningSuggestionEditor({
       <form onSubmit={handleSave}>
         <PrismDialogBody>
           {error && (
-            <p className="text-sm text-error" role="alert">
+            <p className="text-base text-error" role="alert">
               {error}
             </p>
           )}

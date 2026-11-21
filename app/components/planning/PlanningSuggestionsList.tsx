@@ -158,7 +158,7 @@ export function PlanningSuggestionsList({
       )}
 
       {visibleSuggestions.length === 0 ? (
-        <p className="px-6 py-4 text-sm text-secondary-foreground">
+        <p className="px-6 py-4 text-base text-secondary-foreground">
           Nenhuma sugestão para este filtro.
         </p>
       ) : (
@@ -173,7 +173,7 @@ export function PlanningSuggestionsList({
                 className={cn("grid gap-2 py-4", finalized && "opacity-70")}
                 key={suggestion.id}
               >
-                <div className="flex flex-wrap items-center gap-2 text-xs text-secondary-foreground">
+                <div className="flex flex-wrap items-center gap-2 text-sm text-secondary-foreground">
                   <span>{PLANNING_FORMAT_LABELS[suggestion.format]}</span>
                   {suggestion.scheduled_date && (
                     <time
@@ -208,12 +208,12 @@ export function PlanningSuggestionsList({
                 </div>
                 <h3 className="text-base font-semibold">{suggestion.title}</h3>
                 {suggestion.objective && (
-                  <p className="text-sm text-secondary-foreground">
+                  <p className="text-base text-secondary-foreground">
                     {suggestion.objective}
                   </p>
                 )}
                 {suggestion.briefing && (
-                  <p className="text-sm whitespace-pre-line">
+                  <p className="text-base whitespace-pre-line">
                     {suggestion.briefing}
                   </p>
                 )}
@@ -243,11 +243,11 @@ export function PlanningSuggestionsList({
                           <PrismDialogTitle>
                             Liberar esta sugestão?
                           </PrismDialogTitle>
-                          <PrismDialogDescription>
+                          <PrismDialogDescription className="text-base">
                             {suggestion.title}
                           </PrismDialogDescription>
                         </PrismDialogHeader>
-                        <PrismDialogBody>
+                        <PrismDialogBody className="text-base">
                           <p>
                             A sugestão volta a Aprovada e pode ser finalizada de
                             novo, criando uma nova ação. A ação que já existe
@@ -301,7 +301,7 @@ export function PlanningSuggestionsList({
                   )}
                 </div>
                 {finalized && (
-                  <p className="text-xs text-secondary-foreground">
+                  <p className="text-sm text-secondary-foreground">
                     A ação já foi criada. Para mudar o conteúdo, edite a ação.
                   </p>
                 )}
