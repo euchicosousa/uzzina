@@ -678,7 +678,7 @@ function PlanningPage() {
   return (
     <div
       ref={pageRef}
-      className="relative mx-2 flex min-h-0 flex-col overflow-hidden border-x lg:mx-8"
+      className="relative mx-2 flex min-h-0 flex-col overflow-clip border-x lg:mx-8"
     >
       <header
         aria-busy={isGenerationBusy}
@@ -1248,7 +1248,7 @@ function PlanningPage() {
 
           <section
             aria-label="Prévia do planejamento"
-            className="flex min-h-0 min-w-0 flex-col overflow-hidden border-l border-border"
+            className="flex min-h-0 min-w-0 flex-col overflow-clip border-l border-border"
           >
             {/* Barra única: visualização, filtros (só na lista) e Finalizar */}
             {currentPlan && !isGenerationBusy && (
