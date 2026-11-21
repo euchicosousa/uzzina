@@ -6,7 +6,7 @@
 - **Anthropic** — Claude Opus 5.5, para auditar evidências e critérios de aceite de toda a série.
 - **Google** — Gemini 4 Argon, para auditar evidências e critérios de aceite de toda a série. Disponibilidade depende do plano do Antigravity.
 
-**Status:** ready-for-agent. Atualizado em 19/11: não iniciado; depende de T09 e T10.
+**Status:** implemented-unverified. Parecer de 21/11 entregue em [T11-evidence.md](../../../docs/audits/social-planning-recovery/T11-evidence.md): núcleo de banco, autorização e IA comprovado; falham o teste `header-menu` (desatualizado) e os ensaios antigos de A06/B01 (passam com as regras D5/T12); sem automação de interface (U01–U08, W01–W08, E02, N11), sem F04 com duas conexões e não publicado. Fechamento é decisão do proprietário.
 **Blocked by:** T02–T10 e T12 verificados conforme escopo aprovado, com decisões registradas em T01.
 **Origem:** C10; todos os achados R1–R11.
 **Prioridade:** P2
