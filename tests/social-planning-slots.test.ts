@@ -1,4 +1,5 @@
 import { describe, expect, it, test } from "bun:test";
+import { buildPlanningPeriodSlots } from "~/lib/social-planning/period-plan";
 import {
   calculatePeriodSlots,
   distributeFormats,
@@ -305,26 +306,101 @@ describe("Social Planning - Slot & Format Calculator", () => {
       ]);
     });
 
-    test("merges multiple celebrations on the same date with combined titles", () => {
-      const slots = ["2026-10-12"];
-      const celebrations = [
-        { id: "c1", title: "Nossa Senhora Aparecida", date: "2026-10-12" },
-        { id: "c2", title: "Dia das Crianças", date: "2026-10-12" },
-      ];
+    const sameDay = [
+      { id: "c1", title: "Nossa Senhora Aparecida", date: "2026-10-12" },
+      { id: "c2", title: "Dia das Crianças", date: "2026-10-12" },
+      { id: "c3", title: "Dia do Engenheiro", date: "2026-10-12" },
+    ];
 
+    test("keeps every same-day celebration as its own slot (first takes over the regular post)", () => {
       const merged = mergeCommemorativeSlots({
-        slots,
-        celebrations,
-        selectedCelebrationIds: ["c1", "c2"],
+        slots: ["2026-10-12"],
+        celebrations: sameDay,
+        selectedCelebrationIds: ["c1", "c2", "c3"],
       });
 
       expect(merged).toEqual([
         {
           date: "2026-10-12",
           isCommemorative: true,
-          celebrationTitle: "Nossa Senhora Aparecida / Dia das Crianças",
+          celebrationTitle: "Nossa Senhora Aparecida",
           isExtra: false,
         },
+        {
+          date: "2026-10-12",
+          isCommemorative: true,
+          celebrationTitle: "Dia das Crianças",
+          isExtra: true,
+        },
+        {
+          date: "2026-10-12",
+          isCommemorative: true,
+          celebrationTitle: "Dia do Engenheiro",
+          isExtra: true,
+        },
+      ]);
+    });
+
+    test("replaceRegularPost false adds every celebration on top of the regular posts", () => {
+      const merged = mergeCommemorativeSlots({
+        slots: ["2026-10-12"],
+        celebrations: sameDay.slice(0, 2),
+        selectedCelebrationIds: ["c1", "c2"],
+        replaceRegularPost: false,
+      });
+
+      expect(merged).toEqual([
+        {
+          date: "2026-10-12",
+          isCommemorative: false,
+          celebrationTitle: undefined,
+          isExtra: false,
+        },
+        {
+          date: "2026-10-12",
+          isCommemorative: true,
+          celebrationTitle: "Nossa Senhora Aparecida",
+          isExtra: true,
+        },
+        {
+          date: "2026-10-12",
+          isCommemorative: true,
+          celebrationTitle: "Dia das Crianças",
+          isExtra: true,
+        },
+      ]);
+    });
+
+    test("period slots make extras Estático without consuming the regular counts; flag defaults to ON", () => {
+      const options = {
+        slots: ["2026-10-12", "2026-10-14"],
+        celebrations: sameDay.slice(0, 2),
+        selectedCelebrationIds: ["c1", "c2"],
+      };
+      const counts: [number, number, number] = [0, 2, 0];
+
+      const byDefault = buildPlanningPeriodSlots(options, counts);
+      expect(byDefault.map((s) => [s.isExtra, s.format])).toEqual([
+        [false, "carousel"],
+        [true, "static"],
+        [false, "carousel"],
+      ]);
+      expect(byDefault).toEqual(
+        buildPlanningPeriodSlots(
+          { ...options, replaceRegularPost: true },
+          counts,
+        ),
+      );
+
+      const off = buildPlanningPeriodSlots(
+        { ...options, replaceRegularPost: false },
+        counts,
+      );
+      expect(off.map((s) => [s.isExtra, s.format])).toEqual([
+        [false, "carousel"],
+        [true, "static"],
+        [true, "static"],
+        [false, "carousel"],
       ]);
     });
 

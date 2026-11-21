@@ -428,9 +428,13 @@ export interface MergedSlotsResult {
 }
 
 /**
- * Mescla as datas comemorativas selecionadas com os slots calculados (C03).
- * Restringe estritamente ao período [startDate, endDate].
- * Distingue slots regulares de extras comemorativas.
+ * Merges the selected celebrations with the calculated regular slots (C03).
+ * Strictly limited to [startDate, endDate]. Every selected celebration enters,
+ * including several on the same day: each one is its own slot with its own title.
+ *
+ * With `replaceRegularPost` (default), the first celebration of a day that already
+ * has a regular post takes over that post; the others on that day are extras.
+ * Without it, every celebration is an extra on top of the regular posts.
  */
 export function mergeCommemorativeSlots({
   slots,
@@ -438,14 +442,15 @@ export function mergeCommemorativeSlots({
   selectedCelebrationIds,
   startDate,
   endDate,
+  replaceRegularPost = true,
 }: {
   slots: string[];
   celebrations: Array<{ id: string; title: string; date: string }>;
   selectedCelebrationIds: string[];
   startDate?: string;
   endDate?: string;
+  replaceRegularPost?: boolean;
 }): MergedSlot[] {
-  // Filtra celebrações selecionadas com data estrita dentro do período
   const selectedHolidays = celebrations.filter((c) => {
     if (!selectedCelebrationIds.includes(c.id)) return false;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(c.date)) return false;
@@ -454,42 +459,37 @@ export function mergeCommemorativeSlots({
     return true;
   });
 
-  const holidayByDate = new Map<string, string>();
+  const tookOver = new Set<string>();
+  const regularDates = new Set(slots);
+  const extras: MergedSlot[] = [];
+  const takeovers = new Map<string, string>();
   for (const h of selectedHolidays) {
-    const existing = holidayByDate.get(h.date);
-    holidayByDate.set(h.date, existing ? `${existing} / ${h.title}` : h.title);
-  }
-
-  const slotSet = new Set(slots);
-  const result: MergedSlot[] = [];
-
-  // Slots regulares (podem coincidir com comemoração)
-  const scheduledCelebrations = new Set<string>();
-  for (const slot of slots) {
-    const holidayTitle = scheduledCelebrations.has(slot)
-      ? undefined
-      : holidayByDate.get(slot);
-    if (holidayTitle) scheduledCelebrations.add(slot);
-    result.push({
-      date: slot,
-      isCommemorative: Boolean(holidayTitle),
-      celebrationTitle: holidayTitle,
-      isExtra: false,
+    if (
+      replaceRegularPost &&
+      regularDates.has(h.date) &&
+      !tookOver.has(h.date)
+    ) {
+      tookOver.add(h.date);
+      takeovers.set(h.date, h.title);
+      continue;
+    }
+    extras.push({
+      date: h.date,
+      isCommemorative: true,
+      celebrationTitle: h.title,
+      isExtra: true,
     });
   }
 
-  // Comemorações que não caíram em slots regulares entram como extras
-  for (const [hDate, hTitle] of holidayByDate.entries()) {
-    if (!slotSet.has(hDate)) {
-      result.push({
-        date: hDate,
-        isCommemorative: true,
-        celebrationTitle: hTitle,
-        isExtra: true,
-      });
-    }
-  }
+  const regular: MergedSlot[] = slots.map((slot) => {
+    const title = takeovers.get(slot);
+    return {
+      date: slot,
+      isCommemorative: title !== undefined,
+      celebrationTitle: title,
+      isExtra: false,
+    };
+  });
 
-  // Ordena por data
-  return result.sort((a, b) => a.date.localeCompare(b.date));
+  return [...regular, ...extras].sort((a, b) => a.date.localeCompare(b.date));
 }

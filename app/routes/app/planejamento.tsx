@@ -17,6 +17,7 @@ import { PlanningCalendarView } from "~/components/planning/PlanningCalendarView
 import {
   PlanningPreview,
   PLANNING_FORMAT_LABELS,
+  type PlanningPreviewItem,
 } from "~/components/planning/PlanningPreview";
 import { PlanningSuggestionEditor } from "~/components/planning/PlanningSuggestionEditor";
 import { PlanningFinalizeDialog } from "~/components/planning/PlanningFinalizeDialog";
@@ -193,6 +194,7 @@ function PlanningPage() {
   } | null>(null);
 
   const [considerHolidays, setConsiderHolidays] = useState(false);
+  const [replaceRegularPost, setReplaceRegularPost] = useState(true);
   const [selectedCelebrationIds, setSelectedCelebrationIds] = useState<
     string[]
   >([]);
@@ -294,6 +296,7 @@ function PlanningPage() {
             selectedCelebrationIds: considerHolidays
               ? selectedCelebrationIds
               : [],
+            replaceRegularPost,
             startDate,
             endDate,
           },
@@ -303,10 +306,15 @@ function PlanningPage() {
   const formats: PlanFormat[] =
     mode === "period" ? slots.map((slot) => slot.format) : regularFormats;
   const extraCount = slots.filter((slot) => slot.isExtra).length;
-  const itemsByDate = new Map<string, PlanFormat[]>();
+  const itemsByDate = new Map<string, PlanningPreviewItem[]>();
   for (const slot of slots) {
     const items = itemsByDate.get(slot.date) ?? [];
-    items.push(slot.format);
+    items.push({
+      format: slot.format,
+      celebrationTitle: slot.isCommemorative
+        ? slot.celebrationTitle
+        : undefined,
+    });
     itemsByDate.set(slot.date, items);
   }
 
@@ -400,6 +408,7 @@ function PlanningPage() {
 
     if (typeof input.considerHolidays === "boolean")
       setConsiderHolidays(input.considerHolidays);
+    setReplaceRegularPost(input.replaceRegularPost !== false);
     if (Array.isArray(input.selectedCelebrationIds))
       setSelectedCelebrationIds(input.selectedCelebrationIds as string[]);
   };
@@ -452,6 +461,7 @@ function PlanningPage() {
             formatCounts,
             considerHolidays,
             selectedCelebrationIds,
+            replaceRegularPost,
             expectedSlots: slots,
           },
       openGeneratedPlan,
@@ -1160,6 +1170,12 @@ function PlanningPage() {
                 {mode === "period" ? (
                   considerHolidays ? (
                     <div className="grid gap-3 pt-1">
+                      <PrismCheckbox
+                        isSelected={replaceRegularPost}
+                        onChange={setReplaceRegularPost}
+                      >
+                        Substituir o post do dia
+                      </PrismCheckbox>
                       <p className="text-base text-secondary-foreground">
                         Selecione as datas comemorativas do período que deseja
                         incluir:

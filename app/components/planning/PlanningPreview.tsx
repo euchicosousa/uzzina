@@ -4,6 +4,7 @@ import { CalendarGrid } from "~/components/features/Calendar";
 import { PrismBadge } from "~/components/prism";
 import { UIcons } from "~/components/uzzina/UIcons";
 import { CATEGORIES } from "~/lib/CONSTANTS";
+import { cn } from "~/lib/utils";
 import type { PlanFormat } from "~/lib/social-planning/types";
 import { parseU } from "~/utils/date";
 
@@ -19,13 +20,19 @@ const calendarCategories = {
   reels: CATEGORIES.reels,
 } satisfies Record<PlanFormat, (typeof CATEGORIES)[keyof typeof CATEGORIES]>;
 
+export interface PlanningPreviewItem {
+  format: PlanFormat;
+  /** Celebration name; only set for commemorative slots. */
+  celebrationTitle?: string;
+}
+
 export function PlanningPreview({
   formats,
   itemsByDate,
   period,
 }: {
   formats: PlanFormat[];
-  itemsByDate: ReadonlyMap<string, PlanFormat[]>;
+  itemsByDate: ReadonlyMap<string, PlanningPreviewItem[]>;
   period: { start: string; end: string } | null;
 }) {
   if (!formats.length) return null;
@@ -71,10 +78,13 @@ export function PlanningPreview({
                 </time>
                 <ul className="mt-1 grid items-start gap-1">
                   {itemsByDate.get(key)?.map((item, index) => {
-                    const category = calendarCategories[item];
+                    const category = calendarCategories[item.format];
                     return (
                       <li
-                        className="flex aspect-square w-full max-w-24 min-w-0 flex-col items-center justify-center gap-1 rounded-xl border border-(--category-color)/50 bg-[color-mix(in_srgb,var(--category-color)_10%,transparent)] px-0.5 text-center text-(--category-ink) [--category-ink:color-mix(in_srgb,var(--category-color)_80%,black)] squircle dark:[--category-ink:color-mix(in_srgb,var(--category-color)_80%,white)]"
+                        className={cn(
+                          "flex w-full max-w-24 min-w-0 flex-col items-center justify-center gap-1 rounded-xl border border-(--category-color)/50 bg-[color-mix(in_srgb,var(--category-color)_10%,transparent)] px-0.5 text-center text-(--category-ink) [--category-ink:color-mix(in_srgb,var(--category-color)_80%,black)] squircle dark:[--category-ink:color-mix(in_srgb,var(--category-color)_80%,white)]",
+                          item.celebrationTitle ? "py-1.5" : "aspect-square",
+                        )}
                         // biome-ignore lint/suspicious/noArrayIndexKey: placeholders have no persistent identity.
                         key={index}
                         style={
@@ -88,8 +98,16 @@ export function PlanningPreview({
                           slug={category.slug}
                         />
                         <span className="max-w-full truncate text-xs tracking-tight text-[color-mix(in_srgb,var(--category-ink)_75%,var(--foreground))]">
-                          {PLANNING_FORMAT_LABELS[item]}
+                          {PLANNING_FORMAT_LABELS[item.format]}
                         </span>
+                        {item.celebrationTitle && (
+                          <span
+                            className="line-clamp-2 max-w-full text-sm leading-tight wrap-anywhere text-foreground"
+                            title={item.celebrationTitle}
+                          >
+                            {item.celebrationTitle}
+                          </span>
+                        )}
                       </li>
                     );
                   })}

@@ -42,6 +42,8 @@ export const periodPlanningInputSchema = editorialInput.extend({
   formatCounts: z.tuple([formatCount, formatCount, formatCount]),
   considerHolidays: z.boolean(),
   selectedCelebrationIds: z.array(z.string().uuid()).max(1024),
+  // Missing in older saved/pending requests: they behave as "replace" (ON).
+  replaceRegularPost: z.boolean().default(true),
   expectedSlots: z.array(periodSlotSchema).min(1).max(periodSlotLimit),
 });
 

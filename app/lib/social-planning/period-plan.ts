@@ -21,6 +21,7 @@ export function buildPlanningPeriodSlots(
   return mergeCommemorativeSlots({ ...options, celebrations }).map((slot) => ({
     ...slot,
     isExtra: slot.isExtra === true,
-    format: slot.isExtra ? "carousel" : regularFormats[regularIndex++],
+    // Extras are plain posts (Estático) and never consume the regular counts.
+    format: slot.isExtra ? "static" : regularFormats[regularIndex++],
   }));
 }

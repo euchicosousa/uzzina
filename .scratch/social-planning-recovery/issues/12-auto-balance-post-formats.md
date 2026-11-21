@@ -6,7 +6,7 @@
 - **Codex — GPT-6.2 Sol, raciocínio médio.** Implementar redistribuição inteira após aceite e exercitar totais pequenos e desempates.
 - **Codex — GPT-6.2 Astra, raciocínio baixo.** Conferir a ligação entre composição, calendário, lista e entrada da geração.
 
-**Status:** ready-for-agent. Em 21/11 o proprietário testou os sliders de formatos (ok) e definiu a regra das comemorações abaixo, ainda não implementada. Arredondamento, sobras e durações dos atalhos ficam como estão (aceitos junto com o T03).
+**Status:** ready-for-agent. Em 21/11 o proprietário testou os sliders de formatos (ok) e definiu a regra das comemorações abaixo, implementada em 21/11 na `main` local (sem verificação visual do proprietário). Arredondamento, sobras e durações dos atalhos ficam como estão (aceitos junto com o T03).
 
 **Bloqueado por.** A bancada pode ser estudada primeiro. A implementação usa o total normalizado de T03 e depende da regra de D3; extras dependem de D3/D4. Série em espera.
 
@@ -25,4 +25,4 @@ Na Mesa, a distribuição automática inicia equilibrada. Em Definir quantidades
 - Dia que já tem publicação regular: a comemoração **substitui** a regular. Em vez de regra fixa, o proprietário quer um interruptor "Substituir o post do dia" (a definir: padrão ligado ou desligado e onde fica na tela).
 - O cartão da prévia mostra o **nome da comemoração**.
 - O formato do extra deve ser **Estático (post)**, e não carrossel como hoje, a menos que a ideia gerada peça outro formato; esse detalhe fica para depois.
-- Não implementado: o código atual (`mergeCommemorativeSlots`, `period-plan.ts`) ainda junta datas do mesmo dia e usa sempre carrossel nos extras.
+- Implementado em 21/11 (não visto no navegador): datas do mesmo dia não são mais juntadas; interruptor "Substituir o post do dia" ligado por padrão, gravado na proposta e validado no servidor (ausente = ligado); extras Estático; a prévia mostra o nome da comemoração. Falta a conferência visual do proprietário.
