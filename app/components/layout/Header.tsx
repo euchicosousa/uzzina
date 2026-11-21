@@ -455,7 +455,7 @@ export function Header({
             placement="bottom end"
             size="lg"
           >
-            <div className="flex items-center justify-between border-b bg-secondary px-4 py-3">
+            <div className="flex items-center justify-between border-b bg-card px-4 py-3">
               <h5 className="text-sm font-semibold">Notificações</h5>
               {unreadCount > 0 && (
                 <PrismButton
@@ -483,8 +483,9 @@ export function Header({
                     <PrismButton
                       key={notif.id}
                       className={cn(
-                        "flex w-full flex-col items-start gap-1 px-4 py-2 text-left font-normal transition hover:bg-card focus-visible:bg-secondary",
-                        !notif.read_at && "bg-card",
+                        "flex w-full flex-col items-start gap-1 px-4 py-2 text-left font-normal transition hover:bg-secondary focus-visible:bg-secondary",
+                        !notif.read_at &&
+                          "bg-card hover:bg-secondary-hover focus-visible:bg-secondary-hover",
                       )}
                       onPress={() => handleNotificationClick(notif)}
                       variant="unstyled"
@@ -511,7 +512,7 @@ export function Header({
                 })
               )}
             </div>
-            <div className="border-t bg-secondary p-2 text-center">
+            <div className="border-t bg-card p-2 text-center">
               <Link
                 className="block w-full py-1 text-sm hover:underline"
                 onClick={guardLinkClick("/app/notifications")}
@@ -716,7 +717,7 @@ export const HeaderMenu = ({
         {person.admin && (
           <>
             <PrismMenuSeparator />
-            <PrismMenuGroup className="relative -mt-2 bg-secondary/50 p-1">
+            <PrismMenuGroup className="relative -mt-2 bg-card p-1">
               <PrismMenuLabel>Admin</PrismMenuLabel>
               <PrismMenuItem
                 onAction={() => onNavigate("/app/admin/partners")}

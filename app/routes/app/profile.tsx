@@ -269,7 +269,7 @@ function PartnerPageMockup({ showSidebar }: { showSidebar: boolean }) {
       </div>
 
       {/* Subheader / Partner & Filter Controls */}
-      <div className="bo40 flex h-7 w-full shrink-0 items-center justify-between border-b bg-secondary px-3">
+      <div className="bo40 flex h-7 w-full shrink-0 items-center justify-between border-b bg-card px-3">
         <div className="flex items-center gap-1.5">
           <div className="size-2.5 rounded-full border" />
           <div className="h-1.5 w-14 rounded-full border" />

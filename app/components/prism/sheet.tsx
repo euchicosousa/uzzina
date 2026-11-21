@@ -86,7 +86,7 @@ function Sheet({
           {children}
           {showCloseButton && (
             <SheetClose
-              className="absolute top-4 right-4 bg-secondary"
+              className="absolute top-4 right-4 bg-secondary hover:bg-secondary-hover"
               size="icon-sm"
               variant="ghost"
             >

@@ -128,24 +128,39 @@ it("gives every palette a tinted shadow for both modes", () => {
   }
 });
 
-it("applies light and dark ring overrides without overriding the derived accent, then cleans up", () => {
+it("writes the accent and text delta of a palette, then cleans up and drops a custom text override", () => {
   const rubi = PALLETE.find((p) => p.id === "red");
   if (!rubi) throw new Error("Red palette is missing");
-  applyPaletteVars(rubi);
   const root = document.documentElement.style;
-  expect(root.getPropertyValue("--ring-override")).toBe(
-    `oklch(${rubi.light.ring.l} ${rubi.light.ring.c} ${rubi.light.ring.h})`,
+
+  // A custom theme sets an exact text color; switching to a palette must drop it.
+  applyPaletteVars({
+    light: { primary: { h: 0, c: 0, l: 0 }, fg: { h: 10, c: 0.01, l: 0.2 } },
+    dark: { primary: { h: 0, c: 0, l: 1 }, fg: { h: 10, c: 0.01, l: 0.9 } },
+  });
+  expect(root.getPropertyValue("--foreground-override")).not.toBe("");
+
+  applyPaletteVars(rubi);
+  expect(root.getPropertyValue("--accent-override")).toBe(
+    `oklch(${rubi.light.accent.l} ${rubi.light.accent.c} ${rubi.light.accent.h})`,
   );
-  expect(root.getPropertyValue("--dark-ring-override")).toBe(
-    `oklch(${rubi.dark.ring.l} ${rubi.dark.ring.c} ${rubi.dark.ring.h})`,
+  expect(root.getPropertyValue("--dark-accent-override")).toBe(
+    `oklch(${rubi.dark.accent.l} ${rubi.dark.accent.c} ${rubi.dark.accent.h})`,
   );
-  expect(root.getPropertyValue("--accent-override")).toBe("");
-  expect(root.getPropertyValue("--dark-accent-override")).toBe("");
+  expect(root.getPropertyValue("--foreground-l-delta")).toBe(
+    String(rubi.light.fgLDelta),
+  );
+  expect(root.getPropertyValue("--dark-foreground-l-delta")).toBe(
+    String(rubi.dark.fgLDelta),
+  );
+  expect(root.getPropertyValue("--foreground-override")).toBe("");
+  expect(root.getPropertyValue("--dark-foreground-override")).toBe("");
 
   applyPaletteVars({
     light: { primary: { h: 0, c: 0, l: 0 } },
     dark: { primary: { h: 0, c: 0, l: 1 } },
   });
-  expect(root.getPropertyValue("--ring-override")).toBe("");
-  expect(root.getPropertyValue("--dark-ring-override")).toBe("");
+  expect(root.getPropertyValue("--accent-override")).toBe("");
+  expect(root.getPropertyValue("--dark-accent-override")).toBe("");
+  expect(root.getPropertyValue("--foreground-l-delta")).toBe("");
 });

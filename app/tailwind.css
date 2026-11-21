@@ -6,17 +6,23 @@
 [data-theme-preview="light"] {
   --radius: 0.65rem;
   --background: var(--background-override, oklch(1 0 0));
-  /* Neutrals (DS28): every neutral derives from the background (parent color)
-     with one fixed L delta for all palettes. Per-palette *-l-delta values
-     written by palette-vars are no longer read. Text keeps the palette or
-     custom-theme override; the derived value is the fallback. */
+  /* Neutrals (DS28, DS35): every neutral derives from the background (parent
+     color) by adding an L delta. The delta comes from the palette through
+     --<layer>-l-delta (written by palette-vars); the second argument of var()
+     is the default for themes that do not set it (custom theme). Text is the
+     background plus --foreground-l-delta (chroma 0); a custom theme sets
+     --foreground-override with the exact color its owner picked. */
   --foreground: var(
     --foreground-override,
-    oklch(from var(--background) calc(l - 0.96) max(0, calc(c - 0.002)) h)
+    oklch(from var(--background) calc(l + var(--foreground-l-delta, -0.96)) 0 h)
   );
 
-  --card: oklch(from var(--background) calc(l - 0.02) c h);
-  --popover: oklch(from var(--background) calc(l + 0.02) c h);
+  --card: oklch(
+    from var(--background) calc(l + var(--card-l-delta, -0.02)) c h
+  );
+  --popover: oklch(
+    from var(--background) calc(l + var(--popover-l-delta, 0.02)) c h
+  );
 
   /* Primary color knobs — overrideable by JS for theme color picker */
   --primary-h: 0; /* hue: 0–360 */
@@ -30,25 +36,35 @@
     oklch(var(--primary-fg-l) 0 var(--primary-h))
   );
 
-  --secondary: oklch(from var(--background) calc(l - 0.036) c h);
-  --secondary-hover: oklch(from var(--background) calc(l - 0.083) c h);
+  --secondary: oklch(
+    from var(--background) calc(l + var(--secondary-l-delta, -0.06)) c h
+  );
+  --secondary-hover: oklch(
+    from var(--background) calc(l + var(--secondary-hover-l-delta, -0.08)) c h
+  );
   --secondary-foreground: oklch(
     from var(--background) calc(l - 0.512) max(0, calc(c - 0.001)) h
   );
 
-  --border: oklch(from var(--background) calc(l - 0.07) c h);
-  --input: oklch(from var(--background) calc(l - 0.04) c h);
+  --border: oklch(
+    from var(--background) calc(l + var(--border-l-delta, -0.09)) c h
+  );
+  --input: oklch(
+    from var(--background) calc(l + var(--input-l-delta, -0.04)) c h
+  );
 
-  --ring: var(
-    --ring-override,
+  /* Accent: palette color (today a copy of primary); the focus ring uses it. */
+  --accent: var(
+    --accent-override,
     oklch(var(--primary-l) var(--primary-c) var(--primary-h))
   );
-  --accent: oklch(
-    max(0, calc(var(--primary-l) - 0.15)) var(--primary-c) var(--primary-h)
+  --ring: var(--accent);
+  --action: oklch(
+    from var(--background) calc(l + var(--action-l-delta, 0.02)) c h
   );
-
-  --action: oklch(from var(--background) calc(l + 0.02) c h);
-  --action-hover: oklch(from var(--background) calc(l + 0.1) c h);
+  --action-hover: oklch(
+    from var(--background) calc(l + var(--action-hover-l-delta, 0.1)) c h
+  );
   /* Palette surfaces kept apart so phase-surface can tint them (DS11). */
   --action-base: var(--action);
   --action-hover-base: var(--action-hover);
@@ -124,14 +140,20 @@
 .dark,
 :root[class~="dark"] {
   --background: var(--dark-background-override, oklch(0.4 0.01 285.823));
-  /* Neutrals (DS28): fixed L deltas over the dark background. */
+  /* Neutrals (DS28, DS35): L deltas over the dark background (--dark-*-l-delta). */
   --foreground: var(
     --dark-foreground-override,
-    oklch(from var(--background) calc(l + 0.8) max(0, calc(c - 0.01)) h)
+    oklch(
+      from var(--background) calc(l + var(--dark-foreground-l-delta, 0.8)) 0 h
+    )
   );
 
-  --card: oklch(from var(--background) calc(l + 0.05) c h);
-  --popover: oklch(from var(--background) calc(l - 0.03) c h);
+  --card: oklch(
+    from var(--background) calc(l + var(--dark-card-l-delta, 0.05)) c h
+  );
+  --popover: oklch(
+    from var(--background) calc(l + var(--dark-popover-l-delta, -0.03)) c h
+  );
 
   /* Dark mode variables injected by JS */
   /* Fallback values — preto/branco base */
@@ -149,27 +171,28 @@
   );
 
   --secondary: oklch(
-    from var(--background) calc(l + 0.098) max(0, calc(c - 0.002)) h
+    from var(--background) calc(l + var(--dark-secondary-l-delta, 0.12)) c h
   );
   --secondary-hover: oklch(
-    from var(--background) calc(l + 0.133) max(0, calc(c - 0.002)) h
+    from var(--background) calc(l + var(--dark-secondary-hover-l-delta, 0.15)) c
+      h
   );
   --secondary-foreground: oklch(
     from var(--background) calc(l + 0.549) max(0, calc(c - 0.007)) h
   );
 
-  --border: oklch(from var(--background) calc(l + 0.1) c h);
-  --input: oklch(from var(--background) calc(l + 0.02) c h);
+  --border: oklch(
+    from var(--background) calc(l + var(--dark-border-l-delta, 0.15)) c h
+  );
+  --input: oklch(
+    from var(--background) calc(l + var(--dark-input-l-delta, -0.06)) c h
+  );
 
-  --ring: var(
-    --dark-ring-override,
+  --accent: var(
+    --dark-accent-override,
     oklch(var(--dark-primary-l) var(--dark-primary-c) var(--dark-primary-h))
   );
-  --accent: oklch(
-    min(1, calc(var(--dark-primary-l) + 0.1)) var(--dark-primary-c)
-      var(--dark-primary-h)
-  );
-
+  --ring: var(--accent);
   /* Semantic colors: fixed values inside the sRGB gamut (DS21). */
   /* Dark: same fixed semantic values; text is the semantic color itself;
      background = semantic color mixed with the page background, 30% in dark. */
@@ -215,8 +238,12 @@
   --success-strong-hover: oklch(from var(--color-success) 0.4 0.09 h);
   --success-strong-foreground: var(--color-white);
 
-  --action: oklch(from var(--background) calc(l + 0.1) c h);
-  --action-hover: oklch(from var(--background) calc(l + 0.2) c h);
+  --action: oklch(
+    from var(--background) calc(l + var(--dark-action-l-delta, 0.1)) c h
+  );
+  --action-hover: oklch(
+    from var(--background) calc(l + var(--dark-action-hover-l-delta, 0.2)) c h
+  );
   --action-base: var(--action);
   --action-hover-base: var(--action-hover);
   --shadow-tint: var(

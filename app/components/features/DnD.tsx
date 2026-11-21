@@ -9,7 +9,7 @@ import { CSS } from "@dnd-kit/utilities";
 
 // Background of a column while a card is dragged over it (shared by the
 // Kanban boards); tweak the strength here.
-export const DROP_TARGET_HIGHLIGHT = "bg-secondary/50";
+export const DROP_TARGET_HIGHLIGHT = "bg-card";
 
 export function Droppable({
   id,

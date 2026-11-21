@@ -4,19 +4,36 @@ type PaletteModeVars = {
   primary: OklchColor;
   primaryFg?: OklchColor | null;
   bg?: OklchColor | null;
+  /** Custom text color (custom theme); palettes use `fgLDelta`. */
   fg?: OklchColor | null;
-  ring?: OklchColor | null;
-  borderLDelta?: number;
-  inputLDelta?: number;
-  actionLDelta?: number;
-  actionHoverLDelta?: number;
+  fgLDelta?: number;
+  accent?: OklchColor | null;
   popoverLDelta?: number;
   cardLDelta?: number;
+  inputLDelta?: number;
+  secondaryLDelta?: number;
+  secondaryHoverLDelta?: number;
+  borderLDelta?: number;
+  actionLDelta?: number;
+  actionHoverLDelta?: number;
   shadowColor?: string;
   /** Shadow opacity in percent for the largest shadow size. */
   shadowOpacity?: number;
   topBorderColor?: string;
 };
+
+/** Palette field and CSS variable name of each neutral layer (DS35). */
+const NEUTRAL_DELTAS = [
+  ["fgLDelta", "foreground"],
+  ["popoverLDelta", "popover"],
+  ["cardLDelta", "card"],
+  ["inputLDelta", "input"],
+  ["secondaryLDelta", "secondary"],
+  ["secondaryHoverLDelta", "secondary-hover"],
+  ["borderLDelta", "border"],
+  ["actionLDelta", "action"],
+  ["actionHoverLDelta", "action-hover"],
+] as const;
 
 export type PaletteVars = {
   relief?: boolean;
@@ -63,6 +80,8 @@ export function applyPaletteVars(
   if (light.fg) {
     const fgStr = `oklch(${light.fg.l} ${light.fg.c} ${light.fg.h})`;
     root.style.setProperty("--foreground-override", fgStr);
+  } else {
+    root.style.removeProperty("--foreground-override");
   }
   if (dark.bg) {
     const bgStr = `oklch(${dark.bg.l} ${dark.bg.c} ${dark.bg.h})`;
@@ -71,94 +90,38 @@ export function applyPaletteVars(
   if (dark.fg) {
     const fgStr = `oklch(${dark.fg.l} ${dark.fg.c} ${dark.fg.h})`;
     root.style.setProperty("--dark-foreground-override", fgStr);
+  } else {
+    root.style.removeProperty("--dark-foreground-override");
   }
 
-  // 2.1. Ring (anel de foco customizável por paleta)
-  if (light.ring) {
-    const ringStr = `oklch(${light.ring.l} ${light.ring.c} ${light.ring.h})`;
-    root.style.setProperty("--ring-override", ringStr);
+  // 2.1. Accent (the focus ring follows it; defaults to the primary color)
+  if (light.accent) {
+    const accentStr = `oklch(${light.accent.l} ${light.accent.c} ${light.accent.h})`;
+    root.style.setProperty("--accent-override", accentStr);
   } else {
-    root.style.removeProperty("--ring-override");
+    root.style.removeProperty("--accent-override");
   }
-  if (dark.ring) {
-    const ringStr = `oklch(${dark.ring.l} ${dark.ring.c} ${dark.ring.h})`;
-    root.style.setProperty("--dark-ring-override", ringStr);
+  if (dark.accent) {
+    const accentStr = `oklch(${dark.accent.l} ${dark.accent.c} ${dark.accent.h})`;
+    root.style.setProperty("--dark-accent-override", accentStr);
   } else {
-    root.style.removeProperty("--dark-ring-override");
-  }
-
-  // 2.2. Accent (cor de destaque do palette: 15% mais escuro no Light, 10% mais clara no Dark)
-
-  // 3. Deltas de border, input, action, action-hover, popover, card (Light e Dark)
-  if (light.borderLDelta !== undefined) {
-    root.style.setProperty("--border-l-delta", String(light.borderLDelta));
-  } else {
-    root.style.removeProperty("--border-l-delta");
-  }
-  if (light.inputLDelta !== undefined) {
-    root.style.setProperty("--input-l-delta", String(light.inputLDelta));
-  } else {
-    root.style.removeProperty("--input-l-delta");
-  }
-  if (light.actionLDelta !== undefined) {
-    root.style.setProperty("--action-l-delta", String(light.actionLDelta));
-  } else {
-    root.style.removeProperty("--action-l-delta");
-  }
-  if (light.actionHoverLDelta !== undefined) {
-    root.style.setProperty(
-      "--action-hover-l-delta",
-      String(light.actionHoverLDelta),
-    );
-  } else {
-    root.style.removeProperty("--action-hover-l-delta");
-  }
-  if (light.popoverLDelta !== undefined) {
-    root.style.setProperty("--popover-l-delta", String(light.popoverLDelta));
-  } else {
-    root.style.removeProperty("--popover-l-delta");
-  }
-  if (light.cardLDelta !== undefined) {
-    root.style.setProperty("--card-l-delta", String(light.cardLDelta));
-  } else {
-    root.style.removeProperty("--card-l-delta");
+    root.style.removeProperty("--dark-accent-override");
   }
 
-  if (dark.borderLDelta !== undefined) {
-    root.style.setProperty("--dark-border-l-delta", String(dark.borderLDelta));
-  } else {
-    root.style.removeProperty("--dark-border-l-delta");
-  }
-  if (dark.inputLDelta !== undefined) {
-    root.style.setProperty("--dark-input-l-delta", String(dark.inputLDelta));
-  } else {
-    root.style.removeProperty("--dark-input-l-delta");
-  }
-  if (dark.actionLDelta !== undefined) {
-    root.style.setProperty("--dark-action-l-delta", String(dark.actionLDelta));
-  } else {
-    root.style.removeProperty("--dark-action-l-delta");
-  }
-  if (dark.actionHoverLDelta !== undefined) {
-    root.style.setProperty(
-      "--dark-action-hover-l-delta",
-      String(dark.actionHoverLDelta),
-    );
-  } else {
-    root.style.removeProperty("--dark-action-hover-l-delta");
-  }
-  if (dark.popoverLDelta !== undefined) {
-    root.style.setProperty(
-      "--dark-popover-l-delta",
-      String(dark.popoverLDelta),
-    );
-  } else {
-    root.style.removeProperty("--dark-popover-l-delta");
-  }
-  if (dark.cardLDelta !== undefined) {
-    root.style.setProperty("--dark-card-l-delta", String(dark.cardLDelta));
-  } else {
-    root.style.removeProperty("--dark-card-l-delta");
+  // 3. Neutral layers (DS35): L deltas over the page background. Light reads
+  // `--<name>-l-delta`, dark reads `--dark-<name>-l-delta`. Modes without a
+  // value (custom themes) fall back to the defaults declared in tailwind.css.
+  for (const [mode, vars] of [
+    ["", light],
+    ["dark-", dark],
+  ] as const) {
+    for (const [key, name] of NEUTRAL_DELTAS) {
+      setOrRemove(
+        root.style,
+        `--${mode}${name}-l-delta`,
+        vars[key] === undefined ? undefined : String(vars[key]),
+      );
+    }
   }
 
   // 4. Sombra das superfícies elevadas: não depende do relevo dos cartões.

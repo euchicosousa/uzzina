@@ -23,11 +23,12 @@ const buttonSizeClasses = {
 const buttonVariantClasses = {
   default:
     "bg-primary border-primary text-primary-foreground hover:border-[color-mix(in_oklab,var(--primary),var(--background)_20%)] hover:bg-[color-mix(in_oklab,var(--primary),var(--background)_20%)]",
-  outline: "bg-transparent hover:bg-secondary aria-expanded:bg-secondary",
+  outline:
+    "bg-transparent hover:bg-secondary aria-expanded:bg-secondary aria-expanded:hover:bg-secondary-hover",
   secondary:
-    "bg-secondary text-foreground border-secondary hover:border-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-foreground",
+    "bg-secondary text-foreground border-secondary hover:border-secondary-hover hover:bg-secondary-hover aria-expanded:bg-secondary aria-expanded:text-foreground",
   ghost:
-    "bg-clip-border hover:bg-secondary border-transparent aria-expanded:bg-secondary",
+    "bg-clip-border hover:bg-secondary border-transparent aria-expanded:bg-secondary aria-expanded:hover:bg-secondary-hover",
   "ghost-error":
     "bg-transparent border-transparent hover:bg-error-background hover:text-error-foreground hover:border-error focus-visible:border-error focus-visible:ring-error-background focus-visible:text-error-foreground focus-visible:bg-error-background dark:hover:bg-error-background dark:focus-visible:bg-error-background",
   error:
@@ -41,8 +42,8 @@ const buttonVariantClasses = {
 // data-selected). A selected secondary looks like the default (primary)
 // button, hover included.
 const buttonSelectedClasses = {
-  ghost: "data-selected:bg-secondary",
-  outline: "data-selected:bg-secondary",
+  ghost: "data-selected:bg-secondary data-selected:hover:bg-secondary-hover",
+  outline: "data-selected:bg-secondary data-selected:hover:bg-secondary-hover",
   secondary:
     "data-selected:border-primary data-selected:bg-primary data-selected:text-primary-foreground data-selected:hover:border-[color-mix(in_oklab,var(--primary),var(--background)_20%)] data-selected:hover:bg-[color-mix(in_oklab,var(--primary),var(--background)_20%)]",
 } as const;

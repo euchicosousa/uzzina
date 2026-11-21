@@ -94,7 +94,9 @@ function ReviewPage() {
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <ULoader className="size-10 text-foreground" />
-          <p className="text-sm text-secondary-foreground">Carregando revisão...</p>
+          <p className="text-sm text-secondary-foreground">
+            Carregando revisão...
+          </p>
         </div>
       </div>
     );
@@ -251,7 +253,7 @@ function ReviewPage() {
                         "[&_strong]:font-semibold",
                         "[&_em]:italic",
                         "[&_table]:w-full [&_table]:border-collapse",
-                        "[&_th]:border [&_th]:border-border [&_th]:bg-secondary [&_th]:px-3 [&_th]:py-2 [&_th]:text-left",
+                        "[&_th]:border [&_th]:border-border [&_th]:bg-card [&_th]:px-3 [&_th]:py-2 [&_th]:text-left",
                         "[&_td]:border [&_td]:border-border [&_td]:px-3 [&_td]:py-2",
                         "[&_mark]:bg-warning-background",
                         "[&_a]:text-primary [&_a]:underline",

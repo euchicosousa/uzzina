@@ -129,7 +129,7 @@ export function ClientCalendar<
         <div className="flex h-full min-w-375 flex-col overflow-hidden">
           {/* Cabeçalho dos dias da semana (apenas para Mês) */}
           {view === "month" && (
-            <div className="grid shrink-0 grid-cols-7 border-b bg-secondary">
+            <div className="grid shrink-0 grid-cols-7 border-b bg-card">
               {Array.from({
                 length: 7,
               }).map((_, i) => (

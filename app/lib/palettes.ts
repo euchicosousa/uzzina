@@ -12,14 +12,19 @@ export type PaletteConfig = {
     primary: OklchColor;
     primaryFg?: OklchColor;
     bg: OklchColor;
-    fg: OklchColor;
-    ring: OklchColor;
-    cardLDelta?: number;
-    borderLDelta?: number;
-    inputLDelta?: number;
-    actionLDelta?: number;
-    actionHoverLDelta?: number;
-    popoverLDelta?: number;
+    /** Text color: L added to the page background (chroma 0). */
+    fgLDelta: number;
+    /** Accent color; the focus ring uses it (DS35). */
+    accent: OklchColor;
+    /** Neutral layers: L added to the page background (DS35). */
+    popoverLDelta: number;
+    cardLDelta: number;
+    inputLDelta: number;
+    secondaryLDelta: number;
+    secondaryHoverLDelta: number;
+    borderLDelta: number;
+    actionLDelta: number;
+    actionHoverLDelta: number;
     /** Tinted shadow color of the elevated surfaces (OKLCH string). */
     shadowColor: string;
     /** Shadow opacity in percent (1–100) for the largest shadow size. */
@@ -30,14 +35,19 @@ export type PaletteConfig = {
     primary: OklchColor;
     primaryFg?: OklchColor;
     bg: OklchColor;
-    fg: OklchColor;
-    ring: OklchColor;
-    cardLDelta?: number;
-    borderLDelta?: number;
-    inputLDelta?: number;
-    actionLDelta?: number;
-    actionHoverLDelta?: number;
-    popoverLDelta?: number;
+    /** Text color: L added to the page background (chroma 0). */
+    fgLDelta: number;
+    /** Accent color; the focus ring uses it (DS35). */
+    accent: OklchColor;
+    /** Neutral layers: L added to the page background (DS35). */
+    popoverLDelta: number;
+    cardLDelta: number;
+    inputLDelta: number;
+    secondaryLDelta: number;
+    secondaryHoverLDelta: number;
+    borderLDelta: number;
+    actionLDelta: number;
+    actionHoverLDelta: number;
     /** Tinted shadow color of the elevated surfaces (OKLCH string). */
     shadowColor: string;
     /** Shadow opacity in percent (1–100) for the largest shadow size. */
@@ -69,18 +79,16 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.002,
         l: 0.96,
       },
-      fg: {
-        h: 0,
-        c: 0,
-        l: 0,
-      },
+      fgLDelta: -0.96,
+      popoverLDelta: 0.02,
       cardLDelta: -0.02,
-      borderLDelta: -0.07,
       inputLDelta: -0.04,
+      secondaryLDelta: -0.06,
+      secondaryHoverLDelta: -0.08,
+      borderLDelta: -0.09,
       actionLDelta: 0.02,
       actionHoverLDelta: 0.1,
-      popoverLDelta: 0.02,
-      ring: {
+      accent: {
         h: 0,
         c: 0,
         l: 0,
@@ -104,18 +112,16 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.01,
         l: 0.2,
       },
-      fg: {
-        h: 0,
-        c: 0,
-        l: 1,
-      },
+      fgLDelta: 0.8,
+      popoverLDelta: -0.03,
       cardLDelta: 0.05,
-      borderLDelta: 0.1,
-      inputLDelta: 0.02,
+      inputLDelta: -0.06,
+      secondaryLDelta: 0.12,
+      secondaryHoverLDelta: 0.15,
+      borderLDelta: 0.15,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
-      popoverLDelta: -0.03,
-      ring: {
+      accent: {
         h: 0,
         c: 0,
         l: 1,
@@ -144,18 +150,16 @@ export const PALLETE: PaletteConfig[] = [
         c: 0,
         l: 1,
       },
-      fg: {
-        h: 0,
-        c: 0,
-        l: 0,
-      },
-      cardLDelta: -0.04,
-      borderLDelta: -0.04,
-      inputLDelta: -0.02,
-      actionLDelta: -0.02,
-      actionHoverLDelta: -0.005,
-      popoverLDelta: 0.1,
-      ring: {
+      fgLDelta: -1.0,
+      popoverLDelta: 0.02,
+      cardLDelta: -0.02,
+      inputLDelta: -0.04,
+      secondaryLDelta: -0.06,
+      secondaryHoverLDelta: -0.08,
+      borderLDelta: -0.09,
+      actionLDelta: 0.02,
+      actionHoverLDelta: 0.1,
+      accent: {
         h: 240,
         c: 0.02,
         l: 0.3,
@@ -179,18 +183,16 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.015,
         l: 0.25,
       },
-      fg: {
-        h: 0,
-        c: 0,
-        l: 1,
-      },
+      fgLDelta: 0.75,
+      popoverLDelta: -0.03,
       cardLDelta: 0.05,
-      borderLDelta: 0.1,
-      inputLDelta: 0.04,
+      inputLDelta: -0.06,
+      secondaryLDelta: 0.12,
+      secondaryHoverLDelta: 0.15,
+      borderLDelta: 0.15,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
-      popoverLDelta: -0.03,
-      ring: {
+      accent: {
         h: 240,
         c: 0.01,
         l: 0.99,
@@ -218,18 +220,16 @@ export const PALLETE: PaletteConfig[] = [
         c: 0,
         l: 0.98,
       },
-      fg: {
-        h: 0,
-        c: 0,
-        l: 0,
-      },
+      fgLDelta: -0.98,
+      popoverLDelta: 0.02,
       cardLDelta: -0.02,
-      borderLDelta: -0.05,
-      inputLDelta: -0.02,
-      actionLDelta: 0.04,
-      actionHoverLDelta: 0.06,
-      popoverLDelta: 0.06,
-      ring: {
+      inputLDelta: -0.04,
+      secondaryLDelta: -0.06,
+      secondaryHoverLDelta: -0.08,
+      borderLDelta: -0.09,
+      actionLDelta: 0.02,
+      actionHoverLDelta: 0.1,
+      accent: {
         h: 20,
         c: 0.25,
         l: 0.62,
@@ -253,18 +253,16 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.005,
         l: 0.141,
       },
-      fg: {
-        h: 0,
-        c: 0,
-        l: 1,
-      },
+      fgLDelta: 0.859,
+      popoverLDelta: -0.03,
       cardLDelta: 0.05,
-      borderLDelta: 0.2,
-      inputLDelta: 0.02,
+      inputLDelta: -0.06,
+      secondaryLDelta: 0.12,
+      secondaryHoverLDelta: 0.15,
+      borderLDelta: 0.15,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
-      popoverLDelta: -0.03,
-      ring: {
+      accent: {
         h: 20,
         c: 0.25,
         l: 0.68,
@@ -292,18 +290,16 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.01,
         l: 0.95,
       },
-      fg: {
-        h: 0,
-        c: 0,
-        l: 0,
-      },
+      fgLDelta: -0.95,
+      popoverLDelta: 0.02,
       cardLDelta: -0.02,
-      borderLDelta: -0.05,
-      inputLDelta: -0.02,
+      inputLDelta: -0.04,
+      secondaryLDelta: -0.06,
+      secondaryHoverLDelta: -0.08,
+      borderLDelta: -0.09,
       actionLDelta: 0.02,
-      actionHoverLDelta: 1,
-      popoverLDelta: 0.03,
-      ring: {
+      actionHoverLDelta: 0.1,
+      accent: {
         h: 25,
         c: 0.18,
         l: 0.65,
@@ -327,18 +323,16 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.01,
         l: 0.25,
       },
-      fg: {
-        h: 130,
-        c: 0.01,
-        l: 0.95,
-      },
-      cardLDelta: 0.05,
-      borderLDelta: 0.1,
-      inputLDelta: -0.02,
-      actionLDelta: 0.07,
-      actionHoverLDelta: 0.2,
+      fgLDelta: 0.7,
       popoverLDelta: -0.03,
-      ring: {
+      cardLDelta: 0.05,
+      inputLDelta: -0.06,
+      secondaryLDelta: 0.12,
+      secondaryHoverLDelta: 0.15,
+      borderLDelta: 0.15,
+      actionLDelta: 0.1,
+      actionHoverLDelta: 0.2,
+      accent: {
         h: 25,
         c: 0.18,
         l: 0.65,
@@ -366,18 +360,16 @@ export const PALLETE: PaletteConfig[] = [
         c: 0,
         l: 0.98,
       },
-      fg: {
-        h: 0,
-        c: 0,
-        l: 0,
-      },
+      fgLDelta: -0.98,
+      popoverLDelta: 0.02,
       cardLDelta: -0.02,
-      borderLDelta: -0.05,
-      inputLDelta: -0.02,
+      inputLDelta: -0.04,
+      secondaryLDelta: -0.06,
+      secondaryHoverLDelta: -0.08,
+      borderLDelta: -0.09,
       actionLDelta: 0.02,
-      actionHoverLDelta: 0.04,
-      popoverLDelta: 0,
-      ring: {
+      actionHoverLDelta: 0.1,
+      accent: {
         h: 100,
         c: 0.5,
         l: 0.8,
@@ -401,18 +393,16 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.005,
         l: 0.141,
       },
-      fg: {
-        h: 0,
-        c: 0,
-        l: 1,
-      },
+      fgLDelta: 0.859,
+      popoverLDelta: -0.03,
       cardLDelta: 0.05,
-      borderLDelta: 0.2,
-      inputLDelta: 0.02,
+      inputLDelta: -0.06,
+      secondaryLDelta: 0.12,
+      secondaryHoverLDelta: 0.15,
+      borderLDelta: 0.15,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
-      popoverLDelta: -0.03,
-      ring: {
+      accent: {
         h: 100,
         c: 0.4,
         l: 0.8,
@@ -440,18 +430,16 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.004,
         l: 0.96,
       },
-      fg: {
-        h: 0,
-        c: 0,
-        l: 0,
-      },
-      cardLDelta: -0.03,
-      borderLDelta: -0.05,
-      inputLDelta: -0.02,
+      fgLDelta: -0.96,
+      popoverLDelta: 0.02,
+      cardLDelta: -0.02,
+      inputLDelta: -0.04,
+      secondaryLDelta: -0.06,
+      secondaryHoverLDelta: -0.08,
+      borderLDelta: -0.09,
       actionLDelta: 0.02,
-      actionHoverLDelta: 0.04,
-      popoverLDelta: 0,
-      ring: {
+      actionHoverLDelta: 0.1,
+      accent: {
         h: 120,
         c: 0.15,
         l: 0.94,
@@ -475,18 +463,16 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.01,
         l: 0.2,
       },
-      fg: {
-        h: 0,
-        c: 0,
-        l: 1,
-      },
+      fgLDelta: 0.8,
+      popoverLDelta: -0.03,
       cardLDelta: 0.05,
-      borderLDelta: 0.2,
-      inputLDelta: 0.02,
+      inputLDelta: -0.06,
+      secondaryLDelta: 0.12,
+      secondaryHoverLDelta: 0.15,
+      borderLDelta: 0.15,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
-      popoverLDelta: -0.03,
-      ring: {
+      accent: {
         h: 120,
         c: 0.18,
         l: 0.9,
@@ -514,18 +500,16 @@ export const PALLETE: PaletteConfig[] = [
         c: 0,
         l: 0.98,
       },
-      fg: {
-        h: 0,
-        c: 0,
-        l: 0,
-      },
+      fgLDelta: -0.98,
+      popoverLDelta: 0.02,
       cardLDelta: -0.02,
-      borderLDelta: -0.05,
-      inputLDelta: -0.02,
+      inputLDelta: -0.04,
+      secondaryLDelta: -0.06,
+      secondaryHoverLDelta: -0.08,
+      borderLDelta: -0.09,
       actionLDelta: 0.02,
-      actionHoverLDelta: 0.04,
-      popoverLDelta: 0,
-      ring: {
+      actionHoverLDelta: 0.1,
+      accent: {
         h: 130,
         c: 0.2,
         l: 0.7,
@@ -549,18 +533,16 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.005,
         l: 0.141,
       },
-      fg: {
-        h: 0,
-        c: 0,
-        l: 1,
-      },
+      fgLDelta: 0.859,
+      popoverLDelta: -0.03,
       cardLDelta: 0.05,
-      borderLDelta: 0.2,
-      inputLDelta: 0.02,
+      inputLDelta: -0.06,
+      secondaryLDelta: 0.12,
+      secondaryHoverLDelta: 0.15,
+      borderLDelta: 0.15,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
-      popoverLDelta: -0.03,
-      ring: {
+      accent: {
         h: 130,
         c: 0.2,
         l: 0.65,
@@ -588,20 +570,18 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.005,
         l: 0.98,
       },
-      fg: {
-        h: 0,
-        c: 0,
-        l: 0,
-      },
+      fgLDelta: -0.98,
+      popoverLDelta: 0.02,
       cardLDelta: -0.02,
-      borderLDelta: -0.05,
-      inputLDelta: -0.02,
+      inputLDelta: -0.04,
+      secondaryLDelta: -0.06,
+      secondaryHoverLDelta: -0.08,
+      borderLDelta: -0.09,
       actionLDelta: 0.02,
-      actionHoverLDelta: 0.04,
-      popoverLDelta: 0.2,
-      ring: {
+      actionHoverLDelta: 0.1,
+      accent: {
         h: 200,
-        c: 0.2,
+        c: 0.12,
         l: 0.7,
       },
     },
@@ -623,21 +603,19 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.05,
         l: 0.2,
       },
-      fg: {
-        h: 0,
-        c: 0,
-        l: 1,
-      },
+      fgLDelta: 0.8,
+      popoverLDelta: -0.03,
       cardLDelta: 0.05,
-      borderLDelta: 0.2,
-      inputLDelta: 0.02,
+      inputLDelta: -0.06,
+      secondaryLDelta: 0.12,
+      secondaryHoverLDelta: 0.15,
+      borderLDelta: 0.15,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
-      popoverLDelta: -0.03,
-      ring: {
+      accent: {
         h: 200,
-        c: 0.2,
-        l: 0.65,
+        c: 0.15,
+        l: 0.6,
       },
     },
   },
@@ -663,18 +641,16 @@ export const PALLETE: PaletteConfig[] = [
         c: 0,
         l: 1,
       },
-      fg: {
-        h: 0,
-        c: 0,
-        l: 0,
-      },
+      fgLDelta: -1.0,
+      popoverLDelta: 0.02,
       cardLDelta: -0.02,
-      borderLDelta: -0.05,
-      inputLDelta: -0.02,
-      actionLDelta: -0.03,
-      actionHoverLDelta: -0.015,
-      popoverLDelta: 0.1,
-      ring: {
+      inputLDelta: -0.04,
+      secondaryLDelta: -0.06,
+      secondaryHoverLDelta: -0.08,
+      borderLDelta: -0.09,
+      actionLDelta: 0.02,
+      actionHoverLDelta: 0.1,
+      accent: {
         h: 264,
         c: 0.31,
         l: 0.45,
@@ -698,18 +674,16 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.005,
         l: 0.141,
       },
-      fg: {
-        h: 0,
-        c: 0,
-        l: 1,
-      },
+      fgLDelta: 0.859,
+      popoverLDelta: -0.03,
       cardLDelta: 0.05,
-      borderLDelta: 0.2,
-      inputLDelta: 0.1,
+      inputLDelta: -0.06,
+      secondaryLDelta: 0.12,
+      secondaryHoverLDelta: 0.15,
+      borderLDelta: 0.15,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
-      popoverLDelta: 0.05,
-      ring: {
+      accent: {
         h: 264,
         c: 0.31,
         l: 0.58,
@@ -737,18 +711,16 @@ export const PALLETE: PaletteConfig[] = [
         c: 0,
         l: 1,
       },
-      fg: {
-        h: 0,
-        c: 0,
-        l: 0,
-      },
+      fgLDelta: -1.0,
+      popoverLDelta: 0.02,
       cardLDelta: -0.02,
-      borderLDelta: -0.1,
-      inputLDelta: -0.02,
+      inputLDelta: -0.04,
+      secondaryLDelta: -0.06,
+      secondaryHoverLDelta: -0.08,
+      borderLDelta: -0.09,
       actionLDelta: 0.02,
-      actionHoverLDelta: 0.04,
-      popoverLDelta: 0,
-      ring: {
+      actionHoverLDelta: 0.1,
+      accent: {
         h: 290,
         c: 0.28,
         l: 0.54,
@@ -772,18 +744,16 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.005,
         l: 0.141,
       },
-      fg: {
-        h: 0,
-        c: 0,
-        l: 1,
-      },
+      fgLDelta: 0.859,
+      popoverLDelta: -0.03,
       cardLDelta: 0.05,
-      borderLDelta: 0.2,
-      inputLDelta: 0.02,
+      inputLDelta: -0.06,
+      secondaryLDelta: 0.12,
+      secondaryHoverLDelta: 0.15,
+      borderLDelta: 0.15,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
-      popoverLDelta: -0.03,
-      ring: {
+      accent: {
         h: 290,
         c: 0.28,
         l: 0.68,
@@ -811,18 +781,16 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.02,
         l: 0.98,
       },
-      fg: {
-        h: 0,
-        c: 0,
-        l: 0,
-      },
+      fgLDelta: -0.98,
+      popoverLDelta: 0.02,
       cardLDelta: -0.02,
-      borderLDelta: -0.05,
-      inputLDelta: -0.02,
+      inputLDelta: -0.04,
+      secondaryLDelta: -0.06,
+      secondaryHoverLDelta: -0.08,
+      borderLDelta: -0.09,
       actionLDelta: 0.02,
-      actionHoverLDelta: 0.04,
-      popoverLDelta: 0,
-      ring: {
+      actionHoverLDelta: 0.1,
+      accent: {
         h: 350,
         c: 0.4,
         l: 0.9,
@@ -846,18 +814,16 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.1,
         l: 0.3,
       },
-      fg: {
-        h: 0,
-        c: 0,
-        l: 1,
-      },
+      fgLDelta: 0.7,
+      popoverLDelta: -0.03,
       cardLDelta: 0.05,
-      borderLDelta: 0.2,
-      inputLDelta: 0.02,
+      inputLDelta: -0.06,
+      secondaryLDelta: 0.12,
+      secondaryHoverLDelta: 0.15,
+      borderLDelta: 0.15,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
-      popoverLDelta: -0.03,
-      ring: {
+      accent: {
         h: 350,
         c: 0.4,
         l: 0.8,

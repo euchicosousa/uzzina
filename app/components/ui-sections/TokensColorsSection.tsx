@@ -248,7 +248,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="bg-card"
                 name="Card"
-                note="Derivada de background (L −0,02 claro, +0,05 escuro)"
+                note="Derivada de background pelo ajuste da paleta (L −0,02 claro, +0,05 escuro)"
                 preview={
                   <div className="size-11 rounded-xl border border-border bg-card shadow-xs squircle" />
                 }
@@ -256,7 +256,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="bg-popover"
                 name="Popover"
-                note="Derivada de background (L +0,02 claro, −0,03 escuro)"
+                note="Derivada de background pelo ajuste da paleta (L +0,02 claro, −0,03 escuro)"
                 preview={
                   <div className="size-11 rounded-xl border border-border bg-popover shadow-xs squircle" />
                 }
@@ -264,7 +264,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="bg-input"
                 name="Input"
-                note="Derivada de background (L −0,04 claro, +0,02 escuro)"
+                note="Derivada de background pelo ajuste da paleta (L −0,04 claro, −0,06 escuro)"
                 preview={
                   <div className="size-11 rounded-xl border border-border bg-input shadow-xs squircle" />
                 }
@@ -272,7 +272,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="border-border / bg-border"
                 name="Border"
-                note="Derivada de background (L −0,07 claro, +0,10 escuro)"
+                note="Derivada de background pelo ajuste da paleta (L −0,09 claro, +0,15 escuro)"
                 preview={
                   <div className="flex size-11 items-center justify-center rounded-xl border-2 border-border bg-background shadow-xs squircle">
                     <div className="size-4.5 rounded-md bg-border squircle" />
@@ -282,7 +282,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="bg-secondary"
                 name="Secondary"
-                note="Derivada de background (L −0,036 claro, +0,098 escuro); hover em bg-secondary-hover (L −0,083 claro, +0,133 escuro)"
+                note="Derivada de background pelo ajuste da paleta (L −0,06 claro, +0,12 escuro); hover em bg-secondary-hover (L −0,08 claro, +0,15 escuro)"
                 preview={
                   <div className="size-11 rounded-xl border border-border bg-secondary shadow-xs squircle" />
                 }
@@ -315,7 +315,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="bg-action"
                 name="Action"
-                note="Superfície base do cartão (background L +0,02 claro, +0,10 escuro)"
+                note="Superfície base do cartão (background L +0,02 claro, +0,10 escuro, pelo ajuste da paleta)"
                 preview={
                   <div className="size-11 rounded-xl border border-border/40 bg-action shadow-action ring ring-action-ring squircle" />
                 }
@@ -323,7 +323,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="bg-action-hover"
                 name="Action Hover"
-                note="Versão ao passar o mouse (background L +0,10 claro, +0,20 escuro)"
+                note="Versão ao passar o mouse (background L +0,10 claro, +0,20 escuro, pelo ajuste da paleta)"
                 preview={
                   <div className="size-11 rounded-xl border border-border/40 bg-action-hover shadow-action-hover ring ring-action-ring squircle" />
                 }
@@ -350,7 +350,7 @@ export function TokensColorsSection() {
 
             {/* Categoria 3 — Marca, Destaque e Foco */}
             <SemanticCategory
-              description="Cores de destaque e foco guiadas pela paleta ativa. Accent deriva de primary ajustando a luminosidade (-0.15 claro / +0.10 escuro); ring segue primary ou o override da paleta."
+              description="Cor principal e destaque guiados pela paleta ativa; o anel de foco (ring) segue o accent da paleta."
               title="Marca, Destaque e Foco"
             >
               <SemanticSwatch
@@ -374,7 +374,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="bg-accent"
                 name="Accent"
-                note="Cor de destaque derivada de primary (L - 0.15 claro, L + 0.10 escuro)"
+                note="Cor de destaque da paleta (hoje uma cópia da primary); o anel de foco usa ela"
                 preview={
                   <div className="size-11 rounded-xl bg-accent shadow-xs squircle" />
                 }
@@ -382,7 +382,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="ring-ring / border-ring / bg-ring"
                 name="Ring"
-                note="Cor do anel de foco (segue primary ou override da paleta; aplicada com ring-3 ring-ring/30 e border-ring/60)"
+                note="Cor do anel de foco (segue o accent da paleta; aplicada com ring-3 ring-ring/30 e border-ring/60)"
                 preview={
                   <div className="flex size-11 items-center justify-center rounded-xl border border-ring/60 bg-background shadow-xs ring-3 ring-ring/30 squircle">
                     <div className="size-4 rounded bg-ring/40 squircle" />

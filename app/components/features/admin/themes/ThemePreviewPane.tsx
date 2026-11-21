@@ -74,8 +74,7 @@ const BUTTON_DEMO_ROWS: ReadonlyArray<{
     label: "Secundário",
     variant: "secondary",
     actionLabel: "Filtrar",
-    hoverClass:
-      "border-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)]",
+    hoverClass: "border-secondary-hover bg-secondary-hover",
     focusClass: "border-ring/60 ring-3 ring-ring/30",
     targets: ["secondary", "fg", "ring", "ringHalo"],
   },

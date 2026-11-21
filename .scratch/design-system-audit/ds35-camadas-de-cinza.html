@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS35: camadas de cinza, ajuste ao vivo</title>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:#f5f5f4;color:#1c1917;font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow-wrap:break-word}
+h1{font-size:21px;margin:0 0 4px}
+h2{font-size:15px;margin:18px 0 6px}
+p{margin:4px 0}
+.small{font-size:12.5px;color:#57534e}
+code,pre,.mono,textarea{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+button,input{font:inherit}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #0369a1;outline-offset:2px}
+
+.shell{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;max-width:1500px;margin:0 auto;padding:14px 16px 40px}
+@media(min-width:1050px){.shell{grid-template-columns:minmax(0,1fr) 450px;align-items:start}
+  .side{position:sticky;top:10px;max-height:calc(100vh - 20px);overflow:auto}}
+.head{grid-column:1/-1}
+.main{min-width:0}
+.mocks{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+.mocks.two{grid-template-columns:repeat(auto-fit,minmax(min(100%,430px),1fr))}
+.mocktitle{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#57534e;margin:0 0 4px}
+
+.side{background:#fff;border:1px solid #e7e5e4;border-radius:16px;padding:12px 14px}
+.row{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:6px 0}
+.seg{display:inline-flex;background:#e7e5e4;border-radius:11px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;color:#44403c;padding:5px 11px;border-radius:8px;cursor:pointer;min-height:32px;font-size:14px}
+.seg button[aria-pressed=true]{background:#fff;color:#1c1917;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.14)}
+.pals{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pal{border:2px solid #e7e5e4;border-radius:12px;background:#fff;padding:6px;cursor:pointer;text-align:left}
+.pal[aria-pressed=true]{border-color:#1c1917}
+.pal .sw{display:flex;height:34px;border-radius:8px;overflow:hidden;border:1px solid rgba(127,127,127,.35)}
+.pal .sw i{flex:1}
+.pal b{display:block;font-size:13px;margin-top:4px}
+.pal span{display:block;font-size:11px;color:#57534e;font-family:ui-monospace,Menlo,monospace}
+
+.lay{border-top:1px solid #e7e5e4;padding:8px 0}
+.lay .lh{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.lay .lh b{font-family:ui-monospace,Menlo,monospace;font-size:13px}
+.lay .lh span{font-size:12px;color:#57534e;text-align:right}
+.mrow{display:grid;grid-template-columns:42px 1fr 1fr;gap:4px 8px;align-items:center;margin-top:5px}
+.mrow>em{font-style:normal;font-size:12px;font-weight:600;color:#44403c}
+.ctl{display:grid;grid-template-columns:18px 64px 1fr;gap:4px;align-items:center}
+.ctl label{font-size:11px;color:#57534e;font-family:ui-monospace,Menlo,monospace}
+.ctl input[type=number]{width:64px;padding:3px 4px;border:1px solid #d6d3d1;border-radius:7px;background:#fff;color:#1c1917;font-size:12.5px;font-family:ui-monospace,Menlo,monospace}
+.ctl input[type=range]{width:100%;min-width:0}
+.rd{display:flex;align-items:center;gap:6px;font-size:11.5px;color:#44403c;font-family:ui-monospace,Menlo,monospace;margin:3px 0 0 50px;flex-wrap:wrap}
+.rd i{display:inline-block;width:14px;height:14px;border-radius:4px;border:1px solid rgba(127,127,127,.45)}
+.rd .low{color:#b45309;font-weight:700}
+.btn0{border:1px solid #d6d3d1;background:#fff;border-radius:9px;padding:6px 11px;cursor:pointer;min-height:34px;font-size:14px}
+.btn0.main{background:#1c1917;color:#fff;border-color:#1c1917}
+table{border-collapse:collapse;width:100%;font-size:12px}
+th,td{border-bottom:1px solid #e7e5e4;padding:4px 6px;text-align:left}
+th{font-size:11px;background:#fafaf9}
+td.n{font-family:ui-monospace,Menlo,monospace;text-align:right}
+td.low{color:#b45309;font-weight:700}
+textarea{width:100%;min-height:260px;font-size:11.5px;line-height:1.45;border:1px solid #d6d3d1;border-radius:10px;padding:8px;background:#fafaf9;color:#1c1917}
+.note{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:8px 10px;font-size:12.5px;color:#78350f;margin:8px 0}
+
+/* ===================== Mockup (usa só variáveis; todo fundo é explícito) ===================== */
+.mk{background:var(--bg);color:var(--fg);border-radius:18px;border:1px solid rgba(127,127,127,.35);overflow:hidden;font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.mk *{box-sizing:border-box}
+.mk .t2{color:var(--fg2)}
+.mk .s{font-size:12px}
+.mk h4{margin:0;font-size:17px;font-weight:600}
+.mk .appbar{background:var(--pop);border-bottom:1px solid var(--cbor);display:flex;gap:10px;align-items:center;padding:8px 14px;position:relative}
+.mk .appbar .sp{flex:1}
+.mk .body{padding:14px;display:grid;gap:14px}
+.mk .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr))}
+.mk .col{display:grid;gap:8px;align-content:start;min-width:0}
+.mk .lbl{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--fg2)}
+.mk .rw{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.mk .btw{justify-content:space-between}
+.mk .inp{height:32px;border-radius:12px;background:var(--inp);border:1px solid var(--inp);padding:0 10px;display:flex;align-items:center;color:var(--fg2);min-width:0;flex:1}
+.mk .btn{height:32px;border-radius:12px;padding:0 12px;border:0;font:inherit;font-size:14px;display:inline-flex;align-items:center;gap:6px;cursor:default;white-space:nowrap}
+.mk .btn.pri{background:var(--pri);color:var(--prif)}
+.mk .btn.sec{background:var(--sec);color:var(--fg)}
+.mk .btn.sec.h{background:var(--sech)}
+.mk .btn.gh{background:transparent;color:var(--fg)}
+.mk .btn.gh.h{background:var(--sec)}
+.mk .ico{width:32px;height:32px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;position:relative}
+.mk .dot{position:absolute;top:5px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--pri)}
+.mk .acard{background:var(--act);border-radius:16px;padding:12px;display:grid;gap:6px;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.mk .acard.h{background:var(--acth)}
+.mk .acard.ph{background:color-mix(in oklab,var(--phase) var(--pm),var(--bg))}
+.mk .acard.bad{outline:2px dashed #dc2626;outline-offset:3px}
+.mk .avs{display:flex;gap:4px}
+.mk .av{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:600}
+.mk .av.pic{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff}
+.mk .av.emp{background:var(--sec);color:var(--fg)}
+.mk .av.line{background:transparent;border:1px solid currentColor}
+.mk .pop{background:var(--pop);border:1px solid var(--cbor);border-radius:16px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,.14);position:relative}
+.mk .mi{padding:6px 10px;border-radius:12px;display:flex;justify-content:space-between;gap:8px}
+.mk .mi.h{background:var(--sec)}
+.mk .grp{background:var(--card);border-radius:12px;padding:4px;margin:4px 0}
+.mk .sep{height:1px;background:var(--bor);margin:4px 6px;border:0}
+.mk .nt{padding:8px 10px;border-radius:12px;display:grid;gap:1px}
+.mk .nt.u{background:var(--card)}
+.mk .nt.u.h{background:var(--sech)}
+.mk .nt.r.h{background:var(--sec)}
+.mk .card{background:var(--card);border-radius:14px;padding:10px 12px}
+.mk .alert{background:var(--card);border:1px solid var(--bor);border-radius:14px;padding:9px 12px}
+.mk .bub{border-radius:14px;padding:8px 12px;max-width:85%}
+.mk .bub.o{background:var(--card)}
+.mk .bub.me{background:var(--pri);color:var(--prif);margin-left:auto}
+.mk .badge{background:var(--sec);border-radius:999px;padding:0 10px;font-size:12px;line-height:22px;display:inline-block}
+.mk .track{height:8px;border-radius:999px;background:var(--sec);overflow:hidden}
+.mk .track i{display:block;height:100%;width:58%;background:var(--pri)}
+.mk .tabs{display:flex;gap:4px;flex-wrap:wrap}
+.mk .tab{padding:5px 12px;border-radius:12px}
+.mk .tab.on{background:var(--sec)}
+.mk .chk{width:18px;height:18px;border-radius:6px;background:var(--inp);border:1px solid var(--bor);display:inline-block;vertical-align:middle}
+.mk .rad{width:18px;height:18px;border-radius:50%;background:var(--inp);border:1px solid var(--bor);display:inline-block;vertical-align:middle}
+.mk .cal{display:grid;grid-template-columns:repeat(7,1fr);border:1px solid var(--bor);border-radius:12px;overflow:hidden}
+.mk .cal>div{min-height:38px;padding:3px 5px;font-size:11px;border-right:1px solid var(--bor);border-bottom:1px solid var(--bor)}
+.mk .cal>div:nth-child(7n){border-right:0}
+.mk .cal .hd{background:var(--card);min-height:0;font-weight:600;text-align:center}
+.mk .cal .hv{background:var(--card)}
+.mk .cal .out{background:var(--sec);opacity:.6}
+.mk .kan{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mk .kc{border-radius:14px;padding:6px;display:grid;gap:6px;align-content:start;min-height:100px;border:1px dashed var(--bor)}
+.mk .kc.drop{background:var(--card)}
+.mk .kc .k{background:var(--act);border-radius:12px;padding:7px 9px;font-size:13px}
+.mk .dlg{background:var(--pop);border:1px solid var(--cbor);border-radius:18px;padding:14px;box-shadow:0 12px 32px rgba(0,0,0,.16);display:grid;gap:10px}
+.mk .img{height:70px;border-radius:12px;background:linear-gradient(120deg,#0ea5e9,#8b5cf6 60%,#f43f5e)}
+.mk .hr{height:1px;background:var(--bor)}
+.mk .lb{display:none;font:600 9.5px/1 ui-monospace,Menlo,monospace;background:#1c1917;color:#fff;border-radius:5px;padding:2px 5px;margin-left:6px;vertical-align:middle;white-space:nowrap}
+.showlab .mk .lb{display:inline-block}
+.mk .warn{color:#dc2626;font-size:11px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="shell" id="shell">
+  <div class="head">
+    <h1>DS35 · Camadas de cinza: ajuste ao vivo</h1>
+    <p class="small">Estudo, nenhum código do app foi alterado. À esquerda, uma página de mostra com os elementos espalhados. À direita, o fundo de cada paleta e, por camada, a luz (ΔL) e o croma (ΔC) somados ao fundo, no claro e no escuro. No fim, o texto para você colar de volta no chat. Fórmula de cada camada: <code>oklch(from var(--background) calc(l + ΔL) max(0, calc(c + ΔC)) h)</code>. Os valores iniciais são os do app hoje.</p>
+  </div>
+
+  <div class="main">
+    <div class="row" style="margin-top:0">
+      <span class="small">Tema da mostra</span>
+      <div class="seg" id="modeSeg">
+        <button type="button" data-m="light" aria-pressed="true">Claro</button>
+        <button type="button" data-m="dark" aria-pressed="false">Escuro</button>
+        <button type="button" data-m="both" aria-pressed="false">Os dois</button>
+      </div>
+      <label class="small"><input type="checkbox" id="labToggle"> mostrar o nome da camada em cada elemento</label>
+    </div>
+    <div class="mocks" id="mocks"></div>
+  </div>
+
+  <aside class="side" aria-label="Controles das camadas">
+    <h2 style="margin-top:0">Fundo (page)</h2>
+    <p class="small">Cada botão mostra o fundo do claro e do escuro da paleta. Os valores de cada camada valem para as duas paletas (uma fórmula só).</p>
+    <div class="pals" id="pals"></div>
+
+    <h2>Camadas</h2>
+    <p class="small">ΔL soma luz ao fundo (−1 a +1). ΔC soma croma (o app hoje não soma, salvo −0,002 no cinza do escuro). Abaixo de 0,03 de diferença sobre a página o olho quase não separa: aparece em laranja.</p>
+    <div id="layers"></div>
+
+    <h2>Pares medidos (paleta escolhida)</h2>
+    <p class="small">Diferença de luz depois do limite 0 a 1. Ex.: no Carbono claro o fundo é branco puro e o flutuante não pode ficar mais claro.</p>
+    <div id="pairs"></div>
+
+    <div class="note"><b>Fora desta página:</b> <code>accent</code> e <code>muted</code> saíram (0 usos). Cartão de ação e fases entram só como referência, para ver o que o cinza faz perto deles. Texto e semânticas ficam como no app.</div>
+
+    <h2>Exportar para colar no chat</h2>
+    <div class="row">
+      <button class="btn0 main" type="button" id="copyBtn">Copiar texto</button>
+      <button class="btn0" type="button" id="resetBtn">Voltar aos valores do app</button>
+      <span class="small" id="copyMsg" role="status"></span>
+    </div>
+    <textarea id="out" readonly spellcheck="false" aria-label="Texto exportado"></textarea>
+  </aside>
+</div>
+
+<script>
+/* ============================ DADOS ============================ */
+const BG = {
+  onix:    {label:'Ônix',    light:[0.96, 0.002, 200], dark:[0.20, 0.010, 250]},
+  carbono: {label:'Carbono', light:[1.00, 0.000, 0],   dark:[0.25, 0.015, 240]}
+};
+/* primária e texto sobre primária (app/lib/palettes.ts) */
+const PRI = {
+  onix:    {light:['oklch(0 0 0)','oklch(1 0 0)'],           dark:['oklch(1 0 0)','oklch(0 0 0)']},
+  carbono: {light:['oklch(0.3 0.02 240)','oklch(1 0 0)'],    dark:['oklch(0.99 0.01 240)','oklch(0.3 0.02 240)']}
+};
+/* texto (app/tailwind.css, DS28): [ΔL principal, ΔC principal, ΔL secundário, ΔC secundário] */
+const TXT = {light:[-0.96,-0.002,-0.512,-0.001], dark:[0.8,-0.01,0.549,-0.007]};
+
+/* camadas: id, nome do papel, onde entra */
+const LAYERS = [
+  {id:'popover', css:'popover',        role:'Flutuantes: menu, diálogo, gaveta, popover, lista de seleção, tooltip, aviso'},
+  {id:'card',    css:'card',           role:'Objeto com conteúdo e realce de estado: descrição no portal, comentário de outro, alerta, não lida, grupo Admin, alvo de arrastar, hover de célula, faixa de cabeçalho'},
+  {id:'input',   css:'input',          role:'Campo de texto, caixa de seleção, rádio'},
+  {id:'secondary', css:'secondary',    role:'Cinza sobre a página: botão cinza, selo, trilho, avatar vazio, hover de item transparente'},
+  {id:'secondaryHover', css:'secondary-hover', role:'Hover do botão cinza, hover do que já é cinza ou card (ex.: não lida com mouse)'},
+  {id:'border',  css:'border',         role:'Linha de 1px e divisor'},
+  {id:'action',  css:'action',         role:'(referência) cartão de ação'},
+  {id:'actionHover', css:'action-hover', role:'(referência) cartão de ação com mouse'}
+];
+/* valores do app hoje: [ΔL, ΔC] */
+const APP = {
+  light:{popover:[0.02,0], card:[-0.02,0], input:[-0.04,0], secondary:[-0.036,0], secondaryHover:[-0.083,0], border:[-0.07,0], action:[0.02,0], actionHover:[0.10,0]},
+  dark: {popover:[-0.03,0], card:[0.05,0], input:[0.02,0],  secondary:[0.098,-0.002], secondaryHover:[0.133,-0.002], border:[0.10,0], action:[0.10,0], actionHover:[0.20,0]}
+};
+const clone = (o) => JSON.parse(JSON.stringify(o));
+const KEY = 'ds35-camadas-v1';
+const S = {pal:'onix', mode:'light', lab:false, v:clone(APP)};
+try {
+  const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+  if (saved && saved.v && saved.v.light && saved.v.dark) {
+    LAYERS.forEach((l) => ['light','dark'].forEach((m) => {
+      const x = saved.v[m][l.id];
+      if (Array.isArray(x) && isFinite(x[0]) && isFinite(x[1])) S.v[m][l.id] = [Number(x[0]), Number(x[1])];
+    }));
+    if (saved.pal in BG) S.pal = saved.pal;
+  }
+} catch (e) { /* sem armazenamento: segue com os valores do app */ }
+function persist(){ try { localStorage.setItem(KEY, JSON.stringify({pal:S.pal, v:S.v})); } catch (e) {} }
+
+/* ============================ CONTAS ============================ */
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const f3 = (x) => (Math.round(x * 1000) / 1000).toFixed(3);
+const sgn = (x) => (x >= 0 ? '+' : '−') + Math.abs(x).toFixed(3).replace('.', ',');
+const okl = (L, C, h) => `oklch(${L.toFixed(4)} ${C.toFixed(4)} ${h})`;
+function layer(pal, mode, id){
+  const [bl, bc, h] = BG[pal][mode];
+  const [dl, dc] = S.v[mode][id];
+  const L = clamp(bl + dl, 0, 1), C = Math.max(0, bc + dc);
+  return {L, C, h, css: okl(L, C, h), dl: L - bl};
+}
+function page(pal, mode){ const [L,C,h] = BG[pal][mode]; return {L, C, h, css: okl(L,C,h), dl:0}; }
+function text(pal, mode, which){
+  const [bl, bc, h] = BG[pal][mode]; const t = TXT[mode];
+  const i = which === 2 ? 2 : 0;
+  return okl(clamp(bl + t[i], 0, 1), Math.max(0, bc + t[i+1]), h);
+}
+function vars(pal, mode){
+  const L = (id) => layer(pal, mode, id).css;
+  const [pri, prif] = PRI[pal][mode];
+  const fg = text(pal, mode, 1);
+  return [
+    ['--bg', page(pal, mode).css], ['--pop', L('popover')], ['--card', L('card')], ['--inp', L('input')],
+    ['--sec', L('secondary')], ['--sech', L('secondaryHover')], ['--bor', L('border')],
+    ['--act', L('action')], ['--acth', L('actionHover')],
+    ['--fg', fg], ['--fg2', text(pal, mode, 2)], ['--pri', pri], ['--prif', prif],
+    ['--cbor', `color-mix(in oklab, ${fg} ${mode === 'light' ? 5 : 10}%, transparent)`],
+    ['--phase', '#3558de'], ['--pm', mode === 'light' ? '15%' : '40%']
+  ].map(([k, v]) => `${k}:${v}`).join(';');
+}
+
+/* ============================ MOCKUP ============================ */
+const lb = (n) => `<i class="lb">${n}</i>`;
+const icon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
+const bell = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21h4"/></svg>';
+function mock(mode){
+  const days = Array.from({length:14}, (_, i) => i);
+  const cal = ['S','T','Q','Q','S','S','D'].map((d) => `<div class="hd">${d}</div>`).join('') +
+    days.map((i) => i === 0 || i === 1 ? `<div class="out">${i ? 30 : 29}</div>` : i === 6 ? `<div class="hv">${i - 1}<div class="s t2">hover</div></div>` : `<div>${i - 1}</div>`).join('');
+  return `<div class="mk" style="${vars(S.pal, mode)}">
+  <div class="appbar">
+    <b>UZZINA</b>
+    <div class="inp" style="max-width:220px">${icon}&nbsp;Buscar…${lb('input')}</div>
+    <span class="sp"></span>
+    <span class="ico btn gh h" style="padding:0;justify-content:center">${bell}<span class="dot"></span></span>
+    <span class="av pic" style="width:30px;height:30px">CS</span>
+    ${lb('popover (AppBar)')}
+  </div>
+  <div class="body">
+    <div class="rw btw"><div><h4>Hoje</h4><div class="t2 s">21 de novembro · texto de apoio (secondary-foreground)</div></div>
+      <div class="rw"><span class="btn pri">Nova ação +</span><span class="btn sec">Filtrar${lb('secondary')}</span><span class="btn sec h">Com mouse${lb('secondary-hover')}</span><span class="btn gh">Ghost</span><span class="btn gh h">Ghost com mouse${lb('secondary')}</span></div></div>
+
+    <div class="grid">
+      <div class="col"><div class="lbl">Cartões de ação (referência)</div>
+        <div class="acard"><div class="rw btw"><b>Carrossel de lançamento</b><span class="badge">Feito${lb('secondary')}</span></div><div class="t2 s">Aurora · Instagram</div><div class="avs"><span class="av pic">AL</span><span class="av emp">MR</span><span class="av emp">+3</span></div><span class="warn">avatares cinza sobre o cartão: uso a decidir</span>${lb('action')}</div>
+        <div class="acard ph"><div class="rw btw"><b>Reels da semana</b><span class="s">Em produção</span></div><div class="avs"><span class="av pic">AL</span><span class="av line">+2</span></div><span class="s t2">cartão de cor de fase, avatar só com contorno</span></div>
+        <div class="acard h"><b>Com o mouse em cima</b>${lb('action-hover')}</div>
+        <div class="acard bad"><span class="s">Botão cinza sobre cartão de ação (proibido, só para ver):</span><span class="btn sec" style="width:max-content">Cinza no cartão</span></div>
+      </div>
+
+      <div class="col"><div class="lbl">Menu aberto (flutuante)</div>
+        <div class="pop">${lb('popover')}
+          <div class="mi">Minha conta</div><div class="mi h">Planejamento ${lb('secondary')}</div><div class="mi">Ajuda</div>
+          <hr class="sep">
+          <div class="grp">${lb('card')}<div class="mi t2 s" style="padding-bottom:0">Admin</div><div class="mi">Parceiros</div><div class="mi">Datas comemorativas</div></div>
+          <hr class="sep"><div class="mi">Sair</div>
+        </div>
+        <div class="lbl" style="margin-top:6px">Notificações</div>
+        <div class="pop" style="padding:4px">
+          <div class="nt u"><b>Nova revisão do cliente</b><span class="t2 s">há 2 min ${lb('card')}</span></div>
+          <div class="nt u h"><b>Aprovação pendente</b><span class="t2 s">não lida com mouse ${lb('secondary-hover')}</span></div>
+          <div class="nt r"><b>Prazo alterado</b><span class="t2 s">lida</span></div>
+          <div class="nt r h"><b>Comentário novo</b><span class="t2 s">lida com mouse ${lb('secondary')}</span></div>
+        </div>
+      </div>
+
+      <div class="col"><div class="lbl">Formulário</div>
+        <div class="inp">Título da ação${lb('input')}</div>
+        <div class="rw"><span class="chk"></span> <span>Caixa</span> <span class="rad"></span> <span>Rádio</span></div>
+        <div class="rw"><span class="badge">Instagram</span><span class="badge">Reels</span></div>
+        <div class="track">${'<i></i>'}</div><div class="s t2">Trilho de progresso ${lb('secondary')}</div>
+        <div class="tabs"><span class="tab on">Conteúdo</span><span class="tab">Briefing</span><span class="tab">Arquivos</span></div>
+        <div class="hr"></div>
+        <div class="alert"><b>Alerta padrão</b><div class="t2 s">Texto de apoio do alerta ${lb('card')}</div></div>
+        <div class="card"><div class="t2 s" style="margin-bottom:4px">Descrição da ação (portal) ${lb('card')}</div>Texto corrido da descrição, conteúdo para ler.</div>
+        <div class="bub o s">Comentário de outra pessoa ${lb('card')}</div>
+        <div class="bub me s">Comentário próprio</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="col"><div class="lbl">Calendário</div>
+        <div class="cal">${cal}</div><div class="s t2">cabeçalho e hover da célula: card; dia de outro mês: secondary</div></div>
+      <div class="col"><div class="lbl">Kanban e alvo ao arrastar</div>
+        <div class="kan"><div class="kc"><div class="k">Ação A</div><div class="k">Ação B</div></div><div class="kc drop">${lb('card')}<div class="s t2">soltar aqui</div></div></div>
+        <div class="lbl" style="margin-top:6px">Imagem</div><div class="img"></div><div class="s t2">sem cinza atrás de imagem</div></div>
+      <div class="col"><div class="lbl">Diálogo (flutuante)</div>
+        <div class="dlg">${lb('popover')}<b>Excluir ação?</b><div class="t2 s">Campo e botão cinza dentro do flutuante.</div><div class="inp">Motivo${lb('input sobre popover')}</div><div class="rw" style="justify-content:flex-end"><span class="btn sec">Cancelar${lb('secondary sobre popover')}</span><span class="btn pri">Excluir</span></div></div></div>
+    </div>
+  </div>
+</div>`;
+}
+
+/* ============================ PARES ============================ */
+const PAIRS = [
+  ['Flutuante sobre a página','popover','page'],
+  ['Card sobre a página','card','page'],
+  ['Card sobre o flutuante','card','popover'],
+  ['Campo sobre a página','input','page'],
+  ['Campo sobre o flutuante','input','popover'],
+  ['Cinza sobre a página','secondary','page'],
+  ['Cinza sobre o flutuante','secondary','popover'],
+  ['Cinza com mouse sobre cinza','secondaryHover','secondary'],
+  ['Cinza com mouse sobre card','secondaryHover','card'],
+  ['Cinza sobre o card','secondary','card'],
+  ['Cinza sobre cartão de ação','secondary','action'],
+  ['Borda sobre a página','border','page'],
+  ['Borda sobre o flutuante','border','popover'],
+  ['Cartão de ação sobre a página','action','page'],
+  ['Cartão de ação com mouse','actionHover','action']
+];
+const get = (pal, mode, id) => id === 'page' ? page(pal, mode) : layer(pal, mode, id);
+const diff = (pal, mode, a, b) => get(pal, mode, a).L - get(pal, mode, b).L;
+const LOW = 0.03;
+
+/* ============================ RENDER ============================ */
+const $ = (id) => document.getElementById(id);
+function renderMocks(){
+  const modes = S.mode === 'both' ? ['light','dark'] : [S.mode];
+  $('mocks').className = 'mocks' + (modes.length === 2 ? ' two' : '');
+  $('mocks').innerHTML = modes.map((m) => `<div><p class="mocktitle">${BG[S.pal].label} · ${m === 'light' ? 'claro' : 'escuro'}</p>${mock(m)}</div>`).join('');
+  $('shell').classList.toggle('showlab', S.lab);
+}
+function renderPals(){
+  $('pals').innerHTML = Object.keys(BG).map((k) => {
+    const b = BG[k];
+    return `<button type="button" class="pal" data-p="${k}" aria-pressed="${S.pal === k}">
+      <div class="sw"><i style="background:${okl(...b.light)}"></i><i style="background:${okl(...b.dark)}"></i></div>
+      <b>${b.label}</b><span>claro L ${b.light[0]} C ${b.light[1]} H ${b.light[2]}</span><span>escuro L ${b.dark[0]} C ${b.dark[1]} H ${b.dark[2]}</span></button>`;
+  }).join('');
+}
+function buildLayers(){
+  $('layers').innerHTML = LAYERS.map((l) => {
+    const row = (m, name) => `<em>${name}</em>
+      <div class="ctl"><label for="${l.id}-${m}-l">ΔL</label><input type="number" id="${l.id}-${m}-l" data-l="${l.id}" data-m="${m}" data-k="0" step="0.005" min="-1" max="1" aria-label="${l.css} ${name} luz"><input type="range" data-l="${l.id}" data-m="${m}" data-k="0" min="-0.4" max="0.4" step="0.001" aria-label="${l.css} ${name} luz, barra"></div>
+      <div class="ctl"><label for="${l.id}-${m}-c">ΔC</label><input type="number" id="${l.id}-${m}-c" data-l="${l.id}" data-m="${m}" data-k="1" step="0.002" min="-0.5" max="0.5" aria-label="${l.css} ${name} croma"><input type="range" data-l="${l.id}" data-m="${m}" data-k="1" min="-0.05" max="0.15" step="0.001" aria-label="${l.css} ${name} croma, barra"></div>`;
+    return `<div class="lay"><div class="lh"><b>${l.css}</b><span>${l.role}</span></div>
+      <div class="mrow">${row('light','Claro')}</div><div class="rd" id="rd-${l.id}-light"></div>
+      <div class="mrow">${row('dark','Escuro')}</div><div class="rd" id="rd-${l.id}-dark"></div></div>`;
+  }).join('');
+  syncInputs();
+}
+function syncInputs(skip){
+  document.querySelectorAll('#layers input').forEach((el) => {
+    if (el === skip) return;
+    const v = S.v[el.dataset.m][el.dataset.l][Number(el.dataset.k)];
+    el.value = el.type === 'number' ? String(Math.round(v * 1000) / 1000) : String(v);
+  });
+}
+function renderReadouts(){
+  LAYERS.forEach((l) => ['light','dark'].forEach((m) => {
+    const c = layer(S.pal, m, l.id);
+    const real = c.dl, wanted = S.v[m][l.id][0];
+    const clamped = Math.abs(real - wanted) > 0.0005;
+    const low = l.id !== 'secondaryHover' && Math.abs(real) < LOW;
+    $(`rd-${l.id}-${m}`).innerHTML = `<i style="background:${c.css}"></i>L ${f3(c.L)} C ${f3(c.C)}<span>· sobre a página ${sgn(real)}</span>${clamped ? '<span class="low">limitado a 0–1</span>' : ''}${low ? '<span class="low">quase invisível</span>' : ''}`;
+  }));
+}
+function renderPairs(){
+  const rows = PAIRS.map(([t, a, b]) => {
+    const d1 = diff(S.pal, 'light', a, b), d2 = diff(S.pal, 'dark', a, b);
+    const cell = (d) => `<td class="n ${Math.abs(d) < LOW ? 'low' : ''}">${sgn(d)}</td>`;
+    return `<tr><td>${t}</td>${cell(d1)}${cell(d2)}</tr>`;
+  }).join('');
+  $('pairs').innerHTML = `<table><thead><tr><th>Par</th><th>Claro</th><th>Escuro</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+function exportText(){
+  const L = [];
+  L.push('DS35 · camadas de cinza (ajuste do proprietário)');
+  L.push('Paleta em conferência: ' + BG[S.pal].label);
+  L.push('Camadas: page, popover, card, input, secondary, secondary-hover, border (+ action e action-hover como referência). accent e muted fora.');
+  L.push('Fórmula: oklch(from var(--background) calc(l + ΔL) max(0, calc(c + ΔC)) h)');
+  L.push('');
+  L.push('FUNDOS (page)');
+  Object.keys(BG).forEach((k) => ['light','dark'].forEach((m) => L.push(`  ${BG[k].label} ${m === 'light' ? 'claro' : 'escuro'}: oklch(${BG[k][m].join(' ')})`)));
+  ['light','dark'].forEach((m) => {
+    L.push('');
+    L.push(m === 'light' ? 'CLARO (ΔL, ΔC)' : 'ESCURO (ΔL, ΔC)');
+    LAYERS.forEach((l) => {
+      const [dl, dc] = S.v[m][l.id], a = APP[m][l.id];
+      const changed = dl !== a[0] || dc !== a[1];
+      L.push(`  ${l.css.padEnd(16)} ΔL ${(dl >= 0 ? '+' : '') + f3(dl)}  ΔC ${(dc >= 0 ? '+' : '') + f3(dc)}${changed ? `   (app hoje: ${(a[0] >= 0 ? '+' : '') + f3(a[0])} / ${(a[1] >= 0 ? '+' : '') + f3(a[1])})` : ''}`);
+    });
+  });
+  L.push('');
+  L.push('DIFERENÇA DE LUZ MEDIDA (depois do limite 0–1; marcado ! quando < 0,03)');
+  Object.keys(BG).forEach((k) => {
+    L.push(`  ${BG[k].label}`);
+    PAIRS.forEach(([t, a, b]) => {
+      const d1 = diff(k, 'light', a, b), d2 = diff(k, 'dark', a, b);
+      L.push(`    ${t.padEnd(32)} claro ${sgn(d1).padStart(7)}${Math.abs(d1) < LOW ? '!' : ' '}  escuro ${sgn(d2).padStart(7)}${Math.abs(d2) < LOW ? '!' : ''}`);
+    });
+  });
+  const css = (m) => LAYERS.map((l) => {
+    const [dl, dc] = S.v[m][l.id];
+    return `  --${l.css}: oklch(from var(--background) calc(l ${dl < 0 ? '-' : '+'} ${Math.abs(dl)}) max(0, calc(c ${dc < 0 ? '-' : '+'} ${Math.abs(dc)})) h);`;
+  }).join('\n');
+  L.push('');
+  L.push('CSS (substitui os neutros de app/tailwind.css; ainda não aplicado)');
+  L.push(':root {\n' + css('light') + '\n}');
+  L.push('.dark {\n' + css('dark') + '\n}');
+  L.push('');
+  L.push('REGRAS A DEFINIR (preencher no chat)');
+  L.push('  1. Onde o secondary pode e não pode ficar (página, flutuante, card, cartão de ação, fase, imagem):');
+  L.push('  2. Hover de item transparente: secondary? E hover de quem já é secondary ou card: secondary-hover?');
+  L.push('  3. card: lista final de usos como objeto e como realce de estado (e se divide):');
+  L.push('  4. Faixa de cabeçalho: card ou secondary?');
+  L.push('  5. Selo padrão: fundir com o selo cinza (secondary)?');
+  L.push('  6. Camadas que podem coincidir em algum tema sem problema:');
+  return L.join('\n');
+}
+function refresh(skip){
+  renderMocks(); renderReadouts(); renderPairs();
+  $('out').value = exportText();
+  persist();
+}
+
+/* ============================ EVENTOS ============================ */
+$('modeSeg').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  S.mode = b.dataset.m;
+  document.querySelectorAll('#modeSeg button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+  renderMocks();
+});
+$('labToggle').addEventListener('change', (e) => { S.lab = e.target.checked; $('shell').classList.toggle('showlab', S.lab); });
+$('pals').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  S.pal = b.dataset.p; renderPals(); refresh();
+});
+$('layers').addEventListener('input', (e) => {
+  const el = e.target; if (!el.dataset.l) return;
+  const v = parseFloat(el.value); if (!isFinite(v)) return;
+  S.v[el.dataset.m][el.dataset.l][Number(el.dataset.k)] = v;
+  syncInputs(el); refresh();
+});
+$('resetBtn').addEventListener('click', () => { S.v = clone(APP); syncInputs(); refresh(); $('copyMsg').textContent = 'Valores do app restaurados.'; });
+$('copyBtn').addEventListener('click', async () => {
+  const t = $('out').value;
+  try { await navigator.clipboard.writeText(t); $('copyMsg').textContent = 'Copiado.'; }
+  catch (err) { $('out').focus(); $('out').select(); $('copyMsg').textContent = 'Selecionei o texto: copie com ⌘C.'; }
+});
+
+renderPals(); buildLayers(); refresh();
+</script>
+</body>
+</html>

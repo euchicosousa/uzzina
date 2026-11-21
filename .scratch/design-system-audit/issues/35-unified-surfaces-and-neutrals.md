@@ -4,6 +4,10 @@
 
 **Fase 1, 19/11.** [Bancada de estudo](../ds35-bancada-de-estudo.html) disponível na `main` local. Reúne cinco comparativos do uso atual com hipóteses em Ônix e Carbono, nos dois modos, e recomendações para P1–P8. A separação de cartão neutro e flutuante sobre o fundo branco do Carbono claro merece conferência pela borda e pela sombra. Controles e larguras de 320 a 1440 px verificados no Chromium isolado. Os exemplos são maquetes. As oito decisões seguem pendentes.
 
+**Camadas e variáveis, 21/11.** O proprietário ajustou os valores na [página de ajuste](../ds35-camadas-de-cinza.html) e decidiu: o botão cinza fica na página ou no flutuante (o cartão de ação tem cor própria); hover de item transparente usa `secondary`; hover de quem já é cinza ou `card` usa `secondary-hover`; faixa de cabeçalho usa `card`; selo padrão se funde com o selo cinza; `accent` e `muted` saem; o uso do `card` (objeto e realce) segue em aberto. Cada paleta guarda oito ajustes de luz por tema (`popover`, `card`, `input`, `secondary`, `secondary-hover`, `border`, `action`, `action-hover`) e o CSS os consome. Ônix aprovado no formato e copiado nas outras 10 paletas. Código preparado na `main` local, sem commit; banco sem mudança.
+
+**Fases 3 e 4 no código, 21/11.** Variáveis nas 11 paletas e CSS lendo-as (fase 3) e troca dos usos nas telas (fase 4), com aceite visual das variáveis pelo proprietário. Contrato publicado em [surfaces-and-neutrals](../../../docs/contracts/surfaces-and-neutrals.md). Falta: olhar as telas autenticadas, decidir P5 (transparências à mão) e P8 (checagem), fase 5 e fechamento da galeria. Sem commit nem publicação.
+
 ## O problema, em palavras simples
 
 O mesmo tipo de coisa é pintado de jeitos diferentes em telas diferentes. Cada ajuste resolveu um caso pequeno e criou mais uma cor, mais um estado ou mais uma exceção. O resultado é um app inconsistente: o mesmo botão cinza aparece em vários tons, há destaques diferentes para o mesmo papel e cores usadas para o que nunca foram pensadas.

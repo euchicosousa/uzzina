@@ -15,14 +15,17 @@ export type ThemePreviewMode = "light" | "dark" | "split";
 export type PriorityKey = "low" | "medium" | "high";
 
 export type DeltaKey =
+  | "fgLDelta"
   | "cardLDelta"
   | "popoverLDelta"
   | "inputLDelta"
+  | "secondaryLDelta"
+  | "secondaryHoverLDelta"
   | "borderLDelta"
   | "actionLDelta"
   | "actionHoverLDelta";
 
-export type PaletteColorKey = "bg" | "fg" | "primary" | "primaryFg" | "ring";
+export type PaletteColorKey = "bg" | "primary" | "primaryFg" | "accent";
 
 export const PHASE_ORDER: readonly PhaseSlug[] = [
   "idea",
@@ -54,18 +57,24 @@ export const DEFAULT_MODE_DELTAS: Record<
   Record<DeltaKey, number>
 > = {
   light: {
+    fgLDelta: -0.96,
     cardLDelta: -0.02,
-    popoverLDelta: 0,
-    borderLDelta: -0.05,
-    inputLDelta: -0.05,
+    popoverLDelta: 0.02,
+    borderLDelta: -0.09,
+    inputLDelta: -0.04,
+    secondaryLDelta: -0.06,
+    secondaryHoverLDelta: -0.08,
     actionLDelta: 0.02,
-    actionHoverLDelta: 0.04,
+    actionHoverLDelta: 0.1,
   },
   dark: {
+    fgLDelta: 0.8,
     cardLDelta: 0.05,
     popoverLDelta: -0.03,
-    borderLDelta: 0.2,
-    inputLDelta: 0.05,
+    borderLDelta: 0.15,
+    inputLDelta: -0.06,
+    secondaryLDelta: 0.12,
+    secondaryHoverLDelta: 0.15,
     actionLDelta: 0.1,
     actionHoverLDelta: 0.2,
   },
@@ -106,8 +115,7 @@ export function clonePaletteConfig(palette: PaletteConfig): PaletteConfig {
         ? { ...palette.light.primaryFg }
         : undefined,
       bg: { ...palette.light.bg },
-      fg: { ...palette.light.fg },
-      ring: { ...palette.light.ring },
+      accent: { ...palette.light.accent },
     },
     dark: {
       ...palette.dark,
@@ -116,8 +124,7 @@ export function clonePaletteConfig(palette: PaletteConfig): PaletteConfig {
         ? { ...palette.dark.primaryFg }
         : undefined,
       bg: { ...palette.dark.bg },
-      fg: { ...palette.dark.fg },
-      ring: { ...palette.dark.ring },
+      accent: { ...palette.dark.accent },
     },
   };
 }
@@ -176,6 +183,16 @@ export function getEffectiveDelta(
   return palette[mode][key] ?? DEFAULT_MODE_DELTAS[mode][key];
 }
 
+/** Text color of a palette: page background plus its L delta, chroma 0. */
+export function getPaletteFg(
+  palette: PaletteConfig,
+  mode: "light" | "dark",
+): OklchColor {
+  const bg = palette[mode].bg;
+  const delta = getEffectiveDelta(palette, mode, "fgLDelta");
+  return { l: Math.max(0, Math.min(1, bg.l + delta)), c: 0, h: bg.h };
+}
+
 export function getShadowOklch(
   palette: PaletteConfig,
   mode: "light" | "dark",
@@ -197,22 +214,30 @@ const PALETTE_COLOR_META: Record<
   { label: string; token: string }
 > = {
   bg: { label: "Fundo", token: "--background" },
-  fg: { label: "Texto", token: "--foreground" },
   primary: { label: "Principal", token: "--primary" },
   primaryFg: {
     label: "Texto sobre a principal",
     token: "--primary-foreground",
   },
-  ring: { label: "Anel de foco", token: "--ring" },
+  accent: { label: "Destaque e anel de foco", token: "--accent" },
 };
 
 const DELTA_META: Record<DeltaKey, { label: string; token: string }> = {
+  fgLDelta: { label: "Texto (ajuste de luz)", token: "--foreground-l-delta" },
   cardLDelta: { label: "Cartão (ajuste de luz)", token: "--card-l-delta" },
   popoverLDelta: {
     label: "Menus e diálogos (ajuste de luz)",
     token: "--popover-l-delta",
   },
   inputLDelta: { label: "Campos (ajuste de luz)", token: "--input-l-delta" },
+  secondaryLDelta: {
+    label: "Cinza (ajuste de luz)",
+    token: "--secondary-l-delta",
+  },
+  secondaryHoverLDelta: {
+    label: "Cinza · mouse (ajuste de luz)",
+    token: "--secondary-hover-l-delta",
+  },
   borderLDelta: { label: "Bordas (ajuste de luz)", token: "--border-l-delta" },
   actionLDelta: {
     label: "Cartão de ação (ajuste de luz)",
@@ -256,7 +281,7 @@ export function computeThemeChanges(
   for (const mode of ["light", "dark"] as const) {
     const modeLabel = mode === "light" ? "Claro" : "Escuro";
 
-    for (const key of ["bg", "fg", "primary", "primaryFg", "ring"] as const) {
+    for (const key of ["bg", "primary", "primaryFg", "accent"] as const) {
       const oldColor =
         key === "primaryFg"
           ? getEffectivePrimaryFg(original, mode)

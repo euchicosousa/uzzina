@@ -192,7 +192,7 @@ export function ActionItem({
   const content = (
     <div
       className={cn(
-        "group/action @container relative shrink-0 cursor-pointer overflow-hidden rounded-2xl squircle",
+        "group/action @container relative shrink-0 cursor-pointer overflow-hidden rounded-2xl squircle [&_[data-slot=avatar-fallback]]:border [&_[data-slot=avatar-fallback]]:border-border [&_[data-slot=avatar-fallback]]:bg-transparent",
         variantClasses,
         bgClasses,
         phaseColor &&

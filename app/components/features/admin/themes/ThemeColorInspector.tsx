@@ -34,6 +34,7 @@ import {
   getOriginalPhasesMap,
   getOriginalPrioritiesMap,
   getPaletteById,
+  getPaletteFg,
   getShadowOklch,
   PHASE_ORDER,
   type DeltaKey,
@@ -288,14 +289,10 @@ export function ThemeColorInspector({
     setExpandedId((prev) => (prev === id ? null : id));
   };
 
-  const fgContrastLight = getOklchContrastRatio(
-    palette.light.fg,
-    palette.light.bg,
-  );
-  const fgContrastDark = getOklchContrastRatio(
-    palette.dark.fg,
-    palette.dark.bg,
-  );
+  const fgLight = getPaletteFg(palette, "light");
+  const fgDark = getPaletteFg(palette, "dark");
+  const fgContrastLight = getOklchContrastRatio(fgLight, palette.light.bg);
+  const fgContrastDark = getOklchContrastRatio(fgDark, palette.dark.bg);
   const pFgLight = getEffectivePrimaryFg(palette, "light");
   const pFgDark = getEffectivePrimaryFg(palette, "dark");
   const primaryContrastLight = getOklchContrastRatio(
@@ -328,7 +325,7 @@ export function ThemeColorInspector({
         <button
           className={cn(
             "flex w-full items-center justify-between gap-2 rounded-xl px-2 py-1.5 text-left transition-colors squircle hover:bg-secondary",
-            isOpen && "bg-secondary",
+            isOpen && "bg-secondary hover:bg-secondary-hover",
           )}
           onClick={() => toggleExpand(opts.id)}
           onMouseEnter={() => onHoverTarget(opts.targetId)}
@@ -398,6 +395,7 @@ export function ThemeColorInspector({
     label: string;
     deltaKey: DeltaKey;
     targetId: string;
+    hint?: string;
   }) => {
     const isOpen = expandedId === opts.id;
     const lightVal = getEffectiveDelta(palette, "light", opts.deltaKey);
@@ -413,15 +411,20 @@ export function ThemeColorInspector({
       opts.deltaKey,
     );
 
-    const lightMax = Math.max(0.35, lightVal, origLightVal);
-    const darkMax = Math.max(0.35, darkVal, origDarkVal);
+    const baseMax = opts.deltaKey === "fgLDelta" ? 1 : 0.35;
+    const lightMax = Math.max(
+      baseMax,
+      Math.abs(lightVal),
+      Math.abs(origLightVal),
+    );
+    const darkMax = Math.max(baseMax, Math.abs(darkVal), Math.abs(origDarkVal));
 
     return (
       <div key={opts.id}>
         <button
           className={cn(
             "flex w-full items-center justify-between gap-2 rounded-xl px-2 py-1.5 text-left transition-colors squircle hover:bg-secondary",
-            isOpen && "bg-secondary",
+            isOpen && "bg-secondary hover:bg-secondary-hover",
           )}
           onClick={() => toggleExpand(opts.id)}
           onMouseEnter={() => onHoverTarget(opts.targetId)}
@@ -433,7 +436,7 @@ export function ThemeColorInspector({
               <span className="truncate">{opts.label}</span>
             </div>
             <div className="truncate text-xs text-secondary-foreground">
-              Fundo com ajuste de luz
+              {opts.hint ?? "Fundo com ajuste de luz"}
             </div>
           </div>
 
@@ -650,6 +653,18 @@ export function ThemeColorInspector({
             targetId: "input",
           })}
           {renderDeltaRow({
+            id: "secondary",
+            label: "Cinza",
+            deltaKey: "secondaryLDelta",
+            targetId: "secondary",
+          })}
+          {renderDeltaRow({
+            id: "secondaryHover",
+            label: "Cinza · mouse",
+            deltaKey: "secondaryHoverLDelta",
+            targetId: "secondaryHover",
+          })}
+          {renderDeltaRow({
             id: "border",
             label: "Bordas",
             deltaKey: "borderLDelta",
@@ -669,27 +684,15 @@ export function ThemeColorInspector({
           })}
         </div>
 
-        {renderDualColorRow({
-          id: "fg",
-          label: "Texto",
-          hint: `Contraste ${fgContrastLight.toFixed(1)} · ${fgContrastDark.toFixed(1)}`,
-          targetId: "fg",
-          lightColor: palette.light.fg,
-          darkColor: palette.dark.fg,
-          origLight: originalPalette.light.fg,
-          origDark: originalPalette.dark.fg,
-          onLightChange: (c) => onChangePaletteColor("light", "fg", c),
-          onDarkChange: (c) => onChangePaletteColor("dark", "fg", c),
-          swatchLabel: "Aa",
-          lightSwatchStyle: {
-            backgroundColor: formatOklchString(palette.light.bg),
-            color: formatOklchString(palette.light.fg),
-          },
-          darkSwatchStyle: {
-            backgroundColor: formatOklchString(palette.dark.bg),
-            color: formatOklchString(palette.dark.fg),
-          },
-        })}
+        <div className="ml-3 flex flex-col gap-1 border-l border-border pl-2">
+          {renderDeltaRow({
+            id: "fg",
+            label: "Texto",
+            hint: `Contraste ${fgContrastLight.toFixed(1)} · ${fgContrastDark.toFixed(1)}`,
+            deltaKey: "fgLDelta",
+            targetId: "fg",
+          })}
+        </div>
 
         <div className="ml-3 flex flex-col gap-1 border-l border-border pl-2">
           {renderLockedRuleRow({
@@ -699,8 +702,8 @@ export function ThemeColorInspector({
             targetId: "secondary",
             lightBadge: "5%",
             darkBadge: "10%",
-            lightColor: `color-mix(in srgb, ${formatOklchString(palette.light.fg)} 5%, ${formatOklchString(palette.light.bg)})`,
-            darkColor: `color-mix(in oklch, ${formatOklchString(palette.dark.fg)} 10%, ${formatOklchString(palette.dark.bg)})`,
+            lightColor: `color-mix(in srgb, ${formatOklchString(fgLight)} 5%, ${formatOklchString(palette.light.bg)})`,
+            darkColor: `color-mix(in oklch, ${formatOklchString(fgDark)} 10%, ${formatOklchString(palette.dark.bg)})`,
           })}
           {renderLockedRuleRow({
             id: "secondaryFg",
@@ -709,8 +712,8 @@ export function ThemeColorInspector({
             targetId: "secondaryFg",
             lightBadge: "65%",
             darkBadge: "65%",
-            lightColor: `color-mix(in srgb, ${formatOklchString(palette.light.fg)} 65%, ${formatOklchString(palette.light.bg)})`,
-            darkColor: `color-mix(in srgb, ${formatOklchString(palette.dark.fg)} 65%, ${formatOklchString(palette.dark.bg)})`,
+            lightColor: `color-mix(in srgb, ${formatOklchString(fgLight)} 65%, ${formatOklchString(palette.light.bg)})`,
+            darkColor: `color-mix(in srgb, ${formatOklchString(fgDark)} 65%, ${formatOklchString(palette.dark.bg)})`,
           })}
         </div>
 
@@ -763,16 +766,16 @@ export function ThemeColorInspector({
         })}
 
         {renderDualColorRow({
-          id: "ring",
-          label: "Anel de foco",
-          hint: "Contorno de teclado",
+          id: "accent",
+          label: "Destaque",
+          hint: "Anel de foco do teclado",
           targetId: "ring",
-          lightColor: palette.light.ring,
-          darkColor: palette.dark.ring,
-          origLight: originalPalette.light.ring,
-          origDark: originalPalette.dark.ring,
-          onLightChange: (c) => onChangePaletteColor("light", "ring", c),
-          onDarkChange: (c) => onChangePaletteColor("dark", "ring", c),
+          lightColor: palette.light.accent,
+          darkColor: palette.dark.accent,
+          origLight: originalPalette.light.accent,
+          origDark: originalPalette.dark.accent,
+          onLightChange: (c) => onChangePaletteColor("light", "accent", c),
+          onDarkChange: (c) => onChangePaletteColor("dark", "accent", c),
         })}
 
         <div className="ml-3 flex flex-col gap-1 border-l border-border pl-2">
@@ -783,8 +786,8 @@ export function ThemeColorInspector({
             targetId: "ringHalo",
             lightBadge: "30%",
             darkBadge: "30%",
-            lightColor: `color-mix(in oklab, ${formatOklchString(palette.light.ring)} 30%, ${formatOklchString(palette.light.bg)})`,
-            darkColor: `color-mix(in oklab, ${formatOklchString(palette.dark.ring)} 30%, ${formatOklchString(palette.dark.bg)})`,
+            lightColor: `color-mix(in oklab, ${formatOklchString(palette.light.accent)} 30%, ${formatOklchString(palette.light.bg)})`,
+            darkColor: `color-mix(in oklab, ${formatOklchString(palette.dark.accent)} 30%, ${formatOklchString(palette.dark.bg)})`,
           })}
         </div>
       </section>
@@ -893,7 +896,7 @@ export function ThemeColorInspector({
               <button
                 className={cn(
                   "flex w-full items-center justify-between gap-2 rounded-xl px-2 py-1.5 text-left transition-colors squircle hover:bg-secondary",
-                  isOpen && "bg-secondary",
+                  isOpen && "bg-secondary hover:bg-secondary-hover",
                 )}
                 onClick={() => toggleExpand(id)}
                 onMouseEnter={() => onHoverTarget(id)}
