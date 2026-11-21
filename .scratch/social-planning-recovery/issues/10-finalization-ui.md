@@ -6,7 +6,7 @@
 - **Anthropic** — Claude Sonnet 5.5, para reconciliar a finalização com o estado da Mesa.
 - **Google** — Gemini 4 Argon, para reconciliar a finalização com o estado da Mesa. Disponibilidade depende do plano do Antigravity.
 
-**Status:** ready-for-agent. Atualizado em 21/11: em andamento. Feito: diálogo de confirmação antes de Finalizar (resumo, datas e horas, bloqueio sem data). Falta: reconciliação de resultado incerto, testes U01–U08 e T10-evidence.md.
+**Status:** ready-for-agent. Atualizado em 21/11: em andamento. Feito: diálogo de confirmação antes de Finalizar (resumo, datas e horas, bloqueio sem data). Decisão do proprietário em 21/11: resultado incerto fica como está (mensagem de erro com orientação de tentar de novo; o banco impede duplicar), sem reconciliação automática. Falta: o proprietário conferir o diálogo na tela e aceitar o ticket; testes U01–U08 e T10-evidence.md só se ele pedir.
 **Blocked by:** T04 e T09; T05 para guarda de edição.
 **Origem:** Conclusão de C09: resumo, falhas, sessão e cache.
 **Prioridade:** P2
