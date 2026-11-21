@@ -2,7 +2,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { format } from "date-fns";
 import {
-  CheckCircle2Icon,
   ArrowRightIcon,
   CalendarIcon,
   FolderOpenIcon,
@@ -20,6 +19,7 @@ import {
   PLANNING_FORMAT_LABELS,
 } from "~/components/planning/PlanningPreview";
 import { PlanningSuggestionEditor } from "~/components/planning/PlanningSuggestionEditor";
+import { PlanningFinalizeDialog } from "~/components/planning/PlanningFinalizeDialog";
 import {
   countSuggestions,
   PlanningFilterTabs,
@@ -1283,20 +1283,13 @@ function PlanningPage() {
                 )}
 
                 {suggestionCounts.approved > 0 && (
-                  <PrismButton
-                    className="min-w-0 shrink"
+                  <PlanningFinalizeDialog
                     isDisabled={isSavingSuggestions || isFinalizing}
-                    onPress={handleFinalize}
-                    size="sm"
-                    variant="success"
-                  >
-                    <span className="truncate">
-                      {isFinalizing
-                        ? "Criando ações…"
-                        : `Finalizar ${suggestionCounts.approved} ${suggestionCounts.approved === 1 ? "ação" : "ações"}`}
-                    </span>
-                    <CheckCircle2Icon data-icon="inline-end" />
-                  </PrismButton>
+                    isFinalizing={isFinalizing}
+                    onConfirm={handleFinalize}
+                    partnerTitle={selectedPartner?.title}
+                    suggestions={currentPlan.suggestions}
+                  />
                 )}
               </div>
             )}

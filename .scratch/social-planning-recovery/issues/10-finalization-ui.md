@@ -6,7 +6,7 @@
 - **Anthropic** — Claude Sonnet 5.5, para reconciliar a finalização com o estado da Mesa.
 - **Google** — Gemini 4 Argon, para reconciliar a finalização com o estado da Mesa. Disponibilidade depende do plano do Antigravity.
 
-**Status:** ready-for-agent. Atualizado em 19/11: não iniciado; depende de T09.
+**Status:** ready-for-agent. Atualizado em 21/11: em andamento. Feito: diálogo de confirmação antes de Finalizar (resumo, datas e horas, bloqueio sem data). Falta: reconciliação de resultado incerto, testes U01–U08 e T10-evidence.md.
 **Blocked by:** T04 e T09; T05 para guarda de edição.
 **Origem:** Conclusão de C09: resumo, falhas, sessão e cache.
 **Prioridade:** P2
@@ -27,16 +27,16 @@
 
 ## Testes obrigatórios
 
-| ID  | Cenário                                            | Resultado                                                                                    |
-| --- | -------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| U01 | Confirmar resumo e depois cancelar                 | Zero requisição de conversão antes da confirmação final.                                     |
-| U02 | Dados obrigatórios incompletos                     | Resumo mostra data e hora aprovadas para cada criação. Quando faltar dado exigido por D5, apresenta o motivo e bloqueia escrita.                      |
-| U03 | Duplo clique/Enter repetido enquanto pendente      | Uma operação lógica; UI permanece coerente; T09 continua a garantia final.                   |
-| U04 | Timeout após commit e reconciliação                | Mostra resultado já existente sem reenviar geração/conversão nova.                           |
-| U05 | Erro confirmado/conflito                           | Sem sucesso falso; proposta/edições preservadas; retry usa o contrato correto.               |
-| U06 | Logout A→B ou trocar parceiro durante resposta     | UI/cache de B não recebe ações/proposta de A.                                                |
-| U07 | Sucesso e reabrir/alternar calendário              | Estado finalizado verdadeiro e ação de reconversão indisponível; IDs existentes preservados. |
-| U08 | Cache conhecido/desconhecido e consumidor de ações | Ação canônica aparece no escopo adequado após confirmação; falha não insere ação fantasma.   |
+| ID  | Cenário                                            | Resultado                                                                                                                        |
+| --- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| U01 | Confirmar resumo e depois cancelar                 | Zero requisição de conversão antes da confirmação final.                                                                         |
+| U02 | Dados obrigatórios incompletos                     | Resumo mostra data e hora aprovadas para cada criação. Quando faltar dado exigido por D5, apresenta o motivo e bloqueia escrita. |
+| U03 | Duplo clique/Enter repetido enquanto pendente      | Uma operação lógica; UI permanece coerente; T09 continua a garantia final.                                                       |
+| U04 | Timeout após commit e reconciliação                | Mostra resultado já existente sem reenviar geração/conversão nova.                                                               |
+| U05 | Erro confirmado/conflito                           | Sem sucesso falso; proposta/edições preservadas; retry usa o contrato correto.                                                   |
+| U06 | Logout A→B ou trocar parceiro durante resposta     | UI/cache de B não recebe ações/proposta de A.                                                                                    |
+| U07 | Sucesso e reabrir/alternar calendário              | Estado finalizado verdadeiro e ação de reconversão indisponível; IDs existentes preservados.                                     |
+| U08 | Cache conhecido/desconhecido e consumidor de ações | Ação canônica aparece no escopo adequado após confirmação; falha não insere ação fantasma.                                       |
 
 ## Acceptance criteria
 
