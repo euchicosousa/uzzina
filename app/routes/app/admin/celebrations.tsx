@@ -1,5 +1,7 @@
+import { I18nProvider } from "react-aria";
 import { CelebrationDialog } from "~/components/features/CelebrationDialog";
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
+import { UCelebrationPartnersSelector } from "~/components/uzzina/UCelebrationPartnersSelector";
 import { ULoader } from "~/components/uzzina/ULoader";
 import { useAppContext } from "~/contexts/AppContext";
 import { CalendarDate } from "@internationalized/date";
@@ -8,7 +10,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import { PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 import type { Celebration } from "~/types";
 import {
   PrismBadge,
@@ -17,11 +20,14 @@ import {
   PrismCheckbox,
   PrismInput,
 } from "~/components/prism";
+import { QUERY_KEYS } from "~/lib/query-keys";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import {
   createCelebration,
   deleteCelebration,
   getAllCelebrations,
+  syncCelebrationActivePartners,
+  updateCelebration,
 } from "~/models/celebrations";
 import { useIsDesktop } from "~/hooks/useIsDesktop";
 import { AdminGuard } from "~/components/features/AdminGuard";
@@ -37,12 +43,27 @@ function AdminCelebrationsPageWrapper() {
     </AdminGuard>
   );
 }
+
 function AdminCelebrationsPage() {
-  const { person } = useAppContext();
+  const { person, partners } = useAppContext();
   const supabase = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
+  const createFormId = useId();
   const [editingCelebration, setEditingCelebration] =
     useState<Celebration | null>(null);
+
+  const activePartners = useMemo(
+    () =>
+      partners
+        .filter((partner) => !partner.archived)
+        .sort((a, b) => a.title.localeCompare(b.title, "pt-BR")),
+    [partners],
+  );
+  const activePartnerIds = useMemo(
+    () => activePartners.map((partner) => partner.id),
+    [activePartners],
+  );
+
   const {
     data: celebrations = [],
     isLoading,
@@ -50,117 +71,228 @@ function AdminCelebrationsPage() {
     isSuccess,
     refetch,
   } = useQuery({
-    queryKey: ["celebrations", "team", person.user_id],
+    queryKey: QUERY_KEYS.celebrations(person.user_id),
     queryFn: () => getAllCelebrations(supabase),
   });
-  const createMutation = useMutation({
-    mutationFn: async ({
-      title,
-      date,
-      is_holiday,
-    }: {
-      title: string;
-      date: string;
-      is_holiday?: boolean;
-    }) => {
-      await createCelebration(supabase, title, date, is_holiday);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["celebrations"],
-      });
-    },
-  });
+
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       await deleteCelebration(supabase, id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: ["celebrations"],
       });
     },
   });
+
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    new Date(),
+    () => new Date(),
   );
   const [title, setTitle] = useState("");
   const [isHoliday, setIsHoliday] = useState(false);
-  const isSubmitting = createMutation.isPending || deleteMutation.isPending;
-  const isAdding = createMutation.isPending;
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim() || !selectedDate) return;
-    await createMutation.mutateAsync({
-      title,
-      date: format(selectedDate, "yyyy-MM-dd"),
-      is_holiday: isHoliday,
-    });
+  const [selectedPartnerIds, setSelectedPartnerIds] = useState<string[]>([]);
+  const [isCreating, setIsCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+
+  const savingRef = useRef(false);
+  const persistedCelebrationRef = useRef<Celebration | null>(null);
+
+  const isSubmitting = isCreating || deleteMutation.isPending;
+  const hasDraftChanges =
+    title.trim().length > 0 ||
+    isHoliday ||
+    selectedPartnerIds.length > 0 ||
+    createError !== null ||
+    persistedCelebrationRef.current !== null;
+
+  const resetCreateForm = () => {
     setTitle("");
     setIsHoliday(false);
+    setSelectedPartnerIds([]);
+    setCreateError(null);
+    setSelectedDate(new Date());
+    persistedCelebrationRef.current = null;
   };
+
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (savingRef.current || !title.trim() || !selectedDate) return;
+
+    savingRef.current = true;
+    setIsCreating(true);
+    setCreateError(null);
+    const formattedDate = format(selectedDate, "yyyy-MM-dd");
+    const existing = persistedCelebrationRef.current;
+
+    try {
+      const saved = existing
+        ? await updateCelebration(
+            supabase,
+            existing.id,
+            title.trim(),
+            formattedDate,
+            isHoliday,
+          )
+        : await createCelebration(
+            supabase,
+            title.trim(),
+            formattedDate,
+            isHoliday,
+          );
+      persistedCelebrationRef.current = saved;
+
+      const celebrationsKey = QUERY_KEYS.celebrations(person.user_id);
+      queryClient.setQueryData<Celebration[]>(celebrationsKey, (current) =>
+        current
+          ? [...current.filter((item) => item.id !== saved.id), saved].sort(
+              (a, b) => a.date.localeCompare(b.date),
+            )
+          : undefined,
+      );
+
+      if (existing !== null || selectedPartnerIds.length > 0) {
+        const syncResult = await syncCelebrationActivePartners(
+          supabase,
+          saved.id,
+          activePartnerIds,
+          selectedPartnerIds,
+        );
+        void queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.celebrationPartners(saved.id),
+        });
+        for (const partnerId of [...syncResult.added, ...syncResult.removed]) {
+          void queryClient.invalidateQueries({
+            queryKey: QUERY_KEYS.partnerHolidays(partnerId),
+          });
+        }
+      }
+
+      void queryClient.invalidateQueries({ queryKey: ["celebrations"] });
+      toast.success("Data comemorativa criada.");
+      resetCreateForm();
+    } catch {
+      if (persistedCelebrationRef.current) {
+        setCreateError(
+          "A data foi salva, mas não foi possível vincular os parceiros. Tente novamente.",
+        );
+      } else {
+        setCreateError(
+          "Não foi possível criar a data comemorativa. Tente novamente.",
+        );
+      }
+    } finally {
+      savingRef.current = false;
+      setIsCreating(false);
+    }
+  };
+
   return (
     <div className="mx-auto flex w-full max-w-7xl shrink-0 flex-col md:h-[calc(100vh-68px)] md:flex-row md:overflow-hidden">
       {/* Coluna da Esquerda: Adicionar Novo */}
-      <div className="flex w-full shrink-0 flex-col gap-4 p-8 md:h-full md:w-96 md:overflow-y-auto">
+      <div className="flex w-full shrink-0 flex-col gap-5 p-8 md:h-full md:w-96 md:overflow-y-auto">
         <div>
           <h1 className="pb-2 text-3xl font-bold">Datas Comemorativas</h1>
-          <p className="text-secondary-foreground">
+          <p className="text-base text-secondary-foreground">
             Gerencie feriados e datas importantes que aparecerão no
             planejamento.
           </p>
         </div>
 
-        <div className="flex flex-col items-center gap-6">
-          <PrismCalendar
-            className="w-full"
-            onChange={(day) => {
-              if (day)
-                setSelectedDate(new Date(day.year, day.month - 1, day.day));
-            }}
-            value={
-              selectedDate
-                ? new CalendarDate(
-                    selectedDate.getFullYear(),
-                    selectedDate.getMonth() + 1,
-                    selectedDate.getDate(),
-                  )
-                : undefined
-            }
-          />
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4">
+            <I18nProvider locale="pt-BR">
+              <PrismCalendar
+                aria-label="Data"
+                captionLayout="dropdown"
+                className="w-full bg-transparent **:data-outside-month:invisible [&_[data-today]>div]:after:absolute [&_[data-today]>div]:after:bottom-1 [&_[data-today]>div]:after:size-1 [&_[data-today]>div]:after:rounded-full [&_[data-today]>div]:after:bg-current [&_td>div]:aspect-auto [&_td>div>div]:mx-auto [&_td>div>div]:size-(--cell-size)"
+                isDisabled={isSubmitting}
+                onChange={(day) => {
+                  if (day)
+                    setSelectedDate(new Date(day.year, day.month - 1, day.day));
+                }}
+                value={
+                  selectedDate
+                    ? new CalendarDate(
+                        selectedDate.getFullYear(),
+                        selectedDate.getMonth() + 1,
+                        selectedDate.getDate(),
+                      )
+                    : undefined
+                }
+              />
+            </I18nProvider>
 
-          <form className="flex w-full flex-col gap-4" onSubmit={handleCreate}>
-            <div className="flex w-full items-center gap-2">
+            <form
+              id={createFormId}
+              className="flex w-full flex-col gap-3"
+              onSubmit={handleCreate}
+            >
               <PrismInput
                 aria-label="Nome do feriado/data"
                 disabled={!selectedDate || isSubmitting}
                 name="title"
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  setCreateError(null);
+                }}
                 placeholder="Nome do feriado/data"
                 required
                 value={title}
               />
-              <PrismButton
-                aria-label={isAdding ? "Adicionando..." : "Adicionar data"}
-                className="shrink-0 rounded-2xl squircle"
-                isDisabled={!selectedDate || isSubmitting}
-                size="icon"
-                type="submit"
-              >
-                {isAdding ? <ULoader size="sm" inheritColor /> : <PlusIcon />}
-              </PrismButton>
-            </div>
-            <div className="flex items-center justify-between px-1">
-              <PrismCheckbox
-                isSelected={isHoliday}
-                onChange={setIsHoliday}
-                isDisabled={!selectedDate || isSubmitting}
-                size="sm"
-              >
-                <span className="text-xs font-medium">É feriado</span>
-              </PrismCheckbox>
-            </div>
-          </form>
+              <div className="flex items-center justify-between px-1">
+                <PrismCheckbox
+                  isSelected={isHoliday}
+                  onChange={setIsHoliday}
+                  isDisabled={!selectedDate || isSubmitting}
+                >
+                  <span className="text-sm font-medium">É feriado</span>
+                </PrismCheckbox>
+              </div>
+              {createError && (
+                <p role="alert" className="text-base text-error">
+                  {createError}
+                </p>
+              )}
+              <div className="flex items-center justify-end gap-2 pt-1">
+                {hasDraftChanges && (
+                  <PrismButton
+                    type="button"
+                    variant="ghost"
+                    isDisabled={isSubmitting}
+                    onPress={resetCreateForm}
+                  >
+                    Cancelar
+                  </PrismButton>
+                )}
+                <PrismButton
+                  isDisabled={!selectedDate || isSubmitting || !title.trim()}
+                  type="submit"
+                >
+                  {isCreating ? (
+                    <>
+                      Adicionando...
+                      <ULoader size="sm" inheritColor />
+                    </>
+                  ) : (
+                    <>
+                      Adicionar data
+                      <PlusIcon />
+                    </>
+                  )}
+                </PrismButton>
+              </div>
+            </form>
+          </div>
+
+          <div className="flex flex-col border-t border-border pt-4">
+            <UCelebrationPartnersSelector
+              partners={activePartners}
+              selectedIds={selectedPartnerIds}
+              onChange={setSelectedPartnerIds}
+              isDisabled={isSubmitting}
+            />
+          </div>
         </div>
         <AppBarSpacer className="hidden md:block" />
       </div>
@@ -177,7 +309,7 @@ function AdminCelebrationsPage() {
           className="flex w-full flex-col items-center justify-center gap-3 p-8"
           role="alert"
         >
-          <p className="text-sm text-error-foreground">
+          <p className="text-base text-error">
             Não foi possível carregar as datas comemorativas.
           </p>
           <PrismButton onPress={() => void refetch()} size="sm">
@@ -273,7 +405,7 @@ export function CelebrationsList({
                   <div
                     key={celebration.id}
                     data-celebration-id={celebration.id}
-                    className="group flex items-center justify-between gap-4 rounded-xl px-3 py-2 transition-colors squircle hover:bg-card"
+                    className="group flex items-center justify-between gap-4 rounded-xl px-3 py-2 transition-colors squircle hover:bg-secondary"
                   >
                     <div className="flex min-w-0 items-center gap-3">
                       <span className="w-6 shrink-0 text-center text-sm font-medium text-secondary-foreground">

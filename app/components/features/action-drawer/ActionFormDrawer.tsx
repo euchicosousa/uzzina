@@ -430,13 +430,13 @@ export function ActionFormDrawer({
 
     const titleTrimmed = (current.title || "").trim();
     if (titleTrimmed.length < 2) {
-      toast.error("Erro / O título deve ter pelo menos 2 caracteres", {
+      toast.error("O título deve ter pelo menos 2 caracteres.", {
         position: "top-center",
       });
       return false;
     }
     if (current.partners.length === 0) {
-      toast.error("Erro / Pelo menos um parceiro deve ser selecionado", {
+      toast.error("Selecione pelo menos um parceiro.", {
         position: "top-center",
       });
       return false;

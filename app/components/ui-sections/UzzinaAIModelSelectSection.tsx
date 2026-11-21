@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { PrismButton, PrismButtonGroup } from "~/components/prism";
 import {
+  AIModelIcon,
   UAIModelSelect,
   type AIModelOption,
 } from "~/components/uzzina/UAIModelSelect";
@@ -91,7 +92,10 @@ export function UzzinaAIModelSelectSection() {
                       isDisabled={isDisabled}
                     />
                   </PrismButtonGroup>
-                  <p className="text-sm text-secondary-foreground" role="status">
+                  <p
+                    className="text-sm text-secondary-foreground"
+                    role="status"
+                  >
                     {simulation || selected?.name}
                   </p>
                 </div>
@@ -152,6 +156,45 @@ export function UzzinaAIModelSelectSection() {
                 onChange={setLabel}
               />
             </PropsPlayground>
+          </GalleryItem>
+          <GalleryItem label="Botões por nível e provedor">
+            <div className="flex flex-wrap items-center gap-3">
+              {models.map((model) => (
+                <div key={model.id} className="flex items-center gap-1.5">
+                  <UAIModelSelect
+                    models={models}
+                    value={model.id}
+                    onChange={setValue}
+                    size="icon"
+                    ariaLabel={`Exemplo ${model.name}`}
+                  />
+                  <UAIModelSelect
+                    models={models}
+                    value={model.id}
+                    onChange={setValue}
+                    size="sm"
+                    showText
+                    ariaLabel={`Exemplo com nome ${model.name}`}
+                  />
+                </div>
+              ))}
+            </div>
+          </GalleryItem>
+          <GalleryItem label="Ícones na lista e em Minha Conta">
+            <div className="flex flex-wrap items-center gap-6">
+              {models.map((model) => (
+                <div
+                  key={model.id}
+                  className="flex items-center gap-2.5 text-sm"
+                >
+                  <AIModelIcon model={model} />
+                  <AIModelIcon model={model} compact />
+                  <span className="text-secondary-foreground">
+                    {model.name}
+                  </span>
+                </div>
+              ))}
+            </div>
           </GalleryItem>
         </GallerySectionContent>
       </GallerySection>

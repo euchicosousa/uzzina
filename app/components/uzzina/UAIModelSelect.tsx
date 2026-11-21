@@ -14,12 +14,20 @@ import {
 } from "~/components/prism";
 
 const providers = { openai: "OpenAI", anthropic: "Anthropic" } as const;
-const levelStrokes = {
-  1: "stroke-blue-500 dark:stroke-blue-400",
-  2: "stroke-yellow-600 dark:stroke-yellow-400",
-  3: "stroke-orange-600 dark:stroke-orange-400",
-  4: "stroke-red-600 dark:stroke-red-400",
-  5: "stroke-violet-600 dark:stroke-violet-400",
+const levelSurfaces = {
+  1: "bg-blue-600 text-white dark:bg-blue-400 dark:text-neutral-950",
+  2: "bg-yellow-500 text-neutral-950 dark:bg-yellow-400 dark:text-neutral-950",
+  3: "bg-orange-600 text-white dark:bg-orange-400 dark:text-neutral-950",
+  4: "bg-red-600 text-white dark:bg-red-400 dark:text-neutral-950",
+  5: "bg-violet-600 text-white dark:bg-violet-400 dark:text-neutral-950",
+} as const;
+
+const levelButtonSurfaces = {
+  1: "border-blue-600 bg-blue-600 text-white hover:border-blue-700 hover:bg-blue-700 aria-expanded:border-blue-700 aria-expanded:bg-blue-700 aria-expanded:text-white dark:border-blue-400 dark:bg-blue-400 dark:text-neutral-950 dark:hover:border-blue-300 dark:hover:bg-blue-300 dark:aria-expanded:border-blue-300 dark:aria-expanded:bg-blue-300 dark:aria-expanded:text-neutral-950",
+  2: "border-yellow-500 bg-yellow-500 text-neutral-950 hover:border-yellow-600 hover:bg-yellow-600 aria-expanded:border-yellow-600 aria-expanded:bg-yellow-600 aria-expanded:text-neutral-950 dark:border-yellow-400 dark:bg-yellow-400 dark:text-neutral-950 dark:hover:border-yellow-300 dark:hover:bg-yellow-300 dark:aria-expanded:border-yellow-300 dark:aria-expanded:bg-yellow-300 dark:aria-expanded:text-neutral-950",
+  3: "border-orange-600 bg-orange-600 text-white hover:border-orange-700 hover:bg-orange-700 aria-expanded:border-orange-700 aria-expanded:bg-orange-700 aria-expanded:text-white dark:border-orange-400 dark:bg-orange-400 dark:text-neutral-950 dark:hover:border-orange-300 dark:hover:bg-orange-300 dark:aria-expanded:border-orange-300 dark:aria-expanded:bg-orange-300 dark:aria-expanded:text-neutral-950",
+  4: "border-red-600 bg-red-600 text-white hover:border-red-700 hover:bg-red-700 aria-expanded:border-red-700 aria-expanded:bg-red-700 aria-expanded:text-white dark:border-red-400 dark:bg-red-400 dark:text-neutral-950 dark:hover:border-red-300 dark:hover:bg-red-300 dark:aria-expanded:border-red-300 dark:aria-expanded:bg-red-300 dark:aria-expanded:text-neutral-950",
+  5: "border-violet-600 bg-violet-600 text-white hover:border-violet-700 hover:bg-violet-700 aria-expanded:border-violet-700 aria-expanded:bg-violet-700 aria-expanded:text-white dark:border-violet-400 dark:bg-violet-400 dark:text-neutral-950 dark:hover:border-violet-300 dark:hover:bg-violet-300 dark:aria-expanded:border-violet-300 dark:aria-expanded:bg-violet-300 dark:aria-expanded:text-neutral-950",
 } as const;
 
 // Monochrome provider symbols from Lobe Icons 1.102.0.
@@ -34,9 +42,31 @@ export type AIModelOption = {
   id: string;
   name: string;
   provider: keyof typeof providers;
-  level: keyof typeof levelStrokes;
+  level: keyof typeof levelSurfaces;
   isDisabled?: boolean;
 };
+
+function ProviderMark({
+  provider,
+  className,
+}: {
+  provider: keyof typeof providers;
+  className: string;
+}) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={cn("shrink-0 opacity-100", className)}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+    >
+      <path
+        fillRule={provider === "openai" ? "evenodd" : "nonzero"}
+        d={providerPaths[provider]}
+      />
+    </svg>
+  );
+}
 
 export function AIModelIcon({
   model,
@@ -47,45 +77,17 @@ export function AIModelIcon({
 }) {
   return (
     <span
-      className={`relative grid shrink-0 place-items-center ${compact ? "size-5" : "size-7"}`}
+      className={cn(
+        "grid shrink-0 place-items-center rounded-lg squircle",
+        compact ? "size-5" : "size-7",
+        levelSurfaces[model.level],
+      )}
       aria-hidden="true"
     >
-      <svg
-        className="absolute inset-0 size-full -rotate-90 opacity-100"
-        viewBox="0 0 28 28"
-        fill="none"
-      >
-        <circle
-          cx="14"
-          cy="14"
-          r="12"
-          stroke="currentColor"
-          strokeOpacity=".18"
-          strokeWidth="2"
-        />
-        <circle
-          className={levelStrokes[model.level]}
-          cx="14"
-          cy="14"
-          r="12"
-          pathLength="100"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeDasharray={
-            model.level === 5 ? undefined : `${model.level * 20} 100`
-          }
-        />
-      </svg>
-      <svg
-        className="size-1/2 opacity-100"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-      >
-        <path
-          fillRule={model.provider === "openai" ? "evenodd" : "nonzero"}
-          d={providerPaths[model.provider]}
-        />
-      </svg>
+      <ProviderMark
+        provider={model.provider}
+        className={compact ? "size-3" : "size-4"}
+      />
     </span>
   );
 }
@@ -115,6 +117,8 @@ export function UAIModelSelect({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const isIconOnly = size?.startsWith("icon") ?? false;
+  const isCompact =
+    size === "xs" || size === "icon-xs" || size === "sm" || size === "icon-sm";
   const selected = models.find((model) => model.id === value);
   const label = selected ? `${ariaLabel}. Atual: ${selected.name}.` : ariaLabel;
   return (
@@ -122,8 +126,9 @@ export function UAIModelSelect({
       <PrismButton
         aria-label={label}
         className={cn(
+          selected && levelButtonSurfaces[selected.level],
           showText && "min-w-0 shrink",
-          showText && isIconOnly && "w-auto px-2",
+          showText && isIconOnly && "w-auto px-2.5",
           className,
         )}
         variant={variant}
@@ -132,14 +137,9 @@ export function UAIModelSelect({
       >
         <span title={label} className="flex min-w-0 items-center gap-1.5">
           {selected ? (
-            <ModelIcon
-              model={selected}
-              compact={
-                size === "xs" ||
-                size === "icon-xs" ||
-                size === "sm" ||
-                size === "icon-sm"
-              }
+            <ProviderMark
+              provider={selected.provider}
+              className={isCompact ? "size-4" : "size-5"}
             />
           ) : (
             "IA"

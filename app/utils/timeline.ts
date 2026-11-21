@@ -7,6 +7,15 @@ export const TIMELINE_STEP_MINUTES = 5;
 export const TIMELINE_MIN_DURATION_MINUTES = 10;
 export const TIMELINE_TOTAL_MINUTES = 24 * 60;
 
+export const TIMELINE_AUTOSCROLL_EDGE_PX = 64;
+export const TIMELINE_AUTOSCROLL_MIN_SPEED_PX_PER_SEC = 180;
+export const TIMELINE_AUTOSCROLL_MAX_SPEED_PX_PER_SEC = 1080;
+
+const TIMELINE_HALF_HOUR_MARKS = [30] as const;
+const TIMELINE_QUARTER_HOUR_MARKS = [15, 30, 45] as const;
+const TIMELINE_TEN_MINUTE_MARKS = [10, 20, 30, 40, 50] as const;
+const TIMELINE_EMPTY_MINUTE_MARKS = [] as const;
+
 export interface TimelineInterval {
   startMin: number;
   durationMin: number;
@@ -203,4 +212,88 @@ export function getTimelinePeopleRows(
     person,
     actions: actionsByUserId.get(person.user_id) ?? [],
   }));
+}
+
+/**
+ * Selects a single minute-label cadence per zoom band so minute marks stay
+ * subordinate to hour labels without overlapping at any width or zoom level.
+ */
+export function getTimelineMinuteMarks(hourWidth: number): readonly number[] {
+  if (!Number.isFinite(hourWidth) || hourWidth <= 0) {
+    return TIMELINE_EMPTY_MINUTE_MARKS;
+  }
+  if (hourWidth / 6 >= 64) {
+    return TIMELINE_TEN_MINUTE_MARKS;
+  }
+  if (hourWidth / 4 >= 56) {
+    return TIMELINE_QUARTER_HOUR_MARKS;
+  }
+  if (hourWidth / 2 >= 56) {
+    return TIMELINE_HALF_HOUR_MARKS;
+  }
+  return TIMELINE_EMPTY_MINUTE_MARKS;
+}
+
+export function isTimelineLabelOverlappingNow(
+  labelLeftPx: number,
+  labelWidthPx: number,
+  nowLeftPx: number,
+  nowHalfWidthPx = 50,
+): boolean {
+  return (
+    labelLeftPx < nowLeftPx + nowHalfWidthPx &&
+    labelLeftPx + labelWidthPx > nowLeftPx - nowHalfWidthPx
+  );
+}
+
+/**
+ * Returns horizontal auto-scroll speed (px/s) while dragging near the visible
+ * track edges. Negative scrolls left, positive scrolls right, 0 means idle.
+ */
+export function getTimelineAutoScrollSpeed(
+  pointerClientX: number,
+  visibleLeftPx: number,
+  visibleRightPx: number,
+): number {
+  const visibleWidth = visibleRightPx - visibleLeftPx;
+  if (!Number.isFinite(visibleWidth) || visibleWidth <= 0) {
+    return 0;
+  }
+
+  const edgeZone = Math.min(TIMELINE_AUTOSCROLL_EDGE_PX, visibleWidth / 4);
+  if (edgeZone <= 0) {
+    return 0;
+  }
+
+  const leftBoundary = visibleLeftPx + edgeZone;
+  if (pointerClientX < leftBoundary) {
+    const ratio = Math.min(
+      1,
+      Math.max(0, (leftBoundary - pointerClientX) / edgeZone),
+    );
+    return -(
+      TIMELINE_AUTOSCROLL_MIN_SPEED_PX_PER_SEC +
+      (TIMELINE_AUTOSCROLL_MAX_SPEED_PX_PER_SEC -
+        TIMELINE_AUTOSCROLL_MIN_SPEED_PX_PER_SEC) *
+        ratio *
+        ratio
+    );
+  }
+
+  const rightBoundary = visibleRightPx - edgeZone;
+  if (pointerClientX > rightBoundary) {
+    const ratio = Math.min(
+      1,
+      Math.max(0, (pointerClientX - rightBoundary) / edgeZone),
+    );
+    return (
+      TIMELINE_AUTOSCROLL_MIN_SPEED_PX_PER_SEC +
+      (TIMELINE_AUTOSCROLL_MAX_SPEED_PX_PER_SEC -
+        TIMELINE_AUTOSCROLL_MIN_SPEED_PX_PER_SEC) *
+        ratio *
+        ratio
+    );
+  }
+
+  return 0;
 }

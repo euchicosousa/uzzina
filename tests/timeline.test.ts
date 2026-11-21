@@ -1,6 +1,8 @@
 import { describe, expect, it } from "bun:test";
 import type { Action, Person } from "~/types";
 import {
+  TIMELINE_AUTOSCROLL_MAX_SPEED_PX_PER_SEC,
+  TIMELINE_AUTOSCROLL_MIN_SPEED_PX_PER_SEC,
   TIMELINE_MIN_DURATION_MINUTES,
   TIMELINE_PX_PER_MINUTE,
   TIMELINE_STEP_MINUTES,
@@ -9,7 +11,10 @@ import {
   assignTimelineLanes,
   getActionDurationMinutes,
   getActionStartMinutes,
+  getTimelineAutoScrollSpeed,
+  getTimelineMinuteMarks,
   getTimelinePeopleRows,
+  isTimelineLabelOverlappingNow,
   moveTimelineInterval,
   resizeTimelineDuration,
   resizeTimelineStart,
@@ -246,5 +251,65 @@ describe("getTimelinePeopleRows", () => {
       "u1",
     ]);
     expect(filteredRows.map((r) => r.person.user_id)).toEqual(["u1", "u3"]);
+  });
+});
+
+describe("getTimelineMinuteMarks", () => {
+  it("returns empty array when space is too tight or invalid", () => {
+    expect(getTimelineMinuteMarks(0)).toEqual([]);
+    expect(getTimelineMinuteMarks(-100)).toEqual([]);
+    expect(getTimelineMinuteMarks(Number.NaN)).toEqual([]);
+    expect(getTimelineMinuteMarks(100)).toEqual([]);
+  });
+
+  it("uses a single cadence per zoom band: :30, then 15/30/45, then 10-minute intervals", () => {
+    expect(getTimelineMinuteMarks(112)).toEqual([30]);
+    expect(getTimelineMinuteMarks(220)).toEqual([30]);
+    expect(getTimelineMinuteMarks(224)).toEqual([15, 30, 45]);
+    expect(getTimelineMinuteMarks(360)).toEqual([15, 30, 45]);
+    expect(getTimelineMinuteMarks(384)).toEqual([10, 20, 30, 40, 50]);
+    expect(getTimelineMinuteMarks(720)).toEqual([10, 20, 30, 40, 50]);
+  });
+});
+
+describe("isTimelineLabelOverlappingNow", () => {
+  it("detects overlap with the Agora badge without false positives", () => {
+    expect(isTimelineLabelOverlappingNow(480, 30, 500, 50)).toBe(true);
+    expect(isTimelineLabelOverlappingNow(540, 30, 500, 50)).toBe(true);
+    expect(isTimelineLabelOverlappingNow(410, 30, 500, 50)).toBe(false);
+    expect(isTimelineLabelOverlappingNow(550, 30, 500, 50)).toBe(false);
+  });
+});
+
+describe("getTimelineAutoScrollSpeed", () => {
+  it("returns 0 inside the neutral zone or with invalid bounds", () => {
+    expect(getTimelineAutoScrollSpeed(500, 100, 900)).toBe(0);
+    expect(getTimelineAutoScrollSpeed(164, 100, 900)).toBe(0);
+    expect(getTimelineAutoScrollSpeed(836, 100, 900)).toBe(0);
+    expect(getTimelineAutoScrollSpeed(100, 500, 500)).toBe(0);
+  });
+
+  it("ramps speed smoothly near left and right edges and clamps past bounds", () => {
+    const leftEdge = getTimelineAutoScrollSpeed(100, 100, 900);
+    const leftMid = getTimelineAutoScrollSpeed(132, 100, 900);
+    const farLeft = getTimelineAutoScrollSpeed(20, 100, 900);
+    expect(leftEdge).toBe(-TIMELINE_AUTOSCROLL_MAX_SPEED_PX_PER_SEC);
+    expect(farLeft).toBe(-TIMELINE_AUTOSCROLL_MAX_SPEED_PX_PER_SEC);
+    expect(leftMid).toBeLessThan(-TIMELINE_AUTOSCROLL_MIN_SPEED_PX_PER_SEC);
+    expect(leftMid).toBeGreaterThan(-TIMELINE_AUTOSCROLL_MAX_SPEED_PX_PER_SEC);
+
+    const rightEdge = getTimelineAutoScrollSpeed(900, 100, 900);
+    const rightMid = getTimelineAutoScrollSpeed(868, 100, 900);
+    const farRight = getTimelineAutoScrollSpeed(980, 100, 900);
+    expect(rightEdge).toBe(TIMELINE_AUTOSCROLL_MAX_SPEED_PX_PER_SEC);
+    expect(farRight).toBe(TIMELINE_AUTOSCROLL_MAX_SPEED_PX_PER_SEC);
+    expect(rightMid).toBeGreaterThan(TIMELINE_AUTOSCROLL_MIN_SPEED_PX_PER_SEC);
+    expect(rightMid).toBeLessThan(TIMELINE_AUTOSCROLL_MAX_SPEED_PX_PER_SEC);
+  });
+
+  it("keeps a neutral center on narrow viewports", () => {
+    expect(getTimelineAutoScrollSpeed(150, 100, 200)).toBe(0);
+    expect(getTimelineAutoScrollSpeed(110, 100, 200)).toBeLessThan(0);
+    expect(getTimelineAutoScrollSpeed(190, 100, 200)).toBeGreaterThan(0);
   });
 });

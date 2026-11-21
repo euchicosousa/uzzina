@@ -11,6 +11,7 @@ import {
   useState,
   type KeyboardEvent as ReactKeyboardEvent,
   type PointerEvent as ReactPointerEvent,
+  type RefObject,
 } from "react";
 import { Focusable } from "react-aria-components";
 import { toast } from "sonner";
@@ -44,7 +45,10 @@ import {
   formatTimelineMinutes,
   getActionDurationMinutes,
   getActionStartMinutes,
+  getTimelineAutoScrollSpeed,
+  getTimelineMinuteMarks,
   getTimelinePeopleRows,
+  isTimelineLabelOverlappingNow,
   moveTimelineInterval,
   resizeTimelineDuration,
   resizeTimelineStart,
@@ -59,6 +63,8 @@ const DRAG_THRESHOLD_PX = 5;
 const TIMELINE_RESIZE_DEBOUNCE_MS = 180;
 const TIMELINE_MAX_SCALE = TIMELINE_PX_PER_MINUTE * 2;
 const TIMELINE_HOUR_STEPS = [1, 2, 3, 4, 6, 8, 12, 24];
+const HOUR_LABEL_WIDTH_PX = 34;
+const MINUTE_LABEL_WIDTH_PX = 28;
 
 interface LanedTimelineAction extends TimelineInterval {
   action: Action;
@@ -111,11 +117,15 @@ function TimelineActionBar({
   onOpenAction,
   pxPerMinute,
   onCommitInterval,
+  scrollContainerRef,
+  personColumnRef,
 }: {
   item: LanedTimelineAction;
   pxPerMinute: number;
   onOpenAction?: TimelineGalleryOptions["onOpenAction"];
   onCommitInterval: CommitTimelineInterval;
+  scrollContainerRef: RefObject<HTMLDivElement | null>;
+  personColumnRef: RefObject<HTMLDivElement | null>;
 }) {
   const { currentPartners, currentCategory } = useActionData(item.action);
   const partnersLabel = getFormattedPartnersName(currentPartners);
@@ -155,11 +165,20 @@ function TimelineActionBar({
     }
 
     cleanupGestureRef.current?.();
+    suppressNextClickRef.current = false;
 
+    const container = scrollContainerRef.current;
     const startClientX = e.clientX;
+    const startScrollLeft = container ? container.scrollLeft : 0;
     const initialStartMin = item.startMin;
     const initialDurationMin = item.durationMin;
+    let lastClientX = startClientX;
     let hasMoved = mode !== "move";
+    let pointerMoved = false;
+    let previewActive = hasMoved;
+    let rafId: number | null = null;
+    let lastFrameTime: number | null = null;
+    let scrollCarry = 0;
     let latestInterval: TimelineInterval = {
       startMin: initialStartMin,
       durationMin: initialDurationMin,
@@ -195,23 +214,128 @@ function TimelineActionBar({
       );
     };
 
-    const handlePointerMove = (moveEvent: PointerEvent) => {
-      const deltaX = moveEvent.clientX - startClientX;
-      if (!hasMoved && Math.abs(deltaX) < DRAG_THRESHOLD_PX) return;
+    const updatePreview = () => {
+      const currentScrollLeft = container
+        ? container.scrollLeft
+        : startScrollLeft;
+      const totalDeltaX =
+        lastClientX - startClientX + (currentScrollLeft - startScrollLeft);
+      if (!hasMoved && Math.abs(totalDeltaX) < DRAG_THRESHOLD_PX) return;
       hasMoved = true;
-      const deltaMinutes = deltaX / pxPerMinute;
-      latestInterval = computeInterval(deltaMinutes);
-      setPreview({
-        mode,
-        startMin: latestInterval.startMin,
-        durationMin: latestInterval.durationMin,
-      });
+      const deltaMinutes = totalDeltaX / pxPerMinute;
+      const nextInterval = computeInterval(deltaMinutes);
+      if (
+        !previewActive ||
+        nextInterval.startMin !== latestInterval.startMin ||
+        nextInterval.durationMin !== latestInterval.durationMin
+      ) {
+        latestInterval = nextInterval;
+        previewActive = true;
+        setPreview({
+          mode,
+          startMin: nextInterval.startMin,
+          durationMin: nextInterval.durationMin,
+        });
+      }
+    };
+
+    const stopAutoScroll = () => {
+      if (rafId !== null) {
+        window.cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+      lastFrameTime = null;
+      scrollCarry = 0;
+    };
+
+    const getAutoScrollSpeed = (): number => {
+      if (!container || !hasMoved || !pointerMoved) return 0;
+      const rect = container.getBoundingClientRect();
+      const personWidth = personColumnRef.current?.offsetWidth ?? 0;
+      const speed = getTimelineAutoScrollSpeed(
+        lastClientX,
+        rect.left + personWidth,
+        rect.right,
+      );
+      if (speed === 0) return 0;
+      const maxScrollLeft = Math.max(
+        0,
+        container.scrollWidth - container.clientWidth,
+      );
+      if (speed < 0 && container.scrollLeft <= 0) return 0;
+      if (speed > 0 && container.scrollLeft >= maxScrollLeft) return 0;
+      return speed;
+    };
+
+    const stepAutoScroll = (timestamp: number) => {
+      const speed = getAutoScrollSpeed();
+      if (speed === 0 || !container) {
+        stopAutoScroll();
+        return;
+      }
+      if (lastFrameTime === null) {
+        lastFrameTime = timestamp;
+        rafId = window.requestAnimationFrame(stepAutoScroll);
+        return;
+      }
+      const dt = Math.min(timestamp - lastFrameTime, 50) / 1000;
+      lastFrameTime = timestamp;
+      const rawDelta = speed * dt + scrollCarry;
+      const stepPx = rawDelta > 0 ? Math.floor(rawDelta) : Math.ceil(rawDelta);
+      scrollCarry = rawDelta - stepPx;
+
+      if (stepPx !== 0) {
+        const maxScrollLeft = Math.max(
+          0,
+          container.scrollWidth - container.clientWidth,
+        );
+        const prevScrollLeft = container.scrollLeft;
+        container.scrollLeft = Math.max(
+          0,
+          Math.min(maxScrollLeft, prevScrollLeft + stepPx),
+        );
+        updatePreview();
+        if (container.scrollLeft === prevScrollLeft) {
+          stopAutoScroll();
+          return;
+        }
+      }
+
+      rafId = window.requestAnimationFrame(stepAutoScroll);
+    };
+
+    const syncAutoScroll = () => {
+      const speed = getAutoScrollSpeed();
+      if (speed === 0) {
+        stopAutoScroll();
+      } else if (rafId === null) {
+        lastFrameTime = null;
+        scrollCarry = 0;
+        rafId = window.requestAnimationFrame(stepAutoScroll);
+      }
+    };
+
+    const handlePointerMove = (moveEvent: PointerEvent) => {
+      lastClientX = moveEvent.clientX;
+      pointerMoved = true;
+      updatePreview();
+      syncAutoScroll();
+    };
+
+    const handleContainerScroll = () => {
+      if (hasMoved) {
+        updatePreview();
+      }
     };
 
     const cleanup = () => {
+      stopAutoScroll();
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerup", handlePointerUp);
       window.removeEventListener("pointercancel", handlePointerCancel);
+      window.removeEventListener("keydown", handleEscapeKey);
+      window.removeEventListener("blur", handlePointerCancel);
+      container?.removeEventListener("scroll", handleContainerScroll);
       cleanupGestureRef.current = null;
     };
 
@@ -237,14 +361,27 @@ function TimelineActionBar({
     };
 
     const handlePointerCancel = () => {
+      const movedBeforeCancel = hasMoved;
       cleanup();
       setPreview(null);
+      if (movedBeforeCancel) {
+        suppressNextClickRef.current = true;
+      }
+    };
+
+    const handleEscapeKey = (keyEvent: KeyboardEvent) => {
+      if (keyEvent.key !== "Escape") return;
+      keyEvent.preventDefault();
+      handlePointerCancel();
     };
 
     cleanupGestureRef.current = cleanup;
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("pointerup", handlePointerUp);
     window.addEventListener("pointercancel", handlePointerCancel);
+    window.addEventListener("keydown", handleEscapeKey);
+    window.addEventListener("blur", handlePointerCancel);
+    container?.addEventListener("scroll", handleContainerScroll);
   };
 
   const handleBarKeyDown = (e: ReactKeyboardEvent<HTMLDivElement>) => {
@@ -541,6 +678,7 @@ export function TimelineGrid({
   const minScale = viewportWidth / TIMELINE_TOTAL_MINUTES;
   const hourStep =
     TIMELINE_HOUR_STEPS.find((step) => step * hourWidth >= 42) ?? 24;
+  const minuteMarks = hourStep === 1 ? getTimelineMinuteMarks(hourWidth) : [];
   const showFiveMinuteGrid = 5 * pxPerMinute >= 8;
 
   const isGallery = gallery !== undefined;
@@ -765,15 +903,48 @@ export function TimelineGrid({
               className="relative flex h-10 shrink-0"
               style={{ width: `${trackWidth}px` }}
             >
-              {HOURS.map((hour) => (
-                <div
-                  className="relative flex h-full shrink-0 items-center border-l border-border pl-2 text-xs font-medium text-secondary-foreground tabular-nums"
-                  key={hour}
-                  style={{ width: `${hourWidth}px` }}
-                >
-                  {hour % hourStep === 0 && `${String(hour).padStart(2, "0")}h`}
-                </div>
-              ))}
+              {HOURS.map((hour) => {
+                const hourLeftPx = hour * hourWidth;
+                const showHourLabel =
+                  hour % hourStep === 0 &&
+                  (!showNowLine ||
+                    !isTimelineLabelOverlappingNow(
+                      hourLeftPx,
+                      HOUR_LABEL_WIDTH_PX,
+                      nowLeftPx,
+                    ));
+
+                return (
+                  <div
+                    className="relative flex h-full shrink-0 items-center border-l border-border pl-2 text-xs font-semibold text-foreground tabular-nums"
+                    key={hour}
+                    style={{ width: `${hourWidth}px` }}
+                  >
+                    {showHourLabel && `${String(hour).padStart(2, "0")}h`}
+                    {minuteMarks.map((minuteOffset) => {
+                      const offsetPx = minuteOffset * pxPerMinute;
+                      const showMinuteLabel =
+                        !showNowLine ||
+                        !isTimelineLabelOverlappingNow(
+                          hourLeftPx + offsetPx,
+                          MINUTE_LABEL_WIDTH_PX,
+                          nowLeftPx,
+                        );
+
+                      return (
+                        <div
+                          className="pointer-events-none absolute inset-y-0 flex items-center border-l border-border/40 pl-1.5 text-xs font-normal text-secondary-foreground tabular-nums"
+                          key={minuteOffset}
+                          style={{ left: `${offsetPx}px` }}
+                        >
+                          {showMinuteLabel &&
+                            `${String(minuteOffset).padStart(2, "0")}`}
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
 
               {showNowLine && (
                 <div
@@ -865,7 +1036,9 @@ export function TimelineGrid({
                                 key={item.action.id}
                                 onCommitInterval={onCommitInterval}
                                 onOpenAction={gallery?.onOpenAction}
+                                personColumnRef={personColumnRef}
                                 pxPerMinute={pxPerMinute}
+                                scrollContainerRef={scrollContainerRef}
                               />
                             ))}
                           </div>

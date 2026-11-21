@@ -75,3 +75,97 @@ export async function updateCelebration(
     throw new Error("The server did not confirm the celebration update.");
   return data;
 }
+
+export interface CelebrationPartnerSyncDiff {
+  toAdd: string[];
+  toRemove: string[];
+  desiredActiveIds: string[];
+  preservedInactiveIds: string[];
+}
+
+export function computeActivePartnerSyncDiff(
+  currentPartnerIds: string[],
+  activePartnerIds: string[],
+  selectedActivePartnerIds: string[],
+): CelebrationPartnerSyncDiff {
+  const activeSet = new Set(activePartnerIds);
+  const currentSet = new Set(currentPartnerIds);
+  const desiredActiveIds = Array.from(
+    new Set(selectedActivePartnerIds.filter((id) => activeSet.has(id))),
+  );
+  const desiredActiveSet = new Set(desiredActiveIds);
+
+  const toAdd = desiredActiveIds.filter((id) => !currentSet.has(id));
+  const toRemove = Array.from(currentSet).filter(
+    (id) => activeSet.has(id) && !desiredActiveSet.has(id),
+  );
+  const preservedInactiveIds = Array.from(currentSet).filter(
+    (id) => !activeSet.has(id),
+  );
+
+  return { toAdd, toRemove, desiredActiveIds, preservedInactiveIds };
+}
+
+export async function getCelebrationPartnerIds(
+  supabase: SupabaseClient<Database>,
+  celebrationId: string,
+): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("partner_holidays")
+    .select("partner_id")
+    .eq("celebration_id", celebrationId);
+  if (error) throw error;
+  return (data ?? []).map((row) => row.partner_id);
+}
+
+export interface CelebrationPartnerSyncResult {
+  added: string[];
+  removed: string[];
+  linkedActiveIds: string[];
+  preservedInactiveIds: string[];
+}
+
+export async function syncCelebrationActivePartners(
+  supabase: SupabaseClient<Database>,
+  celebrationId: string,
+  activePartnerIds: string[],
+  selectedActivePartnerIds: string[],
+): Promise<CelebrationPartnerSyncResult> {
+  const currentPartnerIds = await getCelebrationPartnerIds(
+    supabase,
+    celebrationId,
+  );
+  const { toAdd, toRemove, desiredActiveIds, preservedInactiveIds } =
+    computeActivePartnerSyncDiff(
+      currentPartnerIds,
+      activePartnerIds,
+      selectedActivePartnerIds,
+    );
+
+  if (toAdd.length > 0) {
+    const { error } = await supabase.from("partner_holidays").upsert(
+      toAdd.map((partner_id) => ({
+        partner_id,
+        celebration_id: celebrationId,
+      })),
+      { onConflict: "partner_id,celebration_id", ignoreDuplicates: true },
+    );
+    if (error) throw error;
+  }
+
+  if (toRemove.length > 0) {
+    const { error } = await supabase
+      .from("partner_holidays")
+      .delete()
+      .eq("celebration_id", celebrationId)
+      .in("partner_id", toRemove);
+    if (error) throw error;
+  }
+
+  return {
+    added: toAdd,
+    removed: toRemove,
+    linkedActiveIds: desiredActiveIds,
+    preservedInactiveIds,
+  };
+}

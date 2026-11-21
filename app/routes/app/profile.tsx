@@ -1507,7 +1507,7 @@ function ProfilePage() {
                                   {selectedOptions.slice(0, 3).map((model) => (
                                     <span
                                       key={model.id}
-                                      className="rounded-full bg-secondary"
+                                      className="rounded-lg bg-secondary ring-2 ring-secondary squircle"
                                     >
                                       <AIModelIcon model={model} compact />
                                     </span>

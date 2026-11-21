@@ -19,6 +19,7 @@ import {
   bulkUpdateDateOnlyClient,
   bulkUpdateTimeOnlyClient,
   ActionConflictError,
+  ActionValidationError,
   type BulkActionPatch,
 } from "~/lib/supabase.mutations";
 import type { ActionCreateInput, ActionPatchInput } from "~/utils/validation";
@@ -32,7 +33,10 @@ export type SingleActionInput = {
 
 const handleError = (error: unknown) => {
   console.error("Mutation failed:", error);
-  if (error instanceof ActionConflictError) {
+  if (
+    error instanceof ActionConflictError ||
+    error instanceof ActionValidationError
+  ) {
     toast.error(error.message);
     return;
   }

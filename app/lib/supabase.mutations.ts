@@ -4,6 +4,7 @@ import { createSupabaseBrowserClient } from "./supabase.client";
 import {
   ActionCreateSchema,
   ActionPatchSchema,
+  formatActionValidationError,
   type ActionCreateInput,
   type ActionPatchInput,
 } from "~/utils/validation";
@@ -16,6 +17,15 @@ export type AugmentedComment = ActionComment & {
 
 // ─── Action Mutations ────────────────────────────────────────────────────────
 
+/** Raised when client-side action validation fails before writing to the database. */
+export class ActionValidationError extends Error {
+  readonly code = "ACTION_VALIDATION";
+  constructor(message: string) {
+    super(message);
+    this.name = "ActionValidationError";
+  }
+}
+
 /**
  * Create a new action directly via browser Supabase client.
  * Runs Zod validation before inserting.
@@ -25,9 +35,7 @@ export async function createActionClient(
 ): Promise<Action> {
   const result = ActionCreateSchema.safeParse(actionData);
   if (!result.success) {
-    throw new Error(
-      `Validação falhou: ${JSON.stringify(result.error.flatten().fieldErrors)}`,
-    );
+    throw new ActionValidationError(formatActionValidationError(result.error));
   }
   const supabase = createSupabaseBrowserClient();
   let userId = result.data.user_id;
@@ -114,9 +122,7 @@ export async function updateActionClient(
 
   const result = ActionPatchSchema.safeParse(actionData);
   if (!result.success) {
-    throw new Error(
-      `Validação falhou: ${JSON.stringify(result.error.flatten().fieldErrors)}`,
-    );
+    throw new ActionValidationError(formatActionValidationError(result.error));
   }
   const updateData: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(result.data)) {

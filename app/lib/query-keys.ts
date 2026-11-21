@@ -116,4 +116,6 @@ export const QUERY_KEYS = {
     ["partner-topics", "team", userId] as const,
   partnerHolidays: (partnerId: string) =>
     ["partner-holidays", "team", partnerId] as const,
+  celebrationPartners: (celebrationId: string) =>
+    ["celebration-partners", "team", celebrationId] as const,
 } as const;

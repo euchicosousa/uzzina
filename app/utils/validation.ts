@@ -41,7 +41,7 @@ const requiredPartnersArray = z
   ])
   .refine(
     (arr) => Array.isArray(arr) && arr.length > 0,
-    "Pelo menos um parceiro é obrigatório",
+    "Selecione pelo menos um parceiro.",
   );
 
 const optionalPartnersArray = z
@@ -57,7 +57,7 @@ const optionalPartnersArray = z
   ])
   .refine(
     (arr) => arr === undefined || (Array.isArray(arr) && arr.length > 0),
-    "Pelo menos um parceiro é obrigatório",
+    "Selecione pelo menos um parceiro.",
   );
 
 const responsiblesArray = z
@@ -152,8 +152,8 @@ export const ActionPatchSchema = z.object({
     .min(2, "O Título deve ter pelo menos 2 caracteres")
     .optional(),
   date: validDateString.optional(),
-  category: z.string().min(1).optional(),
-  priority: z.string().min(1).optional(),
+  category: z.string().min(1, "A categoria é obrigatória").optional(),
+  priority: z.string().min(1, "A prioridade é obrigatória").optional(),
   partners: optionalPartnersArray.optional(),
   responsibles: responsiblesArray.optional(),
   description: nullableOptionalString.optional(),
@@ -182,3 +182,29 @@ export type ActionPatchInput = z.input<typeof ActionPatchSchema>;
 export type ActionPatchOutput = z.output<typeof ActionPatchSchema>;
 export type ActionFormInput = ActionCreateInput;
 export type ActionFormOutput = ActionCreateOutput;
+
+const normalizeSentence = (text: string) =>
+  /[.!?]$/.test(text) ? text : `${text}.`;
+
+/**
+ * Formats Zod validation errors into a single human-readable message for UI alerts,
+ * avoiding raw JSON payloads.
+ */
+export function formatActionValidationError(error: z.ZodError): string {
+  const messages: string[] = [];
+  const seen = new Set<string>();
+
+  for (const issue of error.issues) {
+    const trimmed = issue.message.trim();
+    if (trimmed && !seen.has(trimmed)) {
+      seen.add(trimmed);
+      messages.push(normalizeSentence(trimmed));
+    }
+  }
+
+  if (messages.length === 0) {
+    return "Revise os campos obrigatórios antes de salvar.";
+  }
+
+  return messages.join(" ");
+}
