@@ -63,8 +63,8 @@ export function PlanningFinalizeDialog({
         </span>
         <CheckCircle2Icon data-icon="inline-end" />
       </PrismButton>
-      <PrismDialog>
-        <PrismDialogHeader>
+      <PrismDialog className="flex flex-col overflow-hidden">
+        <PrismDialogHeader className="shrink-0">
           <PrismDialogTitle>
             Criar {count} {count === 1 ? "ação" : "ações"}?
           </PrismDialogTitle>
@@ -73,8 +73,8 @@ export function PlanningFinalizeDialog({
             na fase Fazer, com você como responsável.
           </PrismDialogDescription>
         </PrismDialogHeader>
-        <PrismDialogBody className="gap-3 text-base">
-          <ul className="grid max-h-72 gap-2 overflow-auto">
+        <PrismDialogBody className="min-h-0 gap-3 overflow-auto text-base [&>*]:shrink-0">
+          <ul className="grid gap-2">
             {toCreate.map((suggestion) => (
               <li className="grid" key={suggestion.id}>
                 <span className="font-medium">{suggestion.title}</span>
@@ -104,7 +104,7 @@ export function PlanningFinalizeDialog({
               : ""}
           </p>
         </PrismDialogBody>
-        <PrismDialogFooter>
+        <PrismDialogFooter className="shrink-0">
           <PrismDialogClose>Cancelar</PrismDialogClose>
           <PrismDialogClose
             isDisabled={undated.length > 0 || count === 0}
