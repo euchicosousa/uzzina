@@ -259,7 +259,7 @@ export function UPhaseCombobox({
                     onAction={({ shiftKey }) => handleSelect("all", shiftKey)}
                     textValue="Todas as fases"
                   >
-                    <div className="size-4 rounded-full border bg-secondary" />
+                    <div className="size-4 rounded-full border bg-card" />
                     <span className="truncate">Todas as fases</span>
                   </PrismCommandItem>
                   <PrismCommandSeparator className="-mx-2" />

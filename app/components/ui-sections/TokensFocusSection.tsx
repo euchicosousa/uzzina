@@ -186,10 +186,10 @@ export function TokensFocusSection() {
             id="focus-outer"
             title="Anel externo (padrão)"
             rule="Todo foco por anel: 3px, ring-ring a 30%, com borda border-ring a 60% quando o elemento tem borda. Destrutivo usa a mesma lógica toda em vermelho. É o padrão do PrismButton."
-            classes="outline-none focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30 (também focus-within: e data-[focus-visible]:; destrutivo: focus-visible:border-error/60 focus-visible:ring-error/30)"
+            classes="outline-none focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring-halo (também focus-within: e data-[focus-visible]:; destrutivo: focus-visible:border-error/60 focus-visible:ring-error/30)"
             usedBy={[
               "Prism: button, input, textarea, select, toggle, checkbox, radio-group, calendar (dia), color-field, time-field, date-range-picker, input-group, combobox, badge (borda border-ring/60 + anel)",
-              "Prism: slider, color-area e color-slider (thumb: só anel ring-3 ring-ring/30 em data-[focus-visible])",
+              "Prism: slider, color-area e color-slider (thumb: só anel ring-3 ring-ring-halo em data-[focus-visible])",
               "Prism: button e badge destrutivos (border-error/60 + ring-error/30)",
               "features/ComboboxTrigger.tsx (ghost icon-lg no rodapé da gaveta: anel padrão do PrismButton)",
               "features/action-drawer/ActionDatePicker.tsx (data da gaveta: ghost sm com anel padrão do PrismButton)",
@@ -342,7 +342,7 @@ export function TokensFocusSection() {
               label="Editor de texto (focus-within)"
               source="Réplica de routes/app/admin/partner/$slug.tsx"
             >
-              <div className="min-h-25 w-72 overflow-hidden rounded-2xl border border-transparent bg-input text-base transition-[color,box-shadow] squircle focus-within:border-ring/60 focus-within:ring-3 focus-within:ring-ring/30 md:text-sm">
+              <div className="min-h-25 w-72 overflow-hidden rounded-2xl border border-transparent bg-input text-base transition-[color,box-shadow] squircle focus-within:border-ring/60 focus-within:ring-3 focus-within:ring-ring-halo md:text-sm">
                 <textarea
                   aria-label="Réplica do editor admin"
                   className="h-full min-h-25 w-full resize-none bg-transparent p-3 outline-none"
@@ -417,7 +417,7 @@ export function TokensFocusSection() {
             id="focus-inset"
             title="Anel por dentro (ring-inset)"
             rule="Mesmo anel de 3px a 30%, desenhado para dentro. Usado onde um contêiner com overflow cortaria o anel externo. Regiões roláveis com filhos focáveis (Kanban, perfil, célula do dia) e o carrossel do Instagram deixaram de receber foco (03/11/2026); resta a coluna de campos do comparador de conflito, que não tem filhos focáveis e exige tabIndex no Safari."
-            classes="outline-none focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:ring-inset"
+            classes="outline-none focus-visible:ring-3 focus-visible:ring-ring-halo focus-visible:ring-inset"
             usedBy={[
               "features/action-drawer/conflict-comparison.tsx (coluna de campos, lista só de texto)",
             ]}
@@ -427,7 +427,7 @@ export function TokensFocusSection() {
               source="Réplica de features/action-drawer/conflict-comparison.tsx"
             >
               <div
-                className="h-24 w-72 overflow-y-auto overscroll-contain px-3 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:ring-inset"
+                className="h-24 w-72 overflow-y-auto overscroll-contain px-3 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring-halo focus-visible:ring-inset"
                 tabIndex={0}
               >
                 Lista de campos alterados, somente texto. Role com o teclado

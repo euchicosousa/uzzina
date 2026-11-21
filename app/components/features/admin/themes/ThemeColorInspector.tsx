@@ -1,255 +1,112 @@
-import { useState } from "react";
-import { parseColor } from "react-aria-components";
 import {
-  ChevronDownIcon,
-  LockIcon,
-  MoonIcon,
-  RotateCcwIcon,
-  SunIcon,
-} from "lucide-react";
-import { cn } from "cnfast";
-import {
-  PrismBadge,
-  PrismButton,
-  PrismColorField,
-  PrismSlider,
-  PrismSliderFill,
-  PrismSliderThumb,
-  PrismSliderTrack,
+  PrismAccordion,
+  PrismAccordionContent,
+  PrismAccordionItem,
+  PrismAccordionTrigger,
+  PrismToggleGroup,
+  PrismToggleGroupItem,
+  PrismTab,
+  PrismTabList,
+  PrismTabPanel,
+  PrismTabs,
 } from "~/components/prism";
+import { useState } from "react";
 import { UPreferenceSwitch } from "~/components/uzzina/UPreferenceSwitch";
-import { PHASES } from "~/lib/CONSTANTS";
-import type { PaletteConfig } from "~/lib/palettes";
+import { CATEGORIES, PHASES } from "~/lib/CONSTANTS";
+import {
+  oklchToCss,
+  type PaletteConfig,
+  type PhaseSlug,
+  type CategorySlug,
+  type SharedColors,
+} from "~/lib/palettes";
 import {
   formatOklchString,
   getOklchContrastRatio,
-  hexToOklch,
-  isOklchInSrgbGamut,
   oklchToHex,
   type OklchColor,
 } from "~/utils/color";
 import {
+  ColorGroup,
+  formatDelta,
+  LockedRow,
+  RowHeader,
+  RuleInfo,
+  SwatchPair,
+  ValueGroup,
+  ValueSetGroup,
+  type ValueRowSpec,
+} from "./ThemeEditorControls";
+import {
+  PHASE_SAMPLE_KIND,
+  PhaseSampleTiles,
+  phaseSampleStyles,
+} from "./ThemePhaseSamples";
+import {
+  CATEGORY_ORDER,
+  derivePriorities,
   getEffectiveDelta,
   getEffectivePrimaryFg,
-  getOriginalPhasesMap,
-  getOriginalPrioritiesMap,
+  getFormulaValue,
+  getLateValue,
+  getOriginalShared,
   getPaletteById,
+  getPhaseFormula,
+  getSharedNumber,
+  getStateColor,
   getPaletteFg,
-  getShadowOklch,
   PHASE_ORDER,
   type DeltaKey,
+  type FormulaKey,
+  type LateKey,
   type PaletteColorKey,
-  type PhaseSlug,
-  type PhasesColorMap,
-  type PrioritiesColorMap,
-  type PriorityKey,
+  type PhaseFormulaKey,
+  type SharedNumberKey,
+  type StateKey,
+  type StatePart,
 } from "./theme-editor-model";
 
 interface ThemeColorInspectorProps {
   palette: PaletteConfig;
-  phases: PhasesColorMap;
-  priorities: PrioritiesColorMap;
+  /** Colors shared by every palette: states, phases and categories. */
+  shared: SharedColors;
   onChangePaletteColor: (
     mode: "light" | "dark",
     key: PaletteColorKey,
     color: OklchColor,
   ) => void;
   onChangeDelta: (mode: "light" | "dark", key: DeltaKey, value: number) => void;
-  onChangeShadowColor: (mode: "light" | "dark", color: OklchColor) => void;
-  onChangeShadowOpacity: (mode: "light" | "dark", value: number) => void;
   onChangeRelief: (relief: boolean) => void;
   onChangePhase: (slug: PhaseSlug, color: OklchColor) => void;
-  onChangePriority: (
+  onChangeCategory: (slug: CategorySlug, color: OklchColor) => void;
+  onChangeFormula: (
+    key: FormulaKey,
     mode: "light" | "dark",
-    key: PriorityKey,
+    value: number,
+  ) => void;
+  onChangeLate: (key: LateKey, mode: "light" | "dark", value: number) => void;
+  onChangePhaseFormula: (
+    key: PhaseFormulaKey,
+    mode: "light" | "dark",
+    value: number,
+  ) => void;
+  onChangePrimaryFgDelta: (
+    mode: "light" | "dark",
+    part: "l" | "c" | "h",
+    value: number,
+  ) => void;
+  onChangeState: (
+    key: StateKey,
+    part: StatePart,
+    mode: "light" | "dark",
     color: OklchColor,
   ) => void;
+  onChangeSharedNumber: (
+    key: SharedNumberKey,
+    mode: "light" | "dark",
+    value: number,
+  ) => void;
   onHoverTarget: (target: string | null) => void;
-}
-
-interface OklchChannelSlidersProps {
-  modeLabel?: string;
-  color: OklchColor;
-  onChange: (next: OklchColor) => void;
-  onReset?: () => void;
-  isDirty?: boolean;
-}
-
-function OklchChannelSliders({
-  modeLabel,
-  color,
-  onChange,
-  onReset,
-  isDirty,
-}: OklchChannelSlidersProps) {
-  const hex = oklchToHex(color.h, color.c, color.l);
-  const outOfGamut = !isOklchInSrgbGamut(color);
-
-  const lGradient = `linear-gradient(to right, oklch(0 ${color.c} ${color.h}), oklch(0.5 ${color.c} ${color.h}), oklch(1 ${color.c} ${color.h}))`;
-  const cGradient = `linear-gradient(to right, oklch(${color.l} 0 ${color.h}), oklch(${color.l} 0.2 ${color.h}), oklch(${color.l} 0.4 ${color.h}))`;
-  const hGradient = `linear-gradient(to right, oklch(${color.l} ${Math.max(0.12, color.c)} 0), oklch(${color.l} ${Math.max(0.12, color.c)} 60), oklch(${color.l} ${Math.max(0.12, color.c)} 120), oklch(${color.l} ${Math.max(0.12, color.c)} 180), oklch(${color.l} ${Math.max(0.12, color.c)} 240), oklch(${color.l} ${Math.max(0.12, color.c)} 300), oklch(${color.l} ${Math.max(0.12, color.c)} 360))`;
-
-  return (
-    <div className="flex flex-col gap-2.5">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          {modeLabel && (
-            <span className="text-xs font-medium text-foreground">
-              {modeLabel}
-            </span>
-          )}
-          <span className="font-mono text-xs text-secondary-foreground">
-            {formatOklchString(color)}
-          </span>
-        </div>
-
-        <div className="flex items-center gap-1.5">
-          {outOfGamut && (
-            <PrismBadge variant="warning">Fora da tela</PrismBadge>
-          )}
-          {isDirty && onReset && (
-            <PrismButton
-              aria-label="Restaurar original"
-              onPress={onReset}
-              size="xs"
-              variant="ghost"
-            >
-              Restaurar
-              <RotateCcwIcon />
-            </PrismButton>
-          )}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-[1fr_92px] items-center gap-2">
-        <div className="flex flex-col gap-2">
-          <div className="grid grid-cols-[64px_1fr_44px] items-center gap-2">
-            <span className="text-xs text-secondary-foreground">Luz</span>
-            <PrismSlider
-              aria-label={`Luz ${modeLabel ?? ""}`}
-              maxValue={1}
-              minValue={0}
-              onChange={(v) =>
-                onChange({ ...color, l: typeof v === "number" ? v : v[0] })
-              }
-              step={0.005}
-              value={Math.max(0, Math.min(1, color.l))}
-            >
-              <PrismSliderTrack
-                className="h-2.5 border border-foreground/10"
-                style={{ background: lGradient }}
-              >
-                <PrismSliderThumb />
-              </PrismSliderTrack>
-            </PrismSlider>
-            <span className="text-right font-mono text-xs text-secondary-foreground tabular-nums">
-              {color.l.toFixed(3)}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-[64px_1fr_44px] items-center gap-2">
-            <span className="text-xs text-secondary-foreground">Saturação</span>
-            <PrismSlider
-              aria-label={`Saturação ${modeLabel ?? ""}`}
-              maxValue={0.4}
-              minValue={0}
-              onChange={(v) =>
-                onChange({ ...color, c: typeof v === "number" ? v : v[0] })
-              }
-              step={0.002}
-              value={Math.max(0, Math.min(0.4, color.c))}
-            >
-              <PrismSliderTrack
-                className="h-2.5 border border-foreground/10"
-                style={{ background: cGradient }}
-              >
-                <PrismSliderThumb />
-              </PrismSliderTrack>
-            </PrismSlider>
-            <span className="text-right font-mono text-xs text-secondary-foreground tabular-nums">
-              {color.c.toFixed(3)}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-[64px_1fr_44px] items-center gap-2">
-            <span className="text-xs text-secondary-foreground">Matiz</span>
-            <PrismSlider
-              aria-label={`Matiz ${modeLabel ?? ""}`}
-              maxValue={360}
-              minValue={0}
-              onChange={(v) =>
-                onChange({ ...color, h: typeof v === "number" ? v : v[0] })
-              }
-              step={1}
-              value={Math.max(0, Math.min(360, color.h))}
-            >
-              <PrismSliderTrack
-                className="h-2.5 border border-foreground/10"
-                style={{ background: hGradient }}
-              >
-                <PrismSliderThumb />
-              </PrismSliderTrack>
-            </PrismSlider>
-            <span className="text-right font-mono text-xs text-secondary-foreground tabular-nums">
-              {Math.round(color.h)}°
-            </span>
-          </div>
-        </div>
-
-        <PrismColorField
-          aria-label={`Hexadecimal ${modeLabel ?? ""}`}
-          inputClassName="px-2.5 text-center text-xs"
-          onChange={(parsed) => {
-            if (!parsed) return;
-            const nextHex = parsed.toString("hex").slice(0, 7);
-            onChange(hexToOklch(nextHex));
-          }}
-          size="sm"
-          value={parseColor(hex)}
-        />
-      </div>
-    </div>
-  );
-}
-
-function DualSwatch({
-  lightStyle,
-  darkStyle,
-  label,
-  small,
-}: {
-  lightStyle: React.CSSProperties;
-  darkStyle: React.CSSProperties;
-  label?: string;
-  small?: boolean;
-}) {
-  const sizeClass = small ? "size-6 rounded-lg" : "size-7 rounded-xl";
-  return (
-    <div className="flex shrink-0 items-center gap-1.5">
-      <span
-        className={cn(
-          sizeClass,
-          "inline-flex items-center justify-center border border-foreground/15 text-xs font-semibold squircle",
-        )}
-        style={lightStyle}
-      >
-        {label}
-      </span>
-      <span
-        className={cn(
-          sizeClass,
-          "inline-flex items-center justify-center border border-foreground/15 text-xs font-semibold squircle",
-        )}
-        style={darkStyle}
-      >
-        {label}
-      </span>
-    </div>
-  );
-}
-
-function formatDelta(v: number): string {
-  return `${v >= 0 ? "+" : ""}${v.toFixed(2)}`;
 }
 
 function computeModeCardColor(
@@ -266,781 +123,1638 @@ function computeModeCardColor(
   });
 }
 
+const BOX =
+  "flex w-full min-w-0 flex-col overflow-hidden rounded-2xl border bg-card squircle";
+
+const MODES = [
+  { mode: "light" as const, title: "Claro" },
+  { mode: "dark" as const, title: "Escuro" },
+];
+
 export function ThemeColorInspector({
   palette,
-  phases,
-  priorities,
+  shared,
   onChangePaletteColor,
   onChangeDelta,
-  onChangeShadowColor,
-  onChangeShadowOpacity,
   onChangeRelief,
   onChangePhase,
-  onChangePriority,
+  onChangeCategory,
+  onChangeFormula,
+  onChangeLate,
+  onChangePhaseFormula,
+  onChangePrimaryFgDelta,
+  onChangeState,
+  onChangeSharedNumber,
   onHoverTarget,
 }: ThemeColorInspectorProps) {
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-
+  const [samplePhase, setSamplePhase] = useState<PhaseSlug>("doing");
   const originalPalette = getPaletteById(palette.id);
-  const originalPhases = getOriginalPhasesMap();
-  const originalPriorities = getOriginalPrioritiesMap();
+  const originalShared = getOriginalShared();
+  const phases = shared.phases;
+  const priorities = derivePriorities(shared);
 
-  const toggleExpand = (id: string) => {
-    setExpandedId((prev) => (prev === id ? null : id));
+  const fgContrast = (["light", "dark"] as const).map((m) =>
+    getOklchContrastRatio(getPaletteFg(palette, m), palette[m].bg),
+  );
+  const pFg = {
+    light: getEffectivePrimaryFg(palette, "light"),
+    dark: getEffectivePrimaryFg(palette, "dark"),
   };
-
-  const fgLight = getPaletteFg(palette, "light");
-  const fgDark = getPaletteFg(palette, "dark");
-  const fgContrastLight = getOklchContrastRatio(fgLight, palette.light.bg);
-  const fgContrastDark = getOklchContrastRatio(fgDark, palette.dark.bg);
-  const pFgLight = getEffectivePrimaryFg(palette, "light");
-  const pFgDark = getEffectivePrimaryFg(palette, "dark");
-  const primaryContrastLight = getOklchContrastRatio(
-    pFgLight,
-    palette.light.primary,
-  );
-  const primaryContrastDark = getOklchContrastRatio(
-    pFgDark,
-    palette.dark.primary,
+  const primaryContrast = (["light", "dark"] as const).map((m) =>
+    getOklchContrastRatio(pFg[m], palette[m].primary),
   );
 
-  const renderDualColorRow = (opts: {
+  const solid = (c: OklchColor): React.CSSProperties => ({
+    backgroundColor: formatOklchString(c),
+  });
+
+  const hover = (targetId: string) => ({
+    onMouseEnter: () => onHoverTarget(targetId),
+    onMouseLeave: () => onHoverTarget(null),
+  });
+
+  /** One accordion item: header (name, info, hint, swatches) and its open panel. */
+  const item = (opts: {
+    id: string;
+    label: string;
+    hint?: string;
+    targetId: string;
+    swatches: React.ReactNode;
+    children: React.ReactNode;
+  }) => (
+    <PrismAccordionItem key={opts.id} id={opts.id} {...hover(opts.targetId)}>
+      <PrismAccordionTrigger aria-label={opts.label} className="p-5" info>
+        <RowHeader
+          hint={opts.hint}
+          info={<RuleInfo id={opts.id} palette={palette} shared={shared} />}
+          label={opts.label}
+          swatches={opts.swatches}
+        />
+      </PrismAccordionTrigger>
+      <PrismAccordionContent>
+        <div className="flex flex-col gap-8 pt-2">{opts.children}</div>
+      </PrismAccordionContent>
+    </PrismAccordionItem>
+  );
+
+  const colorItem = (opts: {
     id: string;
     label: string;
     hint: string;
     targetId: string;
-    lightColor: OklchColor;
-    darkColor: OklchColor;
+    light: OklchColor;
+    dark: OklchColor;
     origLight: OklchColor;
     origDark: OklchColor;
-    onLightChange: (c: OklchColor) => void;
-    onDarkChange: (c: OklchColor) => void;
+    onLight: (c: OklchColor) => void;
+    onDark: (c: OklchColor) => void;
     swatchLabel?: string;
-    lightSwatchStyle?: React.CSSProperties;
-    darkSwatchStyle?: React.CSSProperties;
-  }) => {
-    const isOpen = expandedId === opts.id;
-    return (
-      <div key={opts.id} className="mt-2">
-        <button
-          className={cn(
-            "flex w-full items-center justify-between gap-2 rounded-xl px-2 py-1.5 text-left transition-colors squircle hover:bg-secondary",
-            isOpen && "bg-secondary hover:bg-secondary-hover",
-          )}
-          onClick={() => toggleExpand(opts.id)}
-          onMouseEnter={() => onHoverTarget(opts.targetId)}
-          onMouseLeave={() => onHoverTarget(null)}
-          type="button"
-        >
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5 text-sm font-medium text-foreground">
-              <span className="truncate">{opts.label}</span>
-              <ChevronDownIcon
-                className={cn(
-                  "size-3.5 shrink-0 opacity-60 transition-transform",
-                  isOpen && "rotate-180",
-                )}
-              />
-            </div>
-            <div className="truncate text-xs text-secondary-foreground">
-              {opts.hint}
-            </div>
-          </div>
-
-          <DualSwatch
-            darkStyle={
-              opts.darkSwatchStyle ?? {
-                backgroundColor: formatOklchString(opts.darkColor),
-              }
-            }
-            label={opts.swatchLabel}
-            lightStyle={
-              opts.lightSwatchStyle ?? {
-                backgroundColor: formatOklchString(opts.lightColor),
-              }
-            }
+    lightStyle?: React.CSSProperties;
+    darkStyle?: React.CSSProperties;
+  }) =>
+    item({
+      id: opts.id,
+      label: opts.label,
+      hint: opts.hint,
+      targetId: opts.targetId,
+      swatches: (
+        <SwatchPair
+          dark={opts.darkStyle ?? solid(opts.dark)}
+          label={opts.swatchLabel}
+          light={opts.lightStyle ?? solid(opts.light)}
+        />
+      ),
+      children: (
+        <>
+          <ColorGroup
+            color={opts.light}
+            mode="light"
+            onChange={opts.onLight}
+            original={opts.origLight}
+            title="Claro"
           />
-        </button>
+          <ColorGroup
+            color={opts.dark}
+            mode="dark"
+            onChange={opts.onDark}
+            original={opts.origDark}
+            title="Escuro"
+          />
+        </>
+      ),
+    });
 
-        {isOpen && (
-          <div className="mt-2 ml-2 flex flex-col gap-4 border-l border-border py-2 pl-3">
-            <OklchChannelSliders
-              color={opts.lightColor}
-              isDirty={
-                formatOklchString(opts.lightColor) !==
-                formatOklchString(opts.origLight)
-              }
-              modeLabel="Claro"
-              onChange={opts.onLightChange}
-              onReset={() => opts.onLightChange({ ...opts.origLight })}
-            />
-            <OklchChannelSliders
-              color={opts.darkColor}
-              isDirty={
-                formatOklchString(opts.darkColor) !==
-                formatOklchString(opts.origDark)
-              }
-              modeLabel="Escuro"
-              onChange={opts.onDarkChange}
-              onReset={() => opts.onDarkChange({ ...opts.origDark })}
-            />
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const renderDeltaRow = (opts: {
-    id: string;
-    label: string;
-    deltaKey: DeltaKey;
-    targetId: string;
-    hint?: string;
-  }) => {
-    const isOpen = expandedId === opts.id;
-    const lightVal = getEffectiveDelta(palette, "light", opts.deltaKey);
-    const darkVal = getEffectiveDelta(palette, "dark", opts.deltaKey);
-    const origLightVal = getEffectiveDelta(
-      originalPalette,
-      "light",
-      opts.deltaKey,
-    );
-    const origDarkVal = getEffectiveDelta(
-      originalPalette,
-      "dark",
-      opts.deltaKey,
-    );
-
-    const baseMax = opts.deltaKey === "fgLDelta" ? 1 : 0.35;
-    const lightMax = Math.max(
-      baseMax,
-      Math.abs(lightVal),
-      Math.abs(origLightVal),
-    );
-    const darkMax = Math.max(baseMax, Math.abs(darkVal), Math.abs(origDarkVal));
-
-    return (
-      <div key={opts.id}>
-        <button
-          className={cn(
-            "flex w-full items-center justify-between gap-2 rounded-xl px-2 py-1.5 text-left transition-colors squircle hover:bg-secondary",
-            isOpen && "bg-secondary hover:bg-secondary-hover",
-          )}
-          onClick={() => toggleExpand(opts.id)}
-          onMouseEnter={() => onHoverTarget(opts.targetId)}
-          onMouseLeave={() => onHoverTarget(null)}
-          type="button"
-        >
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5 text-sm text-foreground">
-              <span className="truncate">{opts.label}</span>
-            </div>
-            <div className="truncate text-xs text-secondary-foreground">
-              {opts.hint ?? "Fundo com ajuste de luz"}
-            </div>
-          </div>
-
-          <div className="flex shrink-0 items-center gap-1.5">
-            <div className="flex flex-col items-center gap-0.5">
-              <span
-                className="size-6 border border-foreground/15 squircle"
-                style={{
-                  backgroundColor: computeModeCardColor(
-                    palette,
-                    "light",
-                    opts.deltaKey,
-                  ),
-                }}
-              />
-              <span className="font-mono text-xs text-secondary-foreground tabular-nums">
-                {formatDelta(lightVal)}
-              </span>
-            </div>
-            <div className="flex flex-col items-center gap-0.5">
-              <span
-                className="size-6 border border-foreground/15 squircle"
-                style={{
-                  backgroundColor: computeModeCardColor(
-                    palette,
-                    "dark",
-                    opts.deltaKey,
-                  ),
-                }}
-              />
-              <span className="font-mono text-xs text-secondary-foreground tabular-nums">
-                {formatDelta(darkVal)}
-              </span>
-            </div>
-          </div>
-        </button>
-
-        {isOpen && (
-          <div className="mt-1 mb-2 ml-2 flex flex-col gap-3 border-l border-border py-2 pl-3">
-            <p className="text-xs text-secondary-foreground">
-              Quanto a luz do fundo sobe (+) ou desce (−). A cor e a saturação
-              vêm do Fundo.
-            </p>
-
-            {(
-              [
-                {
-                  mode: "light" as const,
-                  label: "Claro",
-                  val: lightVal,
-                  orig: origLightVal,
-                  max: lightMax,
-                },
-                {
-                  mode: "dark" as const,
-                  label: "Escuro",
-                  val: darkVal,
-                  orig: origDarkVal,
-                  max: darkMax,
-                },
-              ] as const
-            ).map((item) => (
-              <div key={item.mode} className="flex flex-col gap-1">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-medium text-foreground">
-                    {item.label}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-secondary-foreground tabular-nums">
-                      {formatDelta(item.val)}
-                    </span>
-                    {Math.abs(item.val - item.orig) >= 0.0005 && (
-                      <PrismButton
-                        onPress={() =>
-                          onChangeDelta(item.mode, opts.deltaKey, item.orig)
-                        }
-                        size="xs"
-                        variant="ghost"
-                      >
-                        Restaurar
-                        <RotateCcwIcon />
-                      </PrismButton>
-                    )}
-                  </div>
-                </div>
-                <PrismSlider
-                  aria-label={`${opts.label} ${item.label}`}
-                  maxValue={item.max}
-                  minValue={-0.35}
-                  onChange={(v) =>
-                    onChangeDelta(
-                      item.mode,
-                      opts.deltaKey,
-                      typeof v === "number" ? v : v[0],
-                    )
-                  }
-                  step={0.005}
-                  value={item.val}
-                >
-                  <PrismSliderTrack>
-                    <PrismSliderFill />
-                    <PrismSliderThumb />
-                  </PrismSliderTrack>
-                </PrismSlider>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const renderLockedRuleRow = (opts: {
+  const deltaItem = (opts: {
     id: string;
     label: string;
     hint: string;
+    deltaKey: DeltaKey;
     targetId: string;
-    lightBadge: string;
-    darkBadge: string;
-    lightColor: string;
-    darkColor: string;
-  }) => (
-    <div
-      key={opts.id}
-      className="flex items-center justify-between gap-2 rounded-xl px-2 py-1.5 squircle"
-      onMouseEnter={() => onHoverTarget(opts.targetId)}
-      onMouseLeave={() => onHoverTarget(null)}
-    >
-      <div className="min-w-0">
-        <div className="flex items-center gap-1.5 text-sm text-foreground">
-          <span className="truncate">{opts.label}</span>
-          <LockIcon className="size-3 shrink-0 opacity-60" />
-        </div>
-        <div className="truncate text-xs text-secondary-foreground">
-          {opts.hint}
-        </div>
-      </div>
+  }) =>
+    item({
+      id: opts.id,
+      label: opts.label,
+      hint: opts.hint,
+      targetId: opts.targetId,
+      swatches: (
+        <SwatchPair
+          dark={{
+            backgroundColor: computeModeCardColor(
+              palette,
+              "dark",
+              opts.deltaKey,
+            ),
+          }}
+          light={{
+            backgroundColor: computeModeCardColor(
+              palette,
+              "light",
+              opts.deltaKey,
+            ),
+          }}
+        />
+      ),
+      children: (
+        <>
+          <p className="text-base text-secondary-foreground">
+            Quanto a luz do fundo sobe (+) ou desce (−). A cor e a saturação vêm
+            do Fundo.
+          </p>
+          {MODES.map(({ mode, title }) => (
+            <ValueGroup
+              format={formatDelta}
+              key={mode}
+              max={opts.deltaKey === "fgLDelta" ? 1 : 0.35}
+              min={opts.deltaKey === "fgLDelta" ? -1 : -0.35}
+              mode={mode}
+              name="Luz"
+              onChange={(v) => onChangeDelta(mode, opts.deltaKey, v)}
+              original={getEffectiveDelta(originalPalette, mode, opts.deltaKey)}
+              step={0.005}
+              title={title}
+              value={getEffectiveDelta(palette, mode, opts.deltaKey)}
+            />
+          ))}
+        </>
+      ),
+    });
 
-      <div className="flex shrink-0 items-center gap-1.5">
-        <div className="flex flex-col items-center gap-0.5">
-          <span
-            className="size-6 border border-foreground/15 squircle"
-            style={{ backgroundColor: opts.lightColor }}
+  /** Read-only rules live in one box, one row each. */
+  const lockedRow = (opts: {
+    id: string;
+    label: string;
+    hint: string;
+    light: string;
+    dark: string;
+  }) => (
+    <LockedRow key={opts.id} {...hover(opts.id)}>
+      <RowHeader
+        hint={opts.hint}
+        info={<RuleInfo id={opts.id} palette={palette} shared={shared} />}
+        label={opts.label}
+        locked
+        swatches={
+          <SwatchPair
+            dark={{ backgroundColor: opts.dark }}
+            light={{ backgroundColor: opts.light }}
           />
-          <span className="font-mono text-xs text-secondary-foreground tabular-nums">
-            {opts.lightBadge}
-          </span>
-        </div>
-        <div className="flex flex-col items-center gap-0.5">
-          <span
-            className="size-6 border border-foreground/15 squircle"
-            style={{ backgroundColor: opts.darkColor }}
-          />
-          <span className="font-mono text-xs text-secondary-foreground tabular-nums">
-            {opts.darkBadge}
-          </span>
-        </div>
-      </div>
-    </div>
+        }
+      />
+    </LockedRow>
   );
 
-  const shadowLight = getShadowOklch(palette, "light");
-  const shadowDark = getShadowOklch(palette, "dark");
-  const origShadowLight = getShadowOklch(originalPalette, "light");
-  const origShadowDark = getShadowOklch(originalPalette, "dark");
+  /** Block of the editor: title (h5) and a short explanation. */
+  const section = (
+    title: string,
+    description: string,
+    children: React.ReactNode,
+  ) => (
+    <section className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1">
+        <h5>{title}</h5>
+        <p className="text-base text-secondary-foreground">{description}</p>
+      </div>
+      <div className="flex flex-col gap-4">{children}</div>
+    </section>
+  );
 
-  return (
-    <div className="flex flex-col divide-y divide-border pb-8">
-      {/* 1. Base */}
-      <section className="flex flex-col gap-1 pb-6">
-        <div className="flex items-center justify-between px-2 pb-1">
-          <div>
-            <h2 className="text-sm font-semibold text-foreground">Base</h2>
-            <p className="text-xs text-secondary-foreground">
-              Só da paleta {palette.label}
-            </p>
-          </div>
-          <div className="flex items-center gap-4 pr-1 text-secondary-foreground">
-            <SunIcon className="size-3.5" />
-            <MoonIcon className="size-3.5" />
-          </div>
-        </div>
+  const accordion = (children: React.ReactNode) => (
+    <PrismAccordion allowsMultipleExpanded variant="card">
+      {children}
+    </PrismAccordion>
+  );
 
-        {renderDualColorRow({
-          id: "bg",
-          label: "Fundo",
-          hint: "Fundo da página",
-          targetId: "bg",
-          lightColor: palette.light.bg,
-          darkColor: palette.dark.bg,
-          origLight: originalPalette.light.bg,
-          origDark: originalPalette.dark.bg,
-          onLightChange: (c) => onChangePaletteColor("light", "bg", c),
-          onDarkChange: (c) => onChangePaletteColor("dark", "bg", c),
-        })}
+  const mix = (
+    a: OklchColor,
+    pct: number,
+    b: OklchColor,
+    space: "oklab" | "srgb" = "oklab",
+  ) =>
+    `color-mix(in ${space}, ${formatOklchString(a)} ${pct}%, ${formatOklchString(b)})`;
 
-        <div className="ml-3 flex flex-col gap-1 border-l border-border pl-2">
-          {renderDeltaRow({
-            id: "card",
-            label: "Cartão",
-            deltaKey: "cardLDelta",
-            targetId: "card",
+  const delta3 = (value: number) =>
+    `${value >= 0 ? "+" : "−"}${Math.abs(value).toFixed(3)}`;
+  const percent = (value: number) => `${value}%`;
+
+  type PhaseRow = {
+    key: PhaseFormulaKey;
+    name: string;
+    min: number;
+    max: number;
+    step: number;
+    /** pair: one value per mode; single: one value for both; dark: dark only. */
+    scope: "pair" | "single" | "dark";
+    format: (value: number) => string;
+  };
+
+  /**
+   * Derivation item of a phase. Rows are grouped by mode (Claro, Escuro) so each
+   * group lists everything that changes in that mode; rows shared by both modes
+   * go in their own group.
+   */
+  const phaseFormulaItem = (opts: {
+    id: string;
+    label: string;
+    hint: string;
+    rows: PhaseRow[];
+  }) => {
+    const spec = (row: PhaseRow, mode: "light" | "dark"): ValueRowSpec => ({
+      name: row.name,
+      value: getPhaseFormula(shared, row.key, mode),
+      original: getPhaseFormula(originalShared, row.key, mode),
+      min: row.min,
+      max: row.max,
+      step: row.step,
+      format: row.format,
+      onChange: (v) => onChangePhaseFormula(row.key, mode, v),
+    });
+    const sampleKind = PHASE_SAMPLE_KIND[opts.id];
+    const sampleStyles = sampleKind
+      ? phaseSampleStyles(sampleKind, shared, palette, phases[samplePhase])
+      : null;
+    const sampleSwatches = sampleStyles ? (
+      <SwatchPair
+        dark={sampleStyles.dark}
+        label="Aa"
+        light={sampleStyles.light}
+      />
+    ) : null;
+    const pairRows = opts.rows.filter((r) => r.scope === "pair");
+    const darkRows = opts.rows.filter((r) => r.scope === "dark");
+    const singleRows = opts.rows.filter((r) => r.scope === "single");
+    return item({
+      id: opts.id,
+      label: opts.label,
+      hint: opts.hint,
+      targetId: opts.id,
+      swatches: sampleSwatches,
+      children: (
+        <>
+          {sampleKind && (
+            <PhaseSampleTiles
+              kind={sampleKind}
+              palette={palette}
+              phase={phases[samplePhase]}
+              phaseTitle={PHASES[samplePhase].title}
+              shared={shared}
+            />
+          )}
+          {MODES.map(({ mode, title }) => {
+            const rows = [
+              ...pairRows.map((r) => spec(r, mode)),
+              ...(mode === "dark" ? darkRows.map((r) => spec(r, "dark")) : []),
+            ];
+            return rows.length > 0 ? (
+              <ValueSetGroup key={mode} mode={mode} rows={rows} title={title} />
+            ) : null;
           })}
-          {renderDeltaRow({
-            id: "popover",
-            label: "Menus e diálogos",
-            deltaKey: "popoverLDelta",
-            targetId: "popover",
-          })}
-          {renderDeltaRow({
-            id: "input",
-            label: "Campos",
-            deltaKey: "inputLDelta",
-            targetId: "input",
-          })}
-          {renderDeltaRow({
-            id: "secondary",
-            label: "Cinza",
-            deltaKey: "secondaryLDelta",
-            targetId: "secondary",
-          })}
-          {renderDeltaRow({
-            id: "secondaryHover",
-            label: "Cinza · mouse",
-            deltaKey: "secondaryHoverLDelta",
-            targetId: "secondaryHover",
-          })}
-          {renderDeltaRow({
-            id: "border",
-            label: "Bordas",
-            deltaKey: "borderLDelta",
-            targetId: "border",
-          })}
-          {renderDeltaRow({
-            id: "action",
-            label: "Cartão de ação",
-            deltaKey: "actionLDelta",
-            targetId: "action",
-          })}
-          {renderDeltaRow({
-            id: "actionHover",
-            label: "Cartão de ação · mouse",
-            deltaKey: "actionHoverLDelta",
-            targetId: "actionHover",
-          })}
-        </div>
+          {singleRows.length > 0 && (
+            <ValueSetGroup
+              rows={singleRows.map((r) => spec(r, "light"))}
+              title="Claro e escuro"
+            />
+          )}
+        </>
+      ),
+    });
+  };
 
-        <div className="ml-3 flex flex-col gap-1 border-l border-border pl-2">
-          {renderDeltaRow({
-            id: "fg",
-            label: "Texto",
-            hint: `Contraste ${fgContrastLight.toFixed(1)} · ${fgContrastDark.toFixed(1)}`,
-            deltaKey: "fgLDelta",
-            targetId: "fg",
-          })}
-        </div>
+  /** Late card background: the Erro fill at its opacity over the page background. */
+  const lateBgSwatch = (mode: "light" | "dark"): string => {
+    const err = formatOklchString(shared.states.error.color[mode]);
+    const bg = formatOklchString(palette[mode].bg);
+    const fill = `color-mix(in oklab, ${err} ${shared.states.backgroundMix[mode]}%, ${bg})`;
+    return `color-mix(in srgb, ${fill} ${getFormulaValue(shared, "lateBgAlpha", mode)}%, ${bg})`;
+  };
 
-        <div className="ml-3 flex flex-col gap-1 border-l border-border pl-2">
-          {renderLockedRuleRow({
-            id: "secondary",
-            label: "Fundo neutro",
-            hint: "Texto em transparência (hover, botão secundário)",
-            targetId: "secondary",
-            lightBadge: "5%",
-            darkBadge: "10%",
-            lightColor: `color-mix(in srgb, ${formatOklchString(fgLight)} 5%, ${formatOklchString(palette.light.bg)})`,
-            darkColor: `color-mix(in oklch, ${formatOklchString(fgDark)} 10%, ${formatOklchString(palette.dark.bg)})`,
-          })}
-          {renderLockedRuleRow({
-            id: "secondaryFg",
-            label: "Texto secundário",
-            hint: "Texto a 65%",
-            targetId: "secondaryFg",
-            lightBadge: "65%",
-            darkBadge: "65%",
-            lightColor: `color-mix(in srgb, ${formatOklchString(fgLight)} 65%, ${formatOklchString(palette.light.bg)})`,
-            darkColor: `color-mix(in srgb, ${formatOklchString(fgDark)} 65%, ${formatOklchString(palette.dark.bg)})`,
-          })}
-        </div>
+  /** Spec of one numeric row inside a mode group. */
+  type SetSpec = {
+    name: string;
+    min: number;
+    max: number;
+    step: number;
+    format: (value: number) => string;
+    /** pair: one value per mode; both: the same value for both modes. */
+    scope: "pair" | "both";
+    get: (mode: "light" | "dark") => number;
+    original: (mode: "light" | "dark") => number;
+    set: (mode: "light" | "dark", value: number) => void;
+  };
 
-        {renderDualColorRow({
-          id: "primary",
-          label: "Principal",
-          hint: "Botão principal, seleção",
-          targetId: "primary",
-          lightColor: palette.light.primary,
-          darkColor: palette.dark.primary,
-          origLight: originalPalette.light.primary,
-          origDark: originalPalette.dark.primary,
-          onLightChange: (c) => onChangePaletteColor("light", "primary", c),
-          onDarkChange: (c) => onChangePaletteColor("dark", "primary", c),
-        })}
-
-        <div className="ml-3 flex flex-col gap-1 border-l border-border pl-2">
-          {renderLockedRuleRow({
-            id: "primaryHover",
-            label: "Principal · mouse",
-            hint: "Principal com 20% do fundo",
-            targetId: "primaryHover",
-            lightBadge: "20%",
-            darkBadge: "20%",
-            lightColor: `color-mix(in oklab, ${formatOklchString(palette.light.primary)}, ${formatOklchString(palette.light.bg)} 20%)`,
-            darkColor: `color-mix(in oklab, ${formatOklchString(palette.dark.primary)}, ${formatOklchString(palette.dark.bg)} 20%)`,
-          })}
-        </div>
-
-        {renderDualColorRow({
-          id: "primaryFg",
-          label: "Texto sobre a principal",
-          hint: `Contraste ${primaryContrastLight.toFixed(1)} · ${primaryContrastDark.toFixed(1)}`,
-          targetId: "primaryFg",
-          lightColor: pFgLight,
-          darkColor: pFgDark,
-          origLight: getEffectivePrimaryFg(originalPalette, "light"),
-          origDark: getEffectivePrimaryFg(originalPalette, "dark"),
-          onLightChange: (c) => onChangePaletteColor("light", "primaryFg", c),
-          onDarkChange: (c) => onChangePaletteColor("dark", "primaryFg", c),
-          swatchLabel: "Aa",
-          lightSwatchStyle: {
-            backgroundColor: formatOklchString(palette.light.primary),
-            color: formatOklchString(pFgLight),
-          },
-          darkSwatchStyle: {
-            backgroundColor: formatOklchString(palette.dark.primary),
-            color: formatOklchString(pFgDark),
-          },
-        })}
-
-        {renderDualColorRow({
-          id: "accent",
-          label: "Destaque",
-          hint: "Anel de foco do teclado",
-          targetId: "ring",
-          lightColor: palette.light.accent,
-          darkColor: palette.dark.accent,
-          origLight: originalPalette.light.accent,
-          origDark: originalPalette.dark.accent,
-          onLightChange: (c) => onChangePaletteColor("light", "accent", c),
-          onDarkChange: (c) => onChangePaletteColor("dark", "accent", c),
-        })}
-
-        <div className="ml-3 flex flex-col gap-1 border-l border-border pl-2">
-          {renderLockedRuleRow({
-            id: "ringHalo",
-            label: "Halo de foco",
-            hint: "Anel a 30%",
-            targetId: "ringHalo",
-            lightBadge: "30%",
-            darkBadge: "30%",
-            lightColor: `color-mix(in oklab, ${formatOklchString(palette.light.accent)} 30%, ${formatOklchString(palette.light.bg)})`,
-            darkColor: `color-mix(in oklab, ${formatOklchString(palette.dark.accent)} 30%, ${formatOklchString(palette.dark.bg)})`,
-          })}
-        </div>
-      </section>
-
-      {/* 2. Sombra e relevo */}
-      <section className="flex flex-col gap-2 py-6">
-        <div className="px-2">
-          <h2 className="text-sm font-semibold text-foreground">
-            Sombra e relevo
-          </h2>
-          <p className="text-xs text-secondary-foreground">
-            Só da paleta {palette.label}
-          </p>
-        </div>
-
-        {renderDualColorRow({
-          id: "shadow",
-          label: "Cor da sombra",
-          hint: "Menus, diálogos e cartões",
-          targetId: "shadow",
-          lightColor: shadowLight,
-          darkColor: shadowDark,
-          origLight: origShadowLight,
-          origDark: origShadowDark,
-          onLightChange: (c) => onChangeShadowColor("light", c),
-          onDarkChange: (c) => onChangeShadowColor("dark", c),
-        })}
-
-        <div className="ml-3 flex flex-col gap-2 border-l border-border pl-3">
-          <div
-            className="flex flex-col gap-2 py-1"
-            onMouseEnter={() => onHoverTarget("shadowOpacity")}
-            onMouseLeave={() => onHoverTarget(null)}
-          >
-            <div className="flex items-center justify-between text-sm text-foreground">
-              <span>Força da sombra</span>
-              <span className="font-mono text-xs text-secondary-foreground tabular-nums">
-                {palette.light.shadowOpacity}% · {palette.dark.shadowOpacity}%
-              </span>
-            </div>
-            {(["light", "dark"] as const).map((m) => (
-              <div
-                key={m}
-                className="grid grid-cols-[54px_1fr_36px] items-center gap-2"
-              >
-                <span className="text-xs text-secondary-foreground">
-                  {m === "light" ? "Claro" : "Escuro"}
-                </span>
-                <PrismSlider
-                  aria-label={`Força da sombra ${m === "light" ? "Claro" : "Escuro"}`}
-                  maxValue={100}
-                  minValue={1}
-                  onChange={(v) =>
-                    onChangeShadowOpacity(m, typeof v === "number" ? v : v[0])
-                  }
-                  step={1}
-                  value={palette[m].shadowOpacity}
-                >
-                  <PrismSliderTrack>
-                    <PrismSliderFill />
-                    <PrismSliderThumb />
-                  </PrismSliderTrack>
-                </PrismSlider>
-                <span className="text-right font-mono text-xs text-secondary-foreground tabular-nums">
-                  {palette[m].shadowOpacity}%
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div
-          className="px-2 pt-2"
-          onMouseEnter={() => onHoverTarget("relief")}
-          onMouseLeave={() => onHoverTarget(null)}
-        >
-          <UPreferenceSwitch
-            checked={palette.relief !== false}
-            description="Sombra e brilho no topo"
-            id="theme-editor-relief"
-            label="Relevo dos cartões"
-            onCheckedChange={onChangeRelief}
+  /**
+   * Every numeric control of an item, grouped by mode: one "Claro" group and
+   * one "Escuro" group listing all the rows, plus a group for values shared by
+   * both modes. Replaces one-row groups that repeated Claro/Escuro.
+   */
+  const numberSets = (specs: SetSpec[]) => {
+    const row = (spec: SetSpec, mode: "light" | "dark"): ValueRowSpec => ({
+      name: spec.name,
+      value: spec.get(mode),
+      original: spec.original(mode),
+      min: spec.min,
+      max: spec.max,
+      step: spec.step,
+      format: spec.format,
+      onChange: (v) => spec.set(mode, v),
+    });
+    const pairs = specs.filter((spec) => spec.scope === "pair");
+    const both = specs.filter((spec) => spec.scope === "both");
+    return (
+      <>
+        {pairs.length > 0 &&
+          MODES.map(({ mode, title }) => (
+            <ValueSetGroup
+              key={mode}
+              mode={mode}
+              rows={pairs.map((spec) => row(spec, mode))}
+              title={title}
+            />
+          ))}
+        {both.length > 0 && (
+          <ValueSetGroup
+            rows={both.map((spec) => row(spec, "light"))}
+            title="Claro e escuro"
           />
-        </div>
-      </section>
+        )}
+      </>
+    );
+  };
 
-      {/* 3. Fases */}
-      <section className="flex flex-col gap-1 py-6">
-        <div className="px-2 pb-1">
-          <h2 className="text-sm font-semibold text-foreground">Fases</h2>
-          <p className="text-xs text-secondary-foreground">
-            Valem para todas as paletas · Suave: 7% claro / 14% escuro. Viva:
-            cor cheia.
-          </p>
-        </div>
+  const formulaSpec = (
+    key: FormulaKey,
+    name: string,
+    min: number,
+    max: number,
+    step: number,
+    format: (value: number) => string,
+  ): SetSpec => ({
+    name,
+    min,
+    max,
+    step,
+    format,
+    scope: "pair",
+    get: (mode) => getFormulaValue(shared, key, mode),
+    original: (mode) => getFormulaValue(originalShared, key, mode),
+    set: (mode, v) => onChangeFormula(key, mode, v),
+  });
 
-        {PHASE_ORDER.map((slug) => {
-          const id = `ph-${slug}`;
-          const isOpen = expandedId === id;
-          const color = phases[slug];
-          const orig = originalPhases[slug];
-          const hex = oklchToHex(color.h, color.c, color.l);
+  const sharedSpec = (
+    key: SharedNumberKey,
+    name: string,
+    min: number,
+    max: number,
+    step: number,
+    format: (value: number) => string,
+    scope: "pair" | "both" = "both",
+  ): SetSpec => ({
+    name,
+    min,
+    max,
+    step,
+    format,
+    scope,
+    get: (mode) => getSharedNumber(shared, key, mode),
+    original: (mode) => getSharedNumber(originalShared, key, mode),
+    set: (mode, v) => onChangeSharedNumber(key, mode, v),
+  });
 
-          return (
-            <div key={slug} className="mt-2">
-              <button
-                className={cn(
-                  "flex w-full items-center justify-between gap-2 rounded-xl px-2 py-1.5 text-left transition-colors squircle hover:bg-secondary",
-                  isOpen && "bg-secondary hover:bg-secondary-hover",
-                )}
-                onClick={() => toggleExpand(id)}
-                onMouseEnter={() => onHoverTarget(id)}
-                onMouseLeave={() => onHoverTarget(null)}
-                type="button"
-              >
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5 text-sm font-medium text-foreground">
-                    <span>{PHASES[slug].title}</span>
-                    <ChevronDownIcon
-                      className={cn(
-                        "size-3.5 opacity-60 transition-transform",
-                        isOpen && "rotate-180",
-                      )}
-                    />
-                  </div>
-                  <div className="font-mono text-xs text-secondary-foreground">
-                    {hex}
-                  </div>
-                </div>
+  const strongColor = (mode: "light" | "dark"): OklchColor => ({
+    l: shared.states.successStrong.l,
+    c: shared.states.successStrong.c,
+    h: shared.states.success.color[mode].h,
+  });
 
-                <span
-                  className="size-7 shrink-0 rounded-xl border border-foreground/15 squircle"
-                  style={{ backgroundColor: hex }}
+  /** Marker text of one mode: Atenção's L plus the delta, with the marker chroma. */
+  const markerSwatch = (mode: "light" | "dark"): string => {
+    const warning = shared.states.warning.color[mode];
+    return formatOklchString({
+      l: Math.max(
+        0,
+        Math.min(1, warning.l + getSharedNumber(shared, "markerLDelta", mode)),
+      ),
+      c: getSharedNumber(shared, "markerC", mode),
+      h: warning.h,
+    });
+  };
+
+  /** A state (aviso): fill and text, in light and dark, each as L-C-H. */
+  const stateItem = (key: StateKey, label: string, hint: string) => {
+    const parts: Array<{ part: StatePart; name: string }> = [
+      { part: "color", name: "Cor" },
+      { part: "text", name: "Texto" },
+    ];
+    return item({
+      id: key,
+      label,
+      hint,
+      targetId: key,
+      swatches: (
+        <SwatchPair
+          dark={solid(getStateColor(shared, key, "color", "dark"))}
+          light={solid(getStateColor(shared, key, "color", "light"))}
+        />
+      ),
+      children: parts.flatMap(({ part, name }) =>
+        MODES.map(({ mode, title }) => (
+          <ColorGroup
+            color={getStateColor(shared, key, part, mode)}
+            key={`${key}-${part}-${mode}`}
+            mode={mode}
+            onChange={(c) => onChangeState(key, part, mode, c)}
+            original={getStateColor(originalShared, key, part, mode)}
+            title={`${name} · ${title}`}
+          />
+        )),
+      ),
+    });
+  };
+
+  const tema = (
+    <>
+      {section(
+        "1. Base",
+        `Só da paleta ${palette.label} · claro e escuro`,
+        accordion(
+          <>
+            {colorItem({
+              id: "bg",
+              label: "Fundo",
+              hint: "Fundo da página",
+              targetId: "bg",
+              light: palette.light.bg,
+              dark: palette.dark.bg,
+              origLight: originalPalette.light.bg,
+              origDark: originalPalette.dark.bg,
+              onLight: (c) => onChangePaletteColor("light", "bg", c),
+              onDark: (c) => onChangePaletteColor("dark", "bg", c),
+            })}
+            {deltaItem({
+              id: "fg",
+              label: "Texto",
+              hint: `Contraste ${fgContrast[0].toFixed(1)} · ${fgContrast[1].toFixed(1)}`,
+              deltaKey: "fgLDelta",
+              targetId: "fg",
+            })}
+            {colorItem({
+              id: "primary",
+              label: "Principal",
+              hint: "Botão principal, seleção",
+              targetId: "primary",
+              light: palette.light.primary,
+              dark: palette.dark.primary,
+              origLight: originalPalette.light.primary,
+              origDark: originalPalette.dark.primary,
+              onLight: (c) => onChangePaletteColor("light", "primary", c),
+              onDark: (c) => onChangePaletteColor("dark", "primary", c),
+            })}
+            {item({
+              id: "primaryFg",
+              label: "Texto sobre a principal",
+              hint: `Contraste ${primaryContrast[0].toFixed(1)} · ${primaryContrast[1].toFixed(1)}`,
+              targetId: "primaryFg",
+              swatches: (
+                <SwatchPair
+                  dark={{
+                    ...solid(palette.dark.primary),
+                    color: formatOklchString(pFg.dark),
+                  }}
+                  label="Aa"
+                  light={{
+                    ...solid(palette.light.primary),
+                    color: formatOklchString(pFg.light),
+                  }}
                 />
-              </button>
+              ),
+              children: numberSets(
+                (["l", "c", "h"] as const).map((axis) => ({
+                  name:
+                    axis === "l" ? "Luz" : axis === "c" ? "Saturação" : "Matiz",
+                  min: axis === "l" ? -1 : axis === "c" ? -0.5 : -180,
+                  max: axis === "l" ? 1 : axis === "c" ? 0.05 : 180,
+                  step: axis === "l" ? 0.005 : axis === "c" ? 0.002 : 1,
+                  format:
+                    axis === "h"
+                      ? (v: number) =>
+                          `${v >= 0 ? "+" : "−"}${Math.abs(v).toFixed(0)}°`
+                      : formatDelta,
+                  scope: "pair" as const,
+                  get: (mode: "light" | "dark") =>
+                    palette[mode].primaryFgDelta[axis],
+                  original: (mode: "light" | "dark") =>
+                    originalPalette[mode].primaryFgDelta[axis],
+                  set: (mode: "light" | "dark", v: number) =>
+                    onChangePrimaryFgDelta(mode, axis, v),
+                })),
+              ),
+            })}
+            {colorItem({
+              id: "accent",
+              label: "Destaque",
+              hint: "Anel de foco do teclado",
+              targetId: "ring",
+              light: palette.light.accent,
+              dark: palette.dark.accent,
+              origLight: originalPalette.light.accent,
+              origDark: originalPalette.dark.accent,
+              onLight: (c) => onChangePaletteColor("light", "accent", c),
+              onDark: (c) => onChangePaletteColor("dark", "accent", c),
+            })}
+          </>,
+        ),
+      )}
 
-              {isOpen && (
-                <div className="mt-2 ml-2 border-l border-border py-2 pl-3">
-                  <OklchChannelSliders
-                    color={color}
-                    isDirty={
-                      formatOklchString(color) !== formatOklchString(orig)
-                    }
-                    onChange={(c) => onChangePhase(slug, c)}
-                    onReset={() => onChangePhase(slug, { ...orig })}
-                  />
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </section>
+      {section(
+        "2. Camadas",
+        "Luz somada ao fundo da página · cada camada tem um papel",
+        accordion(
+          <>
+            {deltaItem({
+              id: "popover",
+              label: "Flutuante",
+              hint: "Menus, diálogos e caixas de opção",
+              deltaKey: "popoverLDelta",
+              targetId: "popover",
+            })}
+            {deltaItem({
+              id: "card",
+              label: "Card",
+              hint: "Objeto com conteúdo e realce de estado",
+              deltaKey: "cardLDelta",
+              targetId: "card",
+            })}
+            {deltaItem({
+              id: "input",
+              label: "Campo",
+              hint: "Campo de texto, seleção e rádio",
+              deltaKey: "inputLDelta",
+              targetId: "input",
+            })}
+            {deltaItem({
+              id: "secondary",
+              label: "Cinza",
+              hint: "Botão cinza e hover de item",
+              deltaKey: "secondaryLDelta",
+              targetId: "secondary",
+            })}
+            {deltaItem({
+              id: "secondaryHover",
+              label: "Cinza · hover",
+              hint: "Hover de quem já é cinza ou card",
+              deltaKey: "secondaryHoverLDelta",
+              targetId: "secondaryHover",
+            })}
+            {deltaItem({
+              id: "border",
+              label: "Borda",
+              hint: "Linhas e divisores",
+              deltaKey: "borderLDelta",
+              targetId: "border",
+            })}
+          </>,
+        ),
+      )}
 
-      {/* 4. Avisos */}
-      <section className="flex flex-col gap-1 py-6">
-        <div className="px-2 pb-1">
-          <h2 className="text-sm font-semibold text-foreground">Avisos</h2>
-          <p className="text-xs text-secondary-foreground">
-            Valem para todas as paletas · Hoje são fórmulas fixas no código.
-          </p>
-        </div>
-
-        {[
-          {
-            id: "error",
-            label: "Erro",
-            lightBg: "oklch(0.95 0.04 16)",
-            lightFg: "oklch(0.6 0.22 16)",
-            darkBg: "oklch(0.32 0.05 16)",
-            darkFg: "oklch(0.86 0.2 16)",
-          },
-          {
-            id: "warning",
-            label: "Atenção",
-            lightBg: "oklch(0.96 0.03 70)",
-            lightFg: "oklch(0.5 0.2 70)",
-            darkBg: "oklch(0.32 0.04 90)",
-            darkFg: "oklch(1 0.2 90)",
-          },
-          {
-            id: "success",
-            label: "Sucesso",
-            lightBg: "oklch(0.95 0.03 163)",
-            lightFg: "oklch(0.42 0.14 163)",
-            darkBg: "oklch(0.3 0.05 163)",
-            darkFg: "oklch(0.65 0.16 163)",
-          },
-          {
-            id: "info",
-            label: "Informação",
-            lightBg: "oklch(0.95 0.03 250)",
-            lightFg: "oklch(0.5 0.2 250)",
-            darkBg: "oklch(0.3 0.05 250)",
-            darkFg: "oklch(0.84 0.2 250)",
-          },
-        ].map((item) => (
-          <div
-            key={item.id}
-            className="mt-2 flex items-center justify-between gap-2 rounded-xl px-2 py-1.5 squircle"
-            onMouseEnter={() => onHoverTarget(item.id)}
-            onMouseLeave={() => onHoverTarget(null)}
-          >
-            <div>
-              <div className="flex items-center gap-1.5 text-sm font-medium text-foreground">
-                <span>{item.label}</span>
-                <LockIcon className="size-3 opacity-60" />
-              </div>
-              <div className="text-xs text-secondary-foreground">
-                Fundo e texto do aviso
-              </div>
-            </div>
-            <DualSwatch
-              darkStyle={{ backgroundColor: item.darkBg, color: item.darkFg }}
-              label="Aa"
-              lightStyle={{
-                backgroundColor: item.lightBg,
-                color: item.lightFg,
-              }}
+      {section(
+        "3. Ação",
+        "Cor própria, sem cinza dentro, e o relevo das ações",
+        <>
+          {accordion(
+            <>
+              {deltaItem({
+                id: "action",
+                label: "Ação",
+                hint: "Cor própria, sem cinza dentro",
+                deltaKey: "actionLDelta",
+                targetId: "action",
+              })}
+              {deltaItem({
+                id: "actionHover",
+                label: "Ação · hover",
+                hint: "Hover da ação",
+                deltaKey: "actionHoverLDelta",
+                targetId: "actionHover",
+              })}
+            </>,
+          )}
+          <div {...hover("relief")}>
+            <UPreferenceSwitch
+              checked={palette.relief !== false}
+              description="Sombra e brilho no topo das ações"
+              id="theme-editor-relief"
+              label="Relevo"
+              onCheckedChange={onChangeRelief}
             />
           </div>
-        ))}
-      </section>
+        </>,
+      )}
+    </>
+  );
 
-      {/* 5. Prioridades */}
-      <section className="flex flex-col gap-1 pt-6">
-        <div className="px-2 pb-1">
-          <h2 className="text-sm font-semibold text-foreground">Prioridades</h2>
-          <p className="text-xs text-secondary-foreground">
-            Valem para todas as paletas · Quadro de Hoje
-          </p>
-        </div>
+  const estados = (
+    <>
+      {section(
+        "4. Estados",
+        "Valem para todas as paletas · cor do aviso e do texto, claro e escuro",
+        accordion(
+          <>
+            {stateItem("error", "Erro", "Aviso de erro e selo de atraso")}
+            {stateItem(
+              "warning",
+              "Atenção",
+              "Aviso de atenção · prioridade média",
+            )}
+            {stateItem(
+              "success",
+              "Sucesso",
+              "Aviso de sucesso · prioridade baixa",
+            )}
+            {stateItem("info", "Informação", "Aviso de informação")}
+            {item({
+              id: "successStrong",
+              label: "Sucesso forte",
+              hint: "Botão de sucesso, com texto branco",
+              targetId: "successStrong",
+              swatches: (
+                <SwatchPair
+                  dark={solid(strongColor("dark"))}
+                  light={solid(strongColor("light"))}
+                />
+              ),
+              children: numberSets([
+                sharedSpec("strongL", "Luz", 0, 1, 0.005, (v) => v.toFixed(3)),
+                sharedSpec("strongC", "Saturação", 0, 0.4, 0.002, (v) =>
+                  v.toFixed(3),
+                ),
+                sharedSpec("strongHoverL", "Luz · hover", 0, 1, 0.005, (v) =>
+                  v.toFixed(3),
+                ),
+                sharedSpec(
+                  "strongHoverC",
+                  "Saturação · hover",
+                  0,
+                  0.4,
+                  0.002,
+                  (v) => v.toFixed(3),
+                ),
+              ]),
+            })}
+            {item({
+              id: "stateMix",
+              label: "Fundo dos avisos",
+              hint: "Cor do aviso misturada ao fundo da página",
+              targetId: "stateMix",
+              swatches: null,
+              children: MODES.map(({ mode, title }) => (
+                <ValueGroup
+                  format={percent}
+                  key={mode}
+                  max={100}
+                  min={0}
+                  mode={mode}
+                  name="Mistura"
+                  onChange={(v) =>
+                    onChangeSharedNumber("backgroundMix", mode, v)
+                  }
+                  original={getSharedNumber(
+                    originalShared,
+                    "backgroundMix",
+                    mode,
+                  )}
+                  step={1}
+                  title={title}
+                  value={getSharedNumber(shared, "backgroundMix", mode)}
+                />
+              )),
+            })}
+            {item({
+              id: "lateBg",
+              label: "Ação atrasada · fundo",
+              hint: "Fundo do Erro com opacidade; no hover, cheio",
+              targetId: "lateBg",
+              swatches: (
+                <SwatchPair
+                  dark={{
+                    backgroundColor: lateBgSwatch("dark"),
+                  }}
+                  light={{
+                    backgroundColor: lateBgSwatch("light"),
+                  }}
+                />
+              ),
+              children: (
+                <>
+                  <p className="text-base text-secondary-foreground">
+                    A ação atrasada usa o estado Erro: o anel e o texto são a
+                    cor e o texto do Erro, o fundo é o fundo do Erro (Fundo dos
+                    avisos) com a opacidade abaixo, e a sombra está em Fórmulas
+                    → Sombra da ação atrasada.
+                  </p>
+                  {numberSets([
+                    formulaSpec("lateBgAlpha", "Opacidade", 0, 100, 1, percent),
+                  ])}
+                </>
+              ),
+            })}
+          </>,
+        ),
+      )}
 
-        {(
-          [
-            { key: "low" as const, label: "Baixa" },
-            { key: "medium" as const, label: "Média" },
-            { key: "high" as const, label: "Alta" },
-          ] as const
-        ).map((item) =>
-          renderDualColorRow({
-            id: `prio-${item.key}`,
-            label: item.label,
-            hint: "Quadro de Hoje",
-            targetId: `prio-${item.key}`,
-            lightColor: priorities.light[item.key],
-            darkColor: priorities.dark[item.key],
-            origLight: originalPriorities.light[item.key],
-            origDark: originalPriorities.dark[item.key],
-            onLightChange: (c) => onChangePriority("light", item.key, c),
-            onDarkChange: (c) => onChangePriority("dark", item.key, c),
+      {section(
+        "5. Prioridades",
+        "Só leitura · Quadro de Hoje: Baixa = Sucesso, Média = Atenção, Alta = Erro",
+        <div className={BOX}>
+          {(
+            [
+              {
+                id: "prio-low",
+                label: "Baixa",
+                color: "success",
+                hint: "Sucesso",
+              },
+              {
+                id: "prio-medium",
+                label: "Média",
+                color: "warning",
+                hint: "Atenção",
+              },
+              { id: "prio-high", label: "Alta", color: "error", hint: "Erro" },
+            ] as const
+          ).map((p) =>
+            lockedRow({
+              id: p.id,
+              label: p.label,
+              hint: `Cor de ${p.hint}`,
+              light: oklchToCss(shared.states[p.color].color.light),
+              dark: oklchToCss(shared.states[p.color].color.dark),
+            }),
+          )}
+        </div>,
+      )}
+    </>
+  );
+
+  const fasesECategorias = (
+    <>
+      {section(
+        "6. Fases",
+        "Valem para todas as paletas · Suave: 7% claro, 14% escuro. Viva: cor cheia.",
+        accordion(
+          PHASE_ORDER.map((slug) => {
+            const color = phases[slug];
+            const hex = oklchToHex(color.h, color.c, color.l);
+            return item({
+              id: `ph-${slug}`,
+              label: PHASES[slug].title,
+              hint: hex,
+              targetId: `ph-${slug}`,
+              swatches: <SwatchPair light={solid(color)} />,
+              children: (
+                <ColorGroup
+                  color={color}
+                  onChange={(c) => onChangePhase(slug, c)}
+                  original={originalShared.phases[slug]}
+                  title="Cor"
+                />
+              ),
+            });
           }),
-        )}
-      </section>
-    </div>
+        ),
+      )}
+
+      {section(
+        "6. Fases · derivações",
+        "Tons suave e vivo calculados a partir da cor de cada fase",
+        <>
+          <span className="text-base text-foreground">Fase de amostra</span>
+          {/* Only the buttons are sticky. z-30 keeps them above the info buttons (z-10) of the items. */}
+          <div className="sticky top-0 z-30 -mx-6 -mt-2 px-6 py-3">
+            <PrismToggleGroup
+              aria-label="Fase de amostra"
+              disallowEmptySelection
+              fullWidth
+              onSelectionChange={(keys) => {
+                const key = Array.from(keys)[0];
+                if (key !== undefined) setSamplePhase(String(key) as PhaseSlug);
+              }}
+              selectedKeys={[samplePhase]}
+              size="sm"
+              variant="outline"
+            >
+              {PHASE_ORDER.map((slug) => (
+                <PrismToggleGroupItem
+                  aria-label={PHASES[slug].title}
+                  id={slug}
+                  key={slug}
+                  className={"bg-background"}
+                >
+                  <span
+                    className="size-4 shrink-0 rounded-lg border border-foreground/15 squircle"
+                    style={solid(phases[slug])}
+                  />
+                </PrismToggleGroupItem>
+              ))}
+            </PrismToggleGroup>
+          </div>
+          {accordion(
+            <>
+              {phaseFormulaItem({
+                id: "phaseSoft",
+                label: "Suave · cor",
+                hint: "Cor misturada ao fundo, e no hover",
+                rows: [
+                  {
+                    key: "mix",
+                    name: "Mistura com o fundo",
+                    min: 0,
+                    max: 100,
+                    step: 1,
+                    scope: "pair",
+                    format: percent,
+                  },
+                  {
+                    key: "mixHover",
+                    name: "Mistura no hover",
+                    min: 0,
+                    max: 100,
+                    step: 1,
+                    scope: "pair",
+                    format: percent,
+                  },
+                ],
+              })}
+              {phaseFormulaItem({
+                id: "phaseSoftText",
+                label: "Suave · texto",
+                hint: "Cor do texto sobre a ação suave",
+                rows: [
+                  {
+                    key: "textL",
+                    name: "Luz do texto",
+                    min: 0,
+                    max: 1,
+                    step: 0.005,
+                    scope: "pair",
+                    format: (v) => v.toFixed(3),
+                  },
+                  {
+                    key: "textC",
+                    name: "Saturação do texto",
+                    min: 0,
+                    max: 0.4,
+                    step: 0.002,
+                    scope: "pair",
+                    format: (v) => v.toFixed(3),
+                  },
+                ],
+              })}
+              {phaseFormulaItem({
+                id: "phaseSoftRing",
+                label: "Suave · anel",
+                hint: "Borda colorida em volta da ação suave",
+                rows: [
+                  {
+                    key: "ringAlpha",
+                    name: "Opacidade do anel",
+                    min: 0,
+                    max: 100,
+                    step: 1,
+                    scope: "pair",
+                    format: percent,
+                  },
+                ],
+              })}
+              {phaseFormulaItem({
+                id: "phaseSoftShadow",
+                label: "Suave · sombra",
+                hint: "Sombra e brilho difuso da ação suave",
+                rows: [
+                  {
+                    key: "shadowL",
+                    name: "Luz da sombra",
+                    min: 0,
+                    max: 1,
+                    step: 0.005,
+                    scope: "pair",
+                    format: (v) => v.toFixed(3),
+                  },
+                  {
+                    key: "shadowC",
+                    name: "Saturação da sombra",
+                    min: 0,
+                    max: 0.4,
+                    step: 0.002,
+                    scope: "pair",
+                    format: (v) => v.toFixed(3),
+                  },
+                  {
+                    key: "shadowAlpha",
+                    name: "Força da sombra",
+                    min: 0,
+                    max: 100,
+                    step: 1,
+                    scope: "pair",
+                    format: percent,
+                  },
+                  {
+                    key: "diffuseL",
+                    name: "Brilho difuso · luz",
+                    min: 0,
+                    max: 1,
+                    step: 0.005,
+                    scope: "dark",
+                    format: (v) => v.toFixed(3),
+                  },
+                  {
+                    key: "diffuseC",
+                    name: "Brilho difuso · saturação",
+                    min: 0,
+                    max: 0.4,
+                    step: 0.002,
+                    scope: "dark",
+                    format: (v) => v.toFixed(3),
+                  },
+                  {
+                    key: "diffuseAlpha",
+                    name: "Brilho difuso · força",
+                    min: 0,
+                    max: 100,
+                    step: 1,
+                    scope: "dark",
+                    format: percent,
+                  },
+                  {
+                    key: "diffuseY",
+                    name: "Brilho difuso · distância",
+                    min: 0,
+                    max: 60,
+                    step: 1,
+                    scope: "dark",
+                    format: (v) => `${v}px`,
+                  },
+                  {
+                    key: "diffuseBlur",
+                    name: "Brilho difuso · desfoque",
+                    min: 0,
+                    max: 80,
+                    step: 1,
+                    scope: "dark",
+                    format: (v) => `${v}px`,
+                  },
+                  {
+                    key: "diffuseSpread",
+                    name: "Brilho difuso · espalhamento",
+                    min: -20,
+                    max: 20,
+                    step: 1,
+                    scope: "dark",
+                    format: (v) => `${v}px`,
+                  },
+                ],
+              })}
+              {phaseFormulaItem({
+                id: "phaseVividText",
+                label: "Vivo · texto",
+                hint: "Texto e ícones sobre a cor viva, em tom escuro e em tom claro",
+                rows: [
+                  {
+                    key: "inkL",
+                    name: "Luz do texto escuro",
+                    min: 0,
+                    max: 1,
+                    step: 0.005,
+                    scope: "single",
+                    format: (v) => v.toFixed(3),
+                  },
+                  {
+                    key: "inkC",
+                    name: "Saturação do texto escuro",
+                    min: 0,
+                    max: 0.4,
+                    step: 0.002,
+                    scope: "single",
+                    format: (v) => v.toFixed(3),
+                  },
+                  {
+                    key: "inkLightL",
+                    name: "Luz do texto claro",
+                    min: 0,
+                    max: 1,
+                    step: 0.005,
+                    scope: "single",
+                    format: (v) => v.toFixed(3),
+                  },
+                  {
+                    key: "inkLightC",
+                    name: "Saturação do texto claro",
+                    min: 0,
+                    max: 0.4,
+                    step: 0.002,
+                    scope: "single",
+                    format: (v) => v.toFixed(3),
+                  },
+                ],
+              })}
+              {phaseFormulaItem({
+                id: "phaseVivid",
+                label: "Vivo · ação",
+                hint: "Hover, borda e brilho do topo da ação viva",
+                rows: [
+                  {
+                    key: "hoverDl",
+                    name: "Luz a mais no hover",
+                    min: -0.3,
+                    max: 0.3,
+                    step: 0.005,
+                    scope: "single",
+                    format: delta3,
+                  },
+                  {
+                    key: "edgeDl",
+                    name: "Luz da borda",
+                    min: -0.3,
+                    max: 0.3,
+                    step: 0.005,
+                    scope: "pair",
+                    format: delta3,
+                  },
+                  {
+                    key: "topLight",
+                    name: "Brilho do topo (mistura com branco)",
+                    min: 0,
+                    max: 100,
+                    step: 1,
+                    scope: "pair",
+                    format: percent,
+                  },
+                  {
+                    key: "hoverCLoss",
+                    name: "Saturação perdida no hover",
+                    min: 0,
+                    max: 0.1,
+                    step: 0.002,
+                    scope: "single",
+                    format: (v) => v.toFixed(3),
+                  },
+                  {
+                    key: "dateOpacity",
+                    name: "Opacidade da data",
+                    min: 0,
+                    max: 100,
+                    step: 1,
+                    scope: "single",
+                    format: percent,
+                  },
+                ],
+              })}
+              {phaseFormulaItem({
+                id: "phaseVividDim",
+                label: "Vivo · atenuada (escuro)",
+                hint: "Opção Atenuada de Cor viva no escuro, em Minha Conta",
+                rows: [
+                  {
+                    key: "dimL",
+                    name: "Luz do fundo atenuado",
+                    min: 0,
+                    max: 1,
+                    step: 0.005,
+                    scope: "dark",
+                    format: (v) => v.toFixed(3),
+                  },
+                  {
+                    key: "dimCFactor",
+                    name: "Saturação mantida",
+                    min: 0,
+                    max: 1,
+                    step: 0.01,
+                    scope: "dark",
+                    format: (v) => v.toFixed(2),
+                  },
+                ],
+              })}
+              {phaseFormulaItem({
+                id: "phaseVividShadow",
+                label: "Vivo · sombra",
+                hint: "Sombra da ação viva no hover",
+                rows: [
+                  {
+                    key: "vividShadowL",
+                    name: "Luz da sombra",
+                    min: 0,
+                    max: 1,
+                    step: 0.005,
+                    scope: "single",
+                    format: (v) => v.toFixed(3),
+                  },
+                  {
+                    key: "vividShadowC",
+                    name: "Saturação da sombra",
+                    min: 0,
+                    max: 0.4,
+                    step: 0.002,
+                    scope: "single",
+                    format: (v) => v.toFixed(3),
+                  },
+                  {
+                    key: "vividShadowAlpha",
+                    name: "Opacidade da sombra",
+                    min: 0,
+                    max: 100,
+                    step: 1,
+                    scope: "single",
+                    format: percent,
+                  },
+                ],
+              })}
+            </>,
+          )}
+        </>,
+      )}
+
+      {section(
+        "7. Categorias",
+        "Valem para todas as paletas · cor de cada categoria de ação",
+        <>
+          {accordion(
+            CATEGORY_ORDER.map((slug) => {
+              const color = shared.categories[slug];
+              const hex = oklchToHex(color.h, color.c, color.l);
+              return item({
+                id: `cat-${slug}`,
+                label: CATEGORIES[slug].title,
+                hint: hex,
+                targetId: `cat-${slug}`,
+                swatches: <SwatchPair light={solid(color)} />,
+                children: (
+                  <ColorGroup
+                    color={color}
+                    onChange={(c) => onChangeCategory(slug, c)}
+                    original={originalShared.categories[slug]}
+                    title="Cor"
+                  />
+                ),
+              });
+            }),
+          )}
+          {accordion(
+            item({
+              id: "categoryIcon",
+              label: "Ícone da categoria",
+              hint: "Fundo e contorno do ícone, a partir da cor da categoria",
+              targetId: "categoryIcon",
+              swatches: null,
+              children: (
+                <>
+                  {MODES.map(({ mode, title }) => (
+                    <ValueSetGroup
+                      key={mode}
+                      mode={mode}
+                      rows={(
+                        [
+                          [
+                            "categoryIconFill",
+                            "Opacidade do fundo",
+                            0,
+                            100,
+                            1,
+                            percent,
+                          ],
+                          [
+                            "categoryIconStroke",
+                            "Opacidade do contorno",
+                            0,
+                            100,
+                            1,
+                            percent,
+                          ],
+                          [
+                            "categoryIconChroma",
+                            "Saturação mantida",
+                            0,
+                            1,
+                            0.01,
+                            (v: number) => v.toFixed(2),
+                          ],
+                        ] as const
+                      ).map(([key, name, min, max, step, format]) => ({
+                        name,
+                        value: getFormulaValue(shared, key, mode),
+                        original: getFormulaValue(originalShared, key, mode),
+                        min,
+                        max,
+                        step,
+                        format,
+                        onChange: (v: number) => onChangeFormula(key, mode, v),
+                      }))}
+                      title={title}
+                    />
+                  ))}
+                </>
+              ),
+            }),
+          )}
+        </>,
+      )}
+    </>
+  );
+
+  /** Support text color of one mode: the page background plus the two deltas. */
+  const supportColor = (mode: "light" | "dark"): string => {
+    const bg = palette[mode].bg;
+    const f = shared.formulas.support;
+    return formatOklchString({
+      l: Math.max(0, Math.min(1, bg.l + f.lDelta[mode])),
+      c: Math.max(0, bg.c + f.cDelta[mode]),
+      h: bg.h,
+    });
+  };
+
+  /** Shadow color of one mode: page background mixed with primary, darkened. */
+  const shadowSwatch = (mode: "light" | "dark"): string => {
+    const bg = formatOklchString(palette[mode].bg);
+    const primary = formatOklchString(palette[mode].primary);
+    const mix = getFormulaValue(shared, "shadowMix", mode);
+    const l = getFormulaValue(shared, "shadowL", mode);
+    return `oklch(from color-mix(in oklab, ${bg}, ${primary} ${mix}%) ${l} c h)`;
+  };
+
+  /** Late card color of one mode, over the page background. */
+  const lateSwatch = (mode: "light" | "dark"): string => {
+    const alpha = getLateValue(shared, "alpha", mode);
+    const bg = formatOklchString(palette[mode].bg);
+    if (mode === "light") {
+      return `color-mix(in srgb, ${formatOklchString(shared.states.error.text.light)} ${alpha}%, ${bg})`;
+    }
+    const late = shared.lateShadow.dark;
+    const color = `oklch(${late.l} ${late.c} ${shared.states.error.color.dark.h})`;
+    return `color-mix(in srgb, ${color} ${alpha}%, ${bg})`;
+  };
+
+  /** Action card color of one mode (bottom layer of the highlight swatch). */
+  const actionColor = (mode: "light" | "dark"): string => {
+    const bg = palette[mode].bg;
+    return formatOklchString({
+      l: Math.max(
+        0,
+        Math.min(1, bg.l + getEffectiveDelta(palette, mode, "actionLDelta")),
+      ),
+      c: bg.c,
+      h: bg.h,
+    });
+  };
+
+  /** Formula item: one slider per mode (light, dark) for each variable. */
+  const formulaItem = (opts: {
+    id: string;
+    label: string;
+    hint: string;
+    swatches: React.ReactNode;
+    children: React.ReactNode;
+  }) =>
+    item({
+      id: opts.id,
+      label: opts.label,
+      hint: opts.hint,
+      targetId: opts.id,
+      swatches: opts.swatches,
+      children: opts.children,
+    });
+
+  const formulas = (
+    <>
+      {section(
+        "8. Texto",
+        "Cores de texto que dependem do fundo",
+        accordion(
+          <>
+            {formulaItem({
+              id: "support",
+              label: "Texto de apoio",
+              hint: "Texto secundário, derivado do fundo",
+              swatches: (
+                <SwatchPair
+                  dark={{ backgroundColor: supportColor("dark") }}
+                  light={{ backgroundColor: supportColor("light") }}
+                />
+              ),
+              children: numberSets([
+                formulaSpec("supportL", "Luz", -1, 1, 0.005, delta3),
+                formulaSpec(
+                  "supportC",
+                  "Saturação",
+                  -0.05,
+                  0.05,
+                  0.001,
+                  delta3,
+                ),
+              ]),
+            })}
+            {formulaItem({
+              id: "marker",
+              label: "Marca-texto",
+              hint: "Texto do trecho marcado",
+              swatches: (
+                <SwatchPair
+                  dark={{ backgroundColor: markerSwatch("dark") }}
+                  light={{ backgroundColor: markerSwatch("light") }}
+                />
+              ),
+              children: numberSets([
+                sharedSpec("markerLDelta", "Luz", -1, 1, 0.005, delta3, "pair"),
+                sharedSpec("markerC", "Saturação", 0, 0.4, 0.002, (v) =>
+                  v.toFixed(3),
+                ),
+              ]),
+            })}
+          </>,
+        ),
+      )}
+
+      {section(
+        "9. Interação",
+        "Calculadas a partir da principal e do destaque",
+        accordion(
+          <>
+            {formulaItem({
+              id: "primaryHover",
+              label: "Principal · hover",
+              hint: "Principal misturada com o fundo",
+              swatches: (
+                <SwatchPair
+                  dark={{
+                    backgroundColor: mix(
+                      palette.dark.bg,
+                      getFormulaValue(shared, "primaryHoverMix", "dark"),
+                      palette.dark.primary,
+                    ),
+                  }}
+                  light={{
+                    backgroundColor: mix(
+                      palette.light.bg,
+                      getFormulaValue(shared, "primaryHoverMix", "light"),
+                      palette.light.primary,
+                    ),
+                  }}
+                />
+              ),
+              children: MODES.map(({ mode, title }) => (
+                <ValueGroup
+                  format={percent}
+                  key={mode}
+                  max={100}
+                  min={0}
+                  mode={mode}
+                  name="Mistura"
+                  onChange={(v) => onChangeFormula("primaryHoverMix", mode, v)}
+                  original={getFormulaValue(
+                    originalShared,
+                    "primaryHoverMix",
+                    mode,
+                  )}
+                  step={1}
+                  title={title}
+                  value={getFormulaValue(shared, "primaryHoverMix", mode)}
+                />
+              )),
+            })}
+            {formulaItem({
+              id: "ringHalo",
+              label: "Halo de foco",
+              hint: "Destaque com transparência",
+              swatches: (
+                <SwatchPair
+                  dark={{
+                    backgroundColor: mix(
+                      palette.dark.accent,
+                      getFormulaValue(shared, "ringHaloAlpha", "dark"),
+                      palette.dark.bg,
+                    ),
+                  }}
+                  light={{
+                    backgroundColor: mix(
+                      palette.light.accent,
+                      getFormulaValue(shared, "ringHaloAlpha", "light"),
+                      palette.light.bg,
+                    ),
+                  }}
+                />
+              ),
+              children: MODES.map(({ mode, title }) => (
+                <ValueGroup
+                  format={percent}
+                  key={mode}
+                  max={100}
+                  min={0}
+                  mode={mode}
+                  name="Transparência"
+                  onChange={(v) => onChangeFormula("ringHaloAlpha", mode, v)}
+                  original={getFormulaValue(
+                    originalShared,
+                    "ringHaloAlpha",
+                    mode,
+                  )}
+                  step={1}
+                  title={title}
+                  value={getFormulaValue(shared, "ringHaloAlpha", mode)}
+                />
+              )),
+            })}
+          </>,
+        ),
+      )}
+
+      {section(
+        "10. Sombras e brilho",
+        `Só da paleta ${palette.label}`,
+        accordion(
+          <>
+            {formulaItem({
+              id: "shadow",
+              label: "Sombra",
+              hint: "Menus, diálogos, avisos e ações",
+              swatches: (
+                <SwatchPair
+                  dark={{ backgroundColor: shadowSwatch("dark") }}
+                  light={{ backgroundColor: shadowSwatch("light") }}
+                />
+              ),
+              children: numberSets([
+                formulaSpec(
+                  "shadowMix",
+                  "Mistura com a principal",
+                  0,
+                  100,
+                  1,
+                  percent,
+                ),
+                formulaSpec("shadowL", "Luz", 0, 1, 0.005, (v) => v.toFixed(3)),
+                formulaSpec("shadowAlpha", "Força", 1, 100, 1, percent),
+              ]),
+            })}
+            {formulaItem({
+              id: "actionCardShadow",
+              label: "Ação · anel e sombra",
+              hint: "Força do anel, da sombra em repouso e no hover",
+              swatches: null,
+              children: numberSets([
+                formulaSpec("actionRingAlpha", "Anel", 0, 100, 1, percent),
+                formulaSpec(
+                  "actionShadowAlpha",
+                  "Sombra em repouso",
+                  0,
+                  100,
+                  1,
+                  percent,
+                ),
+                formulaSpec(
+                  "actionHoverShadowAlpha",
+                  "Sombra no hover",
+                  0,
+                  100,
+                  1,
+                  percent,
+                ),
+              ]),
+            })}
+            {formulaItem({
+              id: "lateShadow",
+              label: "Sombra da ação atrasada",
+              hint: "Vermelho do Erro; no escuro, um tom mais profundo",
+              swatches: (
+                <SwatchPair
+                  dark={{ backgroundColor: lateSwatch("dark") }}
+                  light={{ backgroundColor: lateSwatch("light") }}
+                />
+              ),
+              children: (
+                <>
+                  <ValueSetGroup
+                    mode="light"
+                    rows={(["alpha", "alphaHover"] as const).map((key) => ({
+                      name: key === "alpha" ? "Força" : "Força · hover",
+                      value: getLateValue(shared, key, "light"),
+                      original: getLateValue(originalShared, key, "light"),
+                      min: 0,
+                      max: 100,
+                      step: 1,
+                      format: percent,
+                      onChange: (v: number) => onChangeLate(key, "light", v),
+                    }))}
+                    title="Claro"
+                  />
+                  <ValueSetGroup
+                    mode="dark"
+                    rows={(
+                      [
+                        ["l", "Luz", 1, 0.005, (v: number) => v.toFixed(3)],
+                        [
+                          "c",
+                          "Saturação",
+                          0.4,
+                          0.002,
+                          (v: number) => v.toFixed(3),
+                        ],
+                        ["alpha", "Força", 100, 1, percent],
+                        ["alphaHover", "Força · hover", 100, 1, percent],
+                      ] as const
+                    ).map(([key, name, max, step, format]) => ({
+                      name,
+                      value: getLateValue(shared, key, "dark"),
+                      original: getLateValue(originalShared, key, "dark"),
+                      min: 0,
+                      max,
+                      step,
+                      format,
+                      onChange: (v: number) => onChangeLate(key, "dark", v),
+                    }))}
+                    title="Escuro"
+                  />
+                </>
+              ),
+            })}
+            {formulaItem({
+              id: "topHighlight",
+              label: "Brilho da borda da ação",
+              hint: "Linha de luz no topo da ação padrão e suave",
+              swatches: (
+                <SwatchPair
+                  dark={{
+                    backgroundColor: `color-mix(in srgb, white ${getFormulaValue(shared, "topHighlightAlpha", "dark")}%, ${actionColor("dark")})`,
+                  }}
+                  light={{
+                    backgroundColor: `color-mix(in srgb, white ${getFormulaValue(shared, "topHighlightAlpha", "light")}%, ${actionColor("light")})`,
+                  }}
+                />
+              ),
+              children: (
+                <>
+                  <p className="text-base text-secondary-foreground">
+                    Vale para a ação padrão e para a suave. A ação viva tem o
+                    próprio brilho, em Fases e categorias → Vivo · ação →
+                    "Brilho do topo".
+                  </p>
+                  {numberSets([
+                    formulaSpec(
+                      "topHighlightAlpha",
+                      "Opacidade",
+                      0,
+                      100,
+                      1,
+                      percent,
+                    ),
+                  ])}
+                </>
+              ),
+            })}
+          </>,
+        ),
+      )}
+    </>
+  );
+
+  return (
+    <PrismTabs className="h-full min-h-0 flex-1" defaultSelectedKey="tema">
+      {/* The tab list stays outside the scroll and spans the whole panel. */}
+      <PrismTabList aria-label="Partes do tema">
+        <PrismTab id="tema">Tema</PrismTab>
+        <PrismTab id="estados">Estados</PrismTab>
+        <PrismTab id="fases">Fases e categorias</PrismTab>
+        <PrismTab id="formulas">Fórmulas</PrismTab>
+      </PrismTabList>
+      <div className="min-h-0 flex-1 overflow-y-auto px-6">
+        <PrismTabPanel className="flex flex-col gap-12 py-8" id="tema">
+          {tema}
+        </PrismTabPanel>
+        <PrismTabPanel className="flex flex-col gap-12 py-8" id="estados">
+          {estados}
+        </PrismTabPanel>
+        <PrismTabPanel className="flex flex-col gap-12 py-8" id="fases">
+          {fasesECategorias}
+        </PrismTabPanel>
+        <PrismTabPanel className="flex flex-col gap-12 py-8" id="formulas">
+          {formulas}
+        </PrismTabPanel>
+      </div>
+    </PrismTabs>
   );
 }

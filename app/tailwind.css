@@ -6,52 +6,55 @@
 [data-theme-preview="light"] {
   --radius: 0.65rem;
   --background: var(--background-override, oklch(1 0 0));
-  /* Neutrals (DS28, DS35): every neutral derives from the background (parent
-     color) by adding an L delta. The delta comes from the palette through
-     --<layer>-l-delta (written by palette-vars); the second argument of var()
-     is the default for themes that do not set it (custom theme). Text is the
-     background plus --foreground-l-delta (chroma 0); a custom theme sets
-     --foreground-override with the exact color its owner picked. */
+  /* Neutrals (DS28, DS35): every neutral derives from the background by adding
+     an L delta. The delta comes from the palette through --<layer>-l-delta
+     (written by palette-vars); there is no default here (DS36): a theme must
+     set every delta. Text is the background plus --foreground-l-delta (chroma
+     0); a custom theme sets --foreground-override with the exact color its
+     owner picked. */
   --foreground: var(
     --foreground-override,
-    oklch(from var(--background) calc(l + var(--foreground-l-delta, -0.96)) 0 h)
+    oklch(from var(--background) calc(l + var(--foreground-l-delta)) 0 h)
   );
 
-  --card: oklch(
-    from var(--background) calc(l + var(--card-l-delta, -0.02)) c h
-  );
-  --popover: oklch(
-    from var(--background) calc(l + var(--popover-l-delta, 0.02)) c h
-  );
+  --card: oklch(from var(--background) calc(l + var(--card-l-delta)) c h);
+  --popover: oklch(from var(--background) calc(l + var(--popover-l-delta)) c h);
 
   /* Primary color knobs — overrideable by JS for theme color picker */
   --primary-h: 0; /* hue: 0–360 */
   --primary-c: 0; /* chroma / saturation */
   --primary-l: 0; /* lightness: darker in light mode for contrast on white */
-  --primary-fg-l: 0.97; /* foreground lightness: bright text over dark primary */
 
   --primary: oklch(var(--primary-l) var(--primary-c) var(--primary-h));
+  /* Hover of the primary: primary mixed with the page background (DS36). */
+  --primary-hover: color-mix(
+    in oklab,
+    var(--primary),
+    var(--background) var(--shared-primary-hover-mix)
+  );
+  /* Text on the primary: the primary moved by the palette deltas (DS36, stage 7). */
   --primary-foreground: var(
     --primary-foreground-override,
-    oklch(var(--primary-fg-l) 0 var(--primary-h))
+    oklch(
+      from var(--primary) calc(l + var(--primary-fg-l-delta))
+        max(0, calc(c + var(--primary-fg-c-delta)))
+        calc(h + var(--primary-fg-h-delta))
+    )
   );
 
   --secondary: oklch(
-    from var(--background) calc(l + var(--secondary-l-delta, -0.06)) c h
+    from var(--background) calc(l + var(--secondary-l-delta)) c h
   );
   --secondary-hover: oklch(
-    from var(--background) calc(l + var(--secondary-hover-l-delta, -0.08)) c h
+    from var(--background) calc(l + var(--secondary-hover-l-delta)) c h
   );
   --secondary-foreground: oklch(
-    from var(--background) calc(l - 0.512) max(0, calc(c - 0.001)) h
+    from var(--background) calc(l + var(--shared-support-l-delta))
+      max(0, calc(c + var(--shared-support-c-delta))) h
   );
 
-  --border: oklch(
-    from var(--background) calc(l + var(--border-l-delta, -0.09)) c h
-  );
-  --input: oklch(
-    from var(--background) calc(l + var(--input-l-delta, -0.04)) c h
-  );
+  --border: oklch(from var(--background) calc(l + var(--border-l-delta)) c h);
+  --input: oklch(from var(--background) calc(l + var(--input-l-delta)) c h);
 
   /* Accent: palette color (today a copy of primary); the focus ring uses it. */
   --accent: var(
@@ -59,65 +62,116 @@
     oklch(var(--primary-l) var(--primary-c) var(--primary-h))
   );
   --ring: var(--accent);
-  --action: oklch(
-    from var(--background) calc(l + var(--action-l-delta, 0.02)) c h
+  /* Focus halo: the ring color at 30% (DS36, stage 3). */
+  /* Category icon (DS36): opacity of the category color in the fill and the
+     stroke, and the chroma kept. Read by UIcons. */
+  --category-icon-fill-alpha: var(--shared-category-icon-fill-alpha);
+  --category-icon-stroke-alpha: var(--shared-category-icon-stroke-alpha);
+  --category-icon-chroma: var(--shared-category-icon-chroma);
+  /* Late action card background: Erro background at --shared-late-bg-alpha. */
+  --late-bg: color-mix(
+    in srgb,
+    var(--color-error-background) var(--shared-late-bg-alpha),
+    transparent
   );
+  --ring-halo: color-mix(
+    in srgb,
+    var(--ring) var(--shared-ring-halo-alpha),
+    transparent
+  );
+  --action: oklch(from var(--background) calc(l + var(--action-l-delta)) c h);
   --action-hover: oklch(
-    from var(--background) calc(l + var(--action-hover-l-delta, 0.1)) c h
+    from var(--background) calc(l + var(--action-hover-l-delta)) c h
   );
   /* Palette surfaces kept apart so phase-surface can tint them (DS11). */
   --action-base: var(--action);
   --action-hover-base: var(--action-hover);
-  --shadow-tint: var(--shadow-color-override, #000000);
-  --shadow-alpha: var(--shadow-opacity-override, 10%);
-  --action-shadow-color: var(--action-shadow-color-override, #000000);
-  --action-ring: color-mix(in srgb, var(--action-shadow-color) 5%, transparent);
-  --action-top-border: var(--action-top-border-override, #ffffff);
+  /* Shadow (DS29, stage 4): the page background mixed with the primary, then
+     darkened. Its numbers come from SHARED_COLORS.shadow (--shared-*). */
+  --shadow-color: oklch(
+    from
+      color-mix(
+        in oklab,
+        var(--background),
+        var(--primary) var(--shared-shadow-mix)
+      )
+      var(--shared-shadow-l) c h
+  );
+  --shadow-alpha: var(--shared-shadow-alpha);
+  --action-ring: color-mix(
+    in srgb,
+    var(--shadow-color) var(--shared-action-ring-alpha),
+    transparent
+  );
+  /* Top highlight of the action card: white at --shared-top-highlight-alpha. */
+  --action-top-border: var(
+    --action-top-border-override,
+    color-mix(in srgb, white var(--shared-top-highlight-alpha), transparent)
+  );
   --action-shadow: var(
     --action-shadow-override,
-    0 1px 2px 0 color-mix(in srgb, var(--action-shadow-color) 14%, transparent)
+    0 1px 2px 0
+      color-mix(
+        in srgb,
+        var(--shadow-color) var(--shared-action-shadow-alpha),
+        transparent
+      )
   );
   --action-hover-shadow: var(
     --action-hover-shadow-override,
     0 10px 15px -3px
-      color-mix(in srgb, var(--action-shadow-color) 18%, transparent),
+      color-mix(
+        in srgb,
+        var(--shadow-color) var(--shared-action-hover-shadow-alpha),
+        transparent
+      ),
     0 4px 6px -4px
-      color-mix(in srgb, var(--action-shadow-color) 18%, transparent)
+      color-mix(
+        in srgb,
+        var(--shadow-color) var(--shared-action-hover-shadow-alpha),
+        transparent
+      )
   );
 
   /* Semantic colors (DS25): one fixed value each, inside the sRGB gamut.
      Text is set on its own (own chroma), because a darker tone keeps the
      base chroma outside sRGB. Background = semantic color mixed with the page
      background, 10% in light (one value for every palette). */
-  --color-error: oklch(0.65 0.16 16);
-  --error-foreground: oklch(0.52 0.205 16);
+  /* Mix of the state fill with the page background, and the marker text (DS36, stage 6). */
+  --state-background-mix: var(--shared-background-mix);
+  --marker-text: oklch(
+    from var(--color-warning) calc(l + var(--shared-marker-l-delta))
+      var(--shared-marker-c) h
+  );
+  --color-error: var(--shared-error-color);
+  --error-foreground: var(--shared-error-text);
   --color-error-background: color-mix(
     in oklab,
-    var(--color-error) 10%,
+    var(--color-error) var(--state-background-mix),
     var(--background)
   );
 
-  --color-warning: oklch(0.82 0.12 80);
-  --warning-foreground: oklch(0.51 0.1 80);
+  --color-warning: var(--shared-warning-color);
+  --warning-foreground: var(--shared-warning-text);
   --color-warning-background: color-mix(
     in oklab,
-    var(--color-warning) 10%,
+    var(--color-warning) var(--state-background-mix),
     var(--background)
   );
 
-  --color-success: oklch(0.65 0.11 163);
-  --color-success-foreground: oklch(0.495 0.1 163);
+  --color-success: var(--shared-success-color);
+  --color-success-foreground: var(--shared-success-text);
   --color-success-background: color-mix(
     in oklab,
-    var(--color-success) 10%,
+    var(--color-success) var(--state-background-mix),
     var(--background)
   );
 
-  --color-info: oklch(0.65 0.12 250);
-  --info-foreground: oklch(0.505 0.14 250);
+  --color-info: var(--shared-info-color);
+  --info-foreground: var(--shared-info-text);
   --color-info-background: color-mix(
     in oklab,
-    var(--color-info) 10%,
+    var(--color-info) var(--state-background-mix),
     var(--background)
   );
 
@@ -127,8 +181,14 @@
   --priority-high: var(--color-error);
 
   /* Strong success derives from success: same hue, fixed lightness and chroma (white text 5:1). */
-  --success-strong: oklch(from var(--color-success) 0.53 0.105 h);
-  --success-strong-hover: oklch(from var(--color-success) 0.4 0.09 h);
+  --success-strong: oklch(
+    from var(--color-success) var(--shared-success-strong-l)
+      var(--shared-success-strong-c) h
+  );
+  --success-strong-hover: oklch(
+    from var(--color-success) var(--shared-success-strong-hover-l)
+      var(--shared-success-strong-hover-c) h
+  );
   --success-strong-foreground: var(--color-white);
 
   --font-heading: var(--font-sans);
@@ -143,16 +203,12 @@
   /* Neutrals (DS28, DS35): L deltas over the dark background (--dark-*-l-delta). */
   --foreground: var(
     --dark-foreground-override,
-    oklch(
-      from var(--background) calc(l + var(--dark-foreground-l-delta, 0.8)) 0 h
-    )
+    oklch(from var(--background) calc(l + var(--dark-foreground-l-delta)) 0 h)
   );
 
-  --card: oklch(
-    from var(--background) calc(l + var(--dark-card-l-delta, 0.05)) c h
-  );
+  --card: oklch(from var(--background) calc(l + var(--dark-card-l-delta)) c h);
   --popover: oklch(
-    from var(--background) calc(l + var(--dark-popover-l-delta, -0.03)) c h
+    from var(--background) calc(l + var(--dark-popover-l-delta)) c h
   );
 
   /* Dark mode variables injected by JS */
@@ -160,32 +216,40 @@
   --dark-primary-h: 0;
   --dark-primary-c: 0;
   --dark-primary-l: 0.35;
-  --dark-primary-fg-l: 0.97;
 
   --primary: oklch(
     var(--dark-primary-l) var(--dark-primary-c) var(--dark-primary-h)
   );
+  --primary-hover: color-mix(
+    in oklab,
+    var(--primary),
+    var(--background) var(--shared-dark-primary-hover-mix)
+  );
   --primary-foreground: var(
     --dark-primary-foreground-override,
-    oklch(var(--dark-primary-fg-l) 0.014 var(--dark-primary-h))
+    oklch(
+      from var(--primary) calc(l + var(--dark-primary-fg-l-delta))
+        max(0, calc(c + var(--dark-primary-fg-c-delta)))
+        calc(h + var(--dark-primary-fg-h-delta))
+    )
   );
 
   --secondary: oklch(
-    from var(--background) calc(l + var(--dark-secondary-l-delta, 0.12)) c h
+    from var(--background) calc(l + var(--dark-secondary-l-delta)) c h
   );
   --secondary-hover: oklch(
-    from var(--background) calc(l + var(--dark-secondary-hover-l-delta, 0.15)) c
-      h
+    from var(--background) calc(l + var(--dark-secondary-hover-l-delta)) c h
   );
   --secondary-foreground: oklch(
-    from var(--background) calc(l + 0.549) max(0, calc(c - 0.007)) h
+    from var(--background) calc(l + var(--shared-dark-support-l-delta))
+      max(0, calc(c + var(--shared-dark-support-c-delta))) h
   );
 
   --border: oklch(
-    from var(--background) calc(l + var(--dark-border-l-delta, 0.15)) c h
+    from var(--background) calc(l + var(--dark-border-l-delta)) c h
   );
   --input: oklch(
-    from var(--background) calc(l + var(--dark-input-l-delta, -0.06)) c h
+    from var(--background) calc(l + var(--dark-input-l-delta)) c h
   );
 
   --accent: var(
@@ -193,38 +257,59 @@
     oklch(var(--dark-primary-l) var(--dark-primary-c) var(--dark-primary-h))
   );
   --ring: var(--accent);
+  /* Category icon, dark (DS36): opacity of the category color in the fill and the
+     stroke, and the chroma kept. Read by UIcons. */
+  --category-icon-fill-alpha: var(--shared-dark-category-icon-fill-alpha);
+  --category-icon-stroke-alpha: var(--shared-dark-category-icon-stroke-alpha);
+  --category-icon-chroma: var(--shared-dark-category-icon-chroma);
+  --late-bg: color-mix(
+    in srgb,
+    var(--color-error-background) var(--shared-dark-late-bg-alpha),
+    transparent
+  );
+  --ring-halo: color-mix(
+    in srgb,
+    var(--ring) var(--shared-dark-ring-halo-alpha),
+    transparent
+  );
   /* Semantic colors: fixed values inside the sRGB gamut (DS21). */
   /* Dark: same fixed semantic values; text is the semantic color itself;
      background = semantic color mixed with the page background, 30% in dark. */
-  --color-error: oklch(0.72 0.14 16);
-  --error-foreground: oklch(0.72 0.16 16);
+  /* Mix of the state fill with the page background, and the marker text (DS36, stage 6). */
+  --state-background-mix: var(--shared-dark-background-mix);
+  --marker-text: oklch(
+    from var(--color-warning) calc(l + var(--shared-dark-marker-l-delta))
+      var(--shared-marker-c) h
+  );
+  --color-error: var(--shared-dark-error-color);
+  --error-foreground: var(--shared-dark-error-text);
   --color-error-background: color-mix(
     in oklab,
-    var(--color-error) 30%,
+    var(--color-error) var(--state-background-mix),
     var(--background)
   );
 
-  --color-warning: oklch(0.84 0.12 80);
-  --warning-foreground: oklch(0.84 0.14 80);
+  --color-warning: var(--shared-dark-warning-color);
+  --warning-foreground: var(--shared-dark-warning-text);
   --color-warning-background: color-mix(
     in oklab,
-    var(--color-warning) 30%,
+    var(--color-warning) var(--state-background-mix),
     var(--background)
   );
 
-  --color-success: oklch(0.75 0.1 163);
-  --color-success-foreground: oklch(0.75 0.15 163);
+  --color-success: var(--shared-dark-success-color);
+  --color-success-foreground: var(--shared-dark-success-text);
   --color-success-background: color-mix(
     in oklab,
-    var(--color-success) 30%,
+    var(--color-success) var(--state-background-mix),
     var(--background)
   );
 
-  --color-info: oklch(0.75 0.12 250);
-  --info-foreground: oklch(0.75 0.12 250);
+  --color-info: var(--shared-dark-info-color);
+  --info-foreground: var(--shared-dark-info-text);
   --color-info-background: color-mix(
     in oklab,
-    var(--color-info) 30%,
+    var(--color-info) var(--state-background-mix),
     var(--background)
   );
 
@@ -234,42 +319,60 @@
   --priority-high: var(--color-error);
 
   /* Fixed-palette semantic tokens: same value in light and dark themes. */
-  --success-strong: oklch(from var(--color-success) 0.53 0.105 h);
-  --success-strong-hover: oklch(from var(--color-success) 0.4 0.09 h);
+  --success-strong: oklch(
+    from var(--color-success) var(--shared-success-strong-l)
+      var(--shared-success-strong-c) h
+  );
+  --success-strong-hover: oklch(
+    from var(--color-success) var(--shared-success-strong-hover-l)
+      var(--shared-success-strong-hover-c) h
+  );
   --success-strong-foreground: var(--color-white);
 
   --action: oklch(
-    from var(--background) calc(l + var(--dark-action-l-delta, 0.1)) c h
+    from var(--background) calc(l + var(--dark-action-l-delta)) c h
   );
   --action-hover: oklch(
-    from var(--background) calc(l + var(--dark-action-hover-l-delta, 0.2)) c h
+    from var(--background) calc(l + var(--dark-action-hover-l-delta)) c h
   );
   --action-base: var(--action);
   --action-hover-base: var(--action-hover);
-  --shadow-tint: var(
-    --dark-shadow-color-override,
-    var(--shadow-color-override, #000000)
+  --shadow-color: oklch(
+    from
+      color-mix(
+        in oklab,
+        var(--background),
+        var(--primary) var(--shared-dark-shadow-mix)
+      )
+      var(--shared-dark-shadow-l) c h
   );
-  --shadow-alpha: var(--dark-shadow-opacity-override, 25%);
-  --action-shadow-color: var(
-    --dark-action-shadow-color-override,
-    var(--action-shadow-color-override, #000000)
-  );
+  --shadow-alpha: var(--shared-dark-shadow-alpha);
   --action-ring: color-mix(
     in srgb,
-    var(--action-shadow-color) 20%,
+    var(--shadow-color) var(--shared-dark-action-ring-alpha),
     transparent
   );
   --action-top-border: var(
     --dark-action-top-border-override,
-    var(--action-top-border-override, rgba(255, 255, 255, 0.1))
+    var(
+      --action-top-border-override,
+      color-mix(
+        in srgb,
+        white var(--shared-dark-top-highlight-alpha),
+        transparent
+      )
+    )
   );
   --action-shadow: var(
     --dark-action-shadow-override,
     var(
       --action-shadow-override,
       0 1px 2px 0
-        color-mix(in srgb, var(--action-shadow-color) 35%, transparent)
+        color-mix(
+          in srgb,
+          var(--shadow-color) var(--shared-dark-action-shadow-alpha),
+          transparent
+        )
     )
   );
   --action-hover-shadow: var(
@@ -277,9 +380,17 @@
     var(
       --action-hover-shadow-override,
       0 10px 15px -3px
-        color-mix(in srgb, var(--action-shadow-color) 50%, transparent),
+        color-mix(
+          in srgb,
+          var(--shadow-color) var(--shared-dark-action-hover-shadow-alpha),
+          transparent
+        ),
       0 4px 6px -4px
-        color-mix(in srgb, var(--action-shadow-color) 50%, transparent)
+        color-mix(
+          in srgb,
+          var(--shadow-color) var(--shared-dark-action-hover-shadow-alpha),
+          transparent
+        )
     )
   );
 }
@@ -306,6 +417,7 @@
 
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
 
   --color-secondary: var(--secondary);
   --color-secondary-hover: var(--secondary-hover);
@@ -317,6 +429,8 @@
 
   --color-ring: var(--ring);
   --color-accent: var(--accent);
+  --color-ring-halo: var(--ring-halo);
+  --color-late: var(--late-bg);
 
   /* VARIÁVEIS DA UZZINA  */
 
@@ -329,82 +443,82 @@
   --shadow-2xs: 0 1px
     color-mix(
       in srgb,
-      var(--shadow-tint) calc(var(--shadow-alpha) * 0.5),
+      var(--shadow-color) calc(var(--shadow-alpha) * 0.5),
       transparent
     );
   --shadow-xs: 0 1px 2px 0
     color-mix(
       in srgb,
-      var(--shadow-tint) calc(var(--shadow-alpha) * 0.6),
+      var(--shadow-color) calc(var(--shadow-alpha) * 0.6),
       transparent
     );
   --shadow-sm:
     0 1px 3px 0
       color-mix(
         in srgb,
-        var(--shadow-tint) calc(var(--shadow-alpha) * 0.8),
+        var(--shadow-color) calc(var(--shadow-alpha) * 0.8),
         transparent
       ),
     0 1px 2px -1px
       color-mix(
         in srgb,
-        var(--shadow-tint) calc(var(--shadow-alpha) * 0.8),
+        var(--shadow-color) calc(var(--shadow-alpha) * 0.8),
         transparent
       );
   --shadow-md:
     0 4px 6px -1px
       color-mix(
         in srgb,
-        var(--shadow-tint) calc(var(--shadow-alpha) * 1),
+        var(--shadow-color) calc(var(--shadow-alpha) * 1),
         transparent
       ),
     0 2px 4px -2px
       color-mix(
         in srgb,
-        var(--shadow-tint) calc(var(--shadow-alpha) * 1),
+        var(--shadow-color) calc(var(--shadow-alpha) * 1),
         transparent
       );
   --shadow-lg:
     0 10px 15px -3px
       color-mix(
         in srgb,
-        var(--shadow-tint) calc(var(--shadow-alpha) * 1),
+        var(--shadow-color) calc(var(--shadow-alpha) * 1),
         transparent
       ),
     0 4px 6px -4px
       color-mix(
         in srgb,
-        var(--shadow-tint) calc(var(--shadow-alpha) * 1),
+        var(--shadow-color) calc(var(--shadow-alpha) * 1),
         transparent
       );
   --shadow-xl:
     0 20px 25px -5px
       color-mix(
         in srgb,
-        var(--shadow-tint) calc(var(--shadow-alpha) * 1),
+        var(--shadow-color) calc(var(--shadow-alpha) * 1),
         transparent
       ),
     0 8px 10px -6px
       color-mix(
         in srgb,
-        var(--shadow-tint) calc(var(--shadow-alpha) * 1),
+        var(--shadow-color) calc(var(--shadow-alpha) * 1),
         transparent
       );
   --shadow-2xl: 0 25px 50px -12px
     color-mix(
       in srgb,
-      var(--shadow-tint) min(100%, calc(var(--shadow-alpha) * 2.5)),
+      var(--shadow-color) min(100%, calc(var(--shadow-alpha) * 2.5)),
       transparent
     );
   --shadow-toast: 0 12px 24px -6px
     color-mix(
       in srgb,
-      var(--shadow-tint) calc(var(--shadow-alpha) * 1),
+      var(--shadow-color) calc(var(--shadow-alpha) * 1),
       transparent
     );
 
   /* Backdrop of dialogs and sheets: the palette shadow tint at 30%. */
-  --color-overlay: color-mix(in srgb, var(--shadow-tint) 30%, transparent);
+  --color-overlay: color-mix(in srgb, var(--shadow-color) 30%, transparent);
 
   --color-action: var(--action);
   --color-action-hover: var(--action-hover);
@@ -621,7 +735,7 @@ html {
 .tiptap.ProseMirror mark {
   @apply rounded px-0.5 squircle;
   background-color: var(--color-warning);
-  color: oklch(0.25 0.03 80);
+  color: var(--marker-text);
 }
 
 /* Tabelas */
@@ -635,7 +749,7 @@ html {
 }
 
 .tiptap.ProseMirror th {
-  @apply bg-secondary font-semibold;
+  @apply bg-card font-semibold;
 }
 
 .tiptap.ProseMirror p.is-editor-empty:first-child::before {
@@ -667,27 +781,45 @@ html {
    stays the app's shadow-action. Flat palettes (--action-relief: 0, set by
    palette-vars) drop the phase ring and, through the override, the hover
    shadow, like a regular flat card. */
+/* Phase derivations (DS36, stage 5): every number is read from the shared
+   block through --shared-* (light) and --shared-dark-* (dark) variables. */
 @utility phase-surface {
-  --phase-mix: 15%;
-  --phase-mix-hover: 30%;
-  --phase-ring-alpha: 30%;
-  --phase-fg: oklch(from var(--phase-color) 0.35 0.07 h);
-  --phase-shadow: oklch(from var(--phase-color) 0.6 0.15 h);
-  --phase-shadow-alpha: 25%;
+  --phase-mix: var(--shared-phase-mix);
+  --phase-mix-hover: var(--shared-phase-mix-hover);
+  --phase-ring-alpha: var(--shared-phase-ring-alpha);
+  --phase-fg: oklch(
+    from var(--phase-color) var(--shared-phase-text-l)
+      var(--shared-phase-text-c) h
+  );
+  --phase-shadow: oklch(
+    from var(--phase-color) var(--shared-phase-shadow-l)
+      var(--shared-phase-shadow-c) h
+  );
+  --phase-shadow-alpha: var(--shared-phase-shadow-alpha);
   --phase-diffuse: transparent;
   &:is(.dark *):not(
       [data-theme-preview="light"],
       [data-theme-preview="light"] *
     ) {
-    --phase-mix: 40%;
-    --phase-mix-hover: 70%;
-    --phase-ring-alpha: 55%;
-    --phase-fg: oklch(from var(--phase-color) 0.92 0.06 h);
-    --phase-shadow: oklch(from var(--phase-color) 0.33 0.1 h);
-    --phase-shadow-alpha: 20%;
+    --phase-mix: var(--shared-dark-phase-mix);
+    --phase-mix-hover: var(--shared-dark-phase-mix-hover);
+    --phase-ring-alpha: var(--shared-dark-phase-ring-alpha);
+    --phase-fg: oklch(
+      from var(--phase-color) var(--shared-dark-phase-text-l)
+        var(--shared-dark-phase-text-c) h
+    );
+    --phase-shadow: oklch(
+      from var(--phase-color) var(--shared-dark-phase-shadow-l)
+        var(--shared-dark-phase-shadow-c) h
+    );
+    --phase-shadow-alpha: var(--shared-dark-phase-shadow-alpha);
     --phase-diffuse: color-mix(
       in srgb,
-      oklch(from var(--phase-color) 0.2 0.15 h) 63%,
+      oklch(
+          from var(--phase-color) var(--shared-phase-diffuse-l)
+            var(--shared-phase-diffuse-c) h
+        )
+        var(--shared-phase-diffuse-alpha),
       transparent
     );
   }
@@ -722,7 +854,8 @@ html {
         var(--phase-shadow) var(--phase-shadow-alpha),
         transparent
       ),
-    0 14px 30px -4px var(--phase-diffuse)
+    0 var(--shared-phase-diffuse-y) var(--shared-phase-diffuse-blur)
+      var(--shared-phase-diffuse-spread) var(--phase-diffuse)
   );
 }
 
@@ -735,33 +868,45 @@ html {
    and goes transparent in flat palettes (--action-relief: 0). */
 @utility phase-vivid {
   --vivid-fill: var(--phase-color);
-  --vivid-ink: oklch(from var(--phase-color) 0.35 0.07 h);
-  --vivid-hover-dl: 0.1;
-  --vivid-edge-dl: 0.06;
-  --vivid-top-light: 45%;
-  --vivid-shadow: oklch(from var(--phase-color) 0.55 0.16 h);
+  --vivid-ink: oklch(
+    from var(--phase-color) var(--shared-phase-ink-l) var(--shared-phase-ink-c)
+      h
+  );
+  --vivid-hover-dl: var(--shared-phase-hover-dl);
+  --vivid-edge-dl: var(--shared-phase-edge-dl);
+  --vivid-top-light: var(--shared-phase-top-light);
+  --vivid-shadow: oklch(
+    from var(--phase-color) var(--shared-phase-vivid-shadow-l)
+      var(--shared-phase-vivid-shadow-c) h
+  );
   &:is([data-vivid-text="light"] *) {
-    --vivid-ink: oklch(from var(--phase-color) 0.98 0.025 h);
+    --vivid-ink: oklch(
+      from var(--phase-color) var(--shared-phase-ink-light-l)
+        var(--shared-phase-ink-light-c) h
+    );
   }
   &:is(.dark *):not(
       [data-theme-preview="light"],
       [data-theme-preview="light"] *
     ) {
-    --vivid-edge-dl: 0.14;
-    --vivid-top-light: 25%;
+    --vivid-edge-dl: var(--shared-dark-phase-edge-dl);
+    --vivid-top-light: var(--shared-dark-phase-top-light);
   }
   &:is(.dark[data-vivid-dark="dim"] *):not(
       [data-theme-preview="light"],
       [data-theme-preview="light"] *
     ) {
-    --vivid-fill: oklch(from var(--phase-color) 0.72 calc(c* 0.8) h);
+    --vivid-fill: oklch(
+      from var(--phase-color) var(--shared-phase-dim-l)
+        calc(c* var(--shared-phase-dim-c-factor)) h
+    );
   }
 
   --foreground: var(--vivid-ink);
   --action: var(--vivid-fill);
   --action-hover: oklch(
     from var(--vivid-fill) calc(l + var(--vivid-hover-dl))
-      max(0, calc(c - 0.01)) h
+      max(0, calc(c - var(--shared-phase-hover-c-loss))) h
   );
   --action-ring: oklch(
     from var(--vivid-fill) calc(l - var(--vivid-edge-dl)) c h
@@ -774,8 +919,18 @@ html {
   );
   --action-hover-shadow: var(
     --action-hover-shadow-override,
-    0 10px 15px -3px color-mix(in srgb, var(--vivid-shadow) 40%, transparent),
-    0 4px 6px -4px color-mix(in srgb, var(--vivid-shadow) 40%, transparent)
+    0 10px 15px -3px
+      color-mix(
+        in srgb,
+        var(--vivid-shadow) var(--shared-phase-vivid-shadow-alpha),
+        transparent
+      ),
+    0 4px 6px -4px
+      color-mix(
+        in srgb,
+        var(--vivid-shadow) var(--shared-phase-vivid-shadow-alpha),
+        transparent
+      )
   );
   &:hover {
     --action-top-border: color-mix(
@@ -787,7 +942,7 @@ html {
   }
 
   & .action-date {
-    opacity: 0.85;
+    opacity: var(--shared-phase-date-opacity);
   }
   & .vivid-ink {
     color: var(--vivid-ink) !important;
@@ -812,25 +967,57 @@ html {
 @utility late-surface {
   --action-shadow: var(
     --action-shadow-override,
-    0 1px 2px 0 color-mix(in srgb, var(--error-foreground) 25%, transparent)
+    0 1px 2px 0
+      color-mix(
+        in srgb,
+        var(--error-foreground) var(--shared-late-alpha),
+        transparent
+      )
   );
   --action-hover-shadow: var(
     --action-hover-shadow-override,
     0 10px 15px -3px
-      color-mix(in srgb, var(--error-foreground) 30%, transparent),
-    0 4px 6px -4px color-mix(in srgb, var(--error-foreground) 30%, transparent)
+      color-mix(
+        in srgb,
+        var(--error-foreground) var(--shared-late-alpha-hover),
+        transparent
+      ),
+    0 4px 6px -4px
+      color-mix(
+        in srgb,
+        var(--error-foreground) var(--shared-late-alpha-hover),
+        transparent
+      )
   );
   &:is(.dark *) {
     /* A deep red: the dark error tone is too light to read as a shadow. */
-    --late-shadow: oklch(from var(--color-error) 0.45 0.18 h);
+    --late-shadow: oklch(
+      from var(--color-error) var(--shared-dark-late-l)
+        var(--shared-dark-late-c) h
+    );
     --action-shadow: var(
       --action-shadow-override,
-      0 1px 2px 0 color-mix(in srgb, var(--late-shadow) 50%, transparent)
+      0 1px 2px 0
+        color-mix(
+          in srgb,
+          var(--late-shadow) var(--shared-dark-late-alpha),
+          transparent
+        )
     );
     --action-hover-shadow: var(
       --action-hover-shadow-override,
-      0 10px 15px -3px color-mix(in srgb, var(--late-shadow) 60%, transparent),
-      0 4px 6px -4px color-mix(in srgb, var(--late-shadow) 60%, transparent)
+      0 10px 15px -3px
+        color-mix(
+          in srgb,
+          var(--late-shadow) var(--shared-dark-late-alpha-hover),
+          transparent
+        ),
+      0 4px 6px -4px
+        color-mix(
+          in srgb,
+          var(--late-shadow) var(--shared-dark-late-alpha-hover),
+          transparent
+        )
     );
   }
 }

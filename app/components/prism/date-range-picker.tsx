@@ -118,7 +118,7 @@ export function PrismDateRangePicker({
         <ButtonPrimitive
           aria-label={ariaLabel}
           className={cn(
-            "flex w-full items-center justify-between gap-3 rounded-2xl border border-transparent bg-input py-2 text-sm transition-[color,box-shadow] duration-200 outline-none squircle focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50",
+            "flex w-full items-center justify-between gap-3 rounded-2xl border border-transparent bg-input py-2 text-sm transition-[color,box-shadow] duration-200 outline-none squircle focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring-halo disabled:cursor-not-allowed disabled:opacity-50",
             triggerSizeClasses[size],
             triggerClassName,
           )}

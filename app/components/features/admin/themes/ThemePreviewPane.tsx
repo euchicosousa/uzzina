@@ -1,6 +1,8 @@
 import { useLayoutEffect, useMemo, useRef, type CSSProperties } from "react";
 import {
   AlertTriangleIcon,
+  CircleCheckIcon,
+  InfoIcon,
   CalendarIcon,
   CopyIcon,
   MoonIcon,
@@ -21,16 +23,23 @@ import {
 } from "~/components/prism";
 import { useAppContext } from "~/contexts/AppContext";
 import {
+  CATEGORIES,
   DATE_TIME_DISPLAY,
   PHASES,
   PRIORITIES,
   VARIANT,
 } from "~/lib/CONSTANTS";
-import { applyPaletteVars } from "~/lib/palette-vars";
-import type { PaletteConfig } from "~/lib/palettes";
+import { UIcons } from "~/components/uzzina/UIcons";
+import { applyPaletteVars, applySharedColorVars } from "~/lib/palette-vars";
+import {
+  oklchToCss,
+  type PaletteConfig,
+  type SharedColors,
+} from "~/lib/palettes";
 import type { Action } from "~/types";
 import { formatOklchString, oklchToHex } from "~/utils/color";
 import {
+  CATEGORY_ORDER,
   PHASE_ORDER,
   type PhaseSlug,
   type PhasesColorMap,
@@ -43,6 +52,8 @@ interface ThemePreviewPaneProps {
   palette: PaletteConfig;
   phases: PhasesColorMap;
   priorities: PrioritiesColorMap;
+  /** Draft of the shared block (formulas are written on the preview scope). */
+  shared: SharedColors;
   hoveredTarget: string | null;
 }
 
@@ -65,9 +76,8 @@ const BUTTON_DEMO_ROWS: ReadonlyArray<{
     label: "Principal",
     variant: "default",
     actionLabel: "Salvar",
-    hoverClass:
-      "border-[color-mix(in_oklab,var(--primary),var(--background)_20%)] bg-[color-mix(in_oklab,var(--primary),var(--background)_20%)]",
-    focusClass: "border-ring/60 ring-3 ring-ring/30",
+    hoverClass: "border-primary-hover bg-primary-hover",
+    focusClass: "border-ring/60 ring-3 ring-ring-halo",
     targets: ["primary", "primaryFg", "primaryHover", "ring", "ringHalo"],
   },
   {
@@ -75,7 +85,7 @@ const BUTTON_DEMO_ROWS: ReadonlyArray<{
     variant: "secondary",
     actionLabel: "Filtrar",
     hoverClass: "border-secondary-hover bg-secondary-hover",
-    focusClass: "border-ring/60 ring-3 ring-ring/30",
+    focusClass: "border-ring/60 ring-3 ring-ring-halo",
     targets: ["secondary", "fg", "ring", "ringHalo"],
   },
   {
@@ -83,7 +93,7 @@ const BUTTON_DEMO_ROWS: ReadonlyArray<{
     variant: "outline",
     actionLabel: "Duplicar",
     hoverClass: "bg-secondary",
-    focusClass: "border-ring/60 ring-3 ring-ring/30",
+    focusClass: "border-ring/60 ring-3 ring-ring-halo",
     targets: ["border", "secondary", "fg", "ring", "ringHalo"],
   },
   {
@@ -91,7 +101,7 @@ const BUTTON_DEMO_ROWS: ReadonlyArray<{
     variant: "ghost",
     actionLabel: "Cancelar",
     hoverClass: "bg-secondary",
-    focusClass: "border-ring/60 ring-3 ring-ring/30",
+    focusClass: "border-ring/60 ring-3 ring-ring-halo",
     targets: ["secondary", "fg", "ring", "ringHalo"],
   },
   {
@@ -140,6 +150,7 @@ export function ThemePreviewPane({
   palette,
   phases,
   priorities,
+  shared,
   hoveredTarget,
 }: ThemePreviewPaneProps) {
   const paneRef = useRef<HTMLDivElement>(null);
@@ -149,6 +160,7 @@ export function ThemePreviewPane({
     const el = paneRef.current;
     if (!el) return;
     applyPaletteVars(palette, el);
+    applySharedColorVars(el, shared);
     el.style.setProperty(
       "--priority-low",
       formatOklchString(priorities[mode].low),
@@ -161,7 +173,7 @@ export function ThemePreviewPane({
       "--priority-high",
       formatOklchString(priorities[mode].high),
     );
-  }, [palette, priorities, mode]);
+  }, [palette, priorities, mode, shared]);
 
   const isHighlighted = (targets: string[]) =>
     hoveredTarget !== null && targets.includes(hoveredTarget)
@@ -253,20 +265,14 @@ export function ThemePreviewPane({
         data-theme-preview={mode}
         className={cn(
           mode === "dark" && "dark",
-          "flex flex-col gap-6 rounded-2xl border border-border bg-background p-4 text-foreground shadow-sm squircle",
+          "flex flex-col gap-10 rounded-2xl border border-border bg-background p-6 text-foreground shadow-sm squircle [&>*+*]:border-t [&>*+*]:border-border [&>*+*]:pt-10",
           isHighlighted(["bg"]),
         )}
       >
-        {/* 1. Superfícies */}
-        <section className="flex flex-col gap-3">
-          <div className="flex items-baseline gap-1.5 text-xs">
-            <span className="font-semibold text-foreground">Superfícies</span>
-            <span className="text-secondary-foreground">
-              texto, cartão, menu e campos
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 items-start gap-3">
+        {/* 1. Card, menu, cinza e campos: cada exemplo com a sua legenda */}
+        <div className="grid grid-cols-2 items-start gap-x-8 gap-y-10">
+          <section className="flex flex-col gap-5">
+            <h5 className="text-foreground">Card</h5>
             <div className="flex flex-col gap-2">
               <div className="flex flex-col gap-0.5">
                 <span
@@ -293,14 +299,55 @@ export function ThemePreviewPane({
                   isHighlighted(["card", "border"]),
                 )}
               >
-                <div className="text-xs font-medium text-foreground">
-                  Cartão
-                </div>
+                <div className="text-xs font-medium text-foreground">Card</div>
                 <div className="text-xs text-secondary-foreground">
-                  Fundo do cartão com borda
+                  Fundo do card com borda
                 </div>
               </div>
+            </div>
+          </section>
 
+          <section className="flex flex-col gap-5">
+            <h5 className="text-foreground">Menu</h5>
+            <div className="flex flex-col gap-0.5 self-start rounded-2xl border border-foreground/5 bg-popover p-1 shadow-lg squircle dark:border-foreground/10">
+              <div className="flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs text-foreground squircle">
+                <CopyIcon className="size-3.5 opacity-60" />
+                <span>Duplicar</span>
+              </div>
+              <div className="flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs text-foreground squircle">
+                <PlusIcon className="size-3.5 opacity-60" />
+                <span>Nova ação</span>
+              </div>
+              <div
+                className={cn(
+                  "flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs text-error-foreground squircle",
+                  isHighlighted(["error"]),
+                )}
+              >
+                <Trash2Icon className="size-3.5 opacity-60" />
+                <span>Excluir</span>
+              </div>
+            </div>
+          </section>
+
+          <section className="flex flex-col gap-5">
+            <h5 className="text-foreground">Cinza</h5>
+            <div className="flex flex-col gap-0.5 self-start">
+              <div
+                className={cn(
+                  "flex items-center gap-2 rounded-xl bg-secondary px-2.5 py-1.5 text-xs text-foreground squircle",
+                  isHighlighted(["secondary"]),
+                )}
+              >
+                <CalendarIcon className="size-3.5 opacity-60" />
+                <span>Mudar data</span>
+              </div>
+            </div>
+          </section>
+
+          <section className="flex flex-col gap-5">
+            <h5 className="text-foreground">Campos</h5>
+            <div className="flex flex-col gap-2">
               <PrismInput
                 aria-label="Campo normal de prévia"
                 className={cn("pointer-events-none", isHighlighted(["input"]))}
@@ -312,7 +359,7 @@ export function ThemePreviewPane({
               <PrismInput
                 aria-label="Campo em foco de prévia"
                 className={cn(
-                  "pointer-events-none border-ring/60 ring-3 ring-ring/30",
+                  "pointer-events-none border-ring/60 ring-3 ring-ring-halo",
                   isHighlighted(["input", "ring", "ringHalo"]),
                 )}
                 readOnly
@@ -333,60 +380,23 @@ export function ThemePreviewPane({
                 value="Campo com erro"
               />
             </div>
+          </section>
+        </div>
 
-            <div
-              className={cn(
-                "flex flex-col gap-0.5 rounded-2xl border border-foreground/5 bg-popover p-1 shadow-lg squircle dark:border-foreground/10",
-                isHighlighted(["popover", "shadow", "shadowOpacity"]),
-              )}
-            >
-              <div className="flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs text-foreground squircle">
-                <CopyIcon className="size-3.5 opacity-60" />
-                <span>Duplicar</span>
-              </div>
-              <div
-                className={cn(
-                  "flex items-center gap-2 rounded-xl bg-secondary px-2.5 py-1.5 text-xs text-foreground squircle",
-                  isHighlighted(["secondary"]),
-                )}
-              >
-                <CalendarIcon className="size-3.5 opacity-60" />
-                <span>Mudar data</span>
-              </div>
-              <div className="flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs text-foreground squircle">
-                <PlusIcon className="size-3.5 opacity-60" />
-                <span>Nova ação</span>
-              </div>
-              <div
-                className={cn(
-                  "flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs text-error-foreground squircle",
-                  isHighlighted(["error"]),
-                )}
-              >
-                <Trash2Icon className="size-3.5 opacity-60" />
-                <span>Excluir</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 2. Cartão de ação */}
-        <section className="flex flex-col gap-2">
-          <div className="flex items-baseline gap-1.5 text-xs">
-            <span className="font-semibold text-foreground">
-              Cartão de ação
-            </span>
-            <span className="text-secondary-foreground">
-              repouso e com o mouse
-            </span>
+        {/* 2. Ação */}
+        <section className="flex flex-col gap-5">
+          <div className="flex flex-col gap-1">
+            <h5 className="text-foreground">Ação</h5>
+            <p className="text-sm text-secondary-foreground">repouso e hover</p>
           </div>
 
           <div className="grid grid-cols-2 gap-2.5">
             <span className="text-xs text-secondary-foreground">Repouso</span>
-            <span className="text-xs text-secondary-foreground">
-              Com o mouse
-            </span>
+            <span className="text-xs text-secondary-foreground">Hover</span>
 
+            <span className="col-span-2 text-xs text-secondary-foreground">
+              Bloco
+            </span>
             <div
               className={cn(
                 "pointer-events-none",
@@ -395,6 +405,7 @@ export function ThemePreviewPane({
             >
               <ActionItem
                 action={demoActions.blockAction}
+                phaseColorMode="off"
                 onClick={noopClick}
                 variant={VARIANT.block}
               />
@@ -407,12 +418,16 @@ export function ThemePreviewPane({
             >
               <ActionItem
                 action={demoActions.blockAction}
+                phaseColorMode="off"
                 className="bg-action-hover shadow-action-hover"
                 onClick={noopClick}
                 variant={VARIANT.block}
               />
             </div>
 
+            <span className="col-span-2 text-xs text-secondary-foreground">
+              Linha
+            </span>
             <div
               className={cn(
                 "pointer-events-none",
@@ -421,6 +436,7 @@ export function ThemePreviewPane({
             >
               <ActionItem
                 action={demoActions.lineAction}
+                phaseColorMode="off"
                 onClick={noopClick}
                 variant={VARIANT.line}
               />
@@ -433,17 +449,22 @@ export function ThemePreviewPane({
             >
               <ActionItem
                 action={demoActions.lineAction}
+                phaseColorMode="off"
                 className="bg-action-hover shadow-action-hover"
                 onClick={noopClick}
                 variant={VARIANT.line}
               />
             </div>
 
+            <span className="col-span-2 text-xs text-secondary-foreground">
+              Atrasado (cor do estado Erro)
+            </span>
             <div
               className={cn("pointer-events-none", isHighlighted(["error"]))}
             >
               <ActionItem
                 action={demoActions.lateAction}
+                phaseColorMode="off"
                 displayFlags={{ showLate: true }}
                 onClick={noopClick}
                 variant={VARIANT.block}
@@ -454,6 +475,7 @@ export function ThemePreviewPane({
             >
               <ActionItem
                 action={demoActions.lateAction}
+                phaseColorMode="off"
                 className="bg-error-background shadow-action-hover"
                 displayFlags={{ showLate: true }}
                 onClick={noopClick}
@@ -464,23 +486,23 @@ export function ThemePreviewPane({
         </section>
 
         {/* 3. Fases */}
-        <section className="flex flex-col gap-2">
-          <div className="flex items-baseline gap-1.5 text-xs">
-            <span className="font-semibold text-foreground">Fases</span>
-            <span className="text-secondary-foreground">
-              suave e viva, repouso e mouse
-            </span>
+        <section className="flex flex-col gap-5">
+          <div className="flex flex-col gap-1">
+            <h5 className="text-foreground">Fases</h5>
+            <p className="text-sm text-secondary-foreground">
+              suave e viva, repouso e hover
+            </p>
           </div>
 
           <div className="grid grid-cols-[76px_repeat(4,minmax(0,1fr))] items-center gap-1.5">
             <span />
             <span className="text-xs text-secondary-foreground">Suave</span>
             <span className="text-xs text-secondary-foreground">
-              Suave · mouse
+              Suave · hover
             </span>
             <span className="text-xs text-secondary-foreground">Viva</span>
             <span className="text-xs text-secondary-foreground">
-              Viva · mouse
+              Viva · hover
             </span>
 
             {PHASE_ORDER.map((slug) => {
@@ -519,7 +541,9 @@ export function ThemePreviewPane({
                   >
                     <ActionItem
                       action={phaseAction}
-                      className="px-2 py-1 phase-surface"
+                      className="px-2 py-1"
+                      phaseColorMode="soft"
+                      phaseColorOverride={phaseHex}
                       dateTimeDisplay={DATE_TIME_DISPLAY.Null}
                       onClick={noopClick}
                       displayFlags={{
@@ -540,7 +564,9 @@ export function ThemePreviewPane({
                   >
                     <ActionItem
                       action={phaseAction}
-                      className="bg-action-hover px-2 py-1 shadow-action-hover phase-surface"
+                      className="bg-action-hover px-2 py-1 shadow-action-hover"
+                      phaseColorMode="soft"
+                      phaseColorOverride={phaseHex}
                       dateTimeDisplay={DATE_TIME_DISPLAY.Null}
                       onClick={noopClick}
                       displayFlags={{
@@ -561,7 +587,9 @@ export function ThemePreviewPane({
                   >
                     <ActionItem
                       action={phaseAction}
-                      className="phase-vivid px-2 py-1"
+                      className="px-2 py-1"
+                      phaseColorMode="vivid"
+                      phaseColorOverride={phaseHex}
                       dateTimeDisplay={DATE_TIME_DISPLAY.Null}
                       onClick={noopClick}
                       displayFlags={{
@@ -582,7 +610,9 @@ export function ThemePreviewPane({
                   >
                     <ActionItem
                       action={phaseAction}
-                      className="phase-vivid bg-action-hover px-2 py-1 shadow-action-hover"
+                      className="bg-action-hover px-2 py-1 shadow-action-hover"
+                      phaseColorMode="vivid"
+                      phaseColorOverride={phaseHex}
                       dateTimeDisplay={DATE_TIME_DISPLAY.Null}
                       onClick={noopClick}
                       displayFlags={{
@@ -600,17 +630,56 @@ export function ThemePreviewPane({
           </div>
         </section>
 
+        {/* Categorias */}
+        <section className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1">
+            <h5 className="text-foreground">Categorias</h5>
+            <p className="text-sm text-secondary-foreground">
+              ícone com a cor da categoria
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-x-8 gap-y-6">
+            {CATEGORY_ORDER.map((slug) => {
+              const color = oklchToCss(shared.categories[slug]);
+              return (
+                <div
+                  key={slug}
+                  className={cn(
+                    "flex min-w-0 items-center gap-3 text-sm text-foreground",
+                    isHighlighted([`cat-${slug}`, "categoryIcon"]),
+                  )}
+                >
+                  <UIcons
+                    className="size-5 shrink-0"
+                    color={color}
+                    slug={slug}
+                  />
+                  <span className="min-w-0 flex-1 truncate">
+                    {CATEGORIES[slug].title}
+                  </span>
+                  <UIcons
+                    className="size-10 shrink-0"
+                    color={color}
+                    slug={slug}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
         {/* 4. Botões */}
-        <section className="flex flex-col gap-2">
-          <div className="flex items-baseline gap-1.5 text-xs">
-            <span className="font-semibold text-foreground">Botões</span>
-            <span className="text-secondary-foreground">tamanho pequeno</span>
+        <section className="flex flex-col gap-5">
+          <div className="flex flex-col gap-1">
+            <h5 className="text-foreground">Botões</h5>
+            <p className="text-sm text-secondary-foreground">tamanho pequeno</p>
           </div>
 
           <div className="grid grid-cols-[88px_repeat(3,minmax(0,1fr))] items-center gap-2">
             <span />
             <span className="text-xs text-secondary-foreground">Repouso</span>
-            <span className="text-xs text-secondary-foreground">Mouse</span>
+            <span className="text-xs text-secondary-foreground">Hover</span>
             <span className="text-xs text-secondary-foreground">Foco</span>
 
             {BUTTON_DEMO_ROWS.map((row) => (
@@ -658,12 +727,13 @@ export function ThemePreviewPane({
           </div>
         </section>
 
-        {/* 5. Avisos e prioridades */}
-        <section className="flex flex-col gap-3">
-          <div className="flex items-baseline gap-1.5 text-xs">
-            <span className="font-semibold text-foreground">
-              Avisos e prioridades
-            </span>
+        {/* 5. Avisos */}
+        <section className="flex flex-col gap-5">
+          <div className="flex flex-col gap-1">
+            <h5 className="text-foreground">Avisos</h5>
+            <p className="text-sm text-secondary-foreground">
+              Selos e alertas de cada estado
+            </p>
           </div>
 
           <div className="flex flex-wrap gap-1.5">
@@ -690,26 +760,54 @@ export function ThemePreviewPane({
             </PrismBadge>
           </div>
 
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <div className="flex flex-col gap-4">
+            <PrismAlert className="p-3">
+              <InfoIcon />
+              <PrismAlertTitle className="text-base">Padrão</PrismAlertTitle>
+              <PrismAlertDescription className="text-sm">
+                Aviso neutro, sem estado.
+              </PrismAlertDescription>
+            </PrismAlert>
             <PrismAlert
               className={cn("p-3", isHighlighted(["error"]))}
               variant="error"
             >
               <OctagonAlertIcon />
-              <PrismAlertTitle className="text-sm">Erro</PrismAlertTitle>
-              <PrismAlertDescription className="text-xs">
+              <PrismAlertTitle className="text-base">Erro</PrismAlertTitle>
+              <PrismAlertDescription className="text-sm">
                 Não foi possível salvar a alteração.
               </PrismAlertDescription>
             </PrismAlert>
-
             <PrismAlert
               className={cn("p-3", isHighlighted(["warning"]))}
               variant="warning"
             >
               <AlertTriangleIcon />
-              <PrismAlertTitle className="text-sm">Atenção</PrismAlertTitle>
-              <PrismAlertDescription className="text-xs">
+              <PrismAlertTitle className="text-base">Atenção</PrismAlertTitle>
+              <PrismAlertDescription className="text-sm">
                 Confira o contraste no escuro.
+              </PrismAlertDescription>
+            </PrismAlert>
+            <PrismAlert
+              className={cn("p-3", isHighlighted(["success"]))}
+              variant="success"
+            >
+              <CircleCheckIcon />
+              <PrismAlertTitle className="text-base">Sucesso</PrismAlertTitle>
+              <PrismAlertDescription className="text-sm">
+                Alteração salva.
+              </PrismAlertDescription>
+            </PrismAlert>
+            <PrismAlert
+              className={cn("p-3", isHighlighted(["info"]))}
+              variant="info"
+            >
+              <InfoIcon />
+              <PrismAlertTitle className="text-base">
+                Informação
+              </PrismAlertTitle>
+              <PrismAlertDescription className="text-sm">
+                As ações mudam no hover.
               </PrismAlertDescription>
             </PrismAlert>
           </div>

@@ -1,10 +1,16 @@
-import { PHASES } from "~/lib/CONSTANTS";
-import { PALLETE, type PaletteConfig } from "~/lib/palettes";
-
-export type PhaseSlug = keyof typeof PHASES;
+import { CATEGORIES, PHASES } from "~/lib/CONSTANTS";
+import {
+  PALLETE,
+  SHARED_COLORS,
+  type CategorySlug,
+  type ModePair,
+  type PaletteConfig,
+  type PhaseSlug,
+  type SharedColors,
+} from "~/lib/palettes";
+import palettesSource from "~/lib/palettes.ts?raw";
 import {
   formatOklchString,
-  hexToOklch,
   oklchToHex,
   parseOklchString,
   type OklchColor,
@@ -36,51 +42,26 @@ export const PHASE_ORDER: readonly PhaseSlug[] = [
   "finished",
 ] as const;
 
-export const ORIGINAL_PRIORITIES: Record<
-  "light" | "dark",
-  Record<PriorityKey, OklchColor>
-> = {
-  light: {
-    low: { l: 0.7, c: 0.17, h: 150 },
-    medium: { l: 0.82, c: 0.16, h: 90 },
-    high: { l: 0.65, c: 0.22, h: 25 },
-  },
-  dark: {
-    low: { l: 0.75, c: 0.16, h: 150 },
-    medium: { l: 0.85, c: 0.15, h: 95 },
-    high: { l: 0.7, c: 0.2, h: 25 },
-  },
-};
+export type { CategorySlug, PhaseSlug } from "~/lib/palettes";
 
-export const DEFAULT_MODE_DELTAS: Record<
-  "light" | "dark",
-  Record<DeltaKey, number>
-> = {
-  light: {
-    fgLDelta: -0.96,
-    cardLDelta: -0.02,
-    popoverLDelta: 0.02,
-    borderLDelta: -0.09,
-    inputLDelta: -0.04,
-    secondaryLDelta: -0.06,
-    secondaryHoverLDelta: -0.08,
-    actionLDelta: 0.02,
-    actionHoverLDelta: 0.1,
-  },
-  dark: {
-    fgLDelta: 0.8,
-    cardLDelta: 0.05,
-    popoverLDelta: -0.03,
-    borderLDelta: 0.15,
-    inputLDelta: -0.06,
-    secondaryLDelta: 0.12,
-    secondaryHoverLDelta: 0.15,
-    actionLDelta: 0.1,
-    actionHoverLDelta: 0.2,
-  },
-};
+export const CATEGORY_ORDER: readonly CategorySlug[] = [
+  "ads",
+  "capture",
+  "carousel",
+  "design",
+  "dev",
+  "finance",
+  "meeting",
+  "post",
+  "print",
+  "reels",
+  "sm",
+  "stories",
+  "todo",
+] as const;
 
 export type PhasesColorMap = Record<PhaseSlug, OklchColor>;
+export type CategoriesColorMap = Record<CategorySlug, OklchColor>;
 export type PrioritiesColorMap = Record<
   "light" | "dark",
   Record<PriorityKey, OklchColor>
@@ -96,13 +77,21 @@ export interface ThemeChangeEntry {
   keyPath: string;
 }
 
-const STORAGE_KEY = "uzzina:admin-theme-editor-draft:v1";
+const STORAGE_KEY = "uzzina:admin-theme-editor-draft:v3";
 
 export interface StoredThemeDraft {
   paletteId: string;
+  /** Snapshot of the palette in palettes.ts when the draft was saved. */
+  base: string;
+  /** Snapshot of SHARED_COLORS in palettes.ts when the draft was saved. */
+  sharedBase: string;
   palette: PaletteConfig;
-  phases: PhasesColorMap;
-  priorities: PrioritiesColorMap;
+  shared: SharedColors;
+}
+
+/** Fingerprint of a palette as written in palettes.ts, used to detect a stale draft. */
+export function fingerprintPalette(palette: PaletteConfig): string {
+  return JSON.stringify(palette);
 }
 
 export function clonePaletteConfig(palette: PaletteConfig): PaletteConfig {
@@ -111,68 +100,451 @@ export function clonePaletteConfig(palette: PaletteConfig): PaletteConfig {
     light: {
       ...palette.light,
       primary: { ...palette.light.primary },
-      primaryFg: palette.light.primaryFg
-        ? { ...palette.light.primaryFg }
-        : undefined,
       bg: { ...palette.light.bg },
       accent: { ...palette.light.accent },
     },
     dark: {
       ...palette.dark,
       primary: { ...palette.dark.primary },
-      primaryFg: palette.dark.primaryFg
-        ? { ...palette.dark.primaryFg }
-        : undefined,
       bg: { ...palette.dark.bg },
       accent: { ...palette.dark.accent },
     },
   };
 }
 
-export function getOriginalPhasesMap(): PhasesColorMap {
-  const map = {} as PhasesColorMap;
-  for (const slug of PHASE_ORDER) {
-    map[slug] = hexToOklch(PHASES[slug].color);
-  }
-  return map;
+/** Fingerprint of the shared block as written in palettes.ts. */
+export function fingerprintShared(): string {
+  return JSON.stringify(SHARED_COLORS);
 }
 
-export function getOriginalPrioritiesMap(): PrioritiesColorMap {
+/** Deep copy of the shared block (states, phases, categories). */
+export function cloneSharedColors(shared: SharedColors): SharedColors {
+  return structuredClone(shared);
+}
+
+export function getOriginalShared(): SharedColors {
+  return cloneSharedColors(SHARED_COLORS);
+}
+
+export function getOriginalPhasesMap(): PhasesColorMap {
+  return { ...SHARED_COLORS.phases };
+}
+
+/**
+ * Priorities are read-only (DS36): Baixa = Sucesso, Média = Atenção,
+ * Alta = Erro, the same as the --priority-* variables in tailwind.css.
+ */
+/** Numeric formulas of the shared block, editable per mode (DS36, stage 3). */
+export type FormulaKey =
+  | "supportL"
+  | "supportC"
+  | "primaryHoverMix"
+  | "ringHaloAlpha"
+  | "lateBgAlpha"
+  | "actionRingAlpha"
+  | "actionShadowAlpha"
+  | "actionHoverShadowAlpha"
+  | "topHighlightAlpha"
+  | "categoryIconFill"
+  | "categoryIconStroke"
+  | "categoryIconChroma"
+  | "shadowMix"
+  | "shadowL"
+  | "shadowAlpha";
+
+export type StateKey = "error" | "warning" | "success" | "info";
+export type StatePart = "color" | "text";
+
+export function getStateColor(
+  shared: SharedColors,
+  key: StateKey,
+  part: StatePart,
+  mode: "light" | "dark",
+): OklchColor {
+  return shared.states[key][part][mode];
+}
+
+/** Shared block with one state color changed (fill or text, per mode). */
+export function setStateColor(
+  shared: SharedColors,
+  key: StateKey,
+  part: StatePart,
+  mode: "light" | "dark",
+  color: OklchColor,
+): SharedColors {
+  const state = shared.states[key];
   return {
-    light: {
-      low: { ...ORIGINAL_PRIORITIES.light.low },
-      medium: { ...ORIGINAL_PRIORITIES.light.medium },
-      high: { ...ORIGINAL_PRIORITIES.light.high },
-    },
-    dark: {
-      low: { ...ORIGINAL_PRIORITIES.dark.low },
-      medium: { ...ORIGINAL_PRIORITIES.dark.medium },
-      high: { ...ORIGINAL_PRIORITIES.dark.high },
+    ...shared,
+    states: {
+      ...shared.states,
+      [key]: { ...state, [part]: { ...state[part], [mode]: color } },
     },
   };
+}
+
+/** Numeric values of the states and the marker (DS36, stage 6). */
+export type SharedNumberKey =
+  | "backgroundMix"
+  | "markerLDelta"
+  | "markerC"
+  | "strongL"
+  | "strongC"
+  | "strongHoverL"
+  | "strongHoverC";
+
+export function getSharedNumber(
+  shared: SharedColors,
+  key: SharedNumberKey,
+  mode: "light" | "dark",
+): number {
+  switch (key) {
+    case "backgroundMix":
+      return shared.states.backgroundMix[mode];
+    case "markerLDelta":
+      return shared.markerText.lDelta[mode];
+    case "markerC":
+      return shared.markerText.c;
+    case "strongL":
+      return shared.states.successStrong.l;
+    case "strongC":
+      return shared.states.successStrong.c;
+    case "strongHoverL":
+      return shared.states.successStrong.hoverL;
+    case "strongHoverC":
+      return shared.states.successStrong.hoverC;
+  }
+}
+
+/** Shared block with one numeric value changed (single values ignore `mode`). */
+export function setSharedNumber(
+  shared: SharedColors,
+  key: SharedNumberKey,
+  mode: "light" | "dark",
+  value: number,
+): SharedColors {
+  const strong = shared.states.successStrong;
+  switch (key) {
+    case "backgroundMix":
+      return {
+        ...shared,
+        states: {
+          ...shared.states,
+          backgroundMix: { ...shared.states.backgroundMix, [mode]: value },
+        },
+      };
+    case "markerLDelta":
+      return {
+        ...shared,
+        markerText: {
+          ...shared.markerText,
+          lDelta: { ...shared.markerText.lDelta, [mode]: value },
+        },
+      };
+    case "markerC":
+      return { ...shared, markerText: { ...shared.markerText, c: value } };
+    case "strongL":
+      return {
+        ...shared,
+        states: { ...shared.states, successStrong: { ...strong, l: value } },
+      };
+    case "strongC":
+      return {
+        ...shared,
+        states: { ...shared.states, successStrong: { ...strong, c: value } },
+      };
+    case "strongHoverL":
+      return {
+        ...shared,
+        states: {
+          ...shared.states,
+          successStrong: { ...strong, hoverL: value },
+        },
+      };
+    case "strongHoverC":
+      return {
+        ...shared,
+        states: {
+          ...shared.states,
+          successStrong: { ...strong, hoverC: value },
+        },
+      };
+  }
+}
+
+/** One value of the phase derivations (DS36, stage 5). */
+export type PhaseFormulaKey = keyof SharedColors["formulas"]["phase"];
+
+/** Pairs read a value per mode; single values are the same for both modes. */
+export function getPhaseFormula(
+  shared: SharedColors,
+  key: PhaseFormulaKey,
+  mode: "light" | "dark",
+): number {
+  const value = shared.formulas.phase[key];
+  return typeof value === "number" ? value : value[mode];
+}
+
+export function setPhaseFormula(
+  shared: SharedColors,
+  key: PhaseFormulaKey,
+  mode: "light" | "dark",
+  value: number,
+): SharedColors {
+  const phase = shared.formulas.phase;
+  const current = phase[key];
+  const next =
+    typeof current === "number" ? value : { ...current, [mode]: value };
+  return {
+    ...shared,
+    formulas: {
+      ...shared.formulas,
+      phase: { ...phase, [key]: next },
+    },
+  };
+}
+
+/** Late card shadow values (light: alpha pair; dark: L, C and alpha pair). */
+export type LateKey = "alpha" | "alphaHover" | "l" | "c";
+
+export function getLateValue(
+  shared: SharedColors,
+  key: LateKey,
+  mode: "light" | "dark",
+): number {
+  const late = shared.lateShadow;
+  if (mode === "light") {
+    return key === "alphaHover" ? late.light.alphaHover : late.light.alpha;
+  }
+  switch (key) {
+    case "l":
+      return late.dark.l;
+    case "c":
+      return late.dark.c;
+    case "alpha":
+      return late.dark.alpha;
+    case "alphaHover":
+      return late.dark.alphaHover;
+  }
+}
+
+/** Shared block with one late card value changed (light has no L or C). */
+export function setLateValue(
+  shared: SharedColors,
+  key: LateKey,
+  mode: "light" | "dark",
+  value: number,
+): SharedColors {
+  const late = shared.lateShadow;
+  if (mode === "light") {
+    if (key !== "alpha" && key !== "alphaHover") return shared;
+    return {
+      ...shared,
+      lateShadow: { ...late, light: { ...late.light, [key]: value } },
+    };
+  }
+  return {
+    ...shared,
+    lateShadow: { ...late, dark: { ...late.dark, [key]: value } },
+  };
+}
+
+export function getFormulaValue(
+  shared: SharedColors,
+  key: FormulaKey,
+  mode: "light" | "dark",
+): number {
+  const f = shared.formulas;
+  switch (key) {
+    case "shadowMix":
+      return shared.shadow.mix[mode];
+    case "shadowL":
+      return shared.shadow.l[mode];
+    case "shadowAlpha":
+      return shared.shadow.alpha[mode];
+    case "supportL":
+      return f.support.lDelta[mode];
+    case "supportC":
+      return f.support.cDelta[mode];
+    case "primaryHoverMix":
+      return f.primaryHoverMix[mode];
+    case "ringHaloAlpha":
+      return f.ringHaloAlpha[mode];
+    case "lateBgAlpha":
+      return f.lateBgAlpha[mode];
+    case "actionRingAlpha":
+      return f.actionCard.ringAlpha[mode];
+    case "actionShadowAlpha":
+      return f.actionCard.shadowAlpha[mode];
+    case "actionHoverShadowAlpha":
+      return f.actionCard.hoverShadowAlpha[mode];
+    case "topHighlightAlpha":
+      return f.topHighlightAlpha[mode];
+    case "categoryIconFill":
+      return f.categoryIcon.fillAlpha[mode];
+    case "categoryIconStroke":
+      return f.categoryIcon.strokeAlpha[mode];
+    case "categoryIconChroma":
+      return f.categoryIcon.chroma[mode];
+  }
+}
+
+/** Returns a copy of the shared block with one formula value changed. */
+export function setFormulaValue(
+  shared: SharedColors,
+  key: FormulaKey,
+  mode: "light" | "dark",
+  value: number,
+): SharedColors {
+  const f = shared.formulas;
+  const pair = (current: ModePair<number>): ModePair<number> => ({
+    ...current,
+    [mode]: value,
+  });
+  switch (key) {
+    case "shadowMix":
+      return {
+        ...shared,
+        shadow: { ...shared.shadow, mix: pair(shared.shadow.mix) },
+      };
+    case "shadowL":
+      return {
+        ...shared,
+        shadow: { ...shared.shadow, l: pair(shared.shadow.l) },
+      };
+    case "shadowAlpha":
+      return {
+        ...shared,
+        shadow: { ...shared.shadow, alpha: pair(shared.shadow.alpha) },
+      };
+    case "supportL":
+      return {
+        ...shared,
+        formulas: {
+          ...f,
+          support: { ...f.support, lDelta: pair(f.support.lDelta) },
+        },
+      };
+    case "supportC":
+      return {
+        ...shared,
+        formulas: {
+          ...f,
+          support: { ...f.support, cDelta: pair(f.support.cDelta) },
+        },
+      };
+    case "primaryHoverMix":
+      return {
+        ...shared,
+        formulas: { ...f, primaryHoverMix: pair(f.primaryHoverMix) },
+      };
+    case "ringHaloAlpha":
+      return {
+        ...shared,
+        formulas: { ...f, ringHaloAlpha: pair(f.ringHaloAlpha) },
+      };
+    case "lateBgAlpha":
+      return {
+        ...shared,
+        formulas: { ...f, lateBgAlpha: pair(f.lateBgAlpha) },
+      };
+    case "actionRingAlpha":
+      return {
+        ...shared,
+        formulas: {
+          ...f,
+          actionCard: {
+            ...f.actionCard,
+            ringAlpha: pair(f.actionCard.ringAlpha),
+          },
+        },
+      };
+    case "actionShadowAlpha":
+      return {
+        ...shared,
+        formulas: {
+          ...f,
+          actionCard: {
+            ...f.actionCard,
+            shadowAlpha: pair(f.actionCard.shadowAlpha),
+          },
+        },
+      };
+    case "actionHoverShadowAlpha":
+      return {
+        ...shared,
+        formulas: {
+          ...f,
+          actionCard: {
+            ...f.actionCard,
+            hoverShadowAlpha: pair(f.actionCard.hoverShadowAlpha),
+          },
+        },
+      };
+    case "topHighlightAlpha":
+      return {
+        ...shared,
+        formulas: { ...f, topHighlightAlpha: pair(f.topHighlightAlpha) },
+      };
+    case "categoryIconFill":
+      return {
+        ...shared,
+        formulas: {
+          ...f,
+          categoryIcon: {
+            ...f.categoryIcon,
+            fillAlpha: pair(f.categoryIcon.fillAlpha),
+          },
+        },
+      };
+    case "categoryIconStroke":
+      return {
+        ...shared,
+        formulas: {
+          ...f,
+          categoryIcon: {
+            ...f.categoryIcon,
+            strokeAlpha: pair(f.categoryIcon.strokeAlpha),
+          },
+        },
+      };
+    case "categoryIconChroma":
+      return {
+        ...shared,
+        formulas: {
+          ...f,
+          categoryIcon: {
+            ...f.categoryIcon,
+            chroma: pair(f.categoryIcon.chroma),
+          },
+        },
+      };
+  }
+}
+
+export function derivePriorities(shared: SharedColors): PrioritiesColorMap {
+  const pick = (mode: "light" | "dark") => ({
+    low: shared.states.success.color[mode],
+    medium: shared.states.warning.color[mode],
+    high: shared.states.error.color[mode],
+  });
+  return { light: pick("light"), dark: pick("dark") };
 }
 
 export function getPaletteById(paletteId: string): PaletteConfig {
   return PALLETE.find((p) => p.id === paletteId) ?? PALLETE[0];
 }
 
-export function getModePrimaryFgFallback(
-  mode: "light" | "dark",
-  primary: OklchColor,
-): OklchColor {
-  return mode === "light"
-    ? { l: 0.97, c: 0, h: primary.h }
-    : { l: 0.97, c: 0.014, h: primary.h };
-}
-
+/** Text on the primary: the primary moved by the palette deltas (DS36, stage 7). */
 export function getEffectivePrimaryFg(
   palette: PaletteConfig,
   mode: "light" | "dark",
 ): OklchColor {
-  return (
-    palette[mode].primaryFg ??
-    getModePrimaryFgFallback(mode, palette[mode].primary)
-  );
+  const { primary, primaryFgDelta } = palette[mode];
+  return {
+    l: Math.max(0, Math.min(1, primary.l + primaryFgDelta.l)),
+    c: Math.max(0, primary.c + primaryFgDelta.c),
+    h: primary.h + primaryFgDelta.h,
+  };
 }
 
 export function getEffectiveDelta(
@@ -180,7 +552,7 @@ export function getEffectiveDelta(
   mode: "light" | "dark",
   key: DeltaKey,
 ): number {
-  return palette[mode][key] ?? DEFAULT_MODE_DELTAS[mode][key];
+  return palette[mode][key];
 }
 
 /** Text color of a palette: page background plus its L delta, chroma 0. */
@@ -191,14 +563,6 @@ export function getPaletteFg(
   const bg = palette[mode].bg;
   const delta = getEffectiveDelta(palette, mode, "fgLDelta");
   return { l: Math.max(0, Math.min(1, bg.l + delta)), c: 0, h: bg.h };
-}
-
-export function getShadowOklch(
-  palette: PaletteConfig,
-  mode: "light" | "dark",
-): OklchColor {
-  const raw = palette[mode].shadowColor;
-  return parseOklchString(raw) ?? { l: 0.2, c: 0.01, h: 200 };
 }
 
 function oklchEquals(a: OklchColor, b: OklchColor): boolean {
@@ -224,7 +588,7 @@ const PALETTE_COLOR_META: Record<
 
 const DELTA_META: Record<DeltaKey, { label: string; token: string }> = {
   fgLDelta: { label: "Texto (ajuste de luz)", token: "--foreground-l-delta" },
-  cardLDelta: { label: "Cartão (ajuste de luz)", token: "--card-l-delta" },
+  cardLDelta: { label: "Card (ajuste de luz)", token: "--card-l-delta" },
   popoverLDelta: {
     label: "Menus e diálogos (ajuste de luz)",
     token: "--popover-l-delta",
@@ -235,16 +599,16 @@ const DELTA_META: Record<DeltaKey, { label: string; token: string }> = {
     token: "--secondary-l-delta",
   },
   secondaryHoverLDelta: {
-    label: "Cinza · mouse (ajuste de luz)",
+    label: "Cinza · hover (ajuste de luz)",
     token: "--secondary-hover-l-delta",
   },
   borderLDelta: { label: "Bordas (ajuste de luz)", token: "--border-l-delta" },
   actionLDelta: {
-    label: "Cartão de ação (ajuste de luz)",
+    label: "Ação (ajuste de luz)",
     token: "--action-l-delta",
   },
   actionHoverLDelta: {
-    label: "Cartão de ação · mouse (ajuste de luz)",
+    label: "Ação · hover (ajuste de luz)",
     token: "--action-hover-l-delta",
   },
 };
@@ -255,21 +619,395 @@ const PRIORITY_LABELS: Record<PriorityKey, string> = {
   high: "Prioridade Alta",
 };
 
+type SharedDiffTarget = {
+  token: string;
+  label: string;
+  keyPath: string;
+  old: OklchColor;
+  next: OklchColor;
+};
+
+/** Shared colors (states, phases, categories) that differ from palettes.ts. */
+function collectSharedDiffs(draftShared: SharedColors): ThemeChangeEntry[] {
+  const original = SHARED_COLORS;
+  const changes: ThemeChangeEntry[] = [];
+  const pushColor = (t: SharedDiffTarget, mode: ThemeChangeEntry["mode"]) => {
+    if (oklchEquals(t.old, t.next)) return;
+    changes.push({
+      token: t.token,
+      label: t.label,
+      mode,
+      oldValue: `${oklchToHex(t.old.h, t.old.c, t.old.l)} (${formatOklchString(t.old)})`,
+      newValue: `${oklchToHex(t.next.h, t.next.c, t.next.l)} (${formatOklchString(t.next)})`,
+      file: "app/lib/palettes.ts",
+      keyPath: t.keyPath,
+    });
+  };
+
+  const stateKeys = ["error", "warning", "success", "info"] as const;
+  for (const key of stateKeys) {
+    const label = STATE_LABELS[key];
+    for (const mode of ["light", "dark"] as const) {
+      const modeLabel = mode === "light" ? "Claro" : "Escuro";
+      pushColor(
+        {
+          token: `--color-${key}`,
+          label: `${label} (cor)`,
+          keyPath: `SHARED_COLORS.states.${key}.color.${mode}`,
+          old: original.states[key].color[mode],
+          next: draftShared.states[key].color[mode],
+        },
+        modeLabel,
+      );
+      pushColor(
+        {
+          token: `--${key}-foreground`,
+          label: `${label} (texto)`,
+          keyPath: `SHARED_COLORS.states.${key}.text.${mode}`,
+          old: original.states[key].text[mode],
+          next: draftShared.states[key].text[mode],
+        },
+        modeLabel,
+      );
+    }
+  }
+
+  for (const slug of PHASE_ORDER) {
+    pushColor(
+      {
+        token: `PHASES.${slug}.color`,
+        label: `Fase ${PHASES[slug].title}`,
+        keyPath: `SHARED_COLORS.phases.${slug}`,
+        old: original.phases[slug],
+        next: draftShared.phases[slug],
+      },
+      "Ambos",
+    );
+  }
+
+  for (const slug of CATEGORY_ORDER) {
+    pushColor(
+      {
+        token: `CATEGORIES.${slug}.color`,
+        label: `Categoria ${CATEGORIES[slug].title}`,
+        keyPath: `SHARED_COLORS.categories.${slug}`,
+        old: original.categories[slug],
+        next: draftShared.categories[slug],
+      },
+      "Ambos",
+    );
+  }
+
+  const numericDiffs: Array<{
+    token: string;
+    label: string;
+    keyPath: string;
+    format: (value: number) => string;
+    pick: (shared: SharedColors) => ModePair<number>;
+  }> = [
+    {
+      token: "--shared-support-l-delta",
+      label: "Texto de apoio (ajuste de luz)",
+      keyPath: "SHARED_COLORS.formulas.support.lDelta",
+      format: (v) => v.toFixed(3),
+      pick: (sh) => sh.formulas.support.lDelta,
+    },
+    {
+      token: "--shared-support-c-delta",
+      label: "Texto de apoio (ajuste de saturação)",
+      keyPath: "SHARED_COLORS.formulas.support.cDelta",
+      format: (v) => v.toFixed(3),
+      pick: (sh) => sh.formulas.support.cDelta,
+    },
+    {
+      token: "--shared-primary-hover-mix",
+      label: "Principal · hover (mistura com o fundo)",
+      keyPath: "SHARED_COLORS.formulas.primaryHoverMix",
+      format: (v) => `${v}%`,
+      pick: (sh) => sh.formulas.primaryHoverMix,
+    },
+    {
+      token: "--shared-category-icon-fill-alpha",
+      label: "Ícone da categoria · fundo (opacidade)",
+      keyPath: "SHARED_COLORS.formulas.categoryIcon.fillAlpha",
+      format: (v) => `${v}%`,
+      pick: (sh) => sh.formulas.categoryIcon.fillAlpha,
+    },
+    {
+      token: "--shared-category-icon-stroke-alpha",
+      label: "Ícone da categoria · contorno (opacidade)",
+      keyPath: "SHARED_COLORS.formulas.categoryIcon.strokeAlpha",
+      format: (v) => `${v}%`,
+      pick: (sh) => sh.formulas.categoryIcon.strokeAlpha,
+    },
+    {
+      token: "--shared-category-icon-chroma",
+      label: "Ícone da categoria · saturação mantida",
+      keyPath: "SHARED_COLORS.formulas.categoryIcon.chroma",
+      format: (v) => v.toFixed(2),
+      pick: (sh) => sh.formulas.categoryIcon.chroma,
+    },
+    {
+      token: "--shared-action-ring-alpha",
+      label: "Ação · anel (força)",
+      keyPath: "SHARED_COLORS.formulas.actionCard.ringAlpha",
+      format: (v) => `${v}%`,
+      pick: (sh) => sh.formulas.actionCard.ringAlpha,
+    },
+    {
+      token: "--shared-action-shadow-alpha",
+      label: "Ação · sombra em repouso (força)",
+      keyPath: "SHARED_COLORS.formulas.actionCard.shadowAlpha",
+      format: (v) => `${v}%`,
+      pick: (sh) => sh.formulas.actionCard.shadowAlpha,
+    },
+    {
+      token: "--shared-action-hover-shadow-alpha",
+      label: "Ação · sombra no hover (força)",
+      keyPath: "SHARED_COLORS.formulas.actionCard.hoverShadowAlpha",
+      format: (v) => `${v}%`,
+      pick: (sh) => sh.formulas.actionCard.hoverShadowAlpha,
+    },
+    {
+      token: "--shared-late-bg-alpha",
+      label: "Ação atrasada · fundo (opacidade)",
+      keyPath: "SHARED_COLORS.formulas.lateBgAlpha",
+      format: (v) => `${v}%`,
+      pick: (sh) => sh.formulas.lateBgAlpha,
+    },
+    {
+      token: "--shared-ring-halo-alpha",
+      label: "Halo de foco (transparência)",
+      keyPath: "SHARED_COLORS.formulas.ringHaloAlpha",
+      format: (v) => `${v}%`,
+      pick: (sh) => sh.formulas.ringHaloAlpha,
+    },
+    {
+      token: "--shared-background-mix",
+      label: "Fundo dos avisos (mistura)",
+      keyPath: "SHARED_COLORS.states.backgroundMix",
+      format: (v) => `${v}%`,
+      pick: (sh) => sh.states.backgroundMix,
+    },
+    {
+      token: "--shared-marker-l-delta",
+      label: "Marca-texto (ajuste de luz)",
+      keyPath: "SHARED_COLORS.markerText.lDelta",
+      format: (v) => v.toFixed(3),
+      pick: (sh) => sh.markerText.lDelta,
+    },
+    {
+      token: "--shared-shadow-mix",
+      label: "Sombra (mistura com a principal)",
+      keyPath: "SHARED_COLORS.shadow.mix",
+      format: (v) => `${v}%`,
+      pick: (sh) => sh.shadow.mix,
+    },
+    {
+      token: "--shared-shadow-l",
+      label: "Sombra (luz)",
+      keyPath: "SHARED_COLORS.shadow.l",
+      format: (v) => v.toFixed(3),
+      pick: (sh) => sh.shadow.l,
+    },
+    {
+      token: "--shared-shadow-alpha",
+      label: "Sombra (força)",
+      keyPath: "SHARED_COLORS.shadow.alpha",
+      format: (v) => `${v}%`,
+      pick: (sh) => sh.shadow.alpha,
+    },
+    {
+      token: "--shared-top-highlight-alpha",
+      label: "Brilho da borda da ação (opacidade)",
+      keyPath: "SHARED_COLORS.formulas.topHighlightAlpha",
+      format: (v) => `${v}%`,
+      pick: (sh) => sh.formulas.topHighlightAlpha,
+    },
+  ];
+  for (const item of numericDiffs) {
+    for (const mode of ["light", "dark"] as const) {
+      const from = item.pick(original)[mode];
+      const to = item.pick(draftShared)[mode];
+      if (Math.abs(from - to) >= 0.0005) {
+        changes.push({
+          token: item.token,
+          label: item.label,
+          mode: mode === "light" ? "Claro" : "Escuro",
+          oldValue: item.format(from),
+          newValue: item.format(to),
+          file: "app/lib/palettes.ts",
+          keyPath: `${item.keyPath}.${mode}`,
+        });
+      }
+    }
+  }
+
+  const singles: Array<{
+    token: string;
+    label: string;
+    keyPath: string;
+    from: number;
+    to: number;
+  }> = [
+    {
+      token: "--shared-marker-c",
+      label: "Marca-texto (saturação)",
+      keyPath: "SHARED_COLORS.markerText.c",
+      from: original.markerText.c,
+      to: draftShared.markerText.c,
+    },
+    {
+      token: "--shared-success-strong-l",
+      label: "Sucesso forte (luz)",
+      keyPath: "SHARED_COLORS.states.successStrong.l",
+      from: original.states.successStrong.l,
+      to: draftShared.states.successStrong.l,
+    },
+    {
+      token: "--shared-success-strong-c",
+      label: "Sucesso forte (saturação)",
+      keyPath: "SHARED_COLORS.states.successStrong.c",
+      from: original.states.successStrong.c,
+      to: draftShared.states.successStrong.c,
+    },
+    {
+      token: "--shared-success-strong-hover-l",
+      label: "Sucesso forte · hover (luz)",
+      keyPath: "SHARED_COLORS.states.successStrong.hoverL",
+      from: original.states.successStrong.hoverL,
+      to: draftShared.states.successStrong.hoverL,
+    },
+    {
+      token: "--shared-success-strong-hover-c",
+      label: "Sucesso forte · hover (saturação)",
+      keyPath: "SHARED_COLORS.states.successStrong.hoverC",
+      from: original.states.successStrong.hoverC,
+      to: draftShared.states.successStrong.hoverC,
+    },
+  ];
+  for (const item of singles) {
+    if (Math.abs(item.from - item.to) >= 0.0005) {
+      changes.push({
+        token: item.token,
+        label: item.label,
+        mode: "Ambos",
+        oldValue: item.from.toFixed(3),
+        newValue: item.to.toFixed(3),
+        file: "app/lib/palettes.ts",
+        keyPath: item.keyPath,
+      });
+    }
+  }
+
+  const phaseKeys = Object.keys(original.formulas.phase) as PhaseFormulaKey[];
+  for (const key of phaseKeys) {
+    for (const mode of ["light", "dark"] as const) {
+      const from = getPhaseFormula(original, key, mode);
+      const to = getPhaseFormula(draftShared, key, mode);
+      if (Math.abs(from - to) >= 0.0005) {
+        changes.push({
+          token: `--shared-phase-${key}`,
+          label: `Fase derivação · ${key}`,
+          mode: mode === "light" ? "Claro" : "Escuro",
+          oldValue: String(from),
+          newValue: String(to),
+          file: "app/lib/palettes.ts",
+          keyPath: `SHARED_COLORS.formulas.phase.${key}`,
+        });
+      }
+      if (typeof original.formulas.phase[key] === "number") break;
+    }
+  }
+
+  const lateKeys: Array<{
+    token: string;
+    label: string;
+    mode: "light" | "dark";
+    key: LateKey;
+    format: (value: number) => string;
+  }> = [
+    {
+      token: "--shared-late-alpha",
+      label: "Ação atrasada (força)",
+      mode: "light",
+      key: "alpha",
+      format: (v) => `${v}%`,
+    },
+    {
+      token: "--shared-late-alpha-hover",
+      label: "Ação atrasada · hover (força)",
+      mode: "light",
+      key: "alphaHover",
+      format: (v) => `${v}%`,
+    },
+    {
+      token: "--shared-dark-late-l",
+      label: "Ação atrasada (luz)",
+      mode: "dark",
+      key: "l",
+      format: (v) => v.toFixed(3),
+    },
+    {
+      token: "--shared-dark-late-c",
+      label: "Ação atrasada (saturação)",
+      mode: "dark",
+      key: "c",
+      format: (v) => v.toFixed(3),
+    },
+    {
+      token: "--shared-dark-late-alpha",
+      label: "Ação atrasada (força)",
+      mode: "dark",
+      key: "alpha",
+      format: (v) => `${v}%`,
+    },
+    {
+      token: "--shared-dark-late-alpha-hover",
+      label: "Ação atrasada · hover (força)",
+      mode: "dark",
+      key: "alphaHover",
+      format: (v) => `${v}%`,
+    },
+  ];
+  for (const item of lateKeys) {
+    const from = getLateValue(original, item.key, item.mode);
+    const to = getLateValue(draftShared, item.key, item.mode);
+    if (Math.abs(from - to) >= 0.0005) {
+      changes.push({
+        token: item.token,
+        label: item.label,
+        mode: item.mode === "light" ? "Claro" : "Escuro",
+        oldValue: item.format(from),
+        newValue: item.format(to),
+        file: "app/lib/palettes.ts",
+        keyPath: `SHARED_COLORS.lateShadow.${item.mode}.${item.key}`,
+      });
+    }
+  }
+
+  return changes;
+}
+
+const STATE_LABELS: Record<"error" | "warning" | "success" | "info", string> = {
+  error: "Erro",
+  warning: "Atenção",
+  success: "Sucesso",
+  info: "Informação",
+};
+
 export function computeThemeChanges(
   paletteId: string,
   draftPalette: PaletteConfig,
-  draftPhases: PhasesColorMap,
-  draftPriorities: PrioritiesColorMap,
+  draftShared: SharedColors,
 ): ThemeChangeEntry[] {
   const original = getPaletteById(paletteId);
-  const originalPhases = getOriginalPhasesMap();
-  const originalPriorities = getOriginalPrioritiesMap();
   const changes: ThemeChangeEntry[] = [];
 
   if ((draftPalette.relief !== false) !== (original.relief !== false)) {
     changes.push({
       token: "relief",
-      label: "Relevo dos cartões",
+      label: "Relevo das ações",
       mode: "Ambos",
       oldValue: String(original.relief !== false),
       newValue: String(draftPalette.relief !== false),
@@ -319,70 +1057,9 @@ export function computeThemeChanges(
         });
       }
     }
-
-    const oldShadow = getShadowOklch(original, mode);
-    const newShadow = getShadowOklch(draftPalette, mode);
-    if (!oklchEquals(oldShadow, newShadow)) {
-      changes.push({
-        token: "--shadow-tint",
-        label: "Cor da sombra",
-        mode: modeLabel,
-        oldValue: formatOklchString(oldShadow),
-        newValue: formatOklchString(newShadow),
-        file: "app/lib/palettes.ts",
-        keyPath: `PALLETE.${original.id}.${mode}.shadowColor`,
-      });
-    }
-
-    if (original[mode].shadowOpacity !== draftPalette[mode].shadowOpacity) {
-      changes.push({
-        token: "--shadow-alpha",
-        label: "Força da sombra",
-        mode: modeLabel,
-        oldValue: `${original[mode].shadowOpacity}%`,
-        newValue: `${draftPalette[mode].shadowOpacity}%`,
-        file: "app/lib/palettes.ts",
-        keyPath: `PALLETE.${original.id}.${mode}.shadowOpacity`,
-      });
-    }
   }
 
-  for (const slug of PHASE_ORDER) {
-    const oldPhase = originalPhases[slug];
-    const newPhase = draftPhases[slug];
-    if (!oklchEquals(oldPhase, newPhase)) {
-      const oldHex = PHASES[slug].color.toUpperCase();
-      const newHex = oklchToHex(newPhase.h, newPhase.c, newPhase.l);
-      changes.push({
-        token: `PHASES.${slug}.color`,
-        label: `Fase ${PHASES[slug].title}`,
-        mode: "Ambos",
-        oldValue: `${oldHex} (${formatOklchString(oldPhase)})`,
-        newValue: `${newHex} (${formatOklchString(newPhase)})`,
-        file: "app/lib/CONSTANTS.ts",
-        keyPath: `PHASES.${slug}.color`,
-      });
-    }
-  }
-
-  for (const mode of ["light", "dark"] as const) {
-    const modeLabel = mode === "light" ? "Claro" : "Escuro";
-    for (const prioKey of ["low", "medium", "high"] as const) {
-      const oldPrio = originalPriorities[mode][prioKey];
-      const newPrio = draftPriorities[mode][prioKey];
-      if (!oklchEquals(oldPrio, newPrio)) {
-        changes.push({
-          token: `--priority-${prioKey}`,
-          label: PRIORITY_LABELS[prioKey],
-          mode: modeLabel,
-          oldValue: formatOklchString(oldPrio),
-          newValue: formatOklchString(newPrio),
-          file: "app/tailwind.css",
-          keyPath: `${mode === "light" ? ":root" : ':root[class~="dark"]'} → --priority-${prioKey}`,
-        });
-      }
-    }
-  }
+  changes.push(...collectSharedDiffs(draftShared));
 
   return changes;
 }
@@ -443,6 +1120,51 @@ export function buildThemeChangesMarkdown(
   );
 
   return lines.join("\n");
+}
+
+/** Serializes a value as TypeScript object-literal source (unquoted keys). */
+function toTsLiteral(value: unknown, indent: number): string {
+  const pad = "  ".repeat(indent);
+  const inner = "  ".repeat(indent + 1);
+  if (Array.isArray(value)) {
+    return `[\n${value.map((v) => `${inner}${toTsLiteral(v, indent + 1)},`).join("\n")}\n${pad}]`;
+  }
+  if (value && typeof value === "object") {
+    const entries = Object.entries(value).filter(([, v]) => v !== undefined);
+    return `{\n${entries.map(([k, v]) => `${inner}${k}: ${toTsLiteral(v, indent + 1)},`).join("\n")}\n${pad}}`;
+  }
+  return JSON.stringify(value);
+}
+
+/**
+ * Complete `app/lib/palettes.ts`: the file as it is today, with the PALLETE
+ * array and the SHARED_COLORS literal rebuilt from the draft. The header (types
+ * and helpers before PALLETE), the comments and the tail stay as they are. Run
+ * Prettier on the result.
+ */
+export function buildPalettesSource(
+  draftPalette: PaletteConfig,
+  draftShared: SharedColors,
+): string {
+  const start = palettesSource.indexOf("export const PALLETE");
+  const sharedDoc = palettesSource.indexOf(
+    "/**\n * Colors shared by every palette",
+  );
+  const sharedStart = palettesSource.indexOf("export const SHARED_COLORS");
+  if (start === -1 || sharedDoc === -1 || sharedStart === -1) {
+    return palettesSource;
+  }
+  const sharedEndMarker = "\n};\n";
+  const sharedEnd =
+    palettesSource.indexOf(sharedEndMarker, sharedStart) +
+    sharedEndMarker.length;
+  const head = palettesSource.slice(0, start);
+  const docBlock = palettesSource.slice(sharedDoc, sharedStart);
+  const tail = palettesSource.slice(sharedEnd);
+  const palettes = PALLETE.map((p) =>
+    p.id === draftPalette.id ? draftPalette : p,
+  );
+  return `${head}export const PALLETE: PaletteConfig[] = ${toTsLiteral(palettes, 0)};\n\n${docBlock}export const SHARED_COLORS: SharedColors = ${toTsLiteral(draftShared, 0)};\n${tail}`;
 }
 
 export function loadDraftFromStorage(): StoredThemeDraft | null {

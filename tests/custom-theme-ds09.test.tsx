@@ -11,12 +11,11 @@ describe("DS09 - Custom Theme & DS06 properties integration", () => {
   it("defaults relief to true and preserves existing custom theme values", () => {
     const draft = createCustomThemeDraft(null);
     expect(draft.relief).toBe(true);
-    expect(draft.shadowColor).toBeUndefined();
     expect(draft.topBorderColor).toBeUndefined();
     expect(draft.light.primaryHex).toBe("#2640A0");
   });
 
-  it("createCustomThemeDraft preserves saved relief, shadowColor, and topBorderColor", () => {
+  it("createCustomThemeDraft preserves saved relief and topBorderColor (DS36: no shadow)", () => {
     const saved: CustomTheme = {
       light: {
         primaryHex: "#FF0055",
@@ -31,13 +30,11 @@ describe("DS09 - Custom Theme & DS06 properties integration", () => {
         fgHex: "#EEEEEE",
       },
       relief: false,
-      shadowColor: "#330011",
       topBorderColor: "#FFFFFF",
     };
 
     const draft = createCustomThemeDraft(saved);
     expect(draft.relief).toBe(false);
-    expect(draft.shadowColor).toBe("#330011");
     expect(draft.topBorderColor).toBe("#FFFFFF");
     expect(draft.light.primaryHex).toBe("#FF0055");
   });
@@ -48,16 +45,8 @@ describe("DS09 - Custom Theme & DS06 properties integration", () => {
     expect(updated.relief).toBe(false);
     expect(updated.light).toEqual(draft.light);
 
-    const withShadow = applyCustomThemeOption(
-      updated,
-      "shadowColor",
-      "#220033",
-    );
-    expect(withShadow.shadowColor).toBe("#220033");
-    expect(withShadow.relief).toBe(false);
-
     const withTopBorder = applyCustomThemeOption(
-      withShadow,
+      updated,
       "topBorderColor",
       "#FFFFFF",
     );
@@ -141,8 +130,6 @@ describe("DS09 - Custom Theme & DS06 properties integration", () => {
     // Now restore relief: true with custom shadow and top border
     applyPaletteVars({
       relief: true,
-      shadowColor: "#1a0033",
-      topBorderColor: "#ffffff",
       light: {
         primary: { h: 200, c: 0.1, l: 0.5 },
       },
@@ -151,15 +138,14 @@ describe("DS09 - Custom Theme & DS06 properties integration", () => {
       },
     });
 
+    // The top border of the custom theme is written by useAppTheme (DS36).
     expect(root.style.getPropertyValue("--action-top-border-override")).toBe(
-      "#ffffff",
+      "",
     );
+    // The shadow is the shared formula now: no per-theme shadow override (DS36).
     expect(root.style.getPropertyValue("--action-shadow-color-override")).toBe(
-      "#1a0033",
+      "",
     );
-    expect(
-      root.style.getPropertyValue("--dark-action-shadow-color-override"),
-    ).toBe("#1a0033");
   });
   it("keeps per-mode shadow color and opacity and ignores invalid opacity", () => {
     const colors = {
@@ -193,32 +179,21 @@ describe("DS09 - Custom Theme & DS06 properties integration", () => {
     expect(invalid?.darkShadowOpacity).toBeUndefined();
   });
 
-  it("applies custom shadow per mode even with relief off", () => {
+  it("writes no shadow override with relief off (shadow is shared, DS29)", () => {
     const root = document.documentElement;
     applyPaletteVars({
       relief: false,
       light: {
         primary: { h: 200, c: 0.1, l: 0.5 },
-        shadowColor: "#112233",
-        shadowOpacity: 12,
       },
       dark: {
         primary: { h: 200, c: 0.1, l: 0.5 },
-        shadowColor: "#000011",
-        shadowOpacity: 60,
       },
     });
-    expect(root.style.getPropertyValue("--shadow-color-override")).toBe(
-      "#112233",
-    );
+    expect(root.style.getPropertyValue("--shadow-color-override")).toBe("");
     expect(root.style.getPropertyValue("--dark-shadow-color-override")).toBe(
-      "#000011",
+      "",
     );
-    expect(root.style.getPropertyValue("--shadow-opacity-override")).toBe(
-      "12%",
-    );
-    expect(root.style.getPropertyValue("--dark-shadow-opacity-override")).toBe(
-      "60%",
-    );
+    expect(root.style.getPropertyValue("--shadow-opacity-override")).toBe("");
   });
 });

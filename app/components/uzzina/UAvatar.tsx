@@ -139,7 +139,7 @@ export function UAvatar({
     >
       {image && <PrismAvatarImage alt={alt || ""} src={image} />}
       <PrismAvatarFallback
-        className="grid place-content-center bg-secondary text-center text-secondary-foreground"
+        className="grid place-content-center bg-card text-center text-secondary-foreground"
         style={styles}
       >
         {getShortText(fallbackText)}

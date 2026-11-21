@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { InfoIcon } from "lucide-react";
 import {
   PrismAccordion,
   PrismAccordionItem,
   PrismAccordionTrigger,
   PrismAccordionContent,
+  PrismButton,
 } from "~/components/prism";
 import {
   GalleryItem,
@@ -65,6 +67,8 @@ function AccordionPlayground() {
   const [isDisabled, setIsDisabled] = useState(false);
   const [useLongTitle, setUseLongTitle] = useState(false);
   const [count, setCount] = useState(3);
+  const [withInfo, setWithInfo] = useState(false);
+  const [isCard, setIsCard] = useState(false);
 
   const visibleItems = ALL_ITEMS.slice(0, count);
 
@@ -79,13 +83,30 @@ function AccordionPlayground() {
             defaultExpandedKeys={["item-1"]}
             isDisabled={isDisabled}
             key={`${allowsMultipleExpanded}`}
+            variant={isCard ? "card" : "default"}
           >
             {visibleItems.map((item, index) => {
               const title =
                 index === 0 && useLongTitle ? item.longTitle : item.shortTitle;
               return (
                 <PrismAccordionItem id={item.id} key={item.id}>
-                  <PrismAccordionTrigger>{title}</PrismAccordionTrigger>
+                  {withInfo ? (
+                    <PrismAccordionTrigger aria-label={title} info>
+                      <span className="flex min-w-0 items-center gap-2">
+                        <span className="truncate">{title}</span>
+                        <PrismButton
+                          aria-label={`Informação sobre ${title}`}
+                          className="pointer-events-auto relative z-10 shrink-0"
+                          size="icon-xs"
+                          variant="ghost"
+                        >
+                          <InfoIcon />
+                        </PrismButton>
+                      </span>
+                    </PrismAccordionTrigger>
+                  ) : (
+                    <PrismAccordionTrigger>{title}</PrismAccordionTrigger>
+                  )}
                   <PrismAccordionContent>{item.content}</PrismAccordionContent>
                 </PrismAccordionItem>
               );
@@ -113,6 +134,18 @@ function AccordionPlayground() {
         prop="useLongTitle"
         value={useLongTitle}
       />
+      <PlaygroundBoolean
+        label="Com botão de info (info)"
+        onChange={setWithInfo}
+        prop="info"
+        value={withInfo}
+      />
+      <PlaygroundBoolean
+        label="Fundo de card (variant=card)"
+        onChange={setIsCard}
+        prop="variant"
+        value={isCard}
+      />
       <PlaygroundNumber
         label="Quantidade de itens"
         max={5}
@@ -132,7 +165,7 @@ export function AccordionSection() {
       <GallerySection>
         <GallerySectionHeader
           approved
-          description="Não usado no app hoje."
+          description="Variantes: default (sem fundo, hover em bg-secondary) e card (fundo fixo bg-card, hover em bg-secondary-hover). Usado na gaveta de ação (default) e no editor de temas (card)."
           title="Accordion"
         />
         <GallerySectionContent className="grid gap-12">

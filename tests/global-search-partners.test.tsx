@@ -746,6 +746,7 @@ for (const [label, path] of [
   ["Gerenciar clientes", "/app/admin/clients"],
   ["Gerenciar usuários", "/app/admin/users"],
   ["Gerenciar datas comemorativas", "/app/admin/celebrations"],
+  ["Cores dos temas", "/app/admin/themes"],
 ]) {
   it(`navigates through the guarded ${label} command`, async () => {
     const { user, router } = await mount("/app/partner/alpha");

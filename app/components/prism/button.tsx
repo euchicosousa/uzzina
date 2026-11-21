@@ -22,7 +22,7 @@ const buttonSizeClasses = {
 // Single source of truth for variant looks (also used by Toggle).
 const buttonVariantClasses = {
   default:
-    "bg-primary border-primary text-primary-foreground hover:border-[color-mix(in_oklab,var(--primary),var(--background)_20%)] hover:bg-[color-mix(in_oklab,var(--primary),var(--background)_20%)]",
+    "bg-primary border-primary text-primary-foreground hover:border-primary-hover hover:bg-primary-hover",
   outline:
     "bg-transparent hover:bg-secondary aria-expanded:bg-secondary aria-expanded:hover:bg-secondary-hover",
   secondary:
@@ -45,10 +45,10 @@ const buttonSelectedClasses = {
   ghost: "data-selected:bg-secondary data-selected:hover:bg-secondary-hover",
   outline: "data-selected:bg-secondary data-selected:hover:bg-secondary-hover",
   secondary:
-    "data-selected:border-primary data-selected:bg-primary data-selected:text-primary-foreground data-selected:hover:border-[color-mix(in_oklab,var(--primary),var(--background)_20%)] data-selected:hover:bg-[color-mix(in_oklab,var(--primary),var(--background)_20%)]",
+    "data-selected:border-primary data-selected:bg-primary data-selected:text-primary-foreground data-selected:hover:border-primary-hover data-selected:hover:bg-primary-hover",
 } as const;
 const styledButtonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-2xl border bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-error aria-invalid:ring-error-background [&_svg]:pointer-events-none [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5",
+  "group/button inline-flex shrink-0 items-center justify-center rounded-2xl border bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring-halo active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-error aria-invalid:ring-error-background [&_svg]:pointer-events-none [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5",
   {
     variants: {
       variant: buttonVariantClasses,

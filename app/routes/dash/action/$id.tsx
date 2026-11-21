@@ -373,7 +373,7 @@ function DashActionDetail({ actionId }: { actionId: string }) {
                 <UPhaseIcon phase={currentPhase} variant="icon" />
                 <PrismBadge
                   style={{
-                    backgroundColor: `${currentPhase?.color}22`,
+                    backgroundColor: `color-mix(in oklab, ${currentPhase?.color} 13.33%, transparent)`,
                     color: currentPhase?.color,
                   }}
                   variant="secondary"

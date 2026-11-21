@@ -1656,7 +1656,7 @@ export function ActionFormDrawer({
                 </div>
                 <PrismAccordionContent>
                   <div className="flex flex-col gap-3 text-base">
-                    <PrismBadge>{strat.angulo}</PrismBadge>
+                    <PrismBadge variant="outline">{strat.angulo}</PrismBadge>
                     <p>
                       <strong className="text-foreground">Racional:</strong>{" "}
                       {strat.racional}

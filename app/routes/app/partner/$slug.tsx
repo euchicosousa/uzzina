@@ -157,7 +157,7 @@ function PartnerPage() {
   useSelectionContext(JSON.stringify([viewOptions, query, view]));
   if (!partner) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-secondary text-secondary-foreground">
+      <div className="flex h-full w-full items-center justify-center bg-card text-secondary-foreground">
         Parceiro não encontrado ou acesso não autorizado.
       </div>
     );

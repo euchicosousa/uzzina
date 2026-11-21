@@ -135,7 +135,7 @@ function SortableThumbnail({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "group relative aspect-square overflow-hidden rounded-xl border bg-secondary squircle",
+        "group relative aspect-square overflow-hidden rounded-xl border bg-card squircle",
         maxWidth && "w-full justify-self-center",
         selected && "outline-2 -outline-offset-2 outline-primary",
         previewPanelId && "ring-2 ring-info ring-offset-2 ring-offset-popover",
@@ -700,7 +700,7 @@ export function FileManagerDialog({
             </div>
 
             {!workFiles && postType === "video" && (
-              <p className="rounded-xl bg-secondary px-3 py-2 text-xs text-secondary-foreground squircle">
+              <p className="rounded-xl bg-card px-3 py-2 text-xs text-secondary-foreground squircle">
                 <strong>Vídeo:</strong> 1º arquivo = vídeo principal. 2º arquivo
                 (opcional) = capa/thumbnail que aparece antes do play.
               </p>
@@ -754,7 +754,7 @@ export function FileManagerDialog({
                     Arraste arquivos aqui ou clique para escolher
                   </label>
                 ) : (
-                  <div className="m-5 flex h-32 items-center justify-center rounded-xl border border-dashed bg-secondary text-sm text-secondary-foreground squircle">
+                  <div className="m-5 flex h-32 items-center justify-center rounded-xl border border-dashed bg-card text-sm text-secondary-foreground squircle">
                     Nenhum arquivo adicionado ainda
                   </div>
                 )

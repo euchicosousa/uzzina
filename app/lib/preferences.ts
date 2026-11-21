@@ -44,11 +44,30 @@ export function applyVividPreferences(
   root.dataset.vividText = tones.vividTextTone;
 }
 
+/** Neutral layers of a mode: L added to the page background (DS35/DS36). */
+export const CUSTOM_LAYER_KEYS = [
+  "popoverLDelta",
+  "cardLDelta",
+  "inputLDelta",
+  "secondaryLDelta",
+  "secondaryHoverLDelta",
+  "borderLDelta",
+  "actionLDelta",
+  "actionHoverLDelta",
+] as const;
+
+export type CustomLayerKey = (typeof CUSTOM_LAYER_KEYS)[number];
+export type CustomThemeLayers = Record<CustomLayerKey, number>;
+
 export type CustomThemeColors = {
   primaryHex: string;
   primaryFgHex: string;
   bgHex: string;
   fgHex: string;
+  /** Accent (focus ring). Absent: follows the primary color. */
+  accentHex?: string;
+  /** Neutral layer deltas. Absent in themes saved before DS36 stage 8. */
+  layers?: CustomThemeLayers;
 };
 
 export type CustomTheme = {
@@ -144,18 +163,8 @@ export type SerializedPreferences = {
   contentModels?: unknown;
   captionModels?: unknown;
   customTheme?: {
-    light?: {
-      primaryHex?: string;
-      primaryFgHex?: string;
-      bgHex?: string;
-      fgHex?: string;
-    };
-    dark?: {
-      primaryHex?: string;
-      primaryFgHex?: string;
-      bgHex?: string;
-      fgHex?: string;
-    };
+    light?: SerializedCustomMode;
+    dark?: SerializedCustomMode;
     relief?: boolean;
     shadowColor?: string;
     darkShadowColor?: string;
@@ -164,6 +173,48 @@ export type SerializedPreferences = {
     topBorderColor?: string;
   } | null;
 };
+
+type SerializedCustomMode = {
+  primaryHex?: string;
+  primaryFgHex?: string;
+  bgHex?: string;
+  fgHex?: string;
+  accentHex?: unknown;
+  layers?: unknown;
+};
+
+const HEX_COLOR = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
+
+/** Reads the optional accent and layers of one mode; invalid values are dropped. */
+export function parseCustomModeExtras(mode: {
+  accentHex?: unknown;
+  layers?: unknown;
+}): Pick<CustomThemeColors, "accentHex" | "layers"> {
+  const extras: Pick<CustomThemeColors, "accentHex" | "layers"> = {};
+  if (typeof mode.accentHex === "string" && HEX_COLOR.test(mode.accentHex)) {
+    extras.accentHex = mode.accentHex;
+  }
+  const layers = mode.layers;
+  if (layers && typeof layers === "object") {
+    const record = layers as Record<string, unknown>;
+    const parsed: Partial<CustomThemeLayers> = {};
+    for (const key of CUSTOM_LAYER_KEYS) {
+      const value = record[key];
+      if (
+        typeof value === "number" &&
+        Number.isFinite(value) &&
+        Math.abs(value) <= 1
+      ) {
+        parsed[key] = value;
+      }
+    }
+    // A partial set is ignored: the loader fills the whole set from Ônix.
+    if (CUSTOM_LAYER_KEYS.every((key) => parsed[key] !== undefined)) {
+      extras.layers = parsed as CustomThemeLayers;
+    }
+  }
+  return extras;
+}
 
 function parseShadowOpacity(value: unknown): number | undefined {
   return typeof value === "number" &&
@@ -206,12 +257,14 @@ export function getUserPreferences(person?: {
           primaryFgHex: light.primaryFgHex,
           bgHex: light.bgHex,
           fgHex: light.fgHex,
+          ...parseCustomModeExtras(light),
         },
         dark: {
           primaryHex: dark.primaryHex,
           primaryFgHex: dark.primaryFgHex,
           bgHex: dark.bgHex,
           fgHex: dark.fgHex,
+          ...parseCustomModeExtras(dark),
         },
         relief:
           typeof prefs.customTheme.relief === "boolean"

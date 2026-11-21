@@ -1,5 +1,4 @@
 import { cn } from "cnfast";
-import Color from "color";
 import {
   BadgeCheckIcon,
   BinaryIcon,
@@ -40,12 +39,16 @@ export interface UIconsProps {
 }
 
 export function UIcons({ slug, className, style, color }: UIconsProps) {
+  // Tint in CSS (DS36): the color may be an oklch() string, which the `color`
+  // library cannot parse. Chroma is cut to 70%, as the old desaturate(0.3).
+  const tint = (alphaVar: string) =>
+    `oklch(from ${color} l calc(c * var(--category-icon-chroma)) h / var(${alphaVar}))`;
   style = style
     ? style
     : color
       ? {
-          color: Color(color).desaturate(0.3).alpha(0.7).hsl().toString(),
-          fill: Color(color).desaturate(0.3).alpha(0.1).hsl().toString(),
+          color: tint("--category-icon-stroke-alpha"),
+          fill: tint("--category-icon-fill-alpha"),
         }
       : undefined;
   switch (slug) {

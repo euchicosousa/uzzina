@@ -1,8 +1,18 @@
+import {
+  oklchToCss,
+  SHARED_COLORS,
+  type ModePair,
+  type SharedColors,
+} from "~/lib/palettes";
+
 type OklchColor = { h: number; c: number; l: number };
 
 type PaletteModeVars = {
   primary: OklchColor;
+  /** Explicit text color on the primary (custom theme only; palettes use the delta). */
   primaryFg?: OklchColor | null;
+  /** Text on the primary as offsets from the primary (DS36, stage 7). */
+  primaryFgDelta?: { l: number; c: number; h: number } | null;
   bg?: OklchColor | null;
   /** Custom text color (custom theme); palettes use `fgLDelta`. */
   fg?: OklchColor | null;
@@ -16,10 +26,6 @@ type PaletteModeVars = {
   borderLDelta?: number;
   actionLDelta?: number;
   actionHoverLDelta?: number;
-  shadowColor?: string;
-  /** Shadow opacity in percent for the largest shadow size. */
-  shadowOpacity?: number;
-  topBorderColor?: string;
 };
 
 /** Palette field and CSS variable name of each neutral layer (DS35). */
@@ -37,8 +43,6 @@ const NEUTRAL_DELTAS = [
 
 export type PaletteVars = {
   relief?: boolean;
-  shadowColor?: string;
-  topBorderColor?: string;
   light: PaletteModeVars;
   dark: PaletteModeVars;
 };
@@ -71,6 +75,10 @@ export function applyPaletteVars(
   } else {
     root.style.removeProperty("--dark-primary-foreground-override");
   }
+
+  // 1b. Texto sobre a principal: deslocamentos da principal (DS36, stage 7)
+  setPrimaryFgDelta(root.style, "", light.primaryFgDelta);
+  setPrimaryFgDelta(root.style, "dark-", dark.primaryFgDelta);
 
   // 2. Cor de Fundo e Texto (Light e Dark)
   if (light.bg) {
@@ -124,22 +132,6 @@ export function applyPaletteVars(
     }
   }
 
-  // 4. Sombra das superfícies elevadas: não depende do relevo dos cartões.
-  const lightShadowColor = light.shadowColor || palette.shadowColor;
-  const darkShadowColor = dark.shadowColor || palette.shadowColor;
-  setOrRemove(root.style, "--shadow-color-override", lightShadowColor);
-  setOrRemove(root.style, "--dark-shadow-color-override", darkShadowColor);
-  setOrRemove(
-    root.style,
-    "--shadow-opacity-override",
-    light.shadowOpacity === undefined ? undefined : `${light.shadowOpacity}%`,
-  );
-  setOrRemove(
-    root.style,
-    "--dark-shadow-opacity-override",
-    dark.shadowOpacity === undefined ? undefined : `${dark.shadowOpacity}%`,
-  );
-
   // 5. Relevo de ações e cartões (border-t, ring e sombras)
   if (palette.relief === false) {
     // Flat cards: lets tinted rings (phase-surface) fade out like the base ring.
@@ -148,51 +140,225 @@ export function applyPaletteVars(
     // Keep Tailwind's box-shadow list valid so state rings remain visible.
     root.style.setProperty("--action-shadow-override", "0 0 #0000");
     root.style.setProperty("--action-hover-shadow-override", "0 0 #0000");
-    root.style.removeProperty("--action-shadow-color-override");
-    root.style.removeProperty("--dark-action-shadow-color-override");
     root.style.removeProperty("--dark-action-top-border-override");
   } else {
     root.style.removeProperty("--action-relief");
     root.style.removeProperty("--action-shadow-override");
     root.style.removeProperty("--action-hover-shadow-override");
 
-    // Sombra e ring/borda
-    if (lightShadowColor) {
-      root.style.setProperty(
-        "--action-shadow-color-override",
-        lightShadowColor,
-      );
-    } else {
-      root.style.removeProperty("--action-shadow-color-override");
-    }
-
-    if (darkShadowColor) {
-      root.style.setProperty(
-        "--dark-action-shadow-color-override",
-        darkShadowColor,
-      );
-    } else {
-      root.style.removeProperty("--dark-action-shadow-color-override");
-    }
-
-    // Borda superior da action (padrão branco; pode ser customizada)
-    const lightTopBorder = light.topBorderColor || palette.topBorderColor;
-    if (lightTopBorder) {
-      root.style.setProperty("--action-top-border-override", lightTopBorder);
-    } else {
-      root.style.removeProperty("--action-top-border-override");
-    }
-
-    const darkTopBorder = dark.topBorderColor || palette.topBorderColor;
-    if (darkTopBorder) {
-      root.style.setProperty(
-        "--dark-action-top-border-override",
-        darkTopBorder,
-      );
-    } else {
-      root.style.removeProperty("--dark-action-top-border-override");
-    }
+    // Borda superior da action: brilho do tema (--shared-top-highlight-alpha).
+    // A cor customizada do tema Personalizado é aplicada em useAppTheme.
+    root.style.removeProperty("--action-top-border-override");
+    root.style.removeProperty("--dark-action-top-border-override");
   }
+
+  // 6. Blocos compartilhados por todas as paletas (DS36)
+  applySharedColorVars(root);
+}
+
+/**
+ * Writes the shared formulas (states, support text, hover, halo, highlight) as
+ * CSS variables: `--shared-<token>` for light and `--shared-dark-<token>` for
+ * dark. tailwind.css only reads them. Called by applyPaletteVars and, with the
+ * draft, by the theme editor preview.
+ */
+export function applySharedColorVars(
+  target: HTMLElement | null,
+  shared: SharedColors = SHARED_COLORS,
+) {
+  const root = target ?? document.documentElement;
+  const { formulas } = shared;
+  const pct = (value: number) => `${value}%`;
+  setModePair(root.style, "support-l-delta", formulas.support.lDelta, String);
+  setModePair(root.style, "support-c-delta", formulas.support.cDelta, String);
+  setModePair(root.style, "primary-hover-mix", formulas.primaryHoverMix, pct);
+  setModePair(root.style, "ring-halo-alpha", formulas.ringHaloAlpha, pct);
+  setModePair(root.style, "late-bg-alpha", formulas.lateBgAlpha, pct);
+  setModePair(
+    root.style,
+    "action-ring-alpha",
+    formulas.actionCard.ringAlpha,
+    pct,
+  );
+  setModePair(
+    root.style,
+    "action-shadow-alpha",
+    formulas.actionCard.shadowAlpha,
+    pct,
+  );
+  setModePair(
+    root.style,
+    "action-hover-shadow-alpha",
+    formulas.actionCard.hoverShadowAlpha,
+    pct,
+  );
+  setModePair(
+    root.style,
+    "category-icon-fill-alpha",
+    formulas.categoryIcon.fillAlpha,
+    pct,
+  );
+  setModePair(
+    root.style,
+    "category-icon-stroke-alpha",
+    formulas.categoryIcon.strokeAlpha,
+    pct,
+  );
+  setModePair(
+    root.style,
+    "category-icon-chroma",
+    formulas.categoryIcon.chroma,
+    String,
+  );
+  setModePair(
+    root.style,
+    "top-highlight-alpha",
+    formulas.topHighlightAlpha,
+    pct,
+  );
+
+  const { shadow, lateShadow } = shared;
+  setModePair(root.style, "shadow-mix", shadow.mix, pct);
+  setModePair(root.style, "shadow-l", shadow.l, String);
+  setModePair(root.style, "shadow-alpha", shadow.alpha, pct);
+  // Late card: the light values are shared, the dark ones also set the color.
+  // States (DS36, stage 6): one full color per mode, and their text colors.
+  for (const key of ["error", "warning", "success", "info"] as const) {
+    const state = shared.states[key];
+    root.style.setProperty(
+      `--shared-${key}-color`,
+      oklchToCss(state.color.light),
+    );
+    root.style.setProperty(
+      `--shared-dark-${key}-color`,
+      oklchToCss(state.color.dark),
+    );
+    root.style.setProperty(
+      `--shared-${key}-text`,
+      oklchToCss(state.text.light),
+    );
+    root.style.setProperty(
+      `--shared-dark-${key}-text`,
+      oklchToCss(state.text.dark),
+    );
+  }
+  setModePair(root.style, "background-mix", shared.states.backgroundMix, pct);
+  const strong = shared.states.successStrong;
+  root.style.setProperty("--shared-success-strong-l", String(strong.l));
+  root.style.setProperty("--shared-success-strong-c", String(strong.c));
+  root.style.setProperty(
+    "--shared-success-strong-hover-l",
+    String(strong.hoverL),
+  );
+  root.style.setProperty(
+    "--shared-success-strong-hover-c",
+    String(strong.hoverC),
+  );
+  setModePair(root.style, "marker-l-delta", shared.markerText.lDelta, String);
+  root.style.setProperty("--shared-marker-c", String(shared.markerText.c));
+
+  const phase = formulas.phase;
+  setModePair(root.style, "phase-mix", phase.mix, pct);
+  setModePair(root.style, "phase-mix-hover", phase.mixHover, pct);
+  setModePair(root.style, "phase-ring-alpha", phase.ringAlpha, pct);
+  setModePair(root.style, "phase-text-l", phase.textL, String);
+  setModePair(root.style, "phase-text-c", phase.textC, String);
+  setModePair(root.style, "phase-shadow-l", phase.shadowL, String);
+  setModePair(root.style, "phase-shadow-c", phase.shadowC, String);
+  setModePair(root.style, "phase-shadow-alpha", phase.shadowAlpha, pct);
+  setModePair(root.style, "phase-edge-dl", phase.edgeDl, String);
+  setModePair(root.style, "phase-top-light", phase.topLight, pct);
+  // Values that have one setting for both modes.
+  root.style.setProperty("--shared-phase-diffuse-l", String(phase.diffuseL));
+  root.style.setProperty("--shared-phase-diffuse-c", String(phase.diffuseC));
+  root.style.setProperty(
+    "--shared-phase-diffuse-alpha",
+    pct(phase.diffuseAlpha),
+  );
+  root.style.setProperty("--shared-phase-ink-l", String(phase.inkL));
+  root.style.setProperty("--shared-phase-ink-c", String(phase.inkC));
+  root.style.setProperty("--shared-phase-ink-light-l", String(phase.inkLightL));
+  root.style.setProperty("--shared-phase-ink-light-c", String(phase.inkLightC));
+  root.style.setProperty("--shared-phase-hover-dl", String(phase.hoverDl));
+  root.style.setProperty("--shared-phase-dim-l", String(phase.dimL));
+  root.style.setProperty(
+    "--shared-phase-dim-c-factor",
+    String(phase.dimCFactor),
+  );
+  root.style.setProperty(
+    "--shared-phase-vivid-shadow-l",
+    String(phase.vividShadowL),
+  );
+  root.style.setProperty(
+    "--shared-phase-vivid-shadow-c",
+    String(phase.vividShadowC),
+  );
+  root.style.setProperty(
+    "--shared-phase-vivid-shadow-alpha",
+    pct(phase.vividShadowAlpha),
+  );
+  root.style.setProperty(
+    "--shared-phase-hover-c-loss",
+    String(phase.hoverCLoss),
+  );
+  root.style.setProperty("--shared-phase-date-opacity", pct(phase.dateOpacity));
+  root.style.setProperty("--shared-phase-diffuse-y", `${phase.diffuseY}px`);
+  root.style.setProperty(
+    "--shared-phase-diffuse-blur",
+    `${phase.diffuseBlur}px`,
+  );
+  root.style.setProperty(
+    "--shared-phase-diffuse-spread",
+    `${phase.diffuseSpread}px`,
+  );
+
+  root.style.setProperty("--shared-late-alpha", pct(lateShadow.light.alpha));
+  root.style.setProperty(
+    "--shared-late-alpha-hover",
+    pct(lateShadow.light.alphaHover),
+  );
+  root.style.setProperty("--shared-dark-late-l", String(lateShadow.dark.l));
+  root.style.setProperty("--shared-dark-late-c", String(lateShadow.dark.c));
+  root.style.setProperty(
+    "--shared-dark-late-alpha",
+    pct(lateShadow.dark.alpha),
+  );
+  root.style.setProperty(
+    "--shared-dark-late-alpha-hover",
+    pct(lateShadow.dark.alphaHover),
+  );
+}
+
+function setModePair<T>(
+  style: CSSStyleDeclaration,
+  token: string,
+  pair: ModePair<T>,
+  format: (value: T) => string,
+) {
+  style.setProperty(`--shared-${token}`, format(pair.light));
+  style.setProperty(`--shared-dark-${token}`, format(pair.dark));
+}
+
+function setPrimaryFgDelta(
+  style: CSSStyleDeclaration,
+  prefix: string,
+  delta: { l: number; c: number; h: number } | null | undefined,
+) {
+  setOrRemove(
+    style,
+    `--${prefix}primary-fg-l-delta`,
+    delta ? String(delta.l) : undefined,
+  );
+  setOrRemove(
+    style,
+    `--${prefix}primary-fg-c-delta`,
+    delta ? String(delta.c) : undefined,
+  );
+  setOrRemove(
+    style,
+    `--${prefix}primary-fg-h-delta`,
+    delta ? String(delta.h) : undefined,
+  );
 }
 
 function setOrRemove(

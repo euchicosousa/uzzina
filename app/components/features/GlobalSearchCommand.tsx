@@ -28,6 +28,7 @@ import {
   LaptopIcon,
   HomeIcon,
   CalendarIcon,
+  PaletteIcon,
   CalendarRangeIcon,
   BellIcon,
   UsersIcon,
@@ -409,6 +410,12 @@ function GlobalSearchContent({
           label: "Gerenciar datas comemorativas",
           Icon: CalendarIcon,
           to: "/app/admin/celebrations",
+        },
+        {
+          id: "manage-themes",
+          label: "Cores dos temas",
+          Icon: PaletteIcon,
+          to: "/app/admin/themes",
         },
       ].map(({ to, ...command }) => ({
         ...command,

@@ -522,7 +522,7 @@ function AdminPartnerEditPage() {
               {savingFields.has("context") && <ULoader />}
             </div>
             <input name="context" type="hidden" value={contextValue} />
-            <div className="min-h-25 overflow-hidden rounded-2xl border border-transparent bg-input text-base transition-[color,box-shadow] duration-200 squircle focus-within:border-ring/60 focus-within:ring-3 focus-within:ring-ring/30 md:text-sm">
+            <div className="min-h-25 overflow-hidden rounded-2xl border border-transparent bg-input text-base transition-[color,box-shadow] duration-200 squircle focus-within:border-ring/60 focus-within:ring-3 focus-within:ring-ring-halo md:text-sm">
               <Suspense fallback={<PrismSkeleton className="h-full w-full" />}>
                 <Tiptap
                   aria-labelledby="context-label"
@@ -553,7 +553,7 @@ function AdminPartnerEditPage() {
               {savingFields.has("voice") && <ULoader />}
             </div>
             <input name="voice" type="hidden" value={voiceValue} />
-            <div className="min-h-25 overflow-hidden rounded-2xl border border-transparent bg-input text-base transition-[color,box-shadow] duration-200 squircle focus-within:border-ring/60 focus-within:ring-3 focus-within:ring-ring/30 md:text-sm">
+            <div className="min-h-25 overflow-hidden rounded-2xl border border-transparent bg-input text-base transition-[color,box-shadow] duration-200 squircle focus-within:border-ring/60 focus-within:ring-3 focus-within:ring-ring-halo md:text-sm">
               <Suspense fallback={<PrismSkeleton className="h-full w-full" />}>
                 <Tiptap
                   aria-labelledby="voice-label"

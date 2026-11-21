@@ -39,8 +39,9 @@
           }
           document.documentElement.className = theme;
 
-          // Public surfaces start with the approved Onix palette before React paints
-          // (neutral deltas and text come from the defaults in tailwind.css).
+          // Public surfaces start with the approved Onix background and text
+          // before React paints. Every other variable is written from the data
+          // by src/main.tsx (applyPaletteVars) before the first render (DS36).
           const path = window.location.pathname;
           const isPublicSurface =
             path === "/" || path === "/dash" || path.startsWith("/dash/");
@@ -48,14 +49,8 @@
             const publicVars = {
               "--background-override": "oklch(0.96 0.002 200)",
               "--dark-background-override": "oklch(0.2 0.01 250)",
-              "--primary-h": "0",
-              "--primary-c": "0",
-              "--primary-l": "0",
-              "--dark-primary-h": "0",
-              "--dark-primary-c": "0",
-              "--dark-primary-l": "1",
-              "--primary-foreground-override": "oklch(1 0 0)",
-              "--dark-primary-foreground-override": "oklch(0 0 0)",
+              "--foreground-override": "oklch(0 0 0)",
+              "--dark-foreground-override": "oklch(1 0 0)",
             };
             for (const [name, value] of Object.entries(publicVars)) {
               document.documentElement.style.setProperty(name, value);

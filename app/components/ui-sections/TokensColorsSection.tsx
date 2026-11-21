@@ -248,7 +248,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="bg-card"
                 name="Card"
-                note="Derivada de background pelo ajuste da paleta (L −0,02 claro, +0,05 escuro)"
+                note="Fundo fixo que informa ou sinaliza e não é clicável (nota, selo, atalho, avatar vazio, item do acordeão). Derivada de background pelo ajuste da paleta (L −0,02 claro, +0,05 escuro)"
                 preview={
                   <div className="size-11 rounded-xl border border-border bg-card shadow-xs squircle" />
                 }
@@ -264,7 +264,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="bg-input"
                 name="Input"
-                note="Derivada de background pelo ajuste da paleta (L −0,04 claro, −0,06 escuro)"
+                note="Campos e trilho de progresso ou controle deslizante. Derivada de background pelo ajuste da paleta (L −0,04 claro, −0,06 escuro)"
                 preview={
                   <div className="size-11 rounded-xl border border-border bg-input shadow-xs squircle" />
                 }
@@ -282,7 +282,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="bg-secondary"
                 name="Secondary"
-                note="Derivada de background pelo ajuste da paleta (L −0,06 claro, +0,12 escuro); hover em bg-secondary-hover (L −0,08 claro, +0,15 escuro)"
+                note="Só para o que é clicável (botão, item de menu ou lista, aba). Derivada de background pelo ajuste da paleta (L −0,06 claro, +0,12 escuro); hover em bg-secondary-hover (L −0,08 claro, +0,15 escuro)"
                 preview={
                   <div className="size-11 rounded-xl border border-border bg-secondary shadow-xs squircle" />
                 }
@@ -300,7 +300,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="bg-overlay"
                 name="Overlay"
-                note="Fundo escurecido de diálogos/gaveta (--shadow-tint da paleta a 30%)"
+                note="Fundo escurecido de diálogos/gaveta (--shadow-color a 30%)"
                 preview={
                   <div className="size-11 rounded-xl border border-border bg-overlay shadow-xs squircle" />
                 }
@@ -323,7 +323,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="bg-action-hover"
                 name="Action Hover"
-                note="Versão ao passar o mouse (background L +0,10 claro, +0,20 escuro, pelo ajuste da paleta)"
+                note="Versão no hover (background L +0,10 claro, +0,20 escuro, pelo ajuste da paleta)"
                 preview={
                   <div className="size-11 rounded-xl border border-border/40 bg-action-hover shadow-action-hover ring ring-action-ring squircle" />
                 }
@@ -331,7 +331,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="ring-action-ring"
                 name="Action Ring"
-                note="Contorno do cartão (--action-shadow-color a 5% no claro e 20% no escuro; desligado em paletas planas)"
+                note="Contorno do cartão (--shadow-color a 5% no claro e 20% no escuro; desligado em paletas planas)"
                 preview={
                   <div className="flex size-11 items-center justify-center rounded-xl bg-action ring-2 ring-action-ring squircle">
                     <div className="size-4.5 rounded-md bg-action-ring squircle" />
@@ -382,9 +382,9 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="ring-ring / border-ring / bg-ring"
                 name="Ring"
-                note="Cor do anel de foco (segue o accent da paleta; aplicada com ring-3 ring-ring/30 e border-ring/60)"
+                note="Cor do anel de foco (segue o accent da paleta; aplicada com ring-3 ring-ring-halo e border-ring/60)"
                 preview={
-                  <div className="flex size-11 items-center justify-center rounded-xl border border-ring/60 bg-background shadow-xs ring-3 ring-ring/30 squircle">
+                  <div className="flex size-11 items-center justify-center rounded-xl border border-ring/60 bg-background shadow-xs ring-3 ring-ring-halo squircle">
                     <div className="size-4 rounded bg-ring/40 squircle" />
                   </div>
                 }
@@ -826,8 +826,8 @@ export function TokensColorsSection() {
                 <p className="text-sm text-secondary-foreground">
                   Superfície <code className="font-mono text-xs">bg-input</code>{" "}
                   exclusiva de campos de formulário, anel de foco dinâmico{" "}
-                  <code className="font-mono text-xs">ring-ring/30</code> guiado
-                  pela paleta e validação com{" "}
+                  <code className="font-mono text-xs">ring-ring-halo</code>{" "}
+                  guiado pela paleta e validação com{" "}
                   <code className="font-mono text-xs">aria-invalid</code> e
                   texto em{" "}
                   <code className="font-mono text-xs">

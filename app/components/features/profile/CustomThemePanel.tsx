@@ -3,6 +3,8 @@ import {
   PrismButton,
   PrismLabel,
   PrismSlider,
+  PrismSliderFill,
+  PrismSliderThumb,
   PrismSliderTrack,
 } from "~/components/prism";
 import { UColorPickerDropdown } from "~/components/uzzina/UColorPickerDropdown";
@@ -12,7 +14,8 @@ import type {
   ThemeColorKey,
   ThemeMode,
 } from "~/lib/custom-theme";
-import type { CustomTheme } from "~/lib/preferences";
+import { resolveCustomLayers } from "~/lib/custom-theme";
+import type { CustomLayerKey, CustomTheme } from "~/lib/preferences";
 
 const MODES: { mode: ThemeMode; title: string }[] = [
   { mode: "light", title: "Modo claro" },
@@ -26,18 +29,52 @@ const FIELDS: { key: ThemeColorKey; label: string }[] = [
   { key: "fgHex", label: "Texto" },
 ];
 
-const SHADOW_FIELDS = {
-  light: {
-    color: "shadowColor",
-    opacity: "shadowOpacity",
-    defaultOpacity: 10,
-  },
-  dark: {
-    color: "darkShadowColor",
-    opacity: "darkShadowOpacity",
-    defaultOpacity: 25,
-  },
-} as const;
+const LAYERS: { key: CustomLayerKey; label: string }[] = [
+  { key: "popoverLDelta", label: "Flutuante" },
+  { key: "cardLDelta", label: "Cartão" },
+  { key: "inputLDelta", label: "Campo" },
+  { key: "secondaryLDelta", label: "Cinza" },
+  { key: "secondaryHoverLDelta", label: "Cinza · mouse" },
+  { key: "borderLDelta", label: "Borda" },
+  { key: "actionLDelta", label: "Cartão de ação" },
+  { key: "actionHoverLDelta", label: "Cartão de ação · mouse" },
+];
+
+/** One neutral layer: how much lighter (+) or darker (-) than the background. */
+function LayerSlider({
+  label,
+  modeTitle,
+  value,
+  onChange,
+}: {
+  label: string;
+  modeTitle: string;
+  value: number;
+  onChange: (value: number) => void;
+}) {
+  return (
+    <div className="grid grid-cols-[minmax(0,9rem)_minmax(0,1fr)_3.5rem] items-center gap-3">
+      <span className="text-sm opacity-70">{label}</span>
+      <PrismSlider
+        aria-label={`${label}, ${modeTitle.toLowerCase()}`}
+        maxValue={0.25}
+        minValue={-0.25}
+        onChange={(v) => onChange(typeof v === "number" ? v : v[0])}
+        step={0.005}
+        value={value}
+      >
+        <PrismSliderTrack>
+          <PrismSliderFill />
+          <PrismSliderThumb />
+        </PrismSliderTrack>
+      </PrismSlider>
+      <span className="text-right font-mono text-sm tabular-nums">
+        {value > 0 ? "+" : ""}
+        {value.toFixed(3)}
+      </span>
+    </div>
+  );
+}
 
 /** Swatch + value button that opens the color picker. */
 function ColorTrigger({
@@ -68,10 +105,16 @@ function ColorTrigger({
 export function CustomThemePanel({
   theme,
   onChange,
+  onAccentChange,
+  onLayerChange,
+  onLayersReset,
   onOptionChange,
 }: {
   theme: CustomTheme;
   onChange: (mode: ThemeMode, key: ThemeColorKey, value: string) => void;
+  onAccentChange: (mode: ThemeMode, value: string | undefined) => void;
+  onLayerChange: (mode: ThemeMode, key: CustomLayerKey, value: number) => void;
+  onLayersReset: (mode: ThemeMode) => void;
   onOptionChange: <K extends CustomThemeOptionKey>(
     key: K,
     value: CustomTheme[K],
@@ -87,22 +130,14 @@ export function CustomThemePanel({
       </div>
 
       <p className="-mt-3 text-sm text-secondary-foreground">
-        Cada lado mostra o modo com as cores escolhidas. A sombra vale para
-        menus, diálogos, avisos e cartões, mesmo com o relevo desligado.
+        Cada lado mostra o modo com as cores escolhidas. A sombra é a mesma para
+        todos os temas (DS29), não se escolhe aqui. Destaque e Camadas valem
+        para o modo mostrado.
       </p>
 
       {/* Cada modo é exibido com o próprio fundo e texto escolhidos */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {MODES.map(({ mode, title }) => {
-          const fields = SHADOW_FIELDS[mode];
-          const ownColor = theme[fields.color];
-          // Dark mode without its own shadow color falls back to the light one.
-          const shadowColor =
-            ownColor || (mode === "dark" ? theme.shadowColor : undefined);
-          const opacity = theme[fields.opacity] ?? fields.defaultOpacity;
-          const hasShadowChange =
-            Boolean(ownColor) || theme[fields.opacity] !== undefined;
-
           return (
             <div
               className="flex flex-col gap-5 rounded-2xl border border-foreground/10 p-5 squircle"
@@ -132,58 +167,69 @@ export function CustomThemePanel({
                     />
                   </div>
                 ))}
-              </div>
 
-              <div className="flex flex-col gap-4 border-t border-current/15 pt-5">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-sm font-semibold">Sombra</span>
-                  {hasShadowChange && (
-                    <PrismButton
-                      aria-label={`Restaurar sombra do ${title.toLowerCase()}`}
-                      className="h-auto p-0 text-sm text-inherit opacity-70 hover:bg-transparent hover:opacity-100"
-                      onPress={() => {
-                        onOptionChange(fields.color, undefined);
-                        onOptionChange(fields.opacity, undefined);
-                      }}
-                      size="xs"
-                      variant="ghost"
-                    >
-                      Restaurar
-                      <RotateCcwIcon className="size-3.5" />
-                    </PrismButton>
-                  )}
-                </div>
+                {/* Destaque: segue a cor principal até ser escolhido */}
                 <div className="flex flex-col gap-1.5">
-                  <span className="text-sm opacity-70">Cor da sombra</span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm opacity-70">Destaque</span>
+                    {theme[mode].accentHex && (
+                      <PrismButton
+                        aria-label={`Destaque igual à cor principal, ${title.toLowerCase()}`}
+                        className="h-auto p-0 text-sm text-inherit opacity-70 hover:bg-transparent hover:opacity-100"
+                        onPress={() => onAccentChange(mode, undefined)}
+                        size="xs"
+                        variant="ghost"
+                      >
+                        Igual à principal
+                        <RotateCcwIcon className="size-3" />
+                      </PrismButton>
+                    )}
+                  </div>
                   <UColorPickerDropdown
-                    aria-label={`Cor da sombra, ${title.toLowerCase()}`}
-                    onChange={(value) => onOptionChange(fields.color, value)}
+                    aria-label={`Destaque, ${title.toLowerCase()}`}
+                    onChange={(value) => onAccentChange(mode, value)}
                     trigger={
                       <ColorTrigger
-                        ariaLabel={`Cor da sombra, ${title.toLowerCase()}`}
-                        color={shadowColor || "#000000"}
-                        label={shadowColor || "Neutra (padrão)"}
+                        ariaLabel={`Destaque, ${title.toLowerCase()}: ${theme[mode].accentHex ?? "igual à principal"}`}
+                        color={theme[mode].accentHex ?? theme[mode].primaryHex}
+                        label={theme[mode].accentHex ?? "Igual à principal"}
                       />
                     }
-                    value={shadowColor || "#000000"}
+                    value={theme[mode].accentHex ?? theme[mode].primaryHex}
                   />
                 </div>
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="opacity-70">Opacidade da sombra</span>
-                    <span className="font-mono">{opacity}%</span>
-                  </div>
-                  <PrismSlider
-                    aria-label={`Opacidade da sombra, ${title.toLowerCase()}`}
-                    maxValue={100}
-                    minValue={1}
-                    onChange={(value) => onOptionChange(fields.opacity, value)}
-                    value={opacity}
-                  >
-                    <PrismSliderTrack className="bg-current/20" />
-                  </PrismSlider>
-                </div>
               </div>
+
+              {/* Camadas: quanto cada superfície clareia (+) ou escurece (-) o fundo */}
+              <details className="group border-t border-current/15 pt-4">
+                <summary className="cursor-pointer text-sm font-semibold">
+                  Camadas
+                </summary>
+                <div className="mt-4 grid gap-3">
+                  <p className="text-sm opacity-70">
+                    Quanto cada superfície se afasta do fundo: positivo clareia,
+                    negativo escurece.
+                  </p>
+                  {LAYERS.map(({ key, label }) => (
+                    <LayerSlider
+                      key={key}
+                      label={label}
+                      modeTitle={title}
+                      onChange={(value) => onLayerChange(mode, key, value)}
+                      value={resolveCustomLayers(mode, theme[mode].layers)[key]}
+                    />
+                  ))}
+                  <PrismButton
+                    className="h-auto justify-start p-0 text-sm text-inherit opacity-70 hover:bg-transparent hover:opacity-100"
+                    onPress={() => onLayersReset(mode)}
+                    size="xs"
+                    variant="ghost"
+                  >
+                    Restaurar camadas padrão
+                    <RotateCcwIcon className="size-3" />
+                  </PrismButton>
+                </div>
+              </details>
             </div>
           );
         })}

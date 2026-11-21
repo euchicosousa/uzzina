@@ -72,6 +72,7 @@ import {
   isTodayViewMode,
   isVividDarkTone,
   isVividTextTone,
+  type CustomLayerKey,
   type CustomTheme,
   type TodayViewMode,
   type VividDarkTone,
@@ -83,10 +84,14 @@ import { CloudCheckIcon, CloudIcon } from "lucide-react";
 import { PHASES, type PhaseColorMode } from "~/lib/CONSTANTS";
 import { CustomThemePanel } from "~/components/features/profile/CustomThemePanel";
 import {
+  applyCustomThemeAccent,
   applyCustomThemeChange,
+  applyCustomThemeLayer,
+  resetCustomThemeLayers,
   applyCustomThemeOption,
   createCustomThemeDraft,
   isCompleteCustomTheme,
+  toLegacyCustomTheme,
   type CustomThemeOptionKey,
   type ThemeColorKey,
   type ThemeMode,
@@ -166,12 +171,12 @@ function VividPhasePreview({
             style={{
               backgroundColor:
                 isDark && darkTone === "dim"
-                  ? `oklch(from ${phase.color} 0.72 calc(c * 0.8) h)`
+                  ? `oklch(from ${phase.color} var(--shared-phase-dim-l) calc(c * var(--shared-phase-dim-c-factor)) h)`
                   : phase.color,
               color:
                 textTone === "light"
-                  ? `oklch(from ${phase.color} 0.98 0.025 h)`
-                  : `oklch(from ${phase.color} 0.35 0.07 h)`,
+                  ? `oklch(from ${phase.color} var(--shared-phase-ink-light-l) var(--shared-phase-ink-light-c) h)`
+                  : `oklch(from ${phase.color} var(--shared-phase-ink-l) var(--shared-phase-ink-c) h)`,
             }}
           >
             {sample === "type" ? "Aa" : phase.title}
@@ -567,6 +572,28 @@ function ProfilePage() {
     setCustomThemeDraft(next);
     previewCustomTheme(next);
   };
+  const handleCustomThemeAccentChange = (
+    mode: ThemeMode,
+    value: string | undefined,
+  ) => {
+    const next = applyCustomThemeAccent(customThemeDraft, mode, value);
+    setCustomThemeDraft(next);
+    previewCustomTheme(next);
+  };
+  const handleCustomThemeLayerChange = (
+    mode: ThemeMode,
+    key: CustomLayerKey,
+    value: number,
+  ) => {
+    const next = applyCustomThemeLayer(customThemeDraft, mode, key, value);
+    setCustomThemeDraft(next);
+    previewCustomTheme(next);
+  };
+  const handleCustomThemeLayersReset = (mode: ThemeMode) => {
+    const next = resetCustomThemeLayers(customThemeDraft, mode);
+    setCustomThemeDraft(next);
+    previewCustomTheme(next);
+  };
   const handleCustomThemeOptionChange = <K extends CustomThemeOptionKey>(
     key: K,
     value: CustomTheme[K],
@@ -657,10 +684,31 @@ function ProfilePage() {
       if (!isCurrentSession()) return;
       const sentKeys = Object.keys(newPreferences);
       if (sentKeys.length > 0) {
-        const savedPreferences = await updateMyPreferences(
-          supabase,
-          newPreferences,
-        );
+        let savedPreferences: Awaited<ReturnType<typeof updateMyPreferences>>;
+        try {
+          savedPreferences = await updateMyPreferences(
+            supabase,
+            newPreferences,
+          );
+        } catch (error) {
+          // Database not yet updated for DS36 stage 8: it rejects the accent
+          // and layers. Save the four colors it knows; layers stay on this device.
+          const message =
+            typeof error === "object" && error && "message" in error
+              ? String(error.message)
+              : "";
+          if (!newPreferences.customTheme || !message.includes("custom")) {
+            throw error;
+          }
+          newPreferences.customTheme = toLegacyCustomTheme(customThemeDraft);
+          savedPreferences = await updateMyPreferences(
+            supabase,
+            newPreferences,
+          );
+          toast.warning(
+            "Cores salvas. As camadas do tema personalizado ainda não podem ser guardadas na conta.",
+          );
+        }
         if (!isCurrentSession()) return;
         // Merge only the fields sent, keeping values saved by other surfaces.
         const merged = { ...preferenceRecord(person.preferences) };
@@ -1079,6 +1127,9 @@ function ProfilePage() {
             {selectedThemeColor === -1 && (
               <CustomThemePanel
                 onChange={handleCustomThemeChange}
+                onAccentChange={handleCustomThemeAccentChange}
+                onLayerChange={handleCustomThemeLayerChange}
+                onLayersReset={handleCustomThemeLayersReset}
                 onOptionChange={handleCustomThemeOptionChange}
                 theme={customThemeDraft}
               />
@@ -1366,7 +1417,7 @@ function ProfilePage() {
             >
               <div className="grid gap-3 pt-2">
                 {isLoadingAIUsage ? (
-                  <div className="h-20 w-full animate-pulse rounded-2xl bg-secondary squircle" />
+                  <div className="h-20 w-full animate-pulse rounded-2xl bg-card squircle" />
                 ) : isAIUsageError ? (
                   <div
                     className="flex items-center justify-between gap-3 text-xs text-secondary-foreground"
@@ -1411,7 +1462,7 @@ function ProfilePage() {
                     )}
                   </UAIAllowanceMeter>
                 ) : (
-                  <div className="rounded-2xl border border-border/40 bg-secondary p-4 text-xs text-secondary-foreground squircle">
+                  <div className="rounded-2xl border border-border/40 bg-card p-4 text-xs text-secondary-foreground squircle">
                     Consumo de IA ainda não medido neste mês.
                   </div>
                 )}

@@ -79,10 +79,10 @@ const cellVariants = cva(
         true: "[&:is(:nth-child(2)>[data-selected=true])>div]:rounded-l-(--cell-radius)",
       },
       isSelectionStart: {
-        true: "relative isolate z-0 squircle rounded-l-(--cell-radius) bg-secondary after:absolute after:inset-y-0 after:right-0 after:w-4 after:bg-secondary",
+        true: "relative isolate z-0 squircle rounded-l-(--cell-radius) bg-card after:absolute after:inset-y-0 after:right-0 after:w-4 after:bg-card",
       },
       isSelectionEnd: {
-        true: "relative isolate z-0 squircle rounded-r-(--cell-radius) bg-secondary after:absolute after:inset-y-0 after:left-0 after:w-4 after:bg-secondary",
+        true: "relative isolate z-0 squircle rounded-r-(--cell-radius) bg-card after:absolute after:inset-y-0 after:left-0 after:w-4 after:bg-card",
       },
       isUnavailable: {
         true: "text-secondary-foreground opacity-50 [&>div]:line-through",
@@ -306,7 +306,7 @@ function CalendarInner({
                             variant: "ghost",
                             size: "icon",
                           }),
-                          "relative isolate z-10 flex h-full w-full flex-col gap-1 rounded-(--cell-radius) border-0 leading-none font-normal squircle group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-3 group-data-[focused=true]/day:ring-ring/30 data-[range-end=true]:rounded-(--cell-radius) data-[range-end=true]:rounded-r-(--cell-radius) data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground data-[range-end=true]:squircle data-[range-middle=true]:rounded-none data-[range-middle=true]:bg-secondary data-[range-start=true]:rounded-(--cell-radius) data-[range-start=true]:rounded-l-(--cell-radius) data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[range-start=true]:squircle data-[selected-single=true]:rounded-(--cell-radius) data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground data-[selected-single=true]:squircle data-[today=true]:rounded-(--cell-radius) data-[today=true]:bg-secondary data-[today=true]:squircle [&>span]:opacity-70",
+                          "relative isolate z-10 flex h-full w-full flex-col gap-1 rounded-(--cell-radius) border-0 leading-none font-normal squircle group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-3 group-data-[focused=true]/day:ring-ring-halo hover:bg-card data-[range-end=true]:rounded-(--cell-radius) data-[range-end=true]:rounded-r-(--cell-radius) data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground data-[range-end=true]:squircle data-[range-middle=true]:rounded-none data-[range-middle=true]:bg-card data-[range-middle=true]:hover:bg-secondary-hover data-[range-start=true]:rounded-(--cell-radius) data-[range-start=true]:rounded-l-(--cell-radius) data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[range-start=true]:squircle data-[selected-single=true]:rounded-(--cell-radius) data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground data-[selected-single=true]:squircle data-[today=true]:rounded-(--cell-radius) data-[today=true]:bg-card data-[today=true]:squircle data-[today=true]:hover:bg-secondary-hover [&>span]:opacity-70",
                           baseCellClassName,
                           cellSizeConfig[cellSize].cell,
                         )}
@@ -346,7 +346,7 @@ function CalendarInner({
 // chevron icon; hover and keyboard focus still show feedback. Height follows
 // --cell-size so they line up with the previous/next buttons.
 const captionTriggerClassName =
-  "squircle h-auto min-h-(--cell-size) w-auto gap-1 bg-transparent px-2.5 py-0 font-medium data-[hovered]:bg-secondary data-[size=default]:h-auto";
+  "squircle h-auto min-h-(--cell-size) w-auto gap-1 bg-transparent px-2.5 py-0 font-medium data-[hovered]:bg-card data-[size=default]:h-auto";
 function MonthDropdown({
   format,
   cellSize = "default",

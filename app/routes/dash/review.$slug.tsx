@@ -212,7 +212,7 @@ function ReviewPage() {
                         <span
                           className="rounded-full px-2 py-0.5 text-xs font-semibold tracking-wide uppercase"
                           style={{
-                            backgroundColor: `${category.color}20`,
+                            backgroundColor: `color-mix(in oklab, ${category.color} 12.55%, transparent)`,
                             color: category.color,
                           }}
                         >

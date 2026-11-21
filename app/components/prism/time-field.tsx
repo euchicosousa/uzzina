@@ -11,7 +11,7 @@ import { cn } from "cnfast";
 import { Label } from "./label";
 
 const timeFieldVariants = cva(
-  "squircle inline-flex min-w-0 text-sm placeholder:text-sm items-center rounded-2xl border border-transparent bg-input transition-[color,box-shadow] duration-200 outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-foreground/40 focus-within:border-ring/60 focus-within:ring-3 focus-within:ring-ring/30 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:bg-error-background aria-invalid:text-error-foreground aria-invalid:border-error aria-invalid:ring-error-background",
+  "squircle inline-flex min-w-0 text-sm placeholder:text-sm items-center rounded-2xl border border-transparent bg-input transition-[color,box-shadow] duration-200 outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-foreground/40 focus-within:border-ring/60 focus-within:ring-3 focus-within:ring-ring-halo disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:bg-error-background aria-invalid:text-error-foreground aria-invalid:border-error aria-invalid:ring-error-background",
   {
     variants: {
       size: {

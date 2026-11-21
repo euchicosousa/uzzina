@@ -107,19 +107,19 @@ Contratos de área (gaveta, busca, páginas, Prism em detalhe, IA, banco e impla
 
 Preserve o estilo próprio, temas e paletas OKLCH da UZZINA. Novos primitivos ficam em `app/components/prism/`, exportados por index.ts, com React Aria Components, CVA e `cn()` de `~/lib/utils`. Componentes de negócio reutilizam esses primitivos. Consulte implementação e `/ui` para props e variantes atuais.
 
-| Token                                       | Uso                                                                                                  |
-| ------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| bg-background / bg-popover / bg-input       | Página, flutuantes (menu, diálogo, gaveta, aviso) e campos                                           |
-| bg-card                                     | Objeto com conteúdo e realce de estado (não é caixa em volta de blocos)                              |
-| bg-secondary / bg-secondary-hover           | Cinza sobre página ou flutuante; hover de item = secondary, hover de cinza ou card = secondary-hover |
-| text-foreground / text-secondary-foreground | Texto principal e secundário (secundário derivado do fundo)                                          |
-| border-border / border-input                | Bordas                                                                                               |
-| bg-primary / text-primary-foreground        | Ação principal                                                                                       |
-| border-ring / ring-ring/30                  | Foco                                                                                                 |
-| text-error / bg-error-background            | Erro                                                                                                 |
-| text-success / bg-success-background        | Sucesso                                                                                              |
-| text-warning / bg-warning-background        | Aviso                                                                                                |
-| text-info / bg-info-background              | Informação                                                                                           |
+| Token                                       | Uso                                                                                                                                                        |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| bg-background / bg-popover / bg-input       | Página, flutuantes (menu, diálogo, gaveta, aviso), campos e trilho de progresso/controle deslizante                                                        |
+| bg-card                                     | Fundo fixo que informa ou sinaliza e não é clicável (nota, selo, atalho, avatar vazio, alvo ao arrastar, item do acordeão); não é caixa em volta de blocos |
+| bg-secondary / bg-secondary-hover           | Só o que é clicável (botão, item de menu/lista, aba); hover de item = secondary, hover de cinza ou card = secondary-hover                                  |
+| text-foreground / text-secondary-foreground | Texto principal e secundário (secundário derivado do fundo)                                                                                                |
+| border-border / border-input                | Bordas                                                                                                                                                     |
+| bg-primary / text-primary-foreground        | Ação principal                                                                                                                                             |
+| border-ring / ring-ring/30                  | Foco                                                                                                                                                       |
+| text-error / bg-error-background            | Erro                                                                                                                                                       |
+| text-success / bg-success-background        | Sucesso                                                                                                                                                    |
+| text-warning / bg-warning-background        | Aviso                                                                                                                                                      |
+| text-info / bg-info-background              | Informação                                                                                                                                                 |
 
 Escala de controles `xs`/`sm`/`default`/`lg` = 24/32/40/48px, com ícone só `icon-xs`/`icon-sm`/`icon`/`icon-lg` nas mesmas medidas. Texto por tamanho: `xs` `text-xs` (único com 12px), `sm` e `default` `text-sm`, `lg` `text-base` em revisão. Raios: controles até `default` `rounded-2xl squircle`, `lg` `rounded-3xl squircle`; ButtonGroup/ToggleGroup seguem o raio dos itens do tamanho, com puxão de 1px só nas variantes de borda opaca e ghost de toggle sempre separado (detalhe em prism-details, DS18); containers (popover, dropdown, conteúdo de select/combobox, command dialog, dialog, alert, toaster) `rounded-2xl`; itens internos `rounded-xl squircle`; Badge/`PrismKbd` em pílula `rounded-full` sem squircle. Botão circular usa a prop `isRounded` do `PrismButton`/`LinkButton` (`rounded-full`, sem squircle; o `squircle` do botão só se aplica quando não é circular); não combine `rounded-full` com a classe `no-squircle`, que perde para o `squircle` e hoje não é usada. Dentro de `ButtonGroup` o raio vem do grupo e `isRounded` não se aplica. Exemplo: `UAvatarUpload` (avatar de foto/logotipo, `/ui`). Cores de estado usam tokens, sem `emerald`/`green` fixos. `PrismKbd` (atalhos) e `PrismDialogBody` (corpo `px-5 py-2`) existem em `prism/`. Histórico da rodada em [visual-controls-final-status](docs/plans/visual-controls-final-status.md); lista de componentes a ajustar em [visual-controls-where](docs/plans/visual-controls-where.md).
 

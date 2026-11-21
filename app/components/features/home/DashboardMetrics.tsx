@@ -201,7 +201,7 @@ const ProgressBar = ({
   total: number;
 }) => {
   if (total === 0) {
-    return <div className="h-1.5 w-14 shrink-0 rounded-full bg-secondary" />;
+    return <div className="h-1.5 w-14 shrink-0 rounded-full bg-input" />;
   }
   const counts: Record<string, number> = {
     idea: 0,
@@ -218,7 +218,7 @@ const ProgressBar = ({
     }
   }
   return (
-    <div className="flex h-1.5 w-14 shrink-0 overflow-hidden rounded-full bg-secondary">
+    <div className="flex h-1.5 w-14 shrink-0 overflow-hidden rounded-full bg-input">
       {Object.entries(PHASES).map(([key, phaseInfo]) => {
         const count = counts[key as keyof typeof counts] || 0;
         if (count === 0) return null;

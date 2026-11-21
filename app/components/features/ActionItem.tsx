@@ -20,6 +20,7 @@ import { useMultiSelection } from "~/hooks/useMultiSelection";
 
 // Constants & Helpers
 import { cn } from "cnfast";
+import type { PhaseColorMode } from "~/lib/CONSTANTS";
 import { getUserPreferences } from "~/lib/preferences";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { useIsLateAction } from "~/hooks/useIsLateAction";
@@ -65,6 +66,10 @@ type ActionItemProps = {
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
   /** Optional click handler override */
   onClick?: (action: Action) => void;
+  /** Theme editor preview only: forces the phase color mode instead of the account preference. */
+  phaseColorMode?: PhaseColorMode;
+  /** Theme editor preview only: phase color to use instead of the constant. */
+  phaseColorOverride?: string;
 };
 
 /**
@@ -83,6 +88,8 @@ export function ActionItem({
   displayFlags = DEFAULT_DISPLAY_FLAGS,
   dateTimeDisplay,
   onClick,
+  phaseColorMode,
+  phaseColorOverride,
 }: ActionItemProps) {
   const {
     showLate = false,
@@ -95,10 +102,11 @@ export function ActionItem({
   const { person, setPrimaryAction } = useAppContext();
   // Phase color is one account-wide preference (DS19): off, soft tint or vivid fill
   const rawPreferences = person?.preferences;
-  const showPhaseColor = useMemo(
+  const preferredPhaseColor = useMemo(
     () => getUserPreferences({ preferences: rawPreferences }).phaseColor,
     [rawPreferences],
   );
+  const showPhaseColor = phaseColorMode ?? preferredPhaseColor;
   const {
     currentPhase,
     currentPartners,
@@ -161,7 +169,7 @@ export function ActionItem({
     if (isLateShown) {
       baseStyles = cn(
         baseStyles,
-        "late-surface bg-error-background/70 text-error-foreground hover:bg-error-background ring ring-error",
+        "late-surface bg-late text-error-foreground hover:bg-error-background ring ring-error",
       );
     }
     // Sprint keeps its thicker ring; a late action keeps it red.
@@ -187,7 +195,7 @@ export function ActionItem({
   // Late keeps its own background; an unknown legacy phase keeps the default.
   const phaseColor =
     effectivePhaseColor !== "off" && !(showLate && isLate)
-      ? currentPhase?.color
+      ? (phaseColorOverride ?? currentPhase?.color)
       : undefined;
   const content = (
     <div

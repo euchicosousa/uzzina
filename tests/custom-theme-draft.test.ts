@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import {
   applyCustomThemeChange,
   createCustomThemeDraft,
+  customThemeToPalette,
   isCompleteCustomTheme,
 } from "~/lib/custom-theme";
 import {
@@ -15,18 +16,40 @@ const base = createCustomThemeDraft(null);
 
 describe("createCustomThemeDraft", () => {
   test("falls back to the documented defaults", () => {
-    expect(base.light).toEqual({
+    expect(base.light).toMatchObject({
       primaryHex: "#2640A0",
       primaryFgHex: "#FFFFFF",
       bgHex: "#FFFFFF",
       fgHex: "#000000",
     });
-    expect(base.dark).toEqual({
+    expect(base.dark).toMatchObject({
       primaryHex: "#3558DE",
       primaryFgHex: "#FFFFFF",
       bgHex: "#141414",
       fgHex: "#FFFFFF",
     });
+  });
+  test("old saved themes get the Ônix layers at read time", () => {
+    expect(base.light.layers).toEqual({
+      popoverLDelta: 0.02,
+      cardLDelta: -0.02,
+      inputLDelta: -0.04,
+      secondaryLDelta: -0.06,
+      secondaryHoverLDelta: -0.08,
+      borderLDelta: -0.09,
+      actionLDelta: 0.02,
+      actionHoverLDelta: 0.1,
+    });
+    expect(base.dark.layers).toBeDefined();
+  });
+  test("the palette handed to the CSS has every delta", () => {
+    const palette = customThemeToPalette(base);
+    for (const mode of [palette.light, palette.dark]) {
+      expect(mode.fgLDelta).toBeDefined();
+      expect(mode.primaryFgDelta).toBeDefined();
+      expect(mode.cardLDelta).toBeDefined();
+      expect(mode.actionHoverLDelta).toBeDefined();
+    }
   });
   test("keeps saved values", () => {
     const saved = {

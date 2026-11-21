@@ -13,21 +13,31 @@ import { AdminGuard } from "~/components/features/AdminGuard";
 import { ThemeColorInspector } from "~/components/features/admin/themes/ThemeColorInspector";
 import { ThemePreviewPane } from "~/components/features/admin/themes/ThemePreviewPane";
 import {
-  buildThemeChangesMarkdown,
+  buildPalettesSource,
   clearDraftFromStorage,
   clonePaletteConfig,
   computeThemeChanges,
-  getOriginalPhasesMap,
-  getOriginalPrioritiesMap,
+  derivePriorities,
+  fingerprintPalette,
+  fingerprintShared,
+  getOriginalShared,
   getPaletteById,
   loadDraftFromStorage,
   saveDraftToStorage,
+  setFormulaValue,
+  setLateValue,
+  setPhaseFormula,
+  setSharedNumber,
+  setStateColor,
   type DeltaKey,
+  type FormulaKey,
+  type LateKey,
   type PaletteColorKey,
+  type PhaseFormulaKey,
+  type SharedNumberKey,
+  type StateKey,
+  type StatePart,
   type PhaseSlug,
-  type PhasesColorMap,
-  type PrioritiesColorMap,
-  type PriorityKey,
   type ThemePreviewMode,
 } from "~/components/features/admin/themes/theme-editor-model";
 import {
@@ -47,7 +57,12 @@ import {
   PrismToggleGroup,
   PrismToggleGroupItem,
 } from "~/components/prism";
-import { PALLETE, type PaletteConfig } from "~/lib/palettes";
+import {
+  PALLETE,
+  type CategorySlug,
+  type PaletteConfig,
+  type SharedColors,
+} from "~/lib/palettes";
 import { formatOklchString, type OklchColor } from "~/utils/color";
 
 export const Route = createFileRoute("/app/admin/themes")({
@@ -67,11 +82,9 @@ function AdminThemesPage() {
   const [draftPalette, setDraftPalette] = useState<PaletteConfig>(() =>
     clonePaletteConfig(PALLETE[0]),
   );
-  const [draftPhases, setDraftPhases] = useState<PhasesColorMap>(() =>
-    getOriginalPhasesMap(),
-  );
-  const [draftPriorities, setDraftPriorities] = useState<PrioritiesColorMap>(
-    () => getOriginalPrioritiesMap(),
+  /** States, phases and categories: one block shared by every palette (DS36). */
+  const [draftShared, setDraftShared] = useState<SharedColors>(() =>
+    getOriginalShared(),
   );
   const [previewMode, setPreviewMode] = useState<ThemePreviewMode>("split");
   const [hoveredTarget, setHoveredTarget] = useState<string | null>(null);
@@ -80,24 +93,30 @@ function AdminThemesPage() {
 
   useEffect(() => {
     const stored = loadDraftFromStorage();
-    if (stored) {
+    // A draft only survives while palettes.ts is unchanged; otherwise it would
+    // hide the values that were edited in the file.
+    const base = stored ? getPaletteById(stored.paletteId) : null;
+    if (
+      stored &&
+      base &&
+      stored.base === fingerprintPalette(base) &&
+      stored.sharedBase === fingerprintShared()
+    ) {
       setPaletteId(stored.paletteId);
       setDraftPalette(stored.palette);
-      if (stored.phases) setDraftPhases(stored.phases);
-      if (stored.priorities) setDraftPriorities(stored.priorities);
+      setDraftShared(stored.shared);
     }
     setHydrated(true);
   }, []);
 
   const changes = useMemo(
-    () =>
-      computeThemeChanges(
-        paletteId,
-        draftPalette,
-        draftPhases,
-        draftPriorities,
-      ),
-    [paletteId, draftPalette, draftPhases, draftPriorities],
+    () => computeThemeChanges(paletteId, draftPalette, draftShared),
+    [paletteId, draftPalette, draftShared],
+  );
+
+  const previewPriorities = useMemo(
+    () => derivePriorities(draftShared),
+    [draftShared],
   );
 
   useEffect(() => {
@@ -108,25 +127,25 @@ function AdminThemesPage() {
     }
     saveDraftToStorage({
       paletteId,
+      base: fingerprintPalette(getPaletteById(paletteId)),
+      sharedBase: fingerprintShared(),
       palette: draftPalette,
-      phases: draftPhases,
-      priorities: draftPriorities,
+      shared: draftShared,
     });
-  }, [
-    hydrated,
-    changes.length,
-    paletteId,
-    draftPalette,
-    draftPhases,
-    draftPriorities,
-  ]);
+  }, [hydrated, changes.length, paletteId, draftPalette, draftShared]);
+
+  const baseFingerprint = fingerprintPalette(getPaletteById(paletteId));
+  useEffect(() => {
+    if (!hydrated || changes.length > 0) return;
+    setDraftPalette(clonePaletteConfig(getPaletteById(paletteId)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [baseFingerprint]);
 
   const applyPaletteSwitch = (nextId: string) => {
     const next = clonePaletteConfig(getPaletteById(nextId));
     setPaletteId(next.id);
     setDraftPalette(next);
-    setDraftPhases(getOriginalPhasesMap());
-    setDraftPriorities(getOriginalPrioritiesMap());
+    setDraftShared(getOriginalShared());
     clearDraftFromStorage();
   };
 
@@ -144,16 +163,18 @@ function AdminThemesPage() {
     toast.success("Alterações descartadas.");
   };
 
-  const markdownOutput = useMemo(
-    () => buildThemeChangesMarkdown(draftPalette, changes),
-    [draftPalette, changes],
+  // The whole palettes.ts is copied: PALLETE and SHARED_COLORS (states, phases
+  // and categories) are both rebuilt from the draft.
+  const codeOutput = useMemo(
+    () => buildPalettesSource(draftPalette, draftShared),
+    [draftPalette, draftShared],
   );
 
   const handleCopy = async () => {
     if (changes.length === 0) return;
     try {
-      await navigator.clipboard.writeText(markdownOutput);
-      toast.success("Instruções copiadas para a área de transferência.");
+      await navigator.clipboard.writeText(codeOutput);
+      toast.success("palettes.ts completo copiado.");
     } catch {
       toast.error("Não foi possível copiar para a área de transferência.");
     }
@@ -162,9 +183,9 @@ function AdminThemesPage() {
   const handleSaveDownload = () => {
     if (changes.length === 0) return;
     const today = new Date().toISOString().slice(0, 10);
-    const filename = `uzzina-cores-${draftPalette.id}-${today}.md`;
-    const blob = new Blob([markdownOutput], {
-      type: "text/markdown;charset=utf-8",
+    const filename = `palettes-${draftPalette.id}-${today}.ts`;
+    const blob = new Blob([codeOutput], {
+      type: "text/typescript;charset=utf-8",
     });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
@@ -191,6 +212,20 @@ function AdminThemesPage() {
     }));
   };
 
+  const handleChangePrimaryFgDelta = (
+    mode: "light" | "dark",
+    part: "l" | "c" | "h",
+    value: number,
+  ) => {
+    setDraftPalette((prev) => ({
+      ...prev,
+      [mode]: {
+        ...prev[mode],
+        primaryFgDelta: { ...prev[mode].primaryFgDelta, [part]: value },
+      },
+    }));
+  };
+
   const handleChangeDelta = (
     mode: "light" | "dark",
     key: DeltaKey,
@@ -205,29 +240,6 @@ function AdminThemesPage() {
     }));
   };
 
-  const handleChangeShadowColor = (
-    mode: "light" | "dark",
-    color: OklchColor,
-  ) => {
-    setDraftPalette((prev) => ({
-      ...prev,
-      [mode]: {
-        ...prev[mode],
-        shadowColor: formatOklchString(color),
-      },
-    }));
-  };
-
-  const handleChangeShadowOpacity = (mode: "light" | "dark", value: number) => {
-    setDraftPalette((prev) => ({
-      ...prev,
-      [mode]: {
-        ...prev[mode],
-        shadowOpacity: value,
-      },
-    }));
-  };
-
   const handleChangeRelief = (relief: boolean) => {
     setDraftPalette((prev) => ({
       ...prev,
@@ -236,23 +248,57 @@ function AdminThemesPage() {
   };
 
   const handleChangePhase = (slug: PhaseSlug, color: OklchColor) => {
-    setDraftPhases((prev) => ({
+    setDraftShared((prev) => ({
       ...prev,
-      [slug]: color,
+      phases: { ...prev.phases, [slug]: color },
     }));
   };
 
-  const handleChangePriority = (
+  const handleChangeFormula = (
+    key: FormulaKey,
     mode: "light" | "dark",
-    key: PriorityKey,
+    value: number,
+  ) => {
+    setDraftShared((prev) => setFormulaValue(prev, key, mode, value));
+  };
+
+  const handleChangePhaseFormula = (
+    key: PhaseFormulaKey,
+    mode: "light" | "dark",
+    value: number,
+  ) => {
+    setDraftShared((prev) => setPhaseFormula(prev, key, mode, value));
+  };
+
+  const handleChangeState = (
+    key: StateKey,
+    part: StatePart,
+    mode: "light" | "dark",
     color: OklchColor,
   ) => {
-    setDraftPriorities((prev) => ({
+    setDraftShared((prev) => setStateColor(prev, key, part, mode, color));
+  };
+
+  const handleChangeSharedNumber = (
+    key: SharedNumberKey,
+    mode: "light" | "dark",
+    value: number,
+  ) => {
+    setDraftShared((prev) => setSharedNumber(prev, key, mode, value));
+  };
+
+  const handleChangeLate = (
+    key: LateKey,
+    mode: "light" | "dark",
+    value: number,
+  ) => {
+    setDraftShared((prev) => setLateValue(prev, key, mode, value));
+  };
+
+  const handleChangeCategory = (slug: CategorySlug, color: OklchColor) => {
+    setDraftShared((prev) => ({
       ...prev,
-      [mode]: {
-        ...prev[mode],
-        [key]: color,
-      },
+      categories: { ...prev.categories, [slug]: color },
     }));
   };
 
@@ -373,8 +419,27 @@ function AdminThemesPage() {
         </header>
 
         {/* Duas colunas com rolagem independente */}
-        <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_420px]">
-          <div className="min-h-0 overflow-y-auto p-6">
+        <div className="grid min-h-0 flex-1 grid-cols-[440px_minmax(0,1fr)]">
+          <aside className="flex min-h-0 flex-col border-r border-border">
+            <ThemeColorInspector
+              onChangeDelta={handleChangeDelta}
+              onChangePaletteColor={handleChangePaletteColor}
+              onChangePhase={handleChangePhase}
+              onChangeCategory={handleChangeCategory}
+              onChangeFormula={handleChangeFormula}
+              onChangeRelief={handleChangeRelief}
+              onChangeLate={handleChangeLate}
+              onChangePhaseFormula={handleChangePhaseFormula}
+              onChangeSharedNumber={handleChangeSharedNumber}
+              onChangePrimaryFgDelta={handleChangePrimaryFgDelta}
+              onChangeState={handleChangeState}
+              onHoverTarget={setHoveredTarget}
+              palette={draftPalette}
+              shared={draftShared}
+            />
+          </aside>
+
+          <div className="min-h-0 overflow-y-auto p-6 pb-32">
             <div
               className={
                 previewMode === "split"
@@ -387,8 +452,9 @@ function AdminThemesPage() {
                   hoveredTarget={hoveredTarget}
                   mode="light"
                   palette={draftPalette}
-                  phases={draftPhases}
-                  priorities={draftPriorities}
+                  phases={draftShared.phases}
+                  shared={draftShared}
+                  priorities={previewPriorities}
                 />
               )}
               {(previewMode === "dark" || previewMode === "split") && (
@@ -396,28 +462,13 @@ function AdminThemesPage() {
                   hoveredTarget={hoveredTarget}
                   mode="dark"
                   palette={draftPalette}
-                  phases={draftPhases}
-                  priorities={draftPriorities}
+                  phases={draftShared.phases}
+                  shared={draftShared}
+                  priorities={previewPriorities}
                 />
               )}
             </div>
           </div>
-
-          <aside className="min-h-0 overflow-y-auto border-l border-border p-4">
-            <ThemeColorInspector
-              onChangeDelta={handleChangeDelta}
-              onChangePaletteColor={handleChangePaletteColor}
-              onChangePhase={handleChangePhase}
-              onChangePriority={handleChangePriority}
-              onChangeRelief={handleChangeRelief}
-              onChangeShadowColor={handleChangeShadowColor}
-              onChangeShadowOpacity={handleChangeShadowOpacity}
-              onHoverTarget={setHoveredTarget}
-              palette={draftPalette}
-              phases={draftPhases}
-              priorities={draftPriorities}
-            />
-          </aside>
         </div>
       </div>
 

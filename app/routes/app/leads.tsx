@@ -243,7 +243,7 @@ function AppLeads() {
               <h1 className="text-2xl font-medium tracking-tight text-foreground">
                 Leads
               </h1>
-              <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground">
+              <span className="rounded-full bg-card px-2 py-0.5 text-xs font-semibold text-secondary-foreground">
                 {filteredLeads.length}
               </span>
             </div>

@@ -7,9 +7,10 @@ import React, {
   useContext,
 } from "react";
 import { PALLETE } from "~/lib/palettes";
+import { customThemeToPalette } from "~/lib/custom-theme";
 import { applyPaletteVars } from "~/lib/palette-vars";
 import { hexToOklch } from "~/utils/color";
-import type { CustomTheme } from "~/lib/preferences";
+import { parseCustomModeExtras, type CustomTheme } from "~/lib/preferences";
 
 const STORAGE_KEY = "uzzina-theme-color-index";
 const LEGACY_STORAGE_KEY = "uzzina-accent-color-index";
@@ -25,11 +26,32 @@ const CUSTOM_DARK_PRIMARY_FG_KEY = "uzzina-custom-dark-primary-fg";
 const CUSTOM_DARK_BG_KEY = "uzzina-custom-dark-bg";
 const CUSTOM_DARK_FG_KEY = "uzzina-custom-dark-fg";
 const CUSTOM_RELIEF_KEY = "uzzina-custom-relief";
-const CUSTOM_SHADOW_COLOR_KEY = "uzzina-custom-shadow-color";
-const CUSTOM_DARK_SHADOW_COLOR_KEY = "uzzina-custom-dark-shadow-color";
-const CUSTOM_SHADOW_OPACITY_KEY = "uzzina-custom-shadow-opacity";
-const CUSTOM_DARK_SHADOW_OPACITY_KEY = "uzzina-custom-dark-shadow-opacity";
 const CUSTOM_TOP_BORDER_COLOR_KEY = "uzzina-custom-top-border-color";
+// Accent and layer deltas of both modes (DS36, stage 8), as one JSON value.
+const CUSTOM_EXTRAS_KEY = "uzzina-custom-extras";
+
+/**
+ * Custom top border of the action cards (the Personalizado theme option). It
+ * is written after applyPaletteVars; relief off keeps the transparent border
+ * that palette-vars sets.
+ */
+function applyCustomTopBorder(theme: CustomTheme | null) {
+  if (!theme || theme.relief === false) return;
+  const root = document.documentElement;
+  if (theme.topBorderColor) {
+    root.style.setProperty(
+      "--action-top-border-override",
+      theme.topBorderColor,
+    );
+    root.style.setProperty(
+      "--dark-action-top-border-override",
+      theme.topBorderColor,
+    );
+  } else {
+    root.style.removeProperty("--action-top-border-override");
+    root.style.removeProperty("--dark-action-top-border-override");
+  }
+}
 
 function getStoredIndex(): number {
   if (typeof window === "undefined") return 0;
@@ -58,45 +80,42 @@ function getStoredCustomTheme(): CustomTheme | null {
   const dfg = localStorage.getItem(CUSTOM_DARK_FG_KEY);
   const reliefStr = localStorage.getItem(CUSTOM_RELIEF_KEY);
   const relief = reliefStr === null ? true : reliefStr !== "false";
-  const shadowColor =
-    localStorage.getItem(CUSTOM_SHADOW_COLOR_KEY) || undefined;
-  const darkShadowColor =
-    localStorage.getItem(CUSTOM_DARK_SHADOW_COLOR_KEY) || undefined;
-  const shadowOpacity = readStoredOpacity(CUSTOM_SHADOW_OPACITY_KEY);
-  const darkShadowOpacity = readStoredOpacity(CUSTOM_DARK_SHADOW_OPACITY_KEY);
   const topBorderColor =
     localStorage.getItem(CUSTOM_TOP_BORDER_COLOR_KEY) || undefined;
 
+  let extras: { light?: unknown; dark?: unknown } = {};
+  try {
+    const raw: unknown = JSON.parse(
+      localStorage.getItem(CUSTOM_EXTRAS_KEY) ?? "null",
+    );
+    if (raw && typeof raw === "object") extras = raw;
+  } catch {
+    // Unreadable extras: the theme loads with the Ônix layers.
+  }
+  const modeExtras = (value: unknown) =>
+    value && typeof value === "object" ? parseCustomModeExtras(value) : {};
+
   if (lp && lbg && lfg && dp && dbg && dfg) {
     return {
-      light: { primaryHex: lp, primaryFgHex: lpfg, bgHex: lbg, fgHex: lfg },
-      dark: { primaryHex: dp, primaryFgHex: dpfg, bgHex: dbg, fgHex: dfg },
+      light: {
+        primaryHex: lp,
+        primaryFgHex: lpfg,
+        bgHex: lbg,
+        fgHex: lfg,
+        ...modeExtras(extras.light),
+      },
+      dark: {
+        primaryHex: dp,
+        primaryFgHex: dpfg,
+        bgHex: dbg,
+        fgHex: dfg,
+        ...modeExtras(extras.dark),
+      },
       relief,
-      shadowColor,
-      darkShadowColor,
-      shadowOpacity,
-      darkShadowOpacity,
       topBorderColor,
     };
   }
   return null;
-}
-
-function readStoredOpacity(key: string): number | undefined {
-  const raw = localStorage.getItem(key);
-  if (raw === null) return undefined;
-  const value = Number(raw);
-  return Number.isFinite(value) && value >= 1 && value <= 100
-    ? value
-    : undefined;
-}
-
-function storeOptional(key: string, value: string | number | undefined) {
-  if (value === undefined || value === "") {
-    localStorage.removeItem(key);
-  } else {
-    localStorage.setItem(key, String(value));
-  }
 }
 
 export enum Theme {
@@ -196,10 +215,6 @@ export function useAppTheme(isPublic = false) {
         key === CUSTOM_DARK_BG_KEY ||
         key === CUSTOM_DARK_FG_KEY ||
         key === CUSTOM_RELIEF_KEY ||
-        key === CUSTOM_SHADOW_COLOR_KEY ||
-        key === CUSTOM_DARK_SHADOW_COLOR_KEY ||
-        key === CUSTOM_SHADOW_OPACITY_KEY ||
-        key === CUSTOM_DARK_SHADOW_OPACITY_KEY ||
         key === CUSTOM_TOP_BORDER_COLOR_KEY
       ) {
         setCustomThemeState(getStoredCustomTheme());
@@ -236,37 +251,7 @@ export function useAppTheme(isPublic = false) {
 
   const selectedPalette = useMemo(() => {
     if (primaryColorIndex === -1 && customTheme) {
-      const lightP = hexToOklch(customTheme.light.primaryHex);
-      const lightPfg = hexToOklch(customTheme.light.primaryFgHex);
-      const lightBg = hexToOklch(customTheme.light.bgHex);
-      const lightFg = hexToOklch(customTheme.light.fgHex);
-      const darkP = hexToOklch(customTheme.dark.primaryHex);
-      const darkPfg = hexToOklch(customTheme.dark.primaryFgHex);
-      const darkBg = hexToOklch(customTheme.dark.bgHex);
-      const darkFg = hexToOklch(customTheme.dark.fgHex);
-
-      return {
-        label: "Personalizado",
-        relief: customTheme.relief,
-        shadowColor: customTheme.shadowColor,
-        topBorderColor: customTheme.topBorderColor,
-        light: {
-          primary: lightP,
-          primaryFg: lightPfg,
-          bg: lightBg,
-          fg: lightFg,
-          shadowColor: customTheme.shadowColor,
-          shadowOpacity: customTheme.shadowOpacity,
-        },
-        dark: {
-          primary: darkP,
-          primaryFg: darkPfg,
-          bg: darkBg,
-          fg: darkFg,
-          shadowColor: customTheme.darkShadowColor,
-          shadowOpacity: customTheme.darkShadowOpacity,
-        },
-      };
+      return { label: "Personalizado", ...customThemeToPalette(customTheme) };
     }
     return PALLETE[primaryColorIndex] || PALLETE[0];
   }, [primaryColorIndex, customTheme]);
@@ -278,12 +263,21 @@ export function useAppTheme(isPublic = false) {
     if (isPublic || selectedPalette) {
       applyPaletteVars(isPublic ? PALLETE[0] : selectedPalette);
     }
+    applyCustomTopBorder(
+      !isPublic && primaryColorIndex === -1 ? customTheme : null,
+    );
 
     // 3. Override Manual de Background (Caso exista algum uso externo)
     if (!selectedPalette && backgroundColor) {
       root.style.setProperty("--background-override", backgroundColor);
     }
-  }, [selectedPalette, backgroundColor, isPublic]);
+  }, [
+    selectedPalette,
+    backgroundColor,
+    isPublic,
+    primaryColorIndex,
+    customTheme,
+  ]);
 
   const setPrimaryColorIndex = (index: number) => {
     localStorage.setItem(STORAGE_KEY, String(index));
@@ -329,15 +323,22 @@ export function useAppTheme(isPublic = false) {
     } else {
       localStorage.removeItem(CUSTOM_RELIEF_KEY);
     }
-    storeOptional(CUSTOM_SHADOW_COLOR_KEY, theme.shadowColor);
-    storeOptional(CUSTOM_DARK_SHADOW_COLOR_KEY, theme.darkShadowColor);
-    storeOptional(CUSTOM_SHADOW_OPACITY_KEY, theme.shadowOpacity);
-    storeOptional(CUSTOM_DARK_SHADOW_OPACITY_KEY, theme.darkShadowOpacity);
     if (theme.topBorderColor) {
       localStorage.setItem(CUSTOM_TOP_BORDER_COLOR_KEY, theme.topBorderColor);
     } else {
       localStorage.removeItem(CUSTOM_TOP_BORDER_COLOR_KEY);
     }
+
+    localStorage.setItem(
+      CUSTOM_EXTRAS_KEY,
+      JSON.stringify({
+        light: {
+          accentHex: theme.light.accentHex,
+          layers: theme.light.layers,
+        },
+        dark: { accentHex: theme.dark.accentHex, layers: theme.dark.layers },
+      }),
+    );
 
     // Salva pré-convertido em OKLCH para o script inline do root.tsx
     const lp = hexToOklch(theme.light.primaryHex);
@@ -387,36 +388,8 @@ export function useAppTheme(isPublic = false) {
   };
 
   const previewCustomTheme = (theme: CustomTheme) => {
-    const lightP = hexToOklch(theme.light.primaryHex);
-    const lightPfg = hexToOklch(theme.light.primaryFgHex);
-    const lightBg = hexToOklch(theme.light.bgHex);
-    const lightFg = hexToOklch(theme.light.fgHex);
-    const darkP = hexToOklch(theme.dark.primaryHex);
-    const darkPfg = hexToOklch(theme.dark.primaryFgHex);
-    const darkBg = hexToOklch(theme.dark.bgHex);
-    const darkFg = hexToOklch(theme.dark.fgHex);
-
-    applyPaletteVars({
-      relief: theme.relief,
-      shadowColor: theme.shadowColor,
-      topBorderColor: theme.topBorderColor,
-      light: {
-        primary: lightP,
-        primaryFg: lightPfg,
-        bg: lightBg,
-        fg: lightFg,
-        shadowColor: theme.shadowColor,
-        shadowOpacity: theme.shadowOpacity,
-      },
-      dark: {
-        primary: darkP,
-        primaryFg: darkPfg,
-        bg: darkBg,
-        fg: darkFg,
-        shadowColor: theme.darkShadowColor,
-        shadowOpacity: theme.darkShadowOpacity,
-      },
-    });
+    applyPaletteVars(customThemeToPalette(theme));
+    applyCustomTopBorder(theme);
   };
 
   return {

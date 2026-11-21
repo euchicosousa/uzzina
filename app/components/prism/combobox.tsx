@@ -262,7 +262,7 @@ function ComboboxChips({
   return (
     <Group
       className={cn(
-        "flex flex-wrap items-center rounded-2xl border border-input bg-input/40 bg-clip-padding text-sm transition-[color,box-shadow] duration-200 squircle focus-within:border-ring/60 focus-within:ring-3 focus-within:ring-ring/30 has-aria-invalid:border-error has-aria-invalid:bg-error-background has-aria-invalid:ring-error-background",
+        "flex flex-wrap items-center rounded-2xl border border-input bg-input/40 bg-clip-padding text-sm transition-[color,box-shadow] duration-200 squircle focus-within:border-ring/60 focus-within:ring-3 focus-within:ring-ring-halo has-aria-invalid:border-error has-aria-invalid:bg-error-background has-aria-invalid:ring-error-background",
         chipsContainerSizes[size],
         className,
       )}
