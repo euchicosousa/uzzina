@@ -64,7 +64,7 @@ export function PlanningFinalizeDialog({
         <CheckCircle2Icon data-icon="inline-end" />
       </PrismButton>
       <PrismDialog className="flex flex-col overflow-hidden">
-        <PrismDialogHeader className="shrink-0">
+        <PrismDialogHeader className="shrink-0 border-b border-border">
           <PrismDialogTitle>
             Criar {count} {count === 1 ? "ação" : "ações"}?
           </PrismDialogTitle>
@@ -104,7 +104,7 @@ export function PlanningFinalizeDialog({
               : ""}
           </p>
         </PrismDialogBody>
-        <PrismDialogFooter className="shrink-0">
+        <PrismDialogFooter className="shrink-0 border-t border-border">
           <PrismDialogClose>Cancelar</PrismDialogClose>
           <PrismDialogClose
             isDisabled={undated.length > 0 || count === 0}
