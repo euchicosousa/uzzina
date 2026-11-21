@@ -6,7 +6,7 @@
 - **Anthropic** — Claude Haiku 5.5, para rastrear decisões existentes e consolidar o contrato de aceite.
 - **Google** — Gemini 3.8 Flash, para rastrear decisões existentes e consolidar o contrato de aceite.
 
-**Status:** needs-product-decision. Atualizado em 19/11: D1 e D6 estão decididos; D2 a D5 seguem abertos (D5 = data das sugestões aprovadas sem data na finalização). [Revisão vigente de 19/11](../../../docs/plans/social-planning-design-decisions.md#revisão-do-proprietário--19112026).
+**Status:** decisões fechadas pelo proprietário em 21/11 (arquivado): D1 a D6 decididos (D2 e D3 pelo uso e aceite do T03; D4 e a regra das comemorações definidas em 21/11, em [T12](12-auto-balance-post-formats.md); D5 em 19/11).
 **Blocked by:** Nenhum.
 **Origem:** C00; decisões D1–D6 e evidência de aprovação.
 **Prioridade:** P2

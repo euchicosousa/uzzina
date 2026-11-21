@@ -6,7 +6,7 @@
 - **Codex — GPT-6.2 Sol, raciocínio médio.** Implementar redistribuição inteira após aceite e exercitar totais pequenos e desempates.
 - **Codex — GPT-6.2 Astra, raciocínio baixo.** Conferir a ligação entre composição, calendário, lista e entrada da geração.
 
-**Status:** ready-for-agent. Atualizado em 19/11: a prévia com os sliders foi aprovada pelo proprietário e está na main local. Permanecem abertas as regras de arredondamento da semana parcial, sobras, durações dos atalhos e extras (D2/D3).
+**Status:** ready-for-agent. Em 21/11 o proprietário testou os sliders de formatos (ok) e definiu a regra das comemorações abaixo, ainda não implementada. Arredondamento, sobras e durações dos atalhos ficam como estão (aceitos junto com o T03).
 
 **Bloqueado por.** A bancada pode ser estudada primeiro. A implementação usa o total normalizado de T03 e depende da regra de D3; extras dependem de D3/D4. Série em espera.
 
@@ -18,3 +18,11 @@ Na Mesa, a distribuição automática inicia equilibrada. Em Definir quantidades
 - [ ] Demonstrar composição inicialmente equilibrada, mudanças a favor de cada formato, totais menores que o número de formatos e redução de total. O resultado é inteiro e soma exatamente ao total regular.
 - [ ] Prévia, resumo e entrada de geração usam a mesma composição. Extras têm contagem própria e seguem a regra aprovada em D3/D4.
 - [ ] Controles reaproveitam o Prism e permitem operação por teclado. A validação visual ocorre nos modos claro e escuro.
+
+## Regra das comemorações (decisão do proprietário, 21/11/2026)
+
+- Todas as datas comemorativas marcadas entram, inclusive duas, três ou mais no mesmo dia: cada uma é uma sugestão própria (a regra atual de juntar as do mesmo dia em um único extra "A / B" está incompleta e deve ser substituída).
+- Dia que já tem publicação regular: a comemoração **substitui** a regular. Em vez de regra fixa, o proprietário quer um interruptor "Substituir o post do dia" (a definir: padrão ligado ou desligado e onde fica na tela).
+- O cartão da prévia mostra o **nome da comemoração**.
+- O formato do extra deve ser **Estático (post)**, e não carrossel como hoje, a menos que a ideia gerada peça outro formato; esse detalhe fica para depois.
+- Não implementado: o código atual (`mergeCommemorativeSlots`, `period-plan.ts`) ainda junta datas do mesmo dia e usa sempre carrossel nos extras.

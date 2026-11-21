@@ -26,6 +26,10 @@ Na `main` local, a Mesa reaproveita o seletor de parceiros no cabeçalho, impede
 | D5 · Data das ideias                | Decisão do proprietário em 19/11: toda sugestão tem data. Ideia gerada sem dia (Por tema) recebe a data do dia em que foi gerada. O admin organiza depois e pode definir outra data no editor da sugestão; sem escolha, permanece a data de hoje. Datas já escolhidas são preservadas e toda ação criada sai com data.    | Fuso e hora usados na ação criada, o que acontece com propostas antigas salvas sem data e como a confirmação apresenta aprovadas e pendentes.                                                                            |
 | D6 · Direcionamento                 | O Direcionamento é obrigatório na geração. Vem da configuração do parceiro e pode ser alterado na solicitação. Contexto é opcional. A entrada efetiva é a versão usada para aquela proposta. O cadastro do parceiro oferece o direcionamento reutilizável.                                                                | Confirmar os campos de saída ainda em aberto e a mensagem quando o parceiro não tem direcionamento salvo. Proposta: permitir preencher na Mesa e guardar o texto na proposta, com alteração permanente só pelo cadastro. |
 
+### Comemorações no período — 21/11/2026
+
+Todas as datas marcadas entram, mesmo várias no mesmo dia (uma sugestão por data). A comemoração substitui o post regular do dia por meio de um interruptor "Substituir o post do dia" (a definir). O cartão da prévia mostra o nome da comemoração. O extra nasce como Estático (post), salvo ideia que mude o formato (detalhe adiado). Detalhes e estado de implementação em [T12](../../.scratch/social-planning-recovery/issues/12-auto-balance-post-formats.md).
+
 ### Nome da proposta — ajuste futuro
 
 O proprietário pediu que a IA retorne um nome curto para identificar cada planejamento. O nome será salvo com a proposta e exibido em Propostas salvas em vez do rótulo genérico Por tema ou Por período. O modo continua sendo dado da proposta. Para propostas antigas sem nome, a lista pode manter o rótulo atual. O pedido foi registrado para uma revisão posterior.
