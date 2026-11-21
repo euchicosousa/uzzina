@@ -37,7 +37,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "~/components/prism/input-group";
-import { ChevronDownIcon, XIcon, CheckIcon } from "lucide-react";
+import { ChevronDownIcon, XIcon, CheckCircle2Icon } from "lucide-react";
 function ComboboxValue<T>({ ...props }: ComboBoxValueProps<T>) {
   return <ComboBoxValuePrimitive data-slot="combobox-value" {...props} />;
 }
@@ -185,7 +185,7 @@ function ComboboxItem<T extends object>({
           {children}
           <span className="pointer-events-none absolute right-2 flex size-4 items-center justify-center">
             {isSelected ? (
-              <CheckIcon className="pointer-events-none opacity-100" />
+              <CheckCircle2Icon className="pointer-events-none opacity-100" />
             ) : null}
           </span>
         </>

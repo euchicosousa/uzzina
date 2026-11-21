@@ -18,6 +18,7 @@ export interface ActionVariantRendererProps {
   showPartner?: boolean;
   showPriority?: boolean;
   isEditing: boolean;
+  isLateShown?: boolean;
   handleSetIsEditing: (val: boolean) => void;
   dateTimeDisplay:
     (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY] | undefined;

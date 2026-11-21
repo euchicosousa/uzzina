@@ -1,7 +1,7 @@
 import type { PRIORITY } from "~/lib/CONSTANTS";
 import { INTENT } from "~/lib/CONSTANTS";
 import { cn } from "cnfast";
-import { UIcons, isLateAction } from "~/utils";
+import { UIcons } from "~/utils";
 import type { ActionVariantRendererProps } from "./types";
 import { ActionItemTitleInput } from "../ActionItemTitleInput";
 import { UPhaseIcon } from "~/components/uzzina/UPhaseIcon";
@@ -24,6 +24,7 @@ export function ActionLineVariant({
   showPartner,
   showPriority,
   isEditing,
+  isLateShown,
   handleSetIsEditing,
   dateTimeDisplay,
   handleAction,
@@ -32,8 +33,8 @@ export function ActionLineVariant({
     <div className="flex w-full items-center justify-between gap-2 overflow-x-hidden py-1">
       <div className="flex w-full items-center gap-2 overflow-hidden">
         <div className="flex items-center gap-2">
-          {isLateAction(action) ? (
-            <AlertCircleIcon className="size-4 text-error-foreground" />
+          {isLateShown ? (
+            <AlertCircleIcon className="size-4" />
           ) : (
             <UPhaseIcon phase={currentPhase} size="dot" />
           )}

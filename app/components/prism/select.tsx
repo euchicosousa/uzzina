@@ -23,7 +23,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "~/components/prism/input-group";
-import { ChevronsUpDownIcon, SearchIcon, CheckIcon } from "lucide-react";
+import { ChevronsUpDownIcon, SearchIcon, CheckCircle2Icon } from "lucide-react";
 function Select<T extends object, M extends "single" | "multiple" = "single">({
   className,
   ...props
@@ -81,7 +81,7 @@ function SelectTrigger({
   return (
     <ButtonPrimitive
       className={cn(
-        "flex w-full items-center justify-between gap-1.5 rounded-2xl border border-transparent bg-input px-3 py-2 text-sm whitespace-nowrap transition-[color,box-shadow] duration-200 outline-none squircle focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:bg-error-background aria-invalid:text-error-foreground aria-invalid:border-error aria-invalid:ring-error-background data-placeholder:text-foreground/40 data-[size=default]:h-10 data-[size=lg]:h-12 data-[size=lg]:rounded-3xl data-[size=lg]:text-base data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "flex w-full items-center justify-between gap-1.5 rounded-2xl border border-transparent bg-input px-3 py-2 text-sm whitespace-nowrap transition-[color,box-shadow] duration-200 outline-none squircle focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-error aria-invalid:bg-error-background aria-invalid:text-error-foreground aria-invalid:ring-error-background data-placeholder:text-foreground/40 data-[size=default]:h-10 data-[size=lg]:h-12 data-[size=lg]:rounded-3xl data-[size=lg]:text-base data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       data-size={size}
@@ -218,7 +218,7 @@ function SelectItem({
           </span>
           <span className="pointer-events-none absolute right-2 flex size-4 items-center justify-center">
             {isSelected ? (
-              <CheckIcon className="pointer-events-none opacity-100" />
+              <CheckCircle2Icon className="pointer-events-none opacity-100" />
             ) : null}
           </span>
         </>

@@ -109,7 +109,7 @@ export function ActionItem({
   const { isSelectionMode, selectedIds, toggleSelection } = useMultiSelection();
   const isSelected = selectedIds.includes(action.id);
   const { handleAction } = useActionMutations();
-  // Line variant shows the late icon regardless of showLate, so always watch
+  // The late icon and the red surface both depend on showLate, so always watch
   const isLate = useIsLateAction(action);
   const { setEditingId } = useActionShortcutContext();
   const [isEditing, setIsEditing] = useState(false);
@@ -305,6 +305,7 @@ export function ActionItem({
         handleAction={handleAction}
         handleSetIsEditing={handleSetIsEditing}
         isEditing={isEditing}
+        isLateShown={showLate && isLate}
         showCategory={showCategory}
         showPartner={showPartner}
         showPriority={showPriority}

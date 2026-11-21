@@ -14,7 +14,7 @@ import {
   type SeparatorProps as SeparatorPrimitiveProps,
 } from "react-aria-components";
 import { cn } from "cnfast";
-import { CheckIcon, ChevronRightIcon } from "lucide-react";
+import { CheckCircle2Icon, ChevronRightIcon } from "lucide-react";
 function DropdownMenuTrigger({
   ...props
 }: React.ComponentProps<typeof MenuTriggerPrimitive>) {
@@ -136,7 +136,9 @@ function DropdownMenuItem({
                 data-selected={isSelected}
                 data-slot="menu-item-indicator"
               >
-                {isSelected ? <CheckIcon className="opacity-100" /> : null}
+                {isSelected ? (
+                  <CheckCircle2Icon className="opacity-100" />
+                ) : null}
               </span>
             ) : null}
           </>
