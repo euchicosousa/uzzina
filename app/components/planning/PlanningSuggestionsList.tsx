@@ -206,7 +206,7 @@ export function PlanningSuggestionsList({
                       : STATUS_LABELS[suggestion.status]}
                   </PrismBadge>
                 </div>
-                <h3 className="text-lg font-semibold">{suggestion.title}</h3>
+                <h4>{suggestion.title}</h4>
                 {suggestion.objective && (
                   <p className="text-base text-secondary-foreground">
                     {suggestion.objective}

@@ -439,27 +439,27 @@ html[data-dragging-item] * {
 
 @layer components {
   h1 {
-    @apply text-5xl leading-none font-bold tracking-tighter;
+    @apply text-5xl leading-none font-bold;
   }
 
   h2 {
-    @apply text-4xl leading-none font-bold tracking-tighter;
+    @apply text-4xl leading-none font-bold;
   }
 
   h3 {
-    @apply text-3xl leading-none font-semibold tracking-tighter;
+    @apply text-3xl leading-none font-semibold;
   }
 
   h4 {
-    @apply text-2xl leading-none font-semibold tracking-tight;
+    @apply text-2xl leading-none font-semibold;
   }
 
   h5 {
-    @apply text-xl leading-none font-medium tracking-tight;
+    @apply text-xl leading-none font-medium;
   }
 
   .lead {
-    @apply text-xl leading-normal tracking-tight;
+    @apply text-xl leading-normal;
   }
 }
 
