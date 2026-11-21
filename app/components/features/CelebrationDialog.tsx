@@ -1,7 +1,7 @@
-import { I18nProvider } from "react-aria";
 import { CalendarDate, parseDate } from "@internationalized/date";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { I18nProvider } from "react-aria";
 import { toast } from "sonner";
 import {
   PrismButton,
@@ -268,6 +268,7 @@ export function CelebrationDialog({
         {/* Only the title lives in the form: the calendar renders a visually
             hidden button without a type, which would otherwise become the
             default button and move the month when Enter submits. */}
+
         <div className="flex min-h-0 flex-1 flex-col">
           <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 overflow-y-auto px-5 py-1 md:grid-cols-[minmax(0,19.5rem)_minmax(0,1fr)]">
             <div className="flex flex-col gap-4">
