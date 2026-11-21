@@ -23,7 +23,7 @@ import {
   Building2Icon,
   CalendarIcon,
   CalendarRangeIcon,
-  CheckIcon,
+  CheckCircle2Icon,
   HelpCircleIcon,
   LaptopIcon,
   LogOutIcon,
@@ -605,7 +605,7 @@ export const HeaderMenu = ({
               <Icon className="size-4" />
               <span>{`Tema ${label.toLowerCase()}`}</span>
               {themePreference === id ? (
-                <CheckIcon className="ml-auto size-4" />
+                <CheckCircle2Icon className="ml-auto size-4" />
               ) : null}
             </PrismMenuItem>
           ))}

@@ -1,4 +1,4 @@
-import { CheckIcon, SendIcon, LockIcon, GlobeIcon } from "lucide-react";
+import { SendIcon, LockIcon, GlobeIcon } from "lucide-react";
 import { useState } from "react";
 import {
   PrismButton,
@@ -171,12 +171,6 @@ export function CommentInput({
                         <span className="flex-1 truncate font-medium text-foreground">
                           {person.name}
                         </span>
-                        <CheckIcon
-                          className={cn(
-                            "ml-auto size-3.5",
-                            isSelected ? "opacity-100" : "opacity-0",
-                          )}
-                        />
                       </PrismCommandItem>
                     );
                   })}
