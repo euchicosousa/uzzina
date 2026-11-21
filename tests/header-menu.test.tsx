@@ -32,6 +32,9 @@ const person = {
   user_id: "u1",
   short: "CS",
   image: null,
+  // The Planejamento item is only shown to active admins.
+  admin: true,
+  visible: true,
   preferences: {},
 } as unknown as Person;
 

@@ -6,7 +6,7 @@
 - **Codex — GPT-6.2 Sol, raciocínio médio.** Implementar redistribuição inteira após aceite e exercitar totais pequenos e desempates.
 - **Codex — GPT-6.2 Astra, raciocínio baixo.** Conferir a ligação entre composição, calendário, lista e entrada da geração.
 
-**Status:** ready-for-agent. Em 21/11 o proprietário testou os sliders de formatos (ok) e definiu a regra das comemorações abaixo, implementada em 21/11 na `main` local (sem verificação visual do proprietário). Arredondamento, sobras e durações dos atalhos ficam como estão (aceitos junto com o T03).
+**Status:** aceito pelo proprietário em 21/11 (arquivado): sliders de formatos e a regra das comemorações (todas as datas entram, interruptor "Substituir o post do dia", extra Estático, nome no cartão da prévia; commit 95da247e) conferidos por ele na tela. Resposta real da IA com extras Estático só confirmada pelo uso.
 
 **Bloqueado por.** A bancada pode ser estudada primeiro. A implementação usa o total normalizado de T03 e depende da regra de D3; extras dependem de D3/D4. Série em espera.
 

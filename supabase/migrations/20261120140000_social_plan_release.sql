@@ -1,5 +1,5 @@
 -- T09 follow-up: release a finalized suggestion so it can be approved and finalized again.
--- PREPARED ONLY: not applied anywhere. Applying it in production needs the owner's explicit authorization.
+-- APPLIED in production on 2026-11-20 (migration registered via the Supabase connector). Kept here as the versioned source.
 --
 -- Why a function: social_plan_action_links is immutable for the app (no UPDATE/DELETE grant),
 -- so a deleted or old action is never recreated by accident. Releasing is the one deliberate

@@ -1,5 +1,5 @@
 -- T09: convert the approved suggestions of a planning proposal into actions in one transaction.
--- PREPARED ONLY: not applied anywhere. Applying it in production needs the owner's explicit authorization.
+-- APPLIED in production on 2026-11-20 (migration registered via the Supabase connector). Kept here as the versioned source.
 --
 -- Guarantees:
 -- * One action per approved suggestion, at most once: social_plan_action_links has
