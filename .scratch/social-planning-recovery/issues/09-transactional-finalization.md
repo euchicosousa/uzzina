@@ -6,7 +6,7 @@
 - **Anthropic** — Claude Opus 5.5, para provar idempotência e atomicidade da conversão.
 - **Google** — Gemini 4 Argon, para provar idempotência e atomicidade da conversão. Disponibilidade depende do plano do Antigravity.
 
-**Status:** implemented-unverified (20/11). RPC `finalize_social_plan` e tabela de vínculos preparadas em `20261120120000_social_plan_finalization.sql`; loop do navegador removido. F01–F03, F05–F11 passaram em PGlite com papéis e RLS reais; F04 só foi rodado em série (PGlite tem uma conexão), sem prova de duas conexões simultâneas. SQL não aplicado em nenhum banco remoto; sem teste no navegador. [Evidência](../../../docs/audits/social-planning-recovery/T09-evidence.md).
+**Status:** aprovado pelo proprietário em 21/11 (arquivado) após usar o Finalizar e o Liberar no app. Migrações `social_plan_finalization` e `social_plan_release` aplicadas em produção em 20/11; frontend na `main` local, sem publicação. Evidência: docs/audits/social-planning-recovery/T09-evidence.md (14 casos em PostgreSQL isolado; duas conexões simultâneas reais não testadas).
 **Blocked by:** T02 e T01/D5. Pode usar propostas canônicas controladas; não espera IA/calendário.
 **Origem:** R1/R2; núcleo C09.
 **Prioridade:** P1
@@ -31,19 +31,19 @@
 
 Não substituir finalização, transação, constraints ou INSERT de ações por mocks. Injetar a falha no banco/limite controlado mantendo execução real. Usar pelo menos duas conexões independentes para concorrência.
 
-| ID  | Cenário                                                                    | Resultado exato                                                                                             |
-| --- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| F01 | A/B/C aprovadas e elegíveis                                                | Três ações, três vínculos, plano confirmado; campos/defaults/datas iguais a D5.                             |
-| F02 | Falha na segunda ação ou na gravação do segundo vínculo                    | Zero novas ações, zero novos vínculos, plano não finalizado; estado preexistente inalterado.                |
-| F03 | Repetir F01 com mesmo pedido e cópia antiga de outra aba                   | Mesmos IDs; contagens continuam três/três.                                                                  |
-| F04 | Dez requisições simultâneas de pelo menos duas conexões                    | Exatamente três ações e três vínculos no total; resultados canônicos ou conflito recuperável coerente.      |
-| F05 | Commit ocorre, resposta se perde e cliente repete                          | Reconsulta encontra resultado; nenhuma quarta ação e nenhum vínculo extra.                                  |
+| ID  | Cenário                                                                               | Resultado exato                                                                                                           |
+| --- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| F01 | A/B/C aprovadas e elegíveis                                                           | Três ações, três vínculos, plano confirmado; campos/defaults/datas iguais a D5.                                           |
+| F02 | Falha na segunda ação ou na gravação do segundo vínculo                               | Zero novas ações, zero novos vínculos, plano não finalizado; estado preexistente inalterado.                              |
+| F03 | Repetir F01 com mesmo pedido e cópia antiga de outra aba                              | Mesmos IDs; contagens continuam três/três.                                                                                |
+| F04 | Dez requisições simultâneas de pelo menos duas conexões                               | Exatamente três ações e três vínculos no total; resultados canônicos ou conflito recuperável coerente.                    |
+| F05 | Commit ocorre, resposta se perde e cliente repete                                     | Reconsulta encontra resultado; nenhuma quarta ação e nenhum vínculo extra.                                                |
 | F06 | Admin ativo, membro comum (inclusive do parceiro), admin inativo e parceiro arquivado | Admin ativo com parceiro elegível cria; demais cenários deixam zero novas linhas. Usar permissões reais no banco isolado. |
-| F07 | Payload altera parceiro, autor, aprovadas, responsáveis ou versão          | Servidor ignora/rejeita autoridade indevida; estado canônico decide; zero escrita parcial.                  |
-| F08 | Rejeitadas/pendentes e aprovadas sem data válida                           | Exatamente o resultado D5, sem criação antecipada nem horário inventado.                                    |
-| F09 | Excluir ação resultante ou retirar acesso, repetir finalização             | Nenhuma recriação; sem exposição de conteúdo agora inacessível.                                             |
-| F10 | Nova proposta para mesmo período/títulos                                   | Pode gerar seu novo conjunto; unicidade não é por título/período.                                           |
-| F11 | Falha/timeout antes do commit vs depois do commit                          | Reconciliação distingue resultados; nunca afirma sucesso sem confirmação nem repete INSERT às cegas.        |
+| F07 | Payload altera parceiro, autor, aprovadas, responsáveis ou versão                     | Servidor ignora/rejeita autoridade indevida; estado canônico decide; zero escrita parcial.                                |
+| F08 | Rejeitadas/pendentes e aprovadas sem data válida                                      | Exatamente o resultado D5, sem criação antecipada nem horário inventado.                                                  |
+| F09 | Excluir ação resultante ou retirar acesso, repetir finalização                        | Nenhuma recriação; sem exposição de conteúdo agora inacessível.                                                           |
+| F10 | Nova proposta para mesmo período/títulos                                              | Pode gerar seu novo conjunto; unicidade não é por título/período.                                                         |
+| F11 | Falha/timeout antes do commit vs depois do commit                                     | Reconciliação distingue resultados; nunca afirma sucesso sem confirmação nem repete INSERT às cegas.                      |
 
 ## Acceptance criteria
 
