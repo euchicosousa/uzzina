@@ -6,7 +6,7 @@
 - **Anthropic** — Claude Sonnet 5.5, para proteger transições entre configuração e proposta aberta.
 - **Google** — Gemini 4 Argon, para proteger transições entre configuração e proposta aberta. Disponibilidade depende do plano do Antigravity.
 
-**Status:** ready-for-agent. Atualizado em 19/11: parcialmente coberto pelas guardas de Por tema/Direcionamento (troca de parceiro com resposta atrasada, reabertura e preservação do texto). Permanecem os cenários W01–W08 abaixo, em especial edição pendente com troca de parceiro, logout e redução de largura.
+**Status:** ready-for-agent. Em 21/11 o proprietário testou a troca de parceiro: a Mesa muda normalmente e não mantém nada do parceiro anterior (W05 como desejado; sem diálogo de cancelar). Atualizado em 19/11: parcialmente coberto pelas guardas de Por tema/Direcionamento (troca de parceiro com resposta atrasada, reabertura e preservação do texto). Permanecem os cenários W01–W08 abaixo, em especial edição pendente com troca de parceiro, logout e redução de largura.
 **Blocked by:** T02. T01/D6 para validar entrada persistida.
 **Origem:** R8; limpeza de contexto e respostas antigas.
 **Prioridade:** P2

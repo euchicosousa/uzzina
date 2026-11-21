@@ -6,7 +6,7 @@
 - **Anthropic** — Claude Sonnet 5.5, para normalizar datas, frequência e formatos sem divergência.
 - **Google** — Gemini 4 Argon, para normalizar datas, frequência e formatos sem divergência. Disponibilidade depende do plano do Antigravity.
 
-**Status:** ready-for-agent. Atualizado em 19/11: a prévia foi aprovada pelo proprietário e a geração usa o mesmo cálculo. Seguem abertas as regras de arredondamento da semana parcial, sobras, durações dos atalhos e extras (D2/D3).
+**Status:** aceito pelo proprietário em 21/11 (arquivado): em todos os testes dele o cálculo de datas, frequência e formatos se comportou como ele considera certo. Os pontos antes abertos (arredondamento da semana parcial, sobras, durações dos atalhos) ficam como estão no app. Extras de comemoração (D3/D4) seguem na conferência do T12.
 **Blocked by:** T01/D2–D4. Independente de T02 para cálculo puro.
 **Origem:** R6 e R10; C02–C04.
 **Prioridade:** P2
@@ -28,20 +28,20 @@
 
 ## Testes obrigatórios
 
-| ID  | Entrada/ação                                                     | Resultado                                                                                                             |
-| --- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| N01 | 2026-02-30; 2026-13-01; data textual malformada                  | Inválidas, sem normalização e sem exceção de render.                                                                  |
-| N02 | 29/02 em 2028 e em 2026                                          | Primeira válida, segunda inválida.                                                                                    |
-| N03 | Início>fim; zero ocorrência; dias vazios                         | Inválido, zero chamada de geração.                                                                                    |
-| N04 | Frequência 7 com segunda, quarta e sexta                            | A frequência não seleciona dias automaticamente. A semana completa mostra 3/2/2, conforme a regra de sobras aprovada. |
-| N05 | Intervalo 10–20/11/2026 com datas 09,10,20,21 e novembro/2025    | Somente limites/datas internas do ano correto elegíveis.                                                              |
-| N06 | Um regular, manual 1 reel, um extra em outro dia                 | Configuração válida, total 2; composição regular continua 1 reel e extra tem formato próprio.                         |
-| N07 | Extra no mesmo dia regular; duas comemorações no mesmo dia       | IDs, soma e rótulos exatamente iguais ao exemplo D4, sem resumo inflado.                                              |
-| N08 | Composição inválida ou soma diferente do total regular | Erro explícito. Quantidades inteiras válidas preservam o total exato após normalização.                                                          |
-| N09 | Alterar período ou desligar comemorações                         | Pedido/resumo sem extras obsoletos.                                                                                   |
-| N10 | Mesmas datas em UTC e America/Fortaleza                          | Mesmas datas civis e contagens, inclusive virada de mês/ano.                                                          |
-| N11 | UI configurada no cenário N06 e clicar gerar                     | Handler recebe o mesmo total/slots/formato do resumo; não basta testar funções isoladas.                              |
-| N12 | Repetir pedido válido no mesmo período                           | Total integral idêntico, sem consultar ações existentes.                                                              |
+| ID  | Entrada/ação                                                  | Resultado                                                                                                             |
+| --- | ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| N01 | 2026-02-30; 2026-13-01; data textual malformada               | Inválidas, sem normalização e sem exceção de render.                                                                  |
+| N02 | 29/02 em 2028 e em 2026                                       | Primeira válida, segunda inválida.                                                                                    |
+| N03 | Início>fim; zero ocorrência; dias vazios                      | Inválido, zero chamada de geração.                                                                                    |
+| N04 | Frequência 7 com segunda, quarta e sexta                      | A frequência não seleciona dias automaticamente. A semana completa mostra 3/2/2, conforme a regra de sobras aprovada. |
+| N05 | Intervalo 10–20/11/2026 com datas 09,10,20,21 e novembro/2025 | Somente limites/datas internas do ano correto elegíveis.                                                              |
+| N06 | Um regular, manual 1 reel, um extra em outro dia              | Configuração válida, total 2; composição regular continua 1 reel e extra tem formato próprio.                         |
+| N07 | Extra no mesmo dia regular; duas comemorações no mesmo dia    | IDs, soma e rótulos exatamente iguais ao exemplo D4, sem resumo inflado.                                              |
+| N08 | Composição inválida ou soma diferente do total regular        | Erro explícito. Quantidades inteiras válidas preservam o total exato após normalização.                               |
+| N09 | Alterar período ou desligar comemorações                      | Pedido/resumo sem extras obsoletos.                                                                                   |
+| N10 | Mesmas datas em UTC e America/Fortaleza                       | Mesmas datas civis e contagens, inclusive virada de mês/ano.                                                          |
+| N11 | UI configurada no cenário N06 e clicar gerar                  | Handler recebe o mesmo total/slots/formato do resumo; não basta testar funções isoladas.                              |
+| N12 | Repetir pedido válido no mesmo período                        | Total integral idêntico, sem consultar ações existentes.                                                              |
 
 ## Acceptance criteria
 
