@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, type ComponentProps } from "react";
+import { PrismToggle } from "~/components/prism";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { SIZE } from "~/lib/CONSTANTS";
 import { cn } from "cnfast";
 import { toast } from "sonner";
 type AvatarSize = (typeof SIZE)[keyof typeof SIZE];
+type ToggleVariant = ComponentProps<typeof PrismToggle>["variant"];
 export interface AvatarSelectorOption {
   id: string; // O ID ou Slug original que será enviado no form state
   fallback: string;
@@ -22,6 +24,7 @@ interface UAvatarSelectorProps {
   minSelected?: number;
   avatarSize?: AvatarSize;
   showLabel?: boolean;
+  variant?: ToggleVariant;
   className?: string;
   isDisabled?: boolean;
   ariaLabel?: string;
@@ -36,6 +39,7 @@ export function UAvatarSelector({
   minSelected,
   avatarSize = SIZE.lg,
   showLabel = true,
+  variant = "secondary",
   className,
   isDisabled = false,
   ariaLabel,
@@ -44,6 +48,13 @@ export function UAvatarSelector({
     useState<string[]>(initialSelectedIds);
   const selectedIds = controlledSelectedIds ?? uncontrolledSelectedIds;
   const isCompact = avatarSize === SIZE.sm || avatarSize === SIZE.xs;
+  const toggleSize = !showLabel
+    ? isCompact
+      ? "icon"
+      : "icon-lg"
+    : isCompact
+      ? "default"
+      : "lg";
 
   const toggleOption = (id: string) => {
     if (isDisabled) return;
@@ -77,53 +88,63 @@ export function UAvatarSelector({
       {options.map((option) => {
         const isSelected = selectedIds.includes(option.id);
         return (
-          <button
+          <PrismToggle
             key={option.id}
             aria-label={showLabel ? undefined : option.title}
-            aria-pressed={isSelected}
             className={cn(
-              "relative flex flex-col items-center justify-center overflow-hidden border-t border-transparent ring-foreground/5 transition-all duration-500 outline-none squircle hover:bg-secondary focus-visible:ring-3 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50",
               !showLabel
-                ? "rounded-2xl p-2"
+                ? "justify-self-center"
                 : isCompact
-                  ? "gap-1.5 rounded-2xl p-2.5"
-                  : "gap-2 rounded-3xl p-4",
-              isSelected
-                ? "border-border bg-action text-foreground shadow-xs ring hover:bg-action-hover hover:shadow-lg"
-                : "",
+                  ? "h-auto w-full flex-col gap-1.5 rounded-2xl p-2.5"
+                  : "h-auto w-full flex-col gap-2 rounded-3xl p-4",
             )}
-            disabled={isDisabled}
-            onClick={() => toggleOption(option.id)}
-            title={option.title}
-            type="button"
+            isDisabled={isDisabled}
+            isSelected={isSelected}
+            onChange={() => toggleOption(option.id)}
+            size={toggleSize}
+            variant={variant}
           >
-            <UAvatar
-              backgroundColor={option.backgroundColor}
-              color={option.color}
-              fallback={option.fallback}
-              image={option.image}
-              size={avatarSize}
-            />
+            <span
+              className={cn(
+                "flex flex-col items-center overflow-hidden",
+                showLabel && (isCompact ? "w-full gap-1.5" : "w-full gap-2"),
+              )}
+              title={option.title}
+            >
+              <UAvatar
+                backgroundColor={option.backgroundColor}
+                color={option.color}
+                fallback={option.fallback}
+                image={option.image}
+                size={avatarSize}
+              />
 
-            {showLabel && (
-              <div className="flex w-full shrink-0 flex-col overflow-hidden text-center">
-                <div className="w-full truncate text-sm leading-tight font-medium">
-                  {option.title}
-                </div>
-                {option.subtitle && (
-                  <div className="truncate text-xs leading-tight text-secondary-foreground">
-                    {option.subtitle}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {isSelected && name && (
-              <input name={name} type="hidden" value={option.id} />
-            )}
-          </button>
+              {showLabel && (
+                <span className="flex w-full shrink-0 flex-col overflow-hidden text-center">
+                  <span className="w-full truncate text-sm leading-tight font-medium">
+                    {option.title}
+                  </span>
+                  {option.subtitle && (
+                    <span
+                      className={cn(
+                        "truncate text-xs leading-tight text-secondary-foreground",
+                        variant === "secondary" &&
+                          "group-data-selected/toggle:text-primary-foreground/70",
+                      )}
+                    >
+                      {option.subtitle}
+                    </span>
+                  )}
+                </span>
+              )}
+            </span>
+          </PrismToggle>
         );
       })}
+      {name &&
+        selectedIds.map((id) => (
+          <input key={id} name={name} type="hidden" value={id} />
+        ))}
     </div>
   );
 }
