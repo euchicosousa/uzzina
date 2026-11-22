@@ -71,7 +71,7 @@ export function GlobalSearchCommand({
     const frame = requestAnimationFrame(() => setCreatingCelebration("open"));
     return () => cancelAnimationFrame(frame);
   }, [creatingCelebration, open]);
-  const { setTheme, themePreference, primaryColorIndex, setPrimaryColorIndex } =
+  const { setTheme, themePreference, primaryColorId, setPrimaryColorId } =
     useAppThemeContext();
   // Keep the persistence owner mounted when a command closes the search.
   const { queuePreference, hasError, retry } = usePreferencePersistence(person);
@@ -90,10 +90,10 @@ export function GlobalSearchCommand({
               setTheme(theme);
               queuePreference({ theme });
             }}
-            paletteIndex={primaryColorIndex}
-            onPaletteChange={(index) => {
-              setPrimaryColorIndex(index);
-              queuePreference({ themeColorIndex: index });
+            paletteId={primaryColorId}
+            onPaletteChange={(id) => {
+              setPrimaryColorId(id);
+              queuePreference({ themeColor: id });
             }}
             preferenceError={hasError}
             retryPreferences={retry}
@@ -120,7 +120,7 @@ function GlobalSearchContent({
   onBeforeLeave,
   themePreference,
   onThemeChange,
-  paletteIndex,
+  paletteId,
   onPaletteChange,
   preferenceError,
   retryPreferences,
@@ -129,8 +129,8 @@ function GlobalSearchContent({
   onCreateCelebration: () => void;
   themePreference: ThemePreference;
   onThemeChange: (theme: ThemePreference) => void;
-  paletteIndex?: number;
-  onPaletteChange?: (index: number) => void;
+  paletteId?: string;
+  onPaletteChange?: (id: string) => void;
   preferenceError: boolean;
   retryPreferences: () => void;
 }) {
@@ -280,17 +280,17 @@ function GlobalSearchContent({
         return true;
       },
     })),
-    ...PALLETE.map((palette, idx) => {
+    ...PALLETE.map((palette) => {
       const { l, c, h } = (theme === Theme.DARK ? palette.dark : palette.light)
         .primary;
       return {
         id: `palette-${palette.id}`,
         label: `Usar paleta ${palette.label}`,
         primaryColor: `oklch(${l} ${c} ${h})`,
-        selected: paletteIndex === idx,
+        selected: paletteId === palette.id,
         run: () => {
           if (onPaletteChange) {
-            onPaletteChange(idx);
+            onPaletteChange(palette.id);
           }
           return true;
         },

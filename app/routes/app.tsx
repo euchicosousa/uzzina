@@ -110,14 +110,9 @@ function Dashboard() {
     if (typeof window !== "undefined" && person) {
       const prefs = getUserPreferences(person);
       localStorage.setItem("uzzina-theme", prefs.theme);
-      localStorage.setItem(
-        "uzzina-theme-color-index",
-        String(prefs.themeColorIndex),
-      );
-      localStorage.setItem(
-        "uzzina-accent-color-index",
-        String(prefs.themeColorIndex),
-      );
+      localStorage.setItem("uzzina-theme-color", prefs.themeColor);
+      localStorage.removeItem("uzzina-theme-color-index");
+      localStorage.removeItem("uzzina-accent-color-index");
       localStorage.removeItem("uzzina-follow-partner-color");
       applyVividPreferences(document.documentElement, prefs);
       window.dispatchEvent(new Event("uzzina-storage-update"));

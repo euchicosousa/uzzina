@@ -83,7 +83,7 @@ it("palette swatches can be selected and persist the color index", async () => {
 
   await user.click(screen.getByRole("menuitem", { name: third.label }));
 
-  await waitFor(() => expect(savedPatches).toEqual([{ themeColorIndex: 2 }]));
+  await waitFor(() => expect(savedPatches).toEqual([{ themeColor: "red" }]));
 });
 
 it("page items request a guarded client navigation instead of a document link", async () => {

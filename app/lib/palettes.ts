@@ -529,64 +529,6 @@ export const PALLETE: PaletteConfig[] = [
     },
   },
   {
-    id: "green",
-    label: "Folha",
-    light: {
-      primary: {
-        h: 130,
-        c: 0.2,
-        l: 0.7,
-      },
-      primaryFgDelta: { l: 0.3, c: -0.2, h: -130 },
-      bg: {
-        h: 0,
-        c: 0,
-        l: 0.98,
-      },
-      fgLDelta: -0.98,
-      popoverLDelta: 0.02,
-      cardLDelta: -0.02,
-      inputLDelta: -0.04,
-      secondaryLDelta: -0.06,
-      secondaryHoverLDelta: -0.08,
-      borderLDelta: -0.09,
-      actionLDelta: 0.02,
-      actionHoverLDelta: 0.1,
-      accent: {
-        h: 130,
-        c: 0.2,
-        l: 0.7,
-      },
-    },
-    dark: {
-      primary: {
-        h: 130,
-        c: 0.2,
-        l: 0.65,
-      },
-      primaryFgDelta: { l: -0.65, c: -0.2, h: -130 },
-      bg: {
-        h: 285,
-        c: 0.005,
-        l: 0.141,
-      },
-      fgLDelta: 0.859,
-      popoverLDelta: -0.03,
-      cardLDelta: 0.05,
-      inputLDelta: -0.06,
-      secondaryLDelta: 0.12,
-      secondaryHoverLDelta: 0.15,
-      borderLDelta: 0.15,
-      actionLDelta: 0.1,
-      actionHoverLDelta: 0.2,
-      accent: {
-        h: 130,
-        c: 0.2,
-        l: 0.65,
-      },
-    },
-  },
-  {
     id: "cyan",
     label: "Turquesa",
     light: {
@@ -820,6 +762,20 @@ export const PALLETE: PaletteConfig[] = [
     },
   },
 ];
+
+/** Id of the fallback palette (Ônix). */
+export const DEFAULT_PALETTE_ID = PALLETE[0].id;
+
+/** Position of a palette in PALLETE, or -1 when the id does not exist. */
+export function getPaletteIndexById(id: unknown): number {
+  return typeof id === "string" ? PALLETE.findIndex((p) => p.id === id) : -1;
+}
+
+/** Palette with the given id, or undefined when it does not exist. */
+export function getPaletteById(id: unknown): PaletteConfig | undefined {
+  const index = getPaletteIndexById(id);
+  return index === -1 ? undefined : PALLETE[index];
+}
 
 /**
  * Colors shared by every palette (DS36). Values are the ones the app used

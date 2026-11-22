@@ -560,17 +560,17 @@ export const HeaderMenu = ({
     theme,
     themePreference,
     setTheme,
-    setPrimaryColorIndex,
-    primaryColorIndex,
+    setPrimaryColorId,
+    primaryColorId,
   } = useAppThemeContext();
   const { queuePreference, retry, hasError } = usePreferencePersistence(person);
   const changeTheme = (newTheme: ThemePreference) => {
     setTheme(newTheme);
     queuePreference({ theme: newTheme });
   };
-  const changeColorIndex = (index: number) => {
-    setPrimaryColorIndex(index);
-    queuePreference({ themeColorIndex: index });
+  const changeColor = (id: string) => {
+    setPrimaryColorId(id);
+    queuePreference({ themeColor: id });
   };
   return (
     <PrismMenu>
@@ -616,18 +616,18 @@ export const HeaderMenu = ({
 
         <PrismMenuGroup
           aria-label="Paleta de cores"
-          className="grid grid-cols-6 gap-1 px-2 py-1"
+          className="grid grid-cols-5 gap-1 px-2 py-1"
         >
-          {PALLETE.map((paletteConfig, i) => {
+          {PALLETE.map((paletteConfig) => {
             const { light, dark } = paletteConfig;
             const currentColors = theme === Theme.DARK ? dark : light;
-            const isSelected = primaryColorIndex === i;
+            const isSelected = primaryColorId === paletteConfig.id;
             return (
               <PrismMenuItem
                 key={paletteConfig.id}
                 aria-label={paletteConfig.label}
                 className="mx-auto size-7 min-w-0 rounded-2xl p-1 transition-opacity squircle"
-                onAction={() => changeColorIndex(i)}
+                onAction={() => changeColor(paletteConfig.id)}
                 shouldCloseOnSelect={false}
                 style={{
                   backgroundColor: isSelected
@@ -647,23 +647,6 @@ export const HeaderMenu = ({
               </PrismMenuItem>
             );
           })}
-          <PrismMenuItem
-            aria-label="Personalizado"
-            className="mx-auto size-7 min-w-0 rounded-2xl p-1 transition-opacity squircle"
-            onAction={() => onNavigate("/app/profile?tab=appearance")}
-            textValue="Personalizado"
-          >
-            <div
-              className={cn(
-                "flex size-5 items-center justify-center rounded-[9px] border squircle",
-                primaryColorIndex === -1
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-secondary text-secondary-foreground",
-              )}
-            >
-              <PaletteIcon className="size-3" />
-            </div>
-          </PrismMenuItem>
         </PrismMenuGroup>
 
         <PrismMenuSeparator />

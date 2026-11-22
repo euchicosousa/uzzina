@@ -4,7 +4,7 @@
 
 ## O que é
 
-Hoje a página **Cores dos temas** (menu do avatar → Administração, ou busca global → "Cores dos temas"; rota `/app/admin/themes`) edita só parte das cores: as 11 paletas (fundo, texto, camadas de cinza, principal, destaque, sombra), as fases e as prioridades. As cores fixas (erro, atenção, sucesso, informação), as categorias e os números escritos nas fórmulas do CSS ficam espalhados em `tailwind.css` e `CONSTANTS.ts`, e só se mudam à mão.
+Hoje a página **Cores dos temas** (menu do avatar → Administração, ou busca global → "Cores dos temas"; rota `/app/admin/themes`) edita só parte das cores: as 10 paletas (fundo, texto, camadas de cinza, principal, destaque, sombra), as fases e as prioridades. As cores fixas (erro, atenção, sucesso, informação), as categorias e os números escritos nas fórmulas do CSS ficam espalhados em `tailwind.css` e `CONSTANTS.ts`, e só se mudam à mão.
 
 O proprietário quer **um local que faça tudo**: qualquer cor do app se edita ali, com o mesmo jeito de trabalhar de hoje (acordeão, claro e escuro lado a lado, prévia à direita), e o resultado é o código pronto para colar.
 
@@ -27,7 +27,7 @@ O proprietário quer **um local que faça tudo**: qualquer cor do app se edita a
 ## Cuidados
 
 - **Piscar antes do JS:** o login e as páginas públicas aparecem antes de o JavaScript gravar as variáveis. Hoje o `index.html` pré-carrega só fundo e primária do Ônix. Com tudo vindo de dados, esse bloco de pré-carga precisa ser gerado a partir dos dados (no build ou por conferência), senão o app mostra cor errada por um instante.
-- **Tema Personalizado:** guarda só cores, relevo e sombra; precisa continuar funcionando com o bloco compartilhado e com os ajustes de luz padrão.
+- **Tema Personalizado:** removido do app em 21/11/2026 (etapa 10); quem tinha o índice -1 cai no Ônix.
 - **Fases e categorias são usadas em muitos lugares** (cartões, calendário, portal, revisão pública). A mudança de onde vêm as cores precisa manter as mesmas cores no resultado final; só muda a origem.
 
 ## Decisões em aberto
@@ -68,6 +68,11 @@ Sem commit, sem push e sem publicação. Registro detalhado por etapa no [brief 
 
 ## Não verificado no navegador
 
-Telas autenticadas, o editor (login não feito), o primeiro pintar das páginas públicas, a sombra nas 11 paletas e o efeito do halo srgb. Só `tsc`, testes listados e compilação do Tailwind foram rodados.
+Telas autenticadas, o editor (login não feito), o primeiro pintar das páginas públicas, a sombra nas 10 paletas e o efeito do halo srgb. Só `tsc`, testes listados e compilação do Tailwind foram rodados.
 
 - **Etapa 8:** o Personalizado guarda por modo `accentHex?` e `layers` (8 deltas) além das quatro cores hex; `customThemeToPalette` entrega objeto completo ao `applyPaletteVars`; `resolveCustomLayers` preenche temas antigos com o Ônix (único lugar). Editor em Minha Conta: Destaque e "Camadas" recolhível. `fgLDelta` e `primaryFgDelta` não são guardados (texto e texto sobre a principal continuam hex explícitos). Migration `supabase/migrations/20261121120000_custom_theme_layers_preferences.sql` preparada, NÃO aplicada; sem ela o salvamento recua para as quatro cores com aviso. Não verificado na tela autenticada.
+- **Etapa 10 (21/11):** tema Personalizado removido do app (painel, rascunho, `custom-theme.ts`, item do menu do cabeçalho, chave `customTheme` nas preferências); a migration da etapa 8 nunca foi aplicada e foi apagada; quem tinha o índice -1 (navegador ou conta) cai no Ônix. O banco não foi alterado. A etapa 8 acima fica como histórico.
+
+## Etapa 11
+
+- A paleta escolhida passa a ser guardada por id (`themeColor`), não por posição; índice antigo convertido pela ordem das 11 paletas; migration 20261121130000 APLICADA em produção em 22/11 por `execute_sql` (corpo, permissões e search_path conferidos); o deploy do frontend ainda não foi feito; remover paleta do meio não desloca mais ninguém.

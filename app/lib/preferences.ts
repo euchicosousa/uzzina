@@ -5,6 +5,7 @@ import {
 } from "./action-ai-models";
 import { publicAIModels } from "./ai-model-registry";
 import type { PhaseColorMode } from "./CONSTANTS";
+import { DEFAULT_PALETTE_ID, getPaletteById } from "./palettes";
 
 export type TodayViewMode =
   "kanban" | "feed" | "categories" | "partners" | "priority" | "timeline";
@@ -44,45 +45,6 @@ export function applyVividPreferences(
   root.dataset.vividText = tones.vividTextTone;
 }
 
-/** Neutral layers of a mode: L added to the page background (DS35/DS36). */
-export const CUSTOM_LAYER_KEYS = [
-  "popoverLDelta",
-  "cardLDelta",
-  "inputLDelta",
-  "secondaryLDelta",
-  "secondaryHoverLDelta",
-  "borderLDelta",
-  "actionLDelta",
-  "actionHoverLDelta",
-] as const;
-
-export type CustomLayerKey = (typeof CUSTOM_LAYER_KEYS)[number];
-export type CustomThemeLayers = Record<CustomLayerKey, number>;
-
-export type CustomThemeColors = {
-  primaryHex: string;
-  primaryFgHex: string;
-  bgHex: string;
-  fgHex: string;
-  /** Accent (focus ring). Absent: follows the primary color. */
-  accentHex?: string;
-  /** Neutral layer deltas. Absent in themes saved before DS36 stage 8. */
-  layers?: CustomThemeLayers;
-};
-
-export type CustomTheme = {
-  light: CustomThemeColors;
-  dark: CustomThemeColors;
-  relief?: boolean;
-  /** Light-mode shadow color; also used in dark mode when no dark color is set. */
-  shadowColor?: string;
-  darkShadowColor?: string;
-  /** Shadow opacity in percent (1–100) per mode. */
-  shadowOpacity?: number;
-  darkShadowOpacity?: number;
-  topBorderColor?: string;
-};
-
 export const DEFAULT_TASK_AI_MODELS: readonly ActionAIModelId[] =
   publicAIModels.map((m) => m.id);
 
@@ -110,7 +72,8 @@ function resolveDefaultModel(
 
 export type UserPreferences = {
   theme: "light" | "dark" | "system";
-  themeColorIndex: number;
+  /** Id of the chosen palette (stable when palettes are removed or reordered). */
+  themeColor: string;
   defaultViewVariant: "line" | "block" | "content";
   defaultTodayView: TodayViewMode;
   showInstagramSidebar: boolean;
@@ -120,7 +83,6 @@ export type UserPreferences = {
   vividDarkTone: VividDarkTone;
   /** Text tone on the "Viva" phase color. */
   vividTextTone: VividTextTone;
-  customTheme: CustomTheme | null;
   defaultStrategyModel?: ActionAIModelId;
   defaultContentModel?: ActionAIModelId;
   defaultCaptionModel?: ActionAIModelId;
@@ -131,14 +93,13 @@ export type UserPreferences = {
 
 const DEFAULT_PREFERENCES: UserPreferences = {
   theme: "system",
-  themeColorIndex: 0,
+  themeColor: DEFAULT_PALETTE_ID,
   defaultViewVariant: "line",
   defaultTodayView: "partners",
   showInstagramSidebar: true,
   phaseColor: "off",
   vividDarkTone: "pure",
   vividTextTone: "dark",
-  customTheme: null,
   strategyModels: [...DEFAULT_TASK_AI_MODELS],
   contentModels: [...DEFAULT_TASK_AI_MODELS],
   captionModels: [...DEFAULT_TASK_AI_MODELS],
@@ -149,7 +110,9 @@ const DEFAULT_PREFERENCES: UserPreferences = {
 
 export type SerializedPreferences = {
   theme?: string;
-  themeColorIndex?: number;
+  themeColor?: unknown;
+  /** Legacy position in the old 11-palette order; read only, never written. */
+  themeColorIndex?: unknown;
   defaultViewVariant?: string;
   defaultTodayView?: unknown;
   showInstagramSidebar?: boolean;
@@ -162,67 +125,46 @@ export type SerializedPreferences = {
   strategyModels?: unknown;
   contentModels?: unknown;
   captionModels?: unknown;
-  customTheme?: {
-    light?: SerializedCustomMode;
-    dark?: SerializedCustomMode;
-    relief?: boolean;
-    shadowColor?: string;
-    darkShadowColor?: string;
-    shadowOpacity?: number;
-    darkShadowOpacity?: number;
-    topBorderColor?: string;
-  } | null;
 };
 
-type SerializedCustomMode = {
-  primaryHex?: string;
-  primaryFgHex?: string;
-  bgHex?: string;
-  fgHex?: string;
-  accentHex?: unknown;
-  layers?: unknown;
-};
+/**
+ * Order of the 11 palettes when the choice was stored as a position
+ * (`themeColorIndex`). Fixed forever: it only converts legacy values to ids.
+ */
+export const LEGACY_PALETTE_ORDER = [
+  "default",
+  "carbon",
+  "red",
+  "orange",
+  "yellow",
+  "energy",
+  // "green" was removed from PALLETE on 22/11/2026 and resolves to the default palette.
+  "green",
+  "cyan",
+  "blue",
+  "purple",
+  "magenta",
+] as const;
 
-const HEX_COLOR = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
-
-/** Reads the optional accent and layers of one mode; invalid values are dropped. */
-export function parseCustomModeExtras(mode: {
-  accentHex?: unknown;
-  layers?: unknown;
-}): Pick<CustomThemeColors, "accentHex" | "layers"> {
-  const extras: Pick<CustomThemeColors, "accentHex" | "layers"> = {};
-  if (typeof mode.accentHex === "string" && HEX_COLOR.test(mode.accentHex)) {
-    extras.accentHex = mode.accentHex;
+/**
+ * Palette id for a stored choice. A `themeColor` id that still exists wins;
+ * otherwise a legacy numeric `themeColorIndex` is converted through
+ * LEGACY_PALETTE_ORDER and used if that palette still exists. Anything else
+ * (unknown id, removed palette, -1 of the old Personalizado theme, garbage)
+ * falls back to the first palette, Ônix.
+ */
+export function resolvePaletteId(
+  themeColor: unknown,
+  legacyIndex?: unknown,
+): string {
+  const byId = getPaletteById(themeColor);
+  if (byId) return byId.id;
+  if (typeof legacyIndex === "number" && Number.isInteger(legacyIndex)) {
+    const legacyId = LEGACY_PALETTE_ORDER[legacyIndex];
+    const byLegacy = getPaletteById(legacyId);
+    if (byLegacy) return byLegacy.id;
   }
-  const layers = mode.layers;
-  if (layers && typeof layers === "object") {
-    const record = layers as Record<string, unknown>;
-    const parsed: Partial<CustomThemeLayers> = {};
-    for (const key of CUSTOM_LAYER_KEYS) {
-      const value = record[key];
-      if (
-        typeof value === "number" &&
-        Number.isFinite(value) &&
-        Math.abs(value) <= 1
-      ) {
-        parsed[key] = value;
-      }
-    }
-    // A partial set is ignored: the loader fills the whole set from Ônix.
-    if (CUSTOM_LAYER_KEYS.every((key) => parsed[key] !== undefined)) {
-      extras.layers = parsed as CustomThemeLayers;
-    }
-  }
-  return extras;
-}
-
-function parseShadowOpacity(value: unknown): number | undefined {
-  return typeof value === "number" &&
-    Number.isFinite(value) &&
-    value >= 1 &&
-    value <= 100
-    ? value
-    : undefined;
+  return DEFAULT_PALETTE_ID;
 }
 
 export function getUserPreferences(person?: {
@@ -231,66 +173,6 @@ export function getUserPreferences(person?: {
   const prefs = person?.preferences as SerializedPreferences | null | undefined;
   if (!prefs || typeof prefs !== "object") {
     return DEFAULT_PREFERENCES;
-  }
-
-  let customTheme: CustomTheme | null = null;
-  if (prefs.customTheme && typeof prefs.customTheme === "object") {
-    const light = prefs.customTheme.light;
-    const dark = prefs.customTheme.dark;
-    if (
-      light &&
-      typeof light === "object" &&
-      dark &&
-      typeof dark === "object" &&
-      typeof light.primaryHex === "string" &&
-      typeof light.primaryFgHex === "string" &&
-      typeof light.bgHex === "string" &&
-      typeof light.fgHex === "string" &&
-      typeof dark.primaryHex === "string" &&
-      typeof dark.primaryFgHex === "string" &&
-      typeof dark.bgHex === "string" &&
-      typeof dark.fgHex === "string"
-    ) {
-      customTheme = {
-        light: {
-          primaryHex: light.primaryHex,
-          primaryFgHex: light.primaryFgHex,
-          bgHex: light.bgHex,
-          fgHex: light.fgHex,
-          ...parseCustomModeExtras(light),
-        },
-        dark: {
-          primaryHex: dark.primaryHex,
-          primaryFgHex: dark.primaryFgHex,
-          bgHex: dark.bgHex,
-          fgHex: dark.fgHex,
-          ...parseCustomModeExtras(dark),
-        },
-        relief:
-          typeof prefs.customTheme.relief === "boolean"
-            ? prefs.customTheme.relief
-            : true,
-        shadowColor:
-          typeof prefs.customTheme.shadowColor === "string" &&
-          prefs.customTheme.shadowColor.trim().length > 0
-            ? prefs.customTheme.shadowColor
-            : undefined,
-        darkShadowColor:
-          typeof prefs.customTheme.darkShadowColor === "string" &&
-          prefs.customTheme.darkShadowColor.trim().length > 0
-            ? prefs.customTheme.darkShadowColor
-            : undefined,
-        shadowOpacity: parseShadowOpacity(prefs.customTheme.shadowOpacity),
-        darkShadowOpacity: parseShadowOpacity(
-          prefs.customTheme.darkShadowOpacity,
-        ),
-        topBorderColor:
-          typeof prefs.customTheme.topBorderColor === "string" &&
-          prefs.customTheme.topBorderColor.trim().length > 0
-            ? prefs.customTheme.topBorderColor
-            : undefined,
-      };
-    }
   }
 
   const strategyModels = parseTaskModels(prefs.strategyModels);
@@ -304,10 +186,7 @@ export function getUserPreferences(person?: {
       prefs.theme === "system"
         ? prefs.theme
         : DEFAULT_PREFERENCES.theme,
-    themeColorIndex:
-      typeof prefs.themeColorIndex === "number" && prefs.themeColorIndex >= -1
-        ? prefs.themeColorIndex
-        : DEFAULT_PREFERENCES.themeColorIndex,
+    themeColor: resolvePaletteId(prefs.themeColor, prefs.themeColorIndex),
     defaultViewVariant:
       prefs.defaultViewVariant === "line" ||
       prefs.defaultViewVariant === "block" ||
@@ -345,6 +224,5 @@ export function getUserPreferences(person?: {
       prefs.defaultCaptionModel,
       captionModels,
     ),
-    customTheme,
   };
 }

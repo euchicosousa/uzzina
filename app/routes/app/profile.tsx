@@ -24,7 +24,6 @@ import {
   LayoutGridIcon,
   ListIcon,
   MoonIcon,
-  PipetteIcon,
   RefreshCwIcon,
   SunIcon,
 } from "lucide-react";
@@ -72,8 +71,6 @@ import {
   isTodayViewMode,
   isVividDarkTone,
   isVividTextTone,
-  type CustomLayerKey,
-  type CustomTheme,
   type TodayViewMode,
   type VividDarkTone,
   type VividTextTone,
@@ -82,20 +79,6 @@ import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { updateMyPreferences, updateOwnProfile } from "~/models/people";
 import { CloudCheckIcon, CloudIcon } from "lucide-react";
 import { PHASES, type PhaseColorMode } from "~/lib/CONSTANTS";
-import { CustomThemePanel } from "~/components/features/profile/CustomThemePanel";
-import {
-  applyCustomThemeAccent,
-  applyCustomThemeChange,
-  applyCustomThemeLayer,
-  resetCustomThemeLayers,
-  applyCustomThemeOption,
-  createCustomThemeDraft,
-  isCompleteCustomTheme,
-  toLegacyCustomTheme,
-  type CustomThemeOptionKey,
-  type ThemeColorKey,
-  type ThemeMode,
-} from "~/lib/custom-theme";
 import { z } from "zod";
 import cn from "cnfast";
 
@@ -126,10 +109,6 @@ const PROFILE_CHOICE_CLASS_NAME =
 const PROFILE_PANEL_CLASS_NAME =
   "relative grid min-h-0 flex-1 content-start gap-8 overflow-y-auto overscroll-y-contain p-4 md:px-2";
 
-/**
- * Decorative theme palette sample. Colors come from the same PALLETE data as the
- * header menu; without a color it renders the neutral custom-theme chip.
- */
 const VIVID_PREVIEW_PHASES = Object.values(PHASES);
 
 /**
@@ -163,7 +142,7 @@ function VividPhasePreview({
       <span className="text-sm font-semibold">
         {isDark ? "Modo escuro" : "Modo claro"}
       </span>
-      <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-6">
+      <div className="grid grid-cols-5 gap-1.5">
         {VIVID_PREVIEW_PHASES.map((phase) => (
           <span
             key={phase.slug}
@@ -191,20 +170,9 @@ function PaletteSwatch({
   color,
   isDark,
 }: {
-  color?: { l: number; c: number; h: number };
+  color: { l: number; c: number; h: number };
   isDark: boolean;
 }) {
-  if (!color) {
-    return (
-      <span
-        aria-hidden="true"
-        className="flex size-4 shrink-0 items-center justify-center rounded-lg border border-black/10 bg-zinc-200 text-zinc-600 squircle dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-400"
-        data-palette-swatch="custom"
-      >
-        <PipetteIcon className="size-2.5" />
-      </span>
-    );
-  }
   return (
     <span
       aria-hidden="true"
@@ -392,13 +360,7 @@ function ProfilePage() {
     useState<ActionAIModelId[]>();
   const [captionModelsDraft, setCaptionModelsDraft] =
     useState<ActionAIModelId[]>();
-  const {
-    theme,
-    setTheme,
-    previewColorIndex,
-    previewCustomTheme,
-    setCustomTheme,
-  } = useAppThemeContext();
+  const { theme, setTheme, previewColorId } = useAppThemeContext();
   const [imageUrl, setImageUrl] = useState<string | null>(person.image || null);
   const [nameDraft, setNameDraft] = useState(person.name || "");
   const [surnameDraft, setSurnameDraft] = useState(person.surname || "");
@@ -407,8 +369,8 @@ function ProfilePage() {
   const [selectedTheme, setSelectedTheme] = useState<
     "light" | "dark" | "system"
   >(preferences.theme);
-  const [selectedThemeColor, setSelectedThemeColor] = useState<number>(
-    preferences.themeColorIndex,
+  const [selectedThemeColor, setSelectedThemeColor] = useState<string>(
+    preferences.themeColor,
   );
   const [selectedVariant, setSelectedVariant] = useState<
     "line" | "block" | "content"
@@ -437,14 +399,7 @@ function ProfilePage() {
     short: person.short || "",
     image: person.image || null,
     ...preferences,
-    customThemeKey: JSON.stringify(
-      createCustomThemeDraft(preferences.customTheme),
-    ),
   });
-
-  const [customThemeDraft, setCustomThemeDraft] = useState(() =>
-    createCustomThemeDraft(preferences.customTheme),
-  );
 
   const isPersonalDirty =
     (imageUrl ?? null) !== (initialRef.current.image ?? null) ||
@@ -455,12 +410,10 @@ function ProfilePage() {
 
   const isAppearanceDirty =
     selectedTheme !== initialRef.current.theme ||
-    selectedThemeColor !== initialRef.current.themeColorIndex ||
+    selectedThemeColor !== initialRef.current.themeColor ||
     phaseColor !== initialRef.current.phaseColor ||
     vividDarkTone !== initialRef.current.vividDarkTone ||
-    vividTextTone !== initialRef.current.vividTextTone ||
-    (selectedThemeColor === -1 &&
-      JSON.stringify(customThemeDraft) !== initialRef.current.customThemeKey);
+    vividTextTone !== initialRef.current.vividTextTone;
 
   const isBehaviorDirty =
     selectedVariant !== initialRef.current.defaultViewVariant ||
@@ -528,13 +481,9 @@ function ProfilePage() {
   };
 
   // Aplica preview da cor na UI quando o usuário apenas seleciona
-  const handleColorChange = (idx: number) => {
-    setSelectedThemeColor(idx);
-    if (idx === -1) {
-      previewCustomTheme(customThemeDraft);
-    } else {
-      previewColorIndex(idx);
-    }
+  const handleColorChange = (id: string) => {
+    setSelectedThemeColor(id);
+    previewColorId(id);
   };
   // Previews the vivid phase color tones on the page; saved on submit.
   const handleVividDarkToneChange = (value: VividDarkTone) => {
@@ -563,45 +512,6 @@ function ProfilePage() {
     },
     [],
   );
-  const handleCustomThemeChange = (
-    mode: ThemeMode,
-    key: ThemeColorKey,
-    value: string,
-  ) => {
-    const next = applyCustomThemeChange(customThemeDraft, mode, key, value);
-    setCustomThemeDraft(next);
-    previewCustomTheme(next);
-  };
-  const handleCustomThemeAccentChange = (
-    mode: ThemeMode,
-    value: string | undefined,
-  ) => {
-    const next = applyCustomThemeAccent(customThemeDraft, mode, value);
-    setCustomThemeDraft(next);
-    previewCustomTheme(next);
-  };
-  const handleCustomThemeLayerChange = (
-    mode: ThemeMode,
-    key: CustomLayerKey,
-    value: number,
-  ) => {
-    const next = applyCustomThemeLayer(customThemeDraft, mode, key, value);
-    setCustomThemeDraft(next);
-    previewCustomTheme(next);
-  };
-  const handleCustomThemeLayersReset = (mode: ThemeMode) => {
-    const next = resetCustomThemeLayers(customThemeDraft, mode);
-    setCustomThemeDraft(next);
-    previewCustomTheme(next);
-  };
-  const handleCustomThemeOptionChange = <K extends CustomThemeOptionKey>(
-    key: K,
-    value: CustomTheme[K],
-  ) => {
-    const next = applyCustomThemeOption(customThemeDraft, key, value);
-    setCustomThemeDraft(next);
-    previewCustomTheme(next);
-  };
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -616,12 +526,10 @@ function ProfilePage() {
       const short = formData.get("short") as string;
       const image = (formData.get("image") as string) || null;
       const initial = initialRef.current;
-      const colorChanged = selectedThemeColor !== initial.themeColorIndex;
-      const customChanged =
-        JSON.stringify(customThemeDraft) !== initial.customThemeKey;
+      const colorChanged = selectedThemeColor !== initial.themeColor;
       const newPreferences: Record<string, unknown> = {
         ...(selectedTheme !== initial.theme ? { theme: selectedTheme } : {}),
-        ...(colorChanged ? { themeColorIndex: selectedThemeColor } : {}),
+        ...(colorChanged ? { themeColor: selectedThemeColor } : {}),
         ...(selectedVariant !== initial.defaultViewVariant
           ? { defaultViewVariant: selectedVariant }
           : {}),
@@ -661,16 +569,6 @@ function ProfilePage() {
         captionModelDraft !== (initial.defaultCaptionModel ?? lunaModelId)
           ? { defaultCaptionModel: captionModelDraft }
           : {}),
-        ...(selectedThemeColor !== -1
-          ? colorChanged
-            ? { customTheme: null }
-            : {}
-          : (colorChanged || customChanged) &&
-              isCompleteCustomTheme(customThemeDraft)
-            ? { customTheme: customThemeDraft }
-            : colorChanged
-              ? { customTheme: null }
-              : {}),
       };
       const supabase = createSupabaseBrowserClient();
       await updateOwnProfile(supabase, person.user_id, {
@@ -684,31 +582,10 @@ function ProfilePage() {
       if (!isCurrentSession()) return;
       const sentKeys = Object.keys(newPreferences);
       if (sentKeys.length > 0) {
-        let savedPreferences: Awaited<ReturnType<typeof updateMyPreferences>>;
-        try {
-          savedPreferences = await updateMyPreferences(
-            supabase,
-            newPreferences,
-          );
-        } catch (error) {
-          // Database not yet updated for DS36 stage 8: it rejects the accent
-          // and layers. Save the four colors it knows; layers stay on this device.
-          const message =
-            typeof error === "object" && error && "message" in error
-              ? String(error.message)
-              : "";
-          if (!newPreferences.customTheme || !message.includes("custom")) {
-            throw error;
-          }
-          newPreferences.customTheme = toLegacyCustomTheme(customThemeDraft);
-          savedPreferences = await updateMyPreferences(
-            supabase,
-            newPreferences,
-          );
-          toast.warning(
-            "Cores salvas. As camadas do tema personalizado ainda não podem ser guardadas na conta.",
-          );
-        }
+        const savedPreferences = await updateMyPreferences(
+          supabase,
+          newPreferences,
+        );
         if (!isCurrentSession()) return;
         // Merge only the fields sent, keeping values saved by other surfaces.
         const merged = { ...preferenceRecord(person.preferences) };
@@ -728,7 +605,6 @@ function ProfilePage() {
         short,
         image,
         ...getUserPreferences(person),
-        customThemeKey: JSON.stringify(customThemeDraft),
       };
       setStrategyModelDraft(undefined);
       setContentModelDraft(undefined);
@@ -738,17 +614,11 @@ function ProfilePage() {
       setCaptionModelsDraft(undefined);
 
       // Sync local preferences to storage / context
-      if ("themeColorIndex" in newPreferences) {
-        localStorage.setItem(
-          "uzzina-theme-color-index",
-          String(selectedThemeColor),
-        );
-        localStorage.setItem(
-          "uzzina-accent-color-index",
-          String(selectedThemeColor),
-        );
+      if ("themeColor" in newPreferences) {
+        localStorage.setItem("uzzina-theme-color", selectedThemeColor);
+        localStorage.removeItem("uzzina-theme-color-index");
+        localStorage.removeItem("uzzina-accent-color-index");
       }
-      if (newPreferences.customTheme) setCustomTheme(customThemeDraft);
       window.dispatchEvent(new Event("uzzina-storage-update"));
       toast.success("Perfil e preferências salvos com sucesso!");
     } catch (err) {
@@ -1093,16 +963,16 @@ function ProfilePage() {
             <PrismToggleGroup
               aria-label="Cor de Destaque"
               className="grid w-full grid-cols-2 md:grid-cols-3"
-              selectedKeys={[String(selectedThemeColor)]}
+              selectedKeys={[selectedThemeColor]}
               onSelectionChange={(keys) => {
                 const val = Array.from(keys)[0];
-                if (val !== undefined) handleColorChange(Number(val));
+                if (typeof val === "string") handleColorChange(val);
               }}
             >
-              {PALLETE.map((palette, idx) => (
+              {PALLETE.map((palette) => (
                 <PrismToggleGroupItem
                   className={cn(PROFILE_CHOICE_CLASS_NAME, "justify-start")}
-                  id={String(idx)}
+                  id={palette.id}
                   key={palette.id}
                 >
                   <PaletteSwatch
@@ -1116,24 +986,7 @@ function ProfilePage() {
                   {palette.label}
                 </PrismToggleGroupItem>
               ))}
-              <PrismToggleGroupItem
-                className={cn(PROFILE_CHOICE_CLASS_NAME, "justify-start")}
-                id="-1"
-              >
-                <PaletteSwatch isDark={theme === Theme.DARK} />
-                Personalizado
-              </PrismToggleGroupItem>
             </PrismToggleGroup>
-            {selectedThemeColor === -1 && (
-              <CustomThemePanel
-                onChange={handleCustomThemeChange}
-                onAccentChange={handleCustomThemeAccentChange}
-                onLayerChange={handleCustomThemeLayerChange}
-                onLayersReset={handleCustomThemeLayersReset}
-                onOptionChange={handleCustomThemeOptionChange}
-                theme={customThemeDraft}
-              />
-            )}
           </ProfileSetting>
 
           <ProfileSetting

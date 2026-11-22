@@ -136,7 +136,7 @@ function SemanticSwatch({
 }
 
 export function TokensColorsSection() {
-  const { theme, setTheme, primaryColorIndex, setPrimaryColorIndex } =
+  const { theme, setTheme, primaryColorId, setPrimaryColorId } =
     useAppThemeContext();
   const [activeTab, setActiveTab] = useState("essential");
 
@@ -183,8 +183,8 @@ export function TokensColorsSection() {
                 Paleta:
               </span>
               <div className="flex flex-wrap items-center gap-4">
-                {PALLETE.map((item, idx) => {
-                  const isSelected = primaryColorIndex === idx;
+                {PALLETE.map((item) => {
+                  const isSelected = primaryColorId === item.id;
                   const isDark = theme === Theme.DARK;
                   const p = isDark ? item.dark.primary : item.light.primary;
                   const bgStyle = `oklch(${p.l} ${p.c} ${p.h})`;
@@ -196,7 +196,7 @@ export function TokensColorsSection() {
                         isSelected &&
                           "scale-105 ring-2 ring-primary ring-offset-2 ring-offset-background",
                       )}
-                      onClick={() => setPrimaryColorIndex(idx)}
+                      onClick={() => setPrimaryColorId(item.id)}
                       style={{
                         backgroundColor: bgStyle,
                       }}
@@ -577,7 +577,7 @@ export function TokensColorsSection() {
             <p className="text-sm text-secondary-foreground">
               Amostras funcionais integradas diretamente sobre o fundo da página
               para inspeção de contraste, anel de foco (ring), relevo e
-              superfícies dinâmicas em todas as 11 paletas.
+              superfícies dinâmicas em todas as 10 paletas.
             </p>
           </div>
 

@@ -100,7 +100,7 @@ const assert = require("node:assert/strict");
     let fail = false;
     person.preferences = {
       theme: "light",
-      themeColorIndex: 0,
+      themeColor: "default",
       futureKey: "keep",
     };
     await page.route("**/*", async (route) => {
@@ -223,23 +223,21 @@ const assert = require("node:assert/strict");
     gate = null;
     release();
     await page.waitForFunction(
-      () => localStorage.getItem("uzzina-accent-color-index") === "1",
+      () => localStorage.getItem("uzzina-theme-color") === "carbon",
     );
     while (writes.length < 2)
       await new Promise((resolve) => setTimeout(resolve, 20));
     await page.waitForTimeout(100);
     assert.equal(person.preferences.theme, "dark");
-    assert.equal(person.preferences.themeColorIndex, 1);
+    assert.equal(person.preferences.themeColor, "carbon");
     assert.equal(person.preferences.futureKey, "keep");
     await page.reload();
     await page
       .getByRole("button", { name: "Menu do perfil do usuário" })
       .waitFor();
     assert.equal(
-      await page.evaluate(() =>
-        localStorage.getItem("uzzina-accent-color-index"),
-      ),
-      "1",
+      await page.evaluate(() => localStorage.getItem("uzzina-theme-color")),
+      "carbon",
     );
     fail = true;
     await choose("Tema claro");

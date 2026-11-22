@@ -43,7 +43,7 @@ const { join } = require("node:path");
       email: user.email,
       preferences: {
         theme: "system",
-        themeColorIndex: 0,
+        themeColor: "default",
         futureKey: "preserve",
       },
     };

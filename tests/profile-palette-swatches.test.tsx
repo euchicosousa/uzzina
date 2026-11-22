@@ -107,9 +107,7 @@ it("each named palette option shows a decorative swatch from the shared palette 
     expect(swatch.getAttribute("aria-hidden")).toBe("true");
     expect(option.textContent).toBe(palette.label);
   }
-  const custom = within(group).getByRole("radio", { name: "Personalizado" });
-  const customSwatch = custom.querySelector("[data-palette-swatch]");
-  expect(customSwatch?.getAttribute("aria-hidden")).toBe("true");
+  expect(within(group).getAllByRole("radio").length).toBe(PALLETE.length);
 });
 
 it("selecting a palette previews it without writing until the manual save", async () => {

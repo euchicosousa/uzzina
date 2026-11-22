@@ -33,7 +33,7 @@ UZZINA é a aplicação existente de gestão de ações da agência CNVT: React,
 | `app/components/uzzina/`                 | Componentes reutilizáveis de alto nível                                                                                                                                                          |
 | `app/components/features/`               | Fluxos de negócio, incluindo gaveta e upload                                                                                                                                                     |
 | `app/components/layout/`, `ui-sections/` | Layout e galeria `/ui`                                                                                                                                                                           |
-| `app/hooks/`, `app/lib/`                 | Estado, cache, preferências e contratos compartilhados; paletas em `lib/palettes.ts`, variáveis CSS em `lib/palette-vars.ts`, rascunho de tema personalizado em `lib/custom-theme.ts`            |
+| `app/hooks/`, `app/lib/`                 | Estado, cache, preferências e contratos compartilhados; paletas em `lib/palettes.ts`, variáveis CSS em `lib/palette-vars.ts`                                                                     |
 | `app/utils/`                             | Utilitários puros (barrel `~/utils`, `uzzina-utils`, `factory`); `cn` permanece em `~/lib/utils`                                                                                                 |
 | `app/data/`                              | Dados preservados sem uso pelo app (`hooks-library.ts`)                                                                                                                                          |
 | `app/models/`, `app/services/`           | Consultas por entidade e clientes de API                                                                                                                                                         |
@@ -54,16 +54,16 @@ UZZINA é a aplicação existente de gestão de ações da agência CNVT: React,
 
 As regras detalhadas por área ficam em `docs/contracts/`. Ao mexer em uma área, abra o documento dela antes de editar; o texto foi movido sem reescrever e nasceu, em boa parte, de bugs reais.
 
-| Ao mexer em                                                                                                  | Leia primeiro                                                                                    |
-| ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| Gaveta de ação, listas/calendários de ações, cache de consultas, notificações                                | [docs/contracts/action-drawer.md](docs/contracts/action-drawer.md)                               |
-| Busca global, comandos, data comemorativa pela busca                                                         | [docs/contracts/search-and-commands.md](docs/contracts/search-and-commands.md)                   |
-| Hoje/Home, Minha Conta, Planejamento, Ajuda, AppBar/Header, altura de calendários, preferências e temas      | [docs/contracts/pages-today-profile-planning.md](docs/contracts/pages-today-profile-planning.md) |
-| Foco, movimento, abas, containers flutuantes, galeria `/ui`                                                  | [docs/contracts/prism-details.md](docs/contracts/prism-details.md)                               |
-| IA, estratégias, catálogo de modelos, quota                                                                  | [docs/contracts/ai-and-strategies.md](docs/contracts/ai-and-strategies.md)                       |
-| Migrations, RPCs, triggers, tabelas, `bun run dev`, ambientes, publicação                                    | [docs/contracts/database-and-deploy.md](docs/contracts/database-and-deploy.md)                   |
-| Portal `/dash`, revisão pública, componente `Content`                                                        | [docs/contracts/portal-and-review.md](docs/contracts/portal-and-review.md)                       |
-| Cores neutras, camadas de cinza, `palettes.ts`, `palette-vars.ts`, hover e foco de itens, tema Personalizado | [docs/contracts/surfaces-and-neutrals.md](docs/contracts/surfaces-and-neutrals.md)               |
+| Ao mexer em                                                                                             | Leia primeiro                                                                                    |
+| ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Gaveta de ação, listas/calendários de ações, cache de consultas, notificações                           | [docs/contracts/action-drawer.md](docs/contracts/action-drawer.md)                               |
+| Busca global, comandos, data comemorativa pela busca                                                    | [docs/contracts/search-and-commands.md](docs/contracts/search-and-commands.md)                   |
+| Hoje/Home, Minha Conta, Planejamento, Ajuda, AppBar/Header, altura de calendários, preferências e temas | [docs/contracts/pages-today-profile-planning.md](docs/contracts/pages-today-profile-planning.md) |
+| Foco, movimento, abas, containers flutuantes, galeria `/ui`                                             | [docs/contracts/prism-details.md](docs/contracts/prism-details.md)                               |
+| IA, estratégias, catálogo de modelos, quota                                                             | [docs/contracts/ai-and-strategies.md](docs/contracts/ai-and-strategies.md)                       |
+| Migrations, RPCs, triggers, tabelas, `bun run dev`, ambientes, publicação                               | [docs/contracts/database-and-deploy.md](docs/contracts/database-and-deploy.md)                   |
+| Portal `/dash`, revisão pública, componente `Content`                                                   | [docs/contracts/portal-and-review.md](docs/contracts/portal-and-review.md)                       |
+| Cores neutras, camadas de cinza, `palettes.ts`, `palette-vars.ts`, hover e foco de itens                | [docs/contracts/surfaces-and-neutrals.md](docs/contracts/surfaces-and-neutrals.md)               |
 
 Decisões do proprietário que valem sempre, com o detalhe no documento da área:
 
@@ -131,7 +131,7 @@ Use estados React Aria data-[hovered], data-[pressed], data-[focused] e data-[di
 
 - Títulos (decisão do proprietário, 21/11/2026): `h1`–`h5` têm tamanho, peso e entrelinha definidos em `app/tailwind.css` (`h1` 5xl, `h2` 4xl, `h3` 3xl, `h4` 2xl, `h5` xl) e **sem `tracking`** (o espaçamento negativo entre letras foi removido de todos os títulos e de `.lead`). Para título de conteúdo, use a tag certa sem classes de tamanho (exemplo: o título de cada sugestão da lista do Planejamento é `<h4>`); classe de tamanho em título só quando o desenho exigir outro tamanho.
 
-- Superfícies e caixas de formulário (regra de design): nunca empacotar seções de formulários, seletores, listas ou blocos de campos em caixas/cartões externos com borda arredondada e fundo (padrão card/caixa com `rounded`, `border`, `bg-card` ou `bg-surface`). Os elementos, seletores e listas fluem diretamente sobre o fundo da página e da área rolável, mantendo a composição limpa e integrada, sem molduras de cartão ao redor de blocos de configuração. Exceção do proprietário (12/11/2026): no tema Personalizado de Minha Conta, cada modo (claro e escuro) é exibido em um bloco com o fundo e o texto escolhidos, para mostrar as cores aplicadas.
+- Superfícies e caixas de formulário (regra de design): nunca empacotar seções de formulários, seletores, listas ou blocos de campos em caixas/cartões externos com borda arredondada e fundo (padrão card/caixa com `rounded`, `border`, `bg-card` ou `bg-surface`). Os elementos, seletores e listas fluem diretamente sobre o fundo da página e da área rolável, mantendo a composição limpa e integrada, sem molduras de cartão ao redor de blocos de configuração.
 
 - Controles sobre imagem (regra do proprietário, 12/11/2026): alça, caixa de seleção e demais ícones sobrepostos a uma imagem ou miniatura não têm fundo; são brancos com uma sombra que acompanha o desenho do ícone (filtro `drop-shadow`, e não `shadow-*` de caixa). Uso restrito a espaços de imagem. A alternativa de cor invertida foi testada e descartada. A classe é `image-icon` (`app/tailwind.css`), criada no IA-M08 e usada no `FileManagerDialog`.
 

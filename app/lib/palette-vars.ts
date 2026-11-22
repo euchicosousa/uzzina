@@ -147,7 +147,6 @@ export function applyPaletteVars(
     root.style.removeProperty("--action-hover-shadow-override");
 
     // Borda superior da action: brilho do tema (--shared-top-highlight-alpha).
-    // A cor customizada do tema Personalizado é aplicada em useAppTheme.
     root.style.removeProperty("--action-top-border-override");
     root.style.removeProperty("--dark-action-top-border-override");
   }

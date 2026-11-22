@@ -1,7 +1,8 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cnfast";
 // Default and secondary are the same gray (DS35): one badge fill.
-const grayBadge = "bg-card text-foreground [a]:hover:bg-secondary-hover";
+const grayBadge =
+  "border-border bg-card text-foreground [a]:hover:bg-secondary-hover";
 const badgeVariants = cva(
   "group/badge inline-flex h-5 w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-transparent px-2 py-0.5 text-xs whitespace-nowrap transition-all focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring-halo has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 aria-invalid:border-error aria-invalid:ring-error-background [&>svg]:pointer-events-none [&_svg:not([class*='opacity-'])]:opacity-60 [&>svg]:size-3!",
   {

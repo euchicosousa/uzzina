@@ -56,7 +56,7 @@ const engines = require(process.env.PLAYWRIGHT_MODULE || "playwright");
       image: null,
       preferences: {
         theme: "light",
-        themeColorIndex: 0,
+        themeColor: "default",
         futureKey: "preserve",
       },
     };

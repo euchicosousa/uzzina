@@ -56,45 +56,6 @@
               document.documentElement.style.setProperty(name, value);
             }
           }
-
-          // 2. Recupera o índice de cor (Paleta de Tema OKLCH)
-          const idx =
-            localStorage.getItem("uzzina-theme-color-index") ||
-            localStorage.getItem("uzzina-accent-color-index");
-          const n = idx !== null && idx !== "" ? parseInt(idx, 10) : 0;
-
-          // Paleta de cores mapeada em OKLCH (12 opções)
-          const palette = [
-            ["35%", "0.068", "19.34"],
-            // CNVT Red
-            ["61.91%", "0.143", "147.28"],
-            // CNVT Green
-            ["56.09%", "0.203", "255.45"],
-            // CNVT Blue
-            ["61.42%", "0.148", "309.43"],
-            // CNVT Pink
-            ["69.87%", "0.129", "89.65"],
-            // CNVT Yellow
-            ["54.18%", "0.169", "283.42"],
-            // Purple
-            ["48.33%", "0.128", "28.32"],
-            // Rust
-            ["65.73%", "0.165", "131.78"],
-            // Lime
-            ["59.69%", "0.156", "185.03"],
-            // Teal
-            ["79.99%", "0.119", "102.76"],
-            // Neon Yellow
-            ["57.94%", "0.169", "327.91"],
-            // Magenta
-            ["44.15%", "0.076", "233.15"], // Deep Indigo
-          ];
-          const c = palette[n] || palette[0];
-          if (!isPublicSurface) {
-            document.documentElement.style.setProperty("--primary-l", c[0]);
-            document.documentElement.style.setProperty("--primary-c", c[1]);
-            document.documentElement.style.setProperty("--primary-h", c[2]);
-          }
         } catch (e) {
           console.error("Theme preload error:", e);
         }

@@ -1,5 +1,5 @@
--- Preserve existing authorization and preference validation while letting the custom theme also store an accent color and the neutral layer deltas per mode (DS36 stage 8). Themes saved before this migration stay valid: both fields are optional.
--- Prepared only; NOT applied. Apply through the owner's approved procedure, then confirm the function body in production.
+-- APPLIED to production (project bussola) on 22/11/2026 with execute_sql, before the frontend deploy; function body, SECURITY DEFINER, search_path and grants confirmed afterwards. Without it saving the palette is refused by the old function with 'Unknown preference key'.
+-- Stores the chosen palette by stable id (themeColor) instead of position; themeColorIndex stays accepted for old clients (DS36, stage 11).
 -- CREATE OR REPLACE keeps the existing grants on the function.
 CREATE OR REPLACE FUNCTION public.update_my_preferences(p_patch jsonb)
  RETURNS jsonb
@@ -28,6 +28,10 @@ BEGIN
       WHEN 'themeColorIndex' THEN
         IF jsonb_typeof(v_value) <> 'number' THEN RAISE EXCEPTION 'Invalid palette' USING ERRCODE = '22023'; END IF;
         IF (v_value::text)::numeric <> trunc((v_value::text)::numeric) OR (v_value::text)::numeric NOT BETWEEN -1 AND 11 THEN
+          RAISE EXCEPTION 'Invalid palette' USING ERRCODE = '22023';
+        END IF;
+      WHEN 'themeColor' THEN
+        IF jsonb_typeof(v_value) <> 'string' OR (v_value #>> '{}') !~ '^[a-z][a-z0-9-]{0,31}$' THEN
           RAISE EXCEPTION 'Invalid palette' USING ERRCODE = '22023';
         END IF;
       WHEN 'followPartnerColor', 'showInstagramSidebar' THEN
@@ -105,37 +109,13 @@ BEGIN
           END LOOP;
           FOREACH v_mode IN ARRAY ARRAY['light','dark'] LOOP
             IF jsonb_typeof(v_value -> v_mode) IS DISTINCT FROM 'object' THEN RAISE EXCEPTION 'Invalid custom colors' USING ERRCODE = '22023'; END IF;
-            -- The four original colors stay required; accentHex and layers are optional.
-            IF NOT (v_value -> v_mode) ?& ARRAY['primaryHex','primaryFgHex','bgHex','fgHex'] OR EXISTS (
-              SELECT 1 FROM jsonb_object_keys(v_value -> v_mode) AS key
-              WHERE key NOT IN ('primaryHex','primaryFgHex','bgHex','fgHex','accentHex','layers')
-            ) THEN
-              RAISE EXCEPTION 'Invalid custom colors' USING ERRCODE = '22023';
-            END IF;
-            FOREACH v_color IN ARRAY ARRAY['primaryHex','primaryFgHex','bgHex','fgHex','accentHex'] LOOP
-              IF (v_value -> v_mode) ? v_color AND (
-                jsonb_typeof(v_value -> v_mode -> v_color) IS DISTINCT FROM 'string' OR
-                (v_value -> v_mode ->> v_color) !~ '^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$'
-              ) THEN
+            IF (SELECT count(*) FROM jsonb_object_keys(v_value -> v_mode)) <> 4 THEN RAISE EXCEPTION 'Invalid custom colors' USING ERRCODE = '22023'; END IF;
+            FOREACH v_color IN ARRAY ARRAY['primaryHex','primaryFgHex','bgHex','fgHex'] LOOP
+              IF jsonb_typeof(v_value -> v_mode -> v_color) IS DISTINCT FROM 'string' OR
+                 (v_value -> v_mode ->> v_color) !~ '^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$' THEN
                 RAISE EXCEPTION 'Invalid custom color' USING ERRCODE = '22023';
               END IF;
             END LOOP;
-            -- Neutral layer deltas: L added to the background, each a number in [-1, 1].
-            IF (v_value -> v_mode) ? 'layers' THEN
-              IF jsonb_typeof(v_value -> v_mode -> 'layers') IS DISTINCT FROM 'object' THEN
-                RAISE EXCEPTION 'Invalid custom layers' USING ERRCODE = '22023';
-              END IF;
-              IF EXISTS (
-                SELECT 1 FROM jsonb_each(v_value -> v_mode -> 'layers') AS layer(key, val)
-                WHERE key NOT IN ('popoverLDelta','cardLDelta','inputLDelta','secondaryLDelta','secondaryHoverLDelta','borderLDelta','actionLDelta','actionHoverLDelta')
-                   OR CASE
-                        WHEN jsonb_typeof(val) = 'number' THEN (val #>> '{}')::numeric NOT BETWEEN -1 AND 1
-                        ELSE TRUE
-                      END
-              ) THEN
-                RAISE EXCEPTION 'Invalid custom layers' USING ERRCODE = '22023';
-              END IF;
-            END IF;
           END LOOP;
         END IF;
       ELSE RAISE EXCEPTION 'Unknown preference key' USING ERRCODE = '22023';

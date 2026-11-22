@@ -41,7 +41,7 @@ const { join } = require("node:path");
       email: user.email,
       preferences: {
         theme: "light",
-        themeColorIndex: 0,
+        themeColor: "default",
         futureKey: "preserve",
       },
     };
@@ -260,10 +260,8 @@ const { join } = require("node:path");
     );
     await page.keyboard.press("Tab");
     assert(await personal.evaluate((e) => e === document.activeElement));
-    await prefs
-      .getByRole("radio", { name: "Personalizado", exact: true })
-      .click();
-    await geometry("desktop custom theme");
+    await prefs.getByRole("radio", { name: "Cobalto", exact: true }).click();
+    await geometry("desktop palette selected");
     await page.screenshot({ path: `${evidence}/desktop.png` });
     for (const size of [
       { width: 1024, height: 600 },

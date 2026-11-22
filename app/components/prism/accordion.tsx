@@ -17,7 +17,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 export type AccordionVariant = "default" | "card";
 
 /**
- * `default`: items have no fill; the closed item's hover is `bg-secondary`.
+ * `default`: items have no fill and do not change color on hover.
  * `card`: items sit on a fixed `bg-card` fill; the closed item's hover is
  * `bg-secondary-hover` (hover over a card).
  */
@@ -44,7 +44,7 @@ function AccordionItem({ className, ...props }: DisclosureProps) {
     <AccordionItemPrimitive
       data-slot="accordion-item"
       className={cn(
-        "w-full min-w-0 not-last:border-b group-data-[variant=card]/accordion:bg-card not-data-expanded:hover:bg-secondary group-data-[variant=card]/accordion:not-data-expanded:hover:bg-secondary-hover",
+        "w-full min-w-0 not-last:border-b group-data-[variant=card]/accordion:bg-card group-data-[variant=card]/accordion:not-data-expanded:hover:bg-secondary-hover",
         className,
       )}
       {...props}

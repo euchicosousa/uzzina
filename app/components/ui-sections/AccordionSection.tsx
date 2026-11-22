@@ -165,7 +165,7 @@ export function AccordionSection() {
       <GallerySection>
         <GallerySectionHeader
           approved
-          description="Variantes: default (sem fundo, hover em bg-secondary) e card (fundo fixo bg-card, hover em bg-secondary-hover). Usado na gaveta de ação (default) e no editor de temas (card)."
+          description="Variantes: default (sem fundo e sem cor no hover) e card (fundo fixo bg-card, hover em bg-secondary-hover). Usado na gaveta de ação (default) e no editor de temas (card)."
           title="Accordion"
         />
         <GallerySectionContent className="grid gap-12">

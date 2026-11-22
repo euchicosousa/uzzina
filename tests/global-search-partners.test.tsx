@@ -797,11 +797,11 @@ for (const [label, theme] of [
 ]) {
   it(`persists ${label} after the search closes without changing palette`, async () => {
     const { user } = await mount();
-    localStorage.setItem("uzzina-accent-color-index", "4");
+    localStorage.setItem("uzzina-theme-color", "yellow");
     await user.click(screen.getByRole("menuitem", { name: label }));
     expect(screen.queryByRole("searchbox")).toBeNull();
     expect(localStorage.getItem("uzzina-theme")).toBe(theme);
-    expect(localStorage.getItem("uzzina-accent-color-index")).toBe("4");
+    expect(localStorage.getItem("uzzina-theme-color")).toBe("yellow");
     await waitFor(() => expect(savedPreferences).toEqual([{ theme }]));
     expect(beforeLeave).not.toHaveBeenCalled();
   });

@@ -22,9 +22,9 @@ describe("Ticket 37: UColorPickerDropdown - Parsing e Normalização de Cores", 
   });
 
   it("safeColor protege entradas nulas, vazias ou inválidas", () => {
-    expect(safeColor(null)).toBe("#666666");
-    expect(safeColor("")).toBe("#666666");
-    expect(safeColor("invalido")).toBe("#666666");
+    expect(safeColor(null)).toBe("#999999");
+    expect(safeColor("")).toBe("#999999");
+    expect(safeColor("invalido")).toBe("#999999");
     expect(safeColor("#123")).toBe("#112233");
   });
 

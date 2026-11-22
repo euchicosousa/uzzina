@@ -102,7 +102,7 @@ const assert = require("node:assert/strict");
     const fail = false;
     person.preferences = {
       theme: "light",
-      themeColorIndex: 0,
+      themeColor: "default",
       futureKey: "keep",
     };
     await page.route("**/*", async (route) => {
