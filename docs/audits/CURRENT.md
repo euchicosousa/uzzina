@@ -2,7 +2,7 @@
 
 Atualizado em 22/11/2026. [Contratos](../../AGENTS.md) · [Operação](../../README.md) · [Ideias futuras](../../TODO.md).
 
-**Fila vigente em 22/11: vazia.** O [tracker local](../../.scratch/README.md) não tem tickets abertos. HOJE-05, CAL-02, GAV-01, IA-M10, DS35–DS37 e o Planejamento (T01–T12) foram aprovados e estão no GitHub (`main` = `origin/main`); o proprietário conferiu o site publicado. Sobras sem ticket: ensaios de IA em /private/tmp, remover generator.ts/storage.ts e conferir telas fora do Planejamento após remover o tracking dos títulos `h1`–`h5`.
+**Fila vigente em 22/11: vazia.** O [tracker local](../../.scratch/README.md) não tem tickets abertos. HOJE-05, CAL-02, GAV-01, IA-M10, DS35–DS37 e o Planejamento (T01–T12) foram aprovados e estão no GitHub (`main` = `origin/main`); o proprietário conferiu o site publicado. Sobras removidas em 22/11 (`generator.ts`, `storage.ts`, o teste antigo e os ensaios em /private/tmp); o proprietário conferiu as telas.
 
 **Hoje e Home → Linha do tempo (HOJE-04).** Concluído e aprovado pelo proprietário em 18/11. Slider, Ajustar às ações, barras compactas e alças integrados em Hoje e Home. Verificação de navegador em ambas com dados fictícios, mais 18 testes da régua e typecheck aprovados. Commit fa740ef, sem publicação. [Histórico do ticket](../../.scratch/today-views/issues/04-timeline-zoom-fit-compact-bars.md).
 
