@@ -1,6 +1,6 @@
 # Tickets abertos da UZZINA
 
-Atualizado em 22/11/2026. **Fila principal vazia.** Os ajustes de uso (HOJE-05, CAL-02, GAV-01), o seletor de modelos (IA-M10) e o design system (DS35 a DS37) foram aprovados pelo proprietário e estão no GitHub (`main` = `origin/main`); o site publicado foi conferido por ele. Planejamento T01 a T12 aceito (T11 como parecer parcial). Sobras sem ticket: ensaios de IA em /private/tmp, remoção de generator.ts/storage.ts e conferir telas fora do Planejamento após a retirada do tracking dos títulos.
+Atualizado em 22/11/2026. **Fila principal vazia.** Os ajustes de uso (HOJE-05, CAL-02, GAV-01), o seletor de modelos (IA-M10) e o design system (DS35 a DS37) foram aprovados pelo proprietário e estão no GitHub (`main` = `origin/main`); o site publicado foi conferido por ele. Planejamento T01 a T12 aceito (T11 como parecer parcial). Sobras removidas em 22/11 (`generator.ts`, `storage.ts`, o teste antigo e os ensaios em /private/tmp).
 
 [Histórico consolidado](archive/resolved-tickets.md): 97 documentos encerrados/aprovados e 11 da antiga série C do Planejamento, substituída pela recuperação. Os antigos arquivos individuais foram retirados e seus links redirecionados.
 
