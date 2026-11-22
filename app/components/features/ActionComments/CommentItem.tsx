@@ -70,7 +70,7 @@ export function CommentItem({
         />
       </div>
       <div
-        className={`group relative flex max-w-[85%] flex-col rounded-2xl border border-foreground/5 px-4 py-2 squircle md:max-w-[75%] dark:border-foreground/10 ${
+        className={`group relative flex max-w-[85%] flex-col rounded-2xl border border-popover-border px-4 py-2 squircle md:max-w-[75%] ${
           isOwn ? "bg-primary text-primary-foreground" : "bg-card"
         }`}
       >

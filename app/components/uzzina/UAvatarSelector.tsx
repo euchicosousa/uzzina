@@ -129,7 +129,7 @@ export function UAvatarSelector({
                       className={cn(
                         "truncate text-xs leading-tight text-secondary-foreground",
                         variant === "secondary" &&
-                          "group-data-selected/toggle:text-primary-foreground/70",
+                          "group-data-selected/toggle:text-primary-foreground",
                       )}
                     >
                       {option.subtitle}

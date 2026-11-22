@@ -6,28 +6,19 @@ import {
   ComboBoxStateContext,
   ComboBoxValue as ComboBoxValuePrimitive,
   composeRenderProps,
-  Group,
   Header as HeaderPrimitive,
-  Input as InputPrimitive,
   ListBoxItem as ListBoxItemPrimitive,
   ListBox as ListBoxPrimitive,
   ListBoxSection as ListBoxSectionPrimitive,
   Popover as PopoverPrimitive,
   Separator as SeparatorPrimitive,
-  TagGroup as TagGroupPrimitive,
-  TagList as TagListPrimitive,
-  Tag as TagPrimitive,
   type ButtonProps,
   type ComboBoxValueProps,
-  type GroupProps,
   type HeaderProps,
-  type InputProps,
   type ListBoxItemProps,
   type ListBoxProps,
   type ListBoxSectionProps,
   type SeparatorProps,
-  type TagListProps,
-  type TagProps,
 } from "react-aria-components";
 import { cn } from "cnfast";
 import { Button } from "~/components/prism/button";
@@ -138,7 +129,7 @@ function ComboboxContent({
   return (
     <PopoverPrimitive
       className={cn(
-        "relative isolate z-50 max-h-72 w-(--trigger-width) min-w-36 origin-(--trigger-anchor-point) overflow-hidden rounded-2xl border border-foreground/5 bg-popover text-foreground shadow-lg squircle data-entering:animate-overlay-pop-in data-exiting:animate-overlay-pop-out *:data-[slot=input-group]:m-1 *:data-[slot=input-group]:mb-0 *:data-[slot=input-group]:h-8 *:data-[slot=input-group]:border-input/30 *:data-[slot=input-group]:bg-input *:data-[slot=input-group]:shadow-none motion-reduce:animate-none dark:border-foreground/10",
+        "relative isolate z-50 max-h-72 w-(--trigger-width) min-w-36 origin-(--trigger-anchor-point) overflow-hidden rounded-2xl border border-popover-border bg-popover text-foreground shadow-lg squircle data-entering:animate-overlay-pop-in data-exiting:animate-overlay-pop-out *:data-[slot=input-group]:m-1 *:data-[slot=input-group]:mb-0 *:data-[slot=input-group]:h-8 *:data-[slot=input-group]:bg-input *:data-[slot=input-group]:shadow-none motion-reduce:animate-none",
         className,
       )}
       crossOffset={crossOffset}
@@ -235,144 +226,6 @@ function ComboboxSeparator({ className, ...props }: SeparatorProps) {
     />
   );
 }
-const chipsContainerSizes = {
-  // Vertical padding = (field height - chip height) / 2 - 1px border, so the
-  // chip inset is the same on top, bottom and left. The left padding only
-  // shrinks when a chip is present; the bare input keeps the Input padding.
-  sm: "min-h-8 py-1 px-2 gap-1 has-[[data-slot=combobox-chip]]:pl-1",
-  default:
-    "min-h-10 py-1.5 px-2.5 gap-1.5 has-[[data-slot=combobox-chip]]:pl-1.5",
-  lg: "min-h-12 text-base py-[7px] px-3 gap-2 has-[[data-slot=combobox-chip]]:pl-[7px]",
-};
-
-const chipSizes = {
-  sm: "h-5.5 pl-2 pr-1 text-[11px] gap-1 rounded-lg",
-  default: "h-6.5 pl-2.5 pr-1 text-xs gap-1.5 rounded-xl",
-  lg: "h-8 pl-3 pr-1.5 text-sm gap-2 rounded-xl",
-};
-
-function ComboboxChips({
-  children,
-  className,
-  size = "default",
-  ...props
-}: GroupProps & {
-  size?: "sm" | "default" | "lg";
-}) {
-  return (
-    <Group
-      className={cn(
-        "flex flex-wrap items-center rounded-2xl border border-input bg-input/40 bg-clip-padding text-sm transition-[color,box-shadow] duration-200 squircle focus-within:border-ring/60 focus-within:ring-3 focus-within:ring-ring-halo has-aria-invalid:border-error has-aria-invalid:bg-error-background has-aria-invalid:ring-error-background",
-        chipsContainerSizes[size],
-        className,
-      )}
-      data-slot="combobox-chips"
-      {...props}
-    >
-      {children}
-    </Group>
-  );
-}
-function ComboboxChipList<T extends object>({
-  className,
-  ...props
-}: Omit<TagListProps<T>, "className" | "items"> & {
-  className?: string;
-}) {
-  return (
-    <ComboBoxValuePrimitive<T> className="contents">
-      {({ selectedItems, state }) => (
-        <TagGroupPrimitive
-          className={cn("contents", className)}
-          data-slot="combobox-chip-list"
-          onRemove={(keys) => {
-            if (Array.isArray(state.value)) {
-              state.setValue(state.value.filter((k) => !keys.has(k)));
-            }
-          }}
-        >
-          <TagListPrimitive
-            className="contents"
-            items={selectedItems.filter((item) => item != null)}
-            {...props}
-          />
-        </TagGroupPrimitive>
-      )}
-    </ComboBoxValuePrimitive>
-  );
-}
-function ComboboxChip({
-  className,
-  children,
-  showRemove = true,
-  size = "default",
-  ...props
-}: Omit<TagProps, "children"> & {
-  showRemove?: boolean;
-  size?: "sm" | "default" | "lg";
-  children?: React.ReactNode;
-}) {
-  return (
-    <TagPrimitive
-      className={cn(
-        "flex w-fit items-center justify-center border border-foreground/20 bg-foreground/10 font-medium whitespace-nowrap text-foreground shadow-2xs transition-colors select-none squircle hover:bg-foreground/15 has-disabled:pointer-events-none has-disabled:cursor-not-allowed has-disabled:opacity-50",
-        chipSizes[size],
-        className,
-      )}
-      data-slot="combobox-chip"
-      {...props}
-    >
-      {children}
-      {showRemove && (
-        <Button
-          className={cn(
-            "rounded-full p-0 hover:bg-foreground/15 aria-disabled:pointer-events-none",
-            size === "sm" ? "size-3.5" : size === "lg" ? "size-4.5" : "size-4",
-          )}
-          data-slot="combobox-chip-remove"
-          size="icon-xs"
-          slot="remove"
-          variant="ghost"
-        >
-          <XIcon
-            className={cn(
-              "pointer-events-none",
-              size === "sm"
-                ? "size-2.5"
-                : size === "lg"
-                  ? "size-3.5"
-                  : "size-3",
-            )}
-          />
-        </Button>
-      )}
-    </TagPrimitive>
-  );
-}
-function ComboboxChipsInput({ className, ...props }: InputProps) {
-  const state = React.useContext(ComboBoxStateContext);
-  return (
-    <InputPrimitive
-      className={cn(
-        "min-w-16 flex-1 bg-transparent outline-none placeholder:text-foreground/40",
-        className,
-      )}
-      data-slot="combobox-chip-input"
-      onKeyDown={(e) => {
-        if (
-          e.key === "Backspace" &&
-          e.currentTarget.value === "" &&
-          Array.isArray(state?.value) &&
-          state.value.length > 0
-        ) {
-          e.preventDefault();
-          state.setValue(state.value.slice(0, -1));
-        }
-      }}
-      {...props}
-    />
-  );
-}
 function useComboboxAnchor() {
   return React.useRef<HTMLDivElement | null>(null);
 }
@@ -387,10 +240,6 @@ export {
   Collection as PrismComboboxCollection,
   ComboboxEmpty as PrismComboboxEmpty,
   ComboboxSeparator as PrismComboboxSeparator,
-  ComboboxChips as PrismComboboxChips,
-  ComboboxChip as PrismComboboxChip,
-  ComboboxChipList as PrismComboboxChipList,
-  ComboboxChipsInput as PrismComboboxChipsInput,
   ComboboxTrigger as PrismComboboxTrigger,
   ComboboxValue as PrismComboboxValue,
   useComboboxAnchor,

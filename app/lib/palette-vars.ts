@@ -19,6 +19,7 @@ type PaletteModeVars = {
   fgLDelta?: number;
   accent?: OklchColor | null;
   popoverLDelta?: number;
+  popoverBorderLDelta?: number;
   cardLDelta?: number;
   inputLDelta?: number;
   secondaryLDelta?: number;
@@ -32,6 +33,7 @@ type PaletteModeVars = {
 const NEUTRAL_DELTAS = [
   ["fgLDelta", "foreground"],
   ["popoverLDelta", "popover"],
+  ["popoverBorderLDelta", "popover-border"],
   ["cardLDelta", "card"],
   ["inputLDelta", "input"],
   ["secondaryLDelta", "secondary"],
@@ -172,6 +174,13 @@ export function applySharedColorVars(
   setModePair(root.style, "support-c-delta", formulas.support.cDelta, String);
   setModePair(root.style, "primary-hover-mix", formulas.primaryHoverMix, pct);
   setModePair(root.style, "ring-halo-alpha", formulas.ringHaloAlpha, pct);
+  setModePair(
+    root.style,
+    "success-strong-halo-alpha",
+    formulas.successStrongHaloAlpha,
+    pct,
+  );
+  setModePair(root.style, "skeleton-alpha", formulas.skeletonAlpha, pct);
   setModePair(root.style, "late-bg-alpha", formulas.lateBgAlpha, pct);
   setModePair(
     root.style,

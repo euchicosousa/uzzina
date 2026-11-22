@@ -19,6 +19,10 @@
 
   --card: oklch(from var(--background) calc(l + var(--card-l-delta)) c h);
   --popover: oklch(from var(--background) calc(l + var(--popover-l-delta)) c h);
+  /* Border of floating surfaces: opaque, the popover color plus an L delta. */
+  --popover-border: oklch(
+    from var(--popover) calc(l + var(--popover-border-l-delta)) c h
+  );
 
   /* Primary color knobs — overrideable by JS for theme color picker */
   --primary-h: 0; /* hue: 0–360 */
@@ -77,6 +81,16 @@
   --ring-halo: color-mix(
     in srgb,
     var(--ring) var(--shared-ring-halo-alpha),
+    transparent
+  );
+  --success-strong-halo: color-mix(
+    in srgb,
+    var(--success-strong) var(--shared-success-strong-halo-alpha),
+    transparent
+  );
+  --skeleton: color-mix(
+    in srgb,
+    var(--foreground) var(--shared-skeleton-alpha),
     transparent
   );
   --action: oklch(from var(--background) calc(l + var(--action-l-delta)) c h);
@@ -210,6 +224,9 @@
   --popover: oklch(
     from var(--background) calc(l + var(--dark-popover-l-delta)) c h
   );
+  --popover-border: oklch(
+    from var(--popover) calc(l + var(--dark-popover-border-l-delta)) c h
+  );
 
   /* Dark mode variables injected by JS */
   /* Fallback values — preto/branco base */
@@ -270,6 +287,16 @@
   --ring-halo: color-mix(
     in srgb,
     var(--ring) var(--shared-dark-ring-halo-alpha),
+    transparent
+  );
+  --success-strong-halo: color-mix(
+    in srgb,
+    var(--success-strong) var(--shared-dark-success-strong-halo-alpha),
+    transparent
+  );
+  --skeleton: color-mix(
+    in srgb,
+    var(--foreground) var(--shared-dark-skeleton-alpha),
     transparent
   );
   /* Semantic colors: fixed values inside the sRGB gamut (DS21). */
@@ -414,6 +441,7 @@
   --color-card: var(--card);
 
   --color-popover: var(--popover);
+  --color-popover-border: var(--popover-border);
 
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
@@ -430,6 +458,8 @@
   --color-ring: var(--ring);
   --color-accent: var(--accent);
   --color-ring-halo: var(--ring-halo);
+  --color-success-strong-halo: var(--success-strong-halo);
+  --color-skeleton: var(--skeleton);
   --color-late: var(--late-bg);
 
   /* VARIÁVEIS DA UZZINA  */

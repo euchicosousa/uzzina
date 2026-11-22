@@ -254,7 +254,7 @@ export function UColorPickerDropdown({
               <Fragment key={group.id}>
                 {groupIdx > 0 && (
                   <Separator
-                    className="mx-1 h-5 self-center bg-border/60"
+                    className="mx-1 h-5 self-center bg-border"
                     orientation="vertical"
                   />
                 )}
@@ -297,7 +297,7 @@ export function UColorPickerDropdown({
         </div>
 
         {/* 3. Seleção de Formato e Entradas dos Canais */}
-        <div className="flex items-start gap-1.5 border-t border-border/40 pt-2">
+        <div className="flex items-start gap-1.5 border-t pt-2">
           <PrismMenu>
             <PrismButton
               aria-label="Escolher formato de cor"

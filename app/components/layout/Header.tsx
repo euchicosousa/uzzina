@@ -491,7 +491,7 @@ export function Header({
                       variant="unstyled"
                     >
                       <div className="flex w-full items-start justify-between gap-1">
-                        <span className="text-sm tracking-tight text-foreground/80">
+                        <span className="text-sm tracking-tight">
                           <span className="font-bold">{notif.author_name}</span>{" "}
                           mencionou você na ação{" "}
                           <span className="font-bold">
@@ -504,7 +504,7 @@ export function Header({
                         )}
                       </div>
 
-                      <p className="mt-1 line-clamp-2 border-l pl-2 text-sm text-foreground/60">
+                      <p className="mt-1 line-clamp-2 border-l pl-2 text-sm text-secondary-foreground">
                         {notificationExcerptText(notif.comment_excerpt)}
                       </p>
                     </PrismButton>

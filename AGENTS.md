@@ -135,6 +135,6 @@ Use estados React Aria data-[hovered], data-[pressed], data-[focused] e data-[di
 
 - Controles sobre imagem (regra do proprietário, 12/11/2026): alça, caixa de seleção e demais ícones sobrepostos a uma imagem ou miniatura não têm fundo; são brancos com uma sombra que acompanha o desenho do ícone (filtro `drop-shadow`, e não `shadow-*` de caixa). Uso restrito a espaços de imagem. A alternativa de cor invertida foi testada e descartada. A classe é `image-icon` (`app/tailwind.css`), criada no IA-M08 e usada no `FileManagerDialog`.
 
-Containers flutuantes (Popover, Menu, Select, Combobox, Command, Dialog, AppBar, BubbleMenu): `rounded-2xl squircle`, `border border-foreground/5 dark:border-foreground/10` (ring só para foco), listas `p-1`, `shadow-lg`, largura por `size` (popover `w-56/72/80`, diálogo `max-w-sm/lg/xl/2xl`); Sheet sem raio. Todo elemento arredondado usa `squircle`, exceto `rounded-full` e `rounded-none`.
+Containers flutuantes (Popover, Menu, Select, Combobox, Command, Dialog, AppBar, BubbleMenu): `rounded-2xl squircle`, `border border-popover-border` (borda opaca derivada do popover pelo tema, DS37; ring só para foco), listas `p-1`, `shadow-lg`, largura por `size` (popover `w-56/72/80`, diálogo `max-w-sm/lg/xl/2xl`); Sheet sem raio. Todo elemento arredondado usa `squircle`, exceto `rounded-full` e `rounded-none`.
 
 Detalhes do Prism (foco, movimento, abas, nomes acessíveis, galeria `/ui`) estão em [docs/contracts/prism-details.md](docs/contracts/prism-details.md); leia-o ao mexer nesses pontos.

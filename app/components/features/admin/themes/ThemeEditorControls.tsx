@@ -239,7 +239,7 @@ function ChannelRow({
         value={Math.max(min, Math.min(max, value))}
       >
         <PrismSliderTrack
-          className={gradient ? "border border-foreground/10" : undefined}
+          className={gradient ? "border" : undefined}
           style={gradient ? { background: gradient } : undefined}
         >
           {filled && <PrismSliderFill />}

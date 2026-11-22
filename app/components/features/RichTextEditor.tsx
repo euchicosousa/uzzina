@@ -648,7 +648,7 @@ export function RichTextEditor({
         <TiptapToolbar editor={editor} isRounded={isRounded} />
         {editor && (
           <BubbleMenuComponent
-            className="flex items-center gap-0.5 rounded-2xl border border-foreground/5 bg-popover/95 p-1 shadow-lg backdrop-blur-md squircle dark:border-foreground/10"
+            className="flex items-center gap-0.5 rounded-2xl border border-popover-border bg-popover p-1 shadow-lg squircle"
             data-editor-context-toolbar
             editor={editor}
             tabIndex={-1}

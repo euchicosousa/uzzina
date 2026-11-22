@@ -30,7 +30,7 @@ function Tooltip({
       {children}
       <TooltipPrimitive
         className={cn(
-          "z-50 max-w-60 rounded-xl border border-foreground/5 bg-popover px-2.5 py-1.5 text-xs text-foreground shadow-lg outline-hidden squircle data-entering:animate-overlay-pop-in data-exiting:animate-overlay-pop-out motion-reduce:animate-none dark:border-foreground/10",
+          "z-50 max-w-60 rounded-xl border border-popover-border bg-popover px-2.5 py-1.5 text-xs text-foreground shadow-lg outline-hidden squircle data-entering:animate-overlay-pop-in data-exiting:animate-overlay-pop-out motion-reduce:animate-none",
           className,
         )}
         data-slot="tooltip"

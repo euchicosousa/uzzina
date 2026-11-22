@@ -6,10 +6,6 @@ import {
   PrismComboboxContent,
   PrismComboboxList,
   PrismComboboxItem,
-  PrismComboboxChips,
-  PrismComboboxChip,
-  PrismComboboxChipList,
-  PrismComboboxChipsInput,
 } from "~/components/prism";
 import {
   GallerySection,
@@ -117,116 +113,18 @@ function ComboboxPlayground() {
   );
 }
 
-function ChipsComboboxDemo({
-  size = "default",
-  initialCount = 2,
-}: {
-  size?: "sm" | "default" | "lg";
-  initialCount?: number;
-}) {
-  const availableTags = [
-    { id: "design", label: "Design" },
-    { id: "copy", label: "Copywriting" },
-    { id: "video", label: "Vídeo" },
-    { id: "motion", label: "Motion" },
-    { id: "estrategia", label: "Estratégia" },
-  ];
-
-  const [selectedKeys, setSelectedKeys] = useState<string[]>(() =>
-    availableTags.slice(0, initialCount).map((t) => t.id),
-  );
-  const [inputValue, setInputValue] = useState("");
-
-  return (
-    <div className="w-80 sm:w-96">
-      <PrismCombobox
-        items={availableTags}
-        aria-label={`Combobox com Chips ${size}`}
-        inputValue={inputValue}
-        onInputChange={setInputValue}
-        selectionMode="multiple"
-        value={selectedKeys}
-        onChange={(keys) => setSelectedKeys(keys.map(String))}
-      >
-        <PrismComboboxChips size={size}>
-          <PrismComboboxChipList<{ id: string; label: string }>>
-            {(item) => (
-              <PrismComboboxChip
-                id={item.id}
-                size={size}
-                textValue={item.label}
-              >
-                {item.label}
-              </PrismComboboxChip>
-            )}
-          </PrismComboboxChipList>
-          <PrismComboboxChipsInput placeholder="Adicionar tag..." />
-        </PrismComboboxChips>
-        <PrismComboboxContent>
-          <PrismComboboxList items={availableTags}>
-            {(tag) => (
-              <PrismComboboxItem id={tag.id} key={tag.id}>
-                {tag.label}
-              </PrismComboboxItem>
-            )}
-          </PrismComboboxList>
-        </PrismComboboxContent>
-      </PrismCombobox>
-    </div>
-  );
-}
-
-function ComboboxChipsPlayground() {
-  const [size, setSize] = useState<ComboboxSize>("default");
-  const [count, setCount] = useState(2);
-
-  return (
-    <PropsPlayground
-      caption={`size="${size}" · ${count} selecionados`}
-      preview={
-        <ChipsComboboxDemo
-          initialCount={count}
-          key={`${size}-${count}`}
-          size={size}
-        />
-      }
-      title="ComboboxChips"
-    >
-      <PlaygroundRadio
-        label="Tamanho"
-        onChange={setSize}
-        options={COMBOBOX_SIZES}
-        prop="size"
-        value={size}
-      />
-      <PlaygroundNumber
-        label="Quantidade selecionada"
-        max={5}
-        min={0}
-        onChange={setCount}
-        prop="count"
-        step={1}
-        value={count}
-      />
-    </PropsPlayground>
-  );
-}
-
 export function ComboboxSection() {
   return (
     <div id="prism-combobox">
       <GallerySection>
         <GallerySectionHeader
           approved
-          description="Inputs de seleção com preenchimento automático filtrado (Combobox/Autocomplete) e chips com alto contraste nos tamanhos sm, default e lg."
+          description="Inputs de seleção com preenchimento automático filtrado (Combobox/Autocomplete)."
           title="Combobox"
         />
         <GallerySectionContent className="grid gap-12">
           <GalleryItem id="prism-combobox-single" label="Combobox">
             <ComboboxPlayground />
-          </GalleryItem>
-          <GalleryItem id="prism-combobox-chips" label="ComboboxChips">
-            <ComboboxChipsPlayground />
           </GalleryItem>
         </GallerySectionContent>
       </GallerySection>

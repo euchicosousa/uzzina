@@ -262,6 +262,14 @@ export function TokensColorsSection() {
                 }
               />
               <SemanticSwatch
+                cssClass="border-popover-border"
+                name="Popover Border"
+                note="Borda opaca dos flutuantes (menu, diálogo, dica, barra de formatação). Derivada do popover pelo ajuste da paleta (L −0,05 claro, +0,08 escuro na paleta padrão)"
+                preview={
+                  <div className="size-11 rounded-xl border border-popover-border bg-popover shadow-xs squircle" />
+                }
+              />
+              <SemanticSwatch
                 cssClass="bg-input"
                 name="Input"
                 note="Campos e trilho de progresso ou controle deslizante. Derivada de background pelo ajuste da paleta (L −0,04 claro, −0,06 escuro)"
@@ -277,6 +285,14 @@ export function TokensColorsSection() {
                   <div className="flex size-11 items-center justify-center rounded-xl border-2 border-border bg-background shadow-xs squircle">
                     <div className="size-4.5 rounded-md bg-border squircle" />
                   </div>
+                }
+              />
+              <SemanticSwatch
+                cssClass="bg-skeleton"
+                name="Skeleton"
+                note="Esqueleto de carregamento: texto a 5% de opacidade, no claro e no escuro"
+                preview={
+                  <div className="size-11 rounded-xl bg-skeleton squircle" />
                 }
               />
               <SemanticSwatch
@@ -382,9 +398,9 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="ring-ring / border-ring / bg-ring"
                 name="Ring"
-                note="Cor do anel de foco (segue o accent da paleta; aplicada com ring-3 ring-ring-halo e border-ring/60)"
+                note="Cor do anel de foco (segue o accent da paleta; aplicada com ring-3 ring-ring-halo e border-ring)"
                 preview={
-                  <div className="flex size-11 items-center justify-center rounded-xl border border-ring/60 bg-background shadow-xs ring-3 ring-ring-halo squircle">
+                  <div className="flex size-11 items-center justify-center rounded-xl border border-ring bg-background shadow-xs ring-3 ring-ring-halo squircle">
                     <div className="size-4 rounded bg-ring/40 squircle" />
                   </div>
                 }
@@ -464,6 +480,14 @@ export function TokensColorsSection() {
                 note="Versão hover do verde forte (emerald-700 fixo)"
                 preview={
                   <div className="size-11 rounded-xl bg-success-strong-hover shadow-xs squircle" />
+                }
+              />
+              <SemanticSwatch
+                cssClass="ring-success-strong-halo"
+                name="Success Strong Halo"
+                note="Halo de foco do botão de sucesso forte (30% do verde forte)"
+                preview={
+                  <div className="size-11 rounded-xl border border-success-strong bg-background shadow-xs ring-3 ring-success-strong-halo squircle" />
                 }
               />
               <SemanticSwatch

@@ -933,7 +933,7 @@ export function TimelineGrid({
 
                       return (
                         <div
-                          className="pointer-events-none absolute inset-y-0 flex items-center border-l border-border/40 pl-1.5 text-xs font-normal text-secondary-foreground tabular-nums"
+                          className="pointer-events-none absolute inset-y-0 flex items-center border-l pl-1.5 text-xs font-normal text-secondary-foreground tabular-nums"
                           key={minuteOffset}
                           style={{ left: `${offsetPx}px` }}
                         >
@@ -1002,7 +1002,7 @@ export function TimelineGrid({
                             {showFiveMinuteGrid &&
                               FIVE_MINUTE_OFFSETS.map((minuteOffset) => (
                                 <div
-                                  className="absolute inset-y-0 border-l border-border/30"
+                                  className="absolute inset-y-0 border-l"
                                   key={minuteOffset}
                                   style={{
                                     left: `${minuteOffset * pxPerMinute}px`,
@@ -1023,7 +1023,7 @@ export function TimelineGrid({
                       )}
 
                       {/* Lanes */}
-                      <div className="relative flex flex-col divide-y divide-border/50">
+                      <div className="relative flex flex-col divide-y">
                         {lanes.map((laneItems, laneIndex) => (
                           <div
                             className="relative grid min-h-9 w-full grid-cols-1 py-1"

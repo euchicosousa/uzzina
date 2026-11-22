@@ -118,7 +118,7 @@ function ButtonGroupSeparator({
   return (
     <Separator
       className={cn(
-        "pointer-events-none relative z-20 shrink-0 self-stretch bg-border/80 group-has-data-[variant=default]/button-group:bg-primary-foreground/30 aria-[orientation=horizontal]:h-px aria-[orientation=vertical]:w-px",
+        "pointer-events-none relative z-20 shrink-0 self-stretch bg-border group-has-data-[variant=default]/button-group:bg-primary-foreground/30 aria-[orientation=horizontal]:h-px aria-[orientation=vertical]:w-px",
         className,
       )}
       data-slot="button-group-separator"

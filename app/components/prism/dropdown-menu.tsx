@@ -43,7 +43,7 @@ function DropdownMenu({
   return (
     <PopoverPrimitive
       className={cn(
-        "z-50 w-(--trigger-width) min-w-48 origin-(--trigger-anchor-point) overflow-x-hidden overflow-y-auto rounded-2xl border border-foreground/5 bg-popover p-1 text-foreground shadow-lg outline-none squircle data-entering:animate-overlay-pop-in data-exiting:animate-overlay-pop-out data-exiting:overflow-hidden motion-reduce:animate-none dark:border-foreground/10",
+        "z-50 w-(--trigger-width) min-w-48 origin-(--trigger-anchor-point) overflow-x-hidden overflow-y-auto rounded-2xl border border-popover-border bg-popover p-1 text-foreground shadow-lg outline-none squircle data-entering:animate-overlay-pop-in data-exiting:animate-overlay-pop-out data-exiting:overflow-hidden motion-reduce:animate-none",
         className,
       )}
       crossOffset={crossOffset}
@@ -188,7 +188,7 @@ function DropdownMenuSubContent({
   return (
     <DropdownMenu
       className={cn(
-        "w-auto min-w-24 rounded-2xl border border-foreground/5 bg-popover p-1 text-foreground shadow-lg duration-100 squircle dark:border-foreground/10",
+        "w-auto min-w-24 rounded-2xl border border-popover-border bg-popover p-1 text-foreground shadow-lg duration-100 squircle",
         className,
       )}
       crossOffset={crossOffset}

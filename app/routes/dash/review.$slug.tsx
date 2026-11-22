@@ -201,7 +201,7 @@ function ReviewPage() {
                 {/* Action header */}
                 <div className="mb-5 flex flex-wrap items-start gap-3">
                   {/* Index */}
-                  <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-foreground/8 text-xs font-semibold text-secondary-foreground">
+                  <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-card text-xs font-semibold text-secondary-foreground">
                     {index + 1}
                   </span>
 
@@ -272,7 +272,7 @@ function ReviewPage() {
                     <h3 className="mb-2 text-xs font-semibold tracking-widest text-secondary-foreground uppercase">
                       Legenda
                     </h3>
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap text-foreground/80">
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap">
                       {action.instagram_caption}
                     </p>
                   </section>

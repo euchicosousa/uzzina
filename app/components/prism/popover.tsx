@@ -73,7 +73,7 @@ function Popover({
     <PopoverPrimitive
       className={cn(
         popoverWidths[size],
-        "z-50 flex max-w-[calc(100vw-2rem)] origin-(--trigger-anchor-point) flex-col gap-4 overflow-y-auto rounded-2xl border border-foreground/5 bg-popover p-4 text-sm text-foreground shadow-lg outline-hidden squircle data-entering:animate-overlay-pop-in data-exiting:animate-overlay-pop-out motion-reduce:animate-none dark:border-foreground/10",
+        "z-50 flex max-w-[calc(100vw-2rem)] origin-(--trigger-anchor-point) flex-col gap-4 overflow-y-auto rounded-2xl border border-popover-border bg-popover p-4 text-sm text-foreground shadow-lg outline-hidden squircle data-entering:animate-overlay-pop-in data-exiting:animate-overlay-pop-out motion-reduce:animate-none",
         className,
       )}
       crossOffset={crossOffset}

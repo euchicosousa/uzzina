@@ -154,7 +154,7 @@ function CommandInput({
       <Input
         {...props}
         className={cn(
-          "flex h-11 w-full bg-transparent text-sm outline-none placeholder:text-foreground/40 disabled:cursor-not-allowed disabled:opacity-50 [&::-webkit-search-cancel-button]:hidden",
+          "flex h-11 w-full bg-transparent text-sm outline-none placeholder:text-secondary-foreground disabled:cursor-not-allowed disabled:opacity-50 [&::-webkit-search-cancel-button]:hidden",
           size === "sm" && "h-9",
           suffix && "min-w-0 truncate",
           className,

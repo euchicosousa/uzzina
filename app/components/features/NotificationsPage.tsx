@@ -150,23 +150,23 @@ export function NotificationsPage() {
                       <span
                         className={cn(
                           "line-clamp-3 text-base text-foreground",
-                          unread ? "font-medium" : "text-foreground/70",
+                          unread ? "font-medium" : "text-secondary-foreground",
                         )}
                       >
                         {excerpt}
                       </span>
                     ) : (
-                      <span className="text-base text-foreground/70 italic">
+                      <span className="text-base text-secondary-foreground italic">
                         Você foi mencionado sem texto.
                       </span>
                     )}
                     <span className="flex flex-wrap items-baseline gap-x-2 text-xs text-secondary-foreground">
-                      <span className="font-semibold text-foreground/80">
+                      <span className="font-semibold text-foreground">
                         {notification.author_name}
                       </span>
                       <span aria-hidden="true">em</span>
                       <span className="sr-only"> mencionou você em </span>
-                      <span className="font-semibold text-foreground/80">
+                      <span className="font-semibold text-foreground">
                         {notification.action_title}
                       </span>
                       <span aria-hidden="true">·</span>

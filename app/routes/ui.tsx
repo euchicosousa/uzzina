@@ -430,10 +430,7 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     section: "components",
     approved: true,
     keywords: ["autocomplete", "select", "busca", "pesquisa"],
-    subsections: [
-      { id: "prism-combobox-single", label: "Combobox" },
-      { id: "prism-combobox-chips", label: "ComboboxChips" },
-    ],
+    subsections: [{ id: "prism-combobox-single", label: "Combobox" }],
   },
   {
     id: "prism-command",
@@ -948,7 +945,7 @@ function UIPage() {
   return (
     <div className="fixed inset-0 overflow-clip bg-background font-sans text-foreground">
       {/* Top Header Fixado */}
-      <header className="absolute inset-x-0 top-0 z-40 flex h-16 items-center justify-between gap-3 border-b bg-background/80 px-4 backdrop-blur-md lg:px-8">
+      <header className="absolute inset-x-0 top-0 z-40 flex h-16 items-center justify-between gap-3 border-b bg-background px-4 lg:px-8">
         <div className="flex shrink-0 items-center gap-3">
           <div className="flex items-center gap-4">
             <div className="text-2xl font-medium">PRISM</div>

@@ -96,6 +96,16 @@ const RULES: Record<string, ThemeRuleEntry> = {
     code: layerCode("popover", "0.02", "-0.03"),
     calc: (palette, mode) => layerCalc(palette, mode, "popoverLDelta"),
   },
+  popoverBorder: {
+    title: "Borda de flutuante",
+    rule: "Linha de 1 px em volta de menus, diálogos, caixas de opção, dicas e da barra de formatação. É a cor do Flutuante com um ajuste de luz, sem transparência.",
+    code: "Claro: --popover-border: oklch(from var(--popover) calc(l + var(--popover-border-l-delta)) c h);\nEscuro: o mesmo com --dark-popover-border-l-delta\n(classe border-popover-border)",
+    calc: (palette, mode) => {
+      const c = palette[mode];
+      const base = clampL(c.bg.l + c.popoverLDelta);
+      return `Flutuante ${fmt(base)} ${signed(c.popoverBorderLDelta)} = ${fmt(clampL(base + c.popoverBorderLDelta))}`;
+    },
+  },
   card: {
     title: "Card",
     rule: "Fundo fixo que informa ou sinaliza e não é clicável: card de informação, aviso, nota, selo, atalho de teclado, avatar vazio, alvo ao arrastar. É o fundo com um ajuste de luz.",
@@ -166,6 +176,13 @@ const RULES: Record<string, ThemeRuleEntry> = {
     title: "Informação",
     rule: "Avisos de informação. Mesma regra do Erro: cor, texto e fundo misturado.",
     code: "--color-info: var(--shared-info-color); --info-foreground: var(--shared-info-text); --color-info-background: color-mix(in oklab, var(--color-info) var(--state-background-mix), var(--background))",
+  },
+  successStrongHalo: {
+    title: "Sucesso forte · halo de foco",
+    rule: "Anel do foco do teclado no botão de sucesso forte: a cor do Sucesso forte com a transparência indicada.",
+    code: "--success-strong-halo: color-mix(in srgb, var(--success-strong) var(--shared-success-strong-halo-alpha), transparent);\n(classe ring-success-strong-halo)",
+    calc: (palette, mode, shared) =>
+      `Transparência: ${shared.formulas.successStrongHaloAlpha[mode]}% do Sucesso forte`,
   },
   successStrong: {
     title: "Sucesso forte",
@@ -277,6 +294,14 @@ const RULES: Record<string, ThemeRuleEntry> = {
     code: "--ring-halo: color-mix(in srgb, var(--ring) var(--shared-ring-halo-alpha), transparent);\n(classe ring-ring-halo)",
     calc: (palette, mode, shared) =>
       `Transparência: ${shared.formulas.ringHaloAlpha[mode]}% da cor de destaque`,
+  },
+
+  skeleton: {
+    title: "Esqueleto de carregamento",
+    rule: "Fundo dos blocos cinza que aparecem enquanto o conteúdo carrega: a cor do texto com a opacidade indicada.",
+    code: "--skeleton: color-mix(in srgb, var(--foreground) var(--shared-skeleton-alpha), transparent);\n(classe bg-skeleton)",
+    calc: (palette, mode, shared) =>
+      `Opacidade: ${shared.formulas.skeletonAlpha[mode]}% do texto`,
   },
 
   // 10. Sombras e brilho

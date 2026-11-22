@@ -18,6 +18,8 @@ export type PaletteConfig = {
     accent: OklchColor;
     /** Neutral layers: L added to the page background (DS35). */
     popoverLDelta: number;
+    /** Border of floating surfaces: L added to the popover color (opaque). */
+    popoverBorderLDelta: number;
     cardLDelta: number;
     inputLDelta: number;
     secondaryLDelta: number;
@@ -37,6 +39,8 @@ export type PaletteConfig = {
     accent: OklchColor;
     /** Neutral layers: L added to the page background (DS35). */
     popoverLDelta: number;
+    /** Border of floating surfaces: L added to the popover color (opaque). */
+    popoverBorderLDelta: number;
     cardLDelta: number;
     inputLDelta: number;
     secondaryLDelta: number;
@@ -110,6 +114,10 @@ export type SharedColors = {
     primaryHoverMix: ModePair<number>;
     /** Focus halo: percent of the focus ring color. */
     ringHaloAlpha: ModePair<number>;
+    /** Halo of the strong success button on focus: percent of the strong success color. */
+    successStrongHaloAlpha: ModePair<number>;
+    /** Loading skeleton: percent of the text color over the surface. */
+    skeletonAlpha: ModePair<number>;
     /** Late action card: opacity (percent) of the Erro background at rest; on hover it is full. */
     lateBgAlpha: ModePair<number>;
     /** Action card: strength (percent of the shadow color) of the ring, the resting shadow and the hover shadow. */
@@ -196,6 +204,7 @@ export const PALLETE: PaletteConfig[] = [
       },
       fgLDelta: -0.96,
       popoverLDelta: 0.02,
+      popoverBorderLDelta: -0.049,
       cardLDelta: -0.02,
       inputLDelta: -0.04,
       secondaryLDelta: -0.06,
@@ -223,6 +232,7 @@ export const PALLETE: PaletteConfig[] = [
       },
       fgLDelta: 0.8,
       popoverLDelta: -0.03,
+      popoverBorderLDelta: 0.083,
       cardLDelta: 0.05,
       inputLDelta: -0.06,
       secondaryLDelta: 0.12,
@@ -255,6 +265,7 @@ export const PALLETE: PaletteConfig[] = [
       },
       fgLDelta: -1.0,
       popoverLDelta: 0.02,
+      popoverBorderLDelta: -0.05,
       cardLDelta: -0.02,
       inputLDelta: -0.04,
       secondaryLDelta: -0.06,
@@ -282,6 +293,7 @@ export const PALLETE: PaletteConfig[] = [
       },
       fgLDelta: 0.75,
       popoverLDelta: -0.03,
+      popoverBorderLDelta: 0.078,
       cardLDelta: 0.05,
       inputLDelta: -0.06,
       secondaryLDelta: 0.12,
@@ -313,6 +325,7 @@ export const PALLETE: PaletteConfig[] = [
       },
       fgLDelta: -0.98,
       popoverLDelta: 0.02,
+      popoverBorderLDelta: -0.05,
       cardLDelta: -0.02,
       inputLDelta: -0.04,
       secondaryLDelta: -0.06,
@@ -340,6 +353,7 @@ export const PALLETE: PaletteConfig[] = [
       },
       fgLDelta: 0.9,
       popoverLDelta: 0.03,
+      popoverBorderLDelta: 0.083,
       cardLDelta: 0.05,
       inputLDelta: 0.06,
       secondaryLDelta: 0.2,
@@ -371,6 +385,7 @@ export const PALLETE: PaletteConfig[] = [
       },
       fgLDelta: -0.95,
       popoverLDelta: 0.02,
+      popoverBorderLDelta: -0.049,
       cardLDelta: -0.02,
       inputLDelta: -0.04,
       secondaryLDelta: -0.06,
@@ -398,6 +413,7 @@ export const PALLETE: PaletteConfig[] = [
       },
       fgLDelta: 0.7,
       popoverLDelta: -0.03,
+      popoverBorderLDelta: 0.073,
       cardLDelta: 0.05,
       inputLDelta: -0.06,
       secondaryLDelta: 0.12,
@@ -429,6 +445,7 @@ export const PALLETE: PaletteConfig[] = [
       },
       fgLDelta: -0.98,
       popoverLDelta: 0.02,
+      popoverBorderLDelta: -0.05,
       cardLDelta: -0.02,
       inputLDelta: -0.04,
       secondaryLDelta: -0.06,
@@ -456,6 +473,7 @@ export const PALLETE: PaletteConfig[] = [
       },
       fgLDelta: 0.859,
       popoverLDelta: -0.03,
+      popoverBorderLDelta: 0.089,
       cardLDelta: 0.05,
       inputLDelta: -0.06,
       secondaryLDelta: 0.12,
@@ -487,6 +505,7 @@ export const PALLETE: PaletteConfig[] = [
       },
       fgLDelta: -0.96,
       popoverLDelta: 0.02,
+      popoverBorderLDelta: -0.049,
       cardLDelta: -0.02,
       inputLDelta: -0.04,
       secondaryLDelta: -0.06,
@@ -514,6 +533,7 @@ export const PALLETE: PaletteConfig[] = [
       },
       fgLDelta: 0.8,
       popoverLDelta: -0.03,
+      popoverBorderLDelta: 0.083,
       cardLDelta: 0.05,
       inputLDelta: -0.06,
       secondaryLDelta: 0.12,
@@ -545,6 +565,7 @@ export const PALLETE: PaletteConfig[] = [
       },
       fgLDelta: -0.98,
       popoverLDelta: 0.02,
+      popoverBorderLDelta: -0.05,
       cardLDelta: -0.02,
       inputLDelta: -0.04,
       secondaryLDelta: -0.06,
@@ -572,6 +593,7 @@ export const PALLETE: PaletteConfig[] = [
       },
       fgLDelta: 0.8,
       popoverLDelta: -0.03,
+      popoverBorderLDelta: 0.083,
       cardLDelta: 0.05,
       inputLDelta: -0.06,
       secondaryLDelta: 0.12,
@@ -604,6 +626,7 @@ export const PALLETE: PaletteConfig[] = [
       },
       fgLDelta: -1.0,
       popoverLDelta: 0.02,
+      popoverBorderLDelta: -0.05,
       cardLDelta: -0.02,
       inputLDelta: -0.04,
       secondaryLDelta: -0.06,
@@ -631,6 +654,7 @@ export const PALLETE: PaletteConfig[] = [
       },
       fgLDelta: 0.859,
       popoverLDelta: -0.03,
+      popoverBorderLDelta: 0.089,
       cardLDelta: 0.05,
       inputLDelta: -0.06,
       secondaryLDelta: 0.12,
@@ -662,6 +686,7 @@ export const PALLETE: PaletteConfig[] = [
       },
       fgLDelta: -1.0,
       popoverLDelta: 0.02,
+      popoverBorderLDelta: -0.05,
       cardLDelta: -0.02,
       inputLDelta: -0.04,
       secondaryLDelta: -0.06,
@@ -689,8 +714,9 @@ export const PALLETE: PaletteConfig[] = [
       },
       fgLDelta: 0.859,
       popoverLDelta: -0.03,
+      popoverBorderLDelta: 0.089,
       cardLDelta: 0.05,
-      inputLDelta: -0.06,
+      inputLDelta: 0.07,
       secondaryLDelta: 0.12,
       secondaryHoverLDelta: 0.15,
       borderLDelta: 0.15,
@@ -720,6 +746,7 @@ export const PALLETE: PaletteConfig[] = [
       },
       fgLDelta: -0.98,
       popoverLDelta: 0.02,
+      popoverBorderLDelta: -0.05,
       cardLDelta: -0.02,
       inputLDelta: -0.04,
       secondaryLDelta: -0.06,
@@ -747,6 +774,7 @@ export const PALLETE: PaletteConfig[] = [
       },
       fgLDelta: 0.7,
       popoverLDelta: -0.03,
+      popoverBorderLDelta: 0.073,
       cardLDelta: 0.05,
       inputLDelta: -0.06,
       secondaryLDelta: 0.12,
@@ -845,6 +873,8 @@ export const SHARED_COLORS: SharedColors = {
     },
     primaryHoverMix: { light: 20, dark: 20 },
     ringHaloAlpha: { light: 30, dark: 30 },
+    successStrongHaloAlpha: { light: 30, dark: 30 },
+    skeletonAlpha: { light: 5, dark: 5 },
     lateBgAlpha: { light: 70, dark: 70 },
     actionCard: {
       ringAlpha: { light: 5, dark: 20 },

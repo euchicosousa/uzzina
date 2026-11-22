@@ -41,7 +41,7 @@ function hasTextContent(children: unknown): boolean {
 const ghostToggle = cn(buttonVariantClasses.ghost, buttonSelectedClasses.ghost);
 
 const toggleVariants = cva(
-  "group/toggle inline-flex min-w-0 items-center justify-center rounded-2xl squircle border bg-clip-padding text-sm font-medium truncate transition-colors outline-none focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring-halo disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-error aria-invalid:ring-error-background [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-5",
+  "group/toggle inline-flex min-w-0 items-center justify-center rounded-2xl squircle border bg-clip-padding text-sm font-medium truncate transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring-halo disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-error aria-invalid:ring-error-background [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-5",
   {
     variants: {
       variant: {

@@ -77,7 +77,7 @@ const BUTTON_DEMO_ROWS: ReadonlyArray<{
     variant: "default",
     actionLabel: "Salvar",
     hoverClass: "border-primary-hover bg-primary-hover",
-    focusClass: "border-ring/60 ring-3 ring-ring-halo",
+    focusClass: "border-ring ring-3 ring-ring-halo",
     targets: ["primary", "primaryFg", "primaryHover", "ring", "ringHalo"],
   },
   {
@@ -85,7 +85,7 @@ const BUTTON_DEMO_ROWS: ReadonlyArray<{
     variant: "secondary",
     actionLabel: "Filtrar",
     hoverClass: "border-secondary-hover bg-secondary-hover",
-    focusClass: "border-ring/60 ring-3 ring-ring-halo",
+    focusClass: "border-ring ring-3 ring-ring-halo",
     targets: ["secondary", "fg", "ring", "ringHalo"],
   },
   {
@@ -93,7 +93,7 @@ const BUTTON_DEMO_ROWS: ReadonlyArray<{
     variant: "outline",
     actionLabel: "Duplicar",
     hoverClass: "bg-secondary",
-    focusClass: "border-ring/60 ring-3 ring-ring-halo",
+    focusClass: "border-ring ring-3 ring-ring-halo",
     targets: ["border", "secondary", "fg", "ring", "ringHalo"],
   },
   {
@@ -101,7 +101,7 @@ const BUTTON_DEMO_ROWS: ReadonlyArray<{
     variant: "ghost",
     actionLabel: "Cancelar",
     hoverClass: "bg-secondary",
-    focusClass: "border-ring/60 ring-3 ring-ring-halo",
+    focusClass: "border-ring ring-3 ring-ring-halo",
     targets: ["secondary", "fg", "ring", "ringHalo"],
   },
   {
@@ -126,7 +126,7 @@ const BUTTON_DEMO_ROWS: ReadonlyArray<{
     variant: "success",
     actionLabel: "Concluir",
     hoverClass: "bg-success-strong-hover",
-    focusClass: "border-success-strong ring-3 ring-success-strong/30",
+    focusClass: "border-success-strong ring-3 ring-success-strong-halo",
     targets: ["success"],
   },
 ];
@@ -309,7 +309,7 @@ export function ThemePreviewPane({
 
           <section className="flex flex-col gap-5">
             <h5 className="text-foreground">Menu</h5>
-            <div className="flex flex-col gap-0.5 self-start rounded-2xl border border-foreground/5 bg-popover p-1 shadow-lg squircle dark:border-foreground/10">
+            <div className="flex flex-col gap-0.5 self-start rounded-2xl border border-popover-border bg-popover p-1 shadow-lg squircle">
               <div className="flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs text-foreground squircle">
                 <CopyIcon className="size-3.5 opacity-60" />
                 <span>Duplicar</span>
@@ -359,7 +359,7 @@ export function ThemePreviewPane({
               <PrismInput
                 aria-label="Campo em foco de prévia"
                 className={cn(
-                  "pointer-events-none border-ring/60 ring-3 ring-ring-halo",
+                  "pointer-events-none border-ring ring-3 ring-ring-halo",
                   isHighlighted(["input", "ring", "ringHalo"]),
                 )}
                 readOnly

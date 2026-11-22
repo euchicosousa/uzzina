@@ -65,7 +65,7 @@ export function CommentInput({
     selectedMentions.includes(p.user_id),
   );
   return (
-    <div className="relative flex flex-col gap-2 bg-input px-5 py-4 dark:bg-input/30">
+    <div className="relative flex flex-col gap-2 bg-input px-5 py-4">
       <PrismTextarea
         aria-label="Observação"
         className="min-h-20 w-full rounded-none border-0 p-0 text-sm shadow-none focus:border-0 focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
@@ -81,13 +81,13 @@ export function CommentInput({
         <div className="flex flex-wrap items-center gap-2">
           {allowAudienceToggle && (
             <PrismButton
-              size="xs"
-              variant={isInternal ? "ghost" : "outline"}
+              size="sm"
+              variant={isInternal ? "ghost" : "warning"}
               className={cn(
                 "gap-1.5 px-2 text-xs",
                 isInternal
                   ? "text-secondary-foreground hover:text-foreground"
-                  : "border-primary/40 bg-primary/10 font-medium text-primary",
+                  : "font-medium",
               )}
               onClick={() => setIsInternal(!isInternal)}
             >
@@ -106,7 +106,7 @@ export function CommentInput({
           )}
 
           <PrismPopoverTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
-            <PrismButton size="xs" variant="ghost">
+            <PrismButton size="sm" variant="ghost">
               {selectedPeople.length === 0 ? (
                 <>
                   <div className="grid size-4 place-content-center rounded-full bg-background">

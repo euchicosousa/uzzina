@@ -1636,14 +1636,6 @@ export function ActionFormDrawer({
                         void selectStrategy(i, isSelected);
                       }}
                     />
-                    {savingSelectionIndex === i && (
-                      <span
-                        aria-hidden="true"
-                        className="pointer-events-none absolute inset-0 flex items-center justify-center bg-background/80"
-                      >
-                        <ULoader size="xs" className="text-primary" />
-                      </span>
-                    )}
                   </div>
                   <PrismAccordionTrigger className="min-w-0 flex-1 px-2">
                     <div

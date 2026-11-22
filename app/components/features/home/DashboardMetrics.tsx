@@ -148,10 +148,7 @@ export function DashboardMetrics({
           <PrismButton aria-label="Ver métricas" size="icon-sm" variant="ghost">
             <BarChart3Icon className="size-4" />
           </PrismButton>
-          <PrismPopover
-            className="gap-2 bg-popover/80 p-2 backdrop-blur-2xl"
-            size="sm"
-          >
+          <PrismPopover className="gap-2 p-2" size="sm">
             {showToday && (
               <MetricPill
                 actions={stats.today.actions}
@@ -263,10 +260,7 @@ const MetricPill = ({
       <ProgressBar actions={actions} total={total} />
 
       <span
-        className={cn(
-          "text-right text-xs font-medium text-foreground/80",
-          isMobile && "w-14",
-        )}
+        className={cn("text-right text-xs font-medium", isMobile && "w-14")}
       >
         {completed ? `${completed}/${total}` : total}
       </span>

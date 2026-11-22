@@ -82,7 +82,7 @@ export function ActionDrawerPanel({
     <>
       <button
         aria-label="Fechar painel de edição"
-        className="fixed inset-0 top-16 z-10 flex w-full shrink-0 cursor-default flex-col bg-black/20 dark:bg-black/80"
+        className="fixed inset-0 top-16 z-10 flex w-full shrink-0 cursor-default flex-col bg-overlay"
         onClick={(event) => {
           event.preventDefault();
           event.stopPropagation();

@@ -27,6 +27,7 @@ const BUTTON_VARIANTS = [
   "ghost",
   "ghost-error",
   "error",
+  "warning",
   "success",
   "link",
 ] as const;

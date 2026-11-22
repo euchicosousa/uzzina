@@ -133,7 +133,7 @@ function VividPhasePreview({
     <div
       aria-hidden="true"
       className={cn(
-        "flex flex-col gap-3 rounded-2xl border border-foreground/10 p-4 squircle",
+        "flex flex-col gap-3 rounded-2xl border p-4 squircle",
         isDark
           ? "bg-[oklch(0.17_0_0)] text-[oklch(0.96_0_0)]"
           : "bg-[oklch(0.985_0_0)] text-[oklch(0.2_0_0)]",
@@ -168,10 +168,8 @@ function VividPhasePreview({
 
 function PaletteSwatch({
   color,
-  isDark,
 }: {
   color: { l: number; c: number; h: number };
-  isDark: boolean;
 }) {
   return (
     <span
@@ -180,9 +178,7 @@ function PaletteSwatch({
       data-palette-swatch="color"
       style={{
         backgroundColor: `oklch(${color.l} ${color.c} ${color.h})`,
-        border: isDark
-          ? "1px solid rgba(255,255,255,0.1)"
-          : "1px solid rgba(0,0,0,0.1)",
+        border: "1px solid var(--popover-border)",
       }}
     />
   );
@@ -316,7 +312,7 @@ function PartnerPageMockup({ showSidebar }: { showSidebar: boolean }) {
         </div>
 
         {/* Floating Bottom App Bar (+ Nova Ação) */}
-        <div className="pointer-events-none absolute bottom-2 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-primary/60 bg-background/95 px-2.5 py-1 shadow-sm">
+        <div className="pointer-events-none absolute bottom-2 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-primary/60 bg-background px-2.5 py-1 shadow-sm">
           <div className="size-2 rounded-full border border-primary/60" />
           <div className="h-1.5 w-10 rounded-full border border-primary/80" />
         </div>
@@ -904,7 +900,7 @@ function ProfilePage() {
               title="E-mail da Conta"
               description="Nota: O endereço de e-mail é gerenciado pelo administrador do espaço de trabalho."
             >
-              <span className="text-sm font-medium text-foreground/80">
+              <span className="text-sm font-medium">
                 {authEmail || person.email || "Nenhum e-mail associado"}
               </span>
             </ProfileSetting>
@@ -981,7 +977,6 @@ function ProfilePage() {
                         ? palette.dark.primary
                         : palette.light.primary
                     }
-                    isDark={theme === Theme.DARK}
                   />
                   {palette.label}
                 </PrismToggleGroupItem>
@@ -1315,7 +1310,7 @@ function ProfilePage() {
                     )}
                   </UAIAllowanceMeter>
                 ) : (
-                  <div className="rounded-2xl border border-border/40 bg-card p-4 text-xs text-secondary-foreground squircle">
+                  <div className="rounded-2xl border bg-card p-4 text-xs text-secondary-foreground squircle">
                     Consumo de IA ainda não medido neste mês.
                   </div>
                 )}

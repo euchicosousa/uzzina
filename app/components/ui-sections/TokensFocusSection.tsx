@@ -186,9 +186,9 @@ export function TokensFocusSection() {
             id="focus-outer"
             title="Anel externo (padrão)"
             rule="Todo foco por anel: 3px, ring-ring a 30%, com borda border-ring a 60% quando o elemento tem borda. Destrutivo usa a mesma lógica toda em vermelho. É o padrão do PrismButton."
-            classes="outline-none focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring-halo (também focus-within: e data-[focus-visible]:; destrutivo: focus-visible:border-error/60 focus-visible:ring-error/30)"
+            classes="outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring-halo (também focus-within: e data-[focus-visible]:; destrutivo: focus-visible:border-error/60 focus-visible:ring-error/30)"
             usedBy={[
-              "Prism: button, input, textarea, select, toggle, checkbox, radio-group, calendar (dia), color-field, time-field, date-range-picker, input-group, combobox, badge (borda border-ring/60 + anel)",
+              "Prism: button, input, textarea, select, toggle, checkbox, radio-group, calendar (dia), color-field, time-field, date-range-picker, input-group, combobox, badge (borda border-ring + anel)",
               "Prism: slider, color-area e color-slider (thumb: só anel ring-3 ring-ring-halo em data-[focus-visible])",
               "Prism: button e badge destrutivos (border-error/60 + ring-error/30)",
               "features/ComboboxTrigger.tsx (ghost icon-lg no rodapé da gaveta: anel padrão do PrismButton)",
@@ -342,7 +342,7 @@ export function TokensFocusSection() {
               label="Editor de texto (focus-within)"
               source="Réplica de routes/app/admin/partner/$slug.tsx"
             >
-              <div className="min-h-25 w-72 overflow-hidden rounded-2xl border border-transparent bg-input text-base transition-[color,box-shadow] squircle focus-within:border-ring/60 focus-within:ring-3 focus-within:ring-ring-halo md:text-sm">
+              <div className="min-h-25 w-72 overflow-hidden rounded-2xl border border-transparent bg-input text-base transition-[color,box-shadow] squircle focus-within:border-ring focus-within:ring-3 focus-within:ring-ring-halo md:text-sm">
                 <textarea
                   aria-label="Réplica do editor admin"
                   className="h-full min-h-25 w-full resize-none bg-transparent p-3 outline-none"

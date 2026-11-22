@@ -24,6 +24,7 @@ export type DeltaKey =
   | "fgLDelta"
   | "cardLDelta"
   | "popoverLDelta"
+  | "popoverBorderLDelta"
   | "inputLDelta"
   | "secondaryLDelta"
   | "secondaryHoverLDelta"
@@ -140,6 +141,8 @@ export type FormulaKey =
   | "supportC"
   | "primaryHoverMix"
   | "ringHaloAlpha"
+  | "successStrongHaloAlpha"
+  | "skeletonAlpha"
   | "lateBgAlpha"
   | "actionRingAlpha"
   | "actionShadowAlpha"
@@ -369,6 +372,10 @@ export function getFormulaValue(
       return f.primaryHoverMix[mode];
     case "ringHaloAlpha":
       return f.ringHaloAlpha[mode];
+    case "successStrongHaloAlpha":
+      return f.successStrongHaloAlpha[mode];
+    case "skeletonAlpha":
+      return f.skeletonAlpha[mode];
     case "lateBgAlpha":
       return f.lateBgAlpha[mode];
     case "actionRingAlpha":
@@ -441,6 +448,19 @@ export function setFormulaValue(
       return {
         ...shared,
         formulas: { ...f, ringHaloAlpha: pair(f.ringHaloAlpha) },
+      };
+    case "successStrongHaloAlpha":
+      return {
+        ...shared,
+        formulas: {
+          ...f,
+          successStrongHaloAlpha: pair(f.successStrongHaloAlpha),
+        },
+      };
+    case "skeletonAlpha":
+      return {
+        ...shared,
+        formulas: { ...f, skeletonAlpha: pair(f.skeletonAlpha) },
       };
     case "lateBgAlpha":
       return {
@@ -592,6 +612,10 @@ const DELTA_META: Record<DeltaKey, { label: string; token: string }> = {
   popoverLDelta: {
     label: "Menus e diálogos (ajuste de luz)",
     token: "--popover-l-delta",
+  },
+  popoverBorderLDelta: {
+    label: "Borda de menus e diálogos (ajuste de luz)",
+    token: "--popover-border-l-delta",
   },
   inputLDelta: { label: "Campos (ajuste de luz)", token: "--input-l-delta" },
   secondaryLDelta: {
@@ -781,6 +805,20 @@ function collectSharedDiffs(draftShared: SharedColors): ThemeChangeEntry[] {
       keyPath: "SHARED_COLORS.formulas.ringHaloAlpha",
       format: (v) => `${v}%`,
       pick: (sh) => sh.formulas.ringHaloAlpha,
+    },
+    {
+      token: "--shared-success-strong-halo-alpha",
+      label: "Halo de foco do sucesso forte (transparência)",
+      keyPath: "SHARED_COLORS.formulas.successStrongHaloAlpha",
+      format: (v) => `${v}%`,
+      pick: (sh) => sh.formulas.successStrongHaloAlpha,
+    },
+    {
+      token: "--shared-skeleton-alpha",
+      label: "Esqueleto de carregamento (opacidade)",
+      keyPath: "SHARED_COLORS.formulas.skeletonAlpha",
+      format: (v) => `${v}%`,
+      pick: (sh) => sh.formulas.skeletonAlpha,
     },
     {
       token: "--shared-background-mix",

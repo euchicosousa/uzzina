@@ -722,7 +722,7 @@ export function FileManagerDialog({
               />
             )}
             <div
-              className={cn(dropActive && "bg-primary/5")}
+              className={cn(dropActive && "bg-card")}
               onDragOver={(event) => {
                 if (!isExternalDrop(event)) return;
                 event.preventDefault();

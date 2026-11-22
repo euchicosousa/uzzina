@@ -52,7 +52,7 @@ export function UAvatarUpload({
         image={image}
         size="2xl"
       />
-      <span className="absolute inset-0 flex items-center justify-center rounded-full bg-foreground/40 text-background opacity-0 transition group-hover/button:opacity-100 group-focus-visible/button:opacity-100">
+      <span className="absolute inset-0 flex items-center justify-center rounded-full image-icon opacity-0 transition group-hover/button:opacity-100 group-focus-visible/button:opacity-100">
         <UploadIcon className="size-6 opacity-100" />
       </span>
     </CloudinaryUpload>

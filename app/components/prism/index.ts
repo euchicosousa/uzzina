@@ -41,10 +41,6 @@ export {
 } from "./button-group";
 export {
   PrismCombobox,
-  PrismComboboxChip,
-  PrismComboboxChipList,
-  PrismComboboxChips,
-  PrismComboboxChipsInput,
   PrismComboboxCollection,
   PrismComboboxContent,
   PrismComboboxEmpty,

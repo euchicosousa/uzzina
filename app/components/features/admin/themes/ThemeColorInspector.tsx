@@ -116,8 +116,13 @@ function computeModeCardColor(
 ): string {
   const bg = palette[mode].bg;
   const delta = getEffectiveDelta(palette, mode, deltaKey);
+  // The floating border is relative to the popover, not to the page background.
+  const base =
+    deltaKey === "popoverBorderLDelta"
+      ? Math.max(0, Math.min(1, bg.l + palette[mode].popoverLDelta))
+      : bg.l;
   return formatOklchString({
-    l: Math.max(0, Math.min(1, bg.l + delta)),
+    l: Math.max(0, Math.min(1, base + delta)),
     c: bg.c,
     h: bg.h,
   });
@@ -277,8 +282,9 @@ export function ThemeColorInspector({
       children: (
         <>
           <p className="text-base text-secondary-foreground">
-            Quanto a luz do fundo sobe (+) ou desce (−). A cor e a saturação vêm
-            do Fundo.
+            {opts.deltaKey === "popoverBorderLDelta"
+              ? "Quanto a luz do Flutuante sobe (+) ou desce (−). A cor e a saturação vêm do Flutuante."
+              : "Quanto a luz do fundo sobe (+) ou desce (−). A cor e a saturação vêm do Fundo."}
           </p>
           {MODES.map(({ mode, title }) => (
             <ValueGroup
@@ -695,6 +701,13 @@ export function ThemeColorInspector({
               hint: "Menus, diálogos e caixas de opção",
               deltaKey: "popoverLDelta",
               targetId: "popover",
+            })}
+            {deltaItem({
+              id: "popoverBorder",
+              label: "Borda de flutuante",
+              hint: "Linha de menus, diálogos e dicas",
+              deltaKey: "popoverBorderLDelta",
+              targetId: "popoverBorder",
             })}
             {deltaItem({
               id: "card",
@@ -1578,6 +1591,69 @@ export function ThemeColorInspector({
                   value={getFormulaValue(shared, "ringHaloAlpha", mode)}
                 />
               )),
+            })}
+            {formulaItem({
+              id: "successStrongHalo",
+              label: "Sucesso forte · halo de foco",
+              hint: "Sucesso forte com transparência",
+              swatches: (
+                <SwatchPair
+                  dark={{
+                    backgroundColor: mix(
+                      strongColor("dark"),
+                      getFormulaValue(shared, "successStrongHaloAlpha", "dark"),
+                      palette.dark.bg,
+                    ),
+                  }}
+                  light={{
+                    backgroundColor: mix(
+                      strongColor("light"),
+                      getFormulaValue(
+                        shared,
+                        "successStrongHaloAlpha",
+                        "light",
+                      ),
+                      palette.light.bg,
+                    ),
+                  }}
+                />
+              ),
+              children: numberSets([
+                formulaSpec(
+                  "successStrongHaloAlpha",
+                  "Transparência",
+                  0,
+                  100,
+                  1,
+                  percent,
+                ),
+              ]),
+            })}
+            {formulaItem({
+              id: "skeleton",
+              label: "Esqueleto de carregamento",
+              hint: "Texto com transparência sobre o fundo",
+              swatches: (
+                <SwatchPair
+                  dark={{
+                    backgroundColor: mix(
+                      getPaletteFg(palette, "dark"),
+                      getFormulaValue(shared, "skeletonAlpha", "dark"),
+                      palette.dark.bg,
+                    ),
+                  }}
+                  light={{
+                    backgroundColor: mix(
+                      getPaletteFg(palette, "light"),
+                      getFormulaValue(shared, "skeletonAlpha", "light"),
+                      palette.light.bg,
+                    ),
+                  }}
+                />
+              ),
+              children: numberSets([
+                formulaSpec("skeletonAlpha", "Opacidade", 0, 100, 1, percent),
+              ]),
             })}
           </>,
         ),

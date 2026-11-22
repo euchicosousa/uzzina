@@ -408,7 +408,7 @@ function DashActionDetail({ actionId }: { actionId: string }) {
                 {action.instagram_caption}
               </div>
             ) : (
-              <div className="text-secondary-foreground/50 italic">
+              <div className="text-secondary-foreground italic">
                 Sem legenda criada
               </div>
             )}

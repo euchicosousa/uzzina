@@ -1,5 +1,4 @@
 import { eachDayOfInterval, endOfWeek, format, startOfWeek } from "date-fns";
-import type { CSSProperties } from "react";
 import { CalendarGrid } from "~/components/features/Calendar";
 import { PrismBadge } from "~/components/prism";
 import { UIcons } from "~/components/uzzina/UIcons";
@@ -82,22 +81,18 @@ export function PlanningPreview({
                     return (
                       <li
                         className={cn(
-                          "flex w-full max-w-24 min-w-0 flex-col items-center justify-center gap-1 rounded-xl border border-(--category-color)/50 bg-[color-mix(in_srgb,var(--category-color)_10%,transparent)] px-0.5 text-center text-(--category-ink) [--category-ink:color-mix(in_srgb,var(--category-color)_80%,black)] squircle dark:[--category-ink:color-mix(in_srgb,var(--category-color)_80%,white)]",
+                          "flex w-full max-w-24 min-w-0 flex-col items-center justify-center gap-1 rounded-xl border bg-card px-0.5 text-center squircle",
                           item.celebrationTitle ? "py-1.5" : "aspect-square",
                         )}
                         // biome-ignore lint/suspicious/noArrayIndexKey: placeholders have no persistent identity.
                         key={index}
-                        style={
-                          {
-                            "--category-color": category.color,
-                          } as CSSProperties
-                        }
                       >
                         <UIcons
                           className="size-5 shrink-0"
+                          color={category.color}
                           slug={category.slug}
                         />
-                        <span className="max-w-full truncate text-xs tracking-tight text-[color-mix(in_srgb,var(--category-ink)_75%,var(--foreground))]">
+                        <span className="max-w-full truncate text-xs tracking-tight text-secondary-foreground">
                           {PLANNING_FORMAT_LABELS[item.format]}
                         </span>
                         {item.celebrationTitle && (

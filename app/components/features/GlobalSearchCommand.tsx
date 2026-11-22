@@ -680,7 +680,7 @@ function GlobalSearchContent({
                 {"primaryColor" in command ? (
                   <span
                     aria-hidden="true"
-                    className="size-4 shrink-0 rounded-lg border border-foreground/10 squircle"
+                    className="size-4 shrink-0 rounded-lg border squircle"
                     style={{ backgroundColor: command.primaryColor }}
                   />
                 ) : (
