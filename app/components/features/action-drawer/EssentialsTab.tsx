@@ -199,7 +199,7 @@ export function EssentialsTab({
       <div className="shrink-0" data-drawer-focus="title">
         <ActionTitleInput
           autoFocus={autoFocus}
-          className="font-medium tracking-[-5%] transition-colors focus-within:bg-input"
+          className="font-medium tracking-[-5%] transition-colors"
           onBlur={async (title) => {
             if (onTextCommit) onTextCommit("title", title);
             else setRawAction((prev) => ({ ...prev, title }));
@@ -372,7 +372,7 @@ export function EssentialsTab({
           <Tiptap
             key={descriptionVersion}
             className={cn(
-              "h-full min-h-50 w-full bg-popover [&_.tiptap]:transition-colors [&_.tiptap:focus]:bg-input",
+              "h-full min-h-50 w-full bg-popover [&_.tiptap]:transition-colors",
               isAIProcessing && "opacity-40",
             )}
             content={RawAction.description || ""}

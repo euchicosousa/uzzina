@@ -1,8 +1,13 @@
 # Histórico de tickets encerrados
 
-Consolidado em 04/11/2026. Esta é uma referência histórica; a fila vigente está na [lista ativa](../README.md). Reúne 87 documentos de tickets encerrados/aprovados e 11 da série C00–C10 substituída pela recuperação do Planejamento. Status antigos, pendências de publicação e limites de verificação foram preservados; a consolidação não certifica deploy nem valida novamente entregas.
+Consolidado em 04/11/2026; recebeu encerramentos posteriores, inclusive HOJE-06 em 22/11/2026. Esta é uma referência histórica; a fila vigente está na [lista ativa](../README.md). Reúne os tickets encerrados/aprovados e preserva os 11 registros da série C00–C10 substituída pela recuperação do Planejamento. Status antigos, pendências de publicação e limites de verificação foram preservados; a consolidação não certifica deploy nem valida novamente entregas.
 
 Os documentos completos abaixo substituem os antigos arquivos individuais. Nenhum conteúdo de ticket foi descartado. Os índices anteriores também foram preservados no final.
+
+## Encerramentos de 22/11/2026
+
+<a id="today-views-issues-06-timeline-keyboard-focus"></a>
+- [HOJE-06 · Simplificar o foco de teclado nas ações da Linha do tempo](../today-views/issues/06-timeline-keyboard-focus.md) — aprovado e encerrado pelo proprietário em 22/11. Três paradas de Tab por ação (ação inteira, alça esquerda, alça direita); setas movem a ação em passos de cinco minutos e os handles ajustam as extremidades. Typecheck, build e diff-check aprovados. Código local, sem publicação; proprietário aprovou o encerramento.
 
 ## Encerramentos de 19/11/2026
 
@@ -35,6 +40,7 @@ Os documentos completos abaixo substituem os antigos arquivos individuais. Nenhu
 
 - [visual-controls · 45 — Modo unstyled dos botões Prism](#visual-controls-issues-45-clean-unstyled-button-mode)
 - [today-focus · 01-remove-wrapper-focus](#today-focus-issues-01-remove-wrapper-focus)
+- [today-views · 06: Simplificar o foco de teclado nas ações da Linha do tempo](#today-views-issues-06-timeline-keyboard-focus)
 - [brand-holidays · 01-classify-holidays](#brand-holidays-issues-01-classify-holidays)
 - [safari-mobile · 20-landscape-space-advisory](#safari-mobile-issues-20-landscape-space-advisory)
 - [safari-mobile · 16-unify-action-footer-buttons](#safari-mobile-issues-16-unify-action-footer-buttons)

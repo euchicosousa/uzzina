@@ -50,7 +50,7 @@ export function HomeTodayView({
           <Link
             to="/app/today"
             search={{ date: format(currentDay, "yyyy-MM-dd") }}
-            className="underline-offset-4 outline-none squircle hover:underline focus-visible:underline"
+            className="underline-offset-4 outline-none squircle hover:underline"
           >
             {title}
           </Link>

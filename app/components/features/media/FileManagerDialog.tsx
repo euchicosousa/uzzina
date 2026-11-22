@@ -133,11 +133,13 @@ function SortableThumbnail({
   return (
     <div
       ref={setNodeRef}
+      data-focus-thumbnail=""
       style={style}
       className={cn(
         "group relative aspect-square overflow-hidden rounded-xl border bg-card squircle",
         maxWidth && "w-full justify-self-center",
-        selected && "outline-2 -outline-offset-2 outline-primary",
+        selected &&
+          "after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:border-2 after:border-primary",
         previewPanelId && "ring-2 ring-info ring-offset-2 ring-offset-popover",
         !onPreview && selecting && !locked && "cursor-pointer",
       )}
@@ -211,7 +213,7 @@ function SortableThumbnail({
         data-thumb-control
         aria-label={`Selecionar ${fileName}`}
         className={cn(
-          "absolute top-1 right-1 z-10 flex size-6 cursor-pointer items-center justify-center rounded-lg image-icon transition-opacity outline-none data-[disabled]:cursor-not-allowed data-[focus-visible]:ring-2 data-[focus-visible]:ring-white",
+          "absolute top-1 right-1 z-10 flex size-6 cursor-pointer items-center justify-center rounded-lg image-icon transition-opacity outline-none data-[disabled]:cursor-not-allowed",
           showSelectControl,
         )}
         isDisabled={locked}
@@ -230,8 +232,9 @@ function SortableThumbnail({
         <button
           aria-controls={previewPanelId}
           aria-label={`Visualizar ${fileName}`}
+          data-focus-thumbnail-control=""
           aria-pressed={Boolean(previewPanelId)}
-          className="block h-full w-full cursor-pointer focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+          className="block h-full w-full cursor-pointer"
           type="button"
           onClick={(event) => {
             if (!longPressed.current) onPreview(event.currentTarget);
@@ -242,7 +245,8 @@ function SortableThumbnail({
       ) : canOpen && !selecting ? (
         <a
           aria-label={`Abrir ${fileName}`}
-          className="block h-full w-full focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+          data-focus-thumbnail-control=""
+          className="block h-full w-full"
           href={url}
           rel="noopener noreferrer"
           target="_blank"

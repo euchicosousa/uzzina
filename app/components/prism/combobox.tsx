@@ -148,7 +148,7 @@ function ComboboxList<T extends object>({
   return (
     <ListBoxPrimitive
       className={cn(
-        "group/combobox-content no-scrollbar max-h-[inherit] scroll-py-1 overflow-y-auto overscroll-contain p-1 data-empty:p-0",
+        "group/combobox-content no-scrollbar max-h-[inherit] scroll-py-1 overflow-y-auto overscroll-contain p-1.5 data-empty:p-0",
         className,
       )}
       data-slot="combobox-list"
@@ -164,7 +164,7 @@ function ComboboxItem<T extends object>({
   return (
     <ListBoxItemPrimitive
       className={cn(
-        "relative flex min-h-7 w-full cursor-default items-center gap-2 rounded-xl py-1.5 pr-8 pl-2 text-sm outline-hidden select-none squircle data-disabled:pointer-events-none data-disabled:opacity-50 data-focused:bg-secondary data-focused:text-foreground data-highlighted:bg-secondary data-highlighted:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-4",
+        "relative flex min-h-7 w-full cursor-default items-center gap-2 rounded-xl py-1.5 pr-8 pl-2 text-sm outline-hidden select-none squircle data-disabled:pointer-events-none data-disabled:opacity-50 data-hovered:bg-secondary [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       data-slot="combobox-item"

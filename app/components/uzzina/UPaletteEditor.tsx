@@ -298,7 +298,7 @@ function SortablePaletteItem({
           className={cn(
             "h-8 min-w-0 flex-1 font-mono text-xs uppercase",
             item.isInvalid &&
-              "border-error bg-error-background text-error ring-3 ring-error-background focus-visible:border-error",
+              "border-error bg-error-background text-error ring-3 ring-error-background",
           )}
           disabled={disabled}
           id={`hex_${id}`}

@@ -141,7 +141,7 @@ export function NotificationsPage() {
                     )}
                   />
                   <PrismButton
-                    className="flex min-w-0 flex-1 flex-col items-start gap-1.5 rounded-md text-left font-normal outline-none squircle focus-visible:bg-secondary"
+                    className="flex min-w-0 flex-1 flex-col items-start gap-1.5 rounded-md text-left font-normal outline-none squircle"
                     onPress={() => openAction(notification)}
                     variant="unstyled"
                   >

@@ -13,7 +13,6 @@ import {
   type PointerEvent as ReactPointerEvent,
   type RefObject,
 } from "react";
-import { Focusable } from "react-aria-components";
 import { toast } from "sonner";
 import { ActionItem } from "~/components/features/ActionItem";
 import {
@@ -148,10 +147,10 @@ function TimelineActionBar({
 
   const leftPx = displayStartMin * pxPerMinute;
   const widthPx = displayDurationMin * pxPerMinute;
-  // Keep the active handle mounted if a resize crosses the visibility threshold.
-  const showHandles = item.durationMin * pxPerMinute >= 16 || preview !== null;
-  const handleSize =
-    "w-[min(10px,25%)] pointer-coarse:hidden focus-visible:ring-inset";
+  // Pointer handles stay available to keyboard users at every zoom level.
+  // Fine pointers reveal them on hover only when the bar has room for them.
+  const showPointerHandles = item.durationMin * pxPerMinute >= 16;
+  const handleSize = "w-[min(10px,25%)]";
 
   const startPointerGesture = (
     e: ReactPointerEvent<HTMLElement>,
@@ -390,9 +389,7 @@ function TimelineActionBar({
     e.preventDefault();
     const delta =
       e.key === "ArrowLeft" ? -TIMELINE_STEP_MINUTES : TIMELINE_STEP_MINUTES;
-    const next = e.shiftKey
-      ? resizeTimelineDuration(item.startMin, item.durationMin, delta)
-      : moveTimelineInterval(item.startMin, item.durationMin, delta);
+    const next = moveTimelineInterval(item.startMin, item.durationMin, delta);
     if (
       next.startMin !== item.startMin ||
       next.durationMin !== item.durationMin
@@ -466,53 +463,51 @@ function TimelineActionBar({
         </div>
       )}
 
-      {showHandles && (
-        <button
-          aria-label={`Ajustar início de ${item.action.title}`}
-          className={cn(
-            "absolute inset-y-0 left-0 z-20 flex cursor-ew-resize touch-none items-center justify-center rounded-l-xl opacity-0 transition-opacity group-focus-within/bar:opacity-100 group-hover/bar:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-            handleSize,
-            isResizingStart && "opacity-100",
-          )}
-          onClick={(e) => e.stopPropagation()}
-          onKeyDown={handleResizeStartKeyDown}
-          onPointerDown={(e) => startPointerGesture(e, "resize-start")}
-          type="button"
-        >
-          <span className="h-4 w-0.5 max-w-full rounded-full bg-foreground/50" />
-        </button>
-      )}
-
       <PrismTooltip delay={300} label={tooltipText} placement="top">
-        <Focusable>
-          <div className="w-full">
-            <ActionItem
-              action={item.action}
-              className="w-full"
-              onClick={onOpenAction}
-              displayFlags={{ showLate: true, showSprint: true }}
-              variant={VARIANT.timeline}
-            />
-          </div>
-        </Focusable>
+        <div className="w-full">
+          <ActionItem
+            action={item.action}
+            className="w-full"
+            onClick={onOpenAction}
+            displayFlags={{ showLate: true, showSprint: true }}
+            variant={VARIANT.timeline}
+          />
+        </div>
       </PrismTooltip>
 
-      {showHandles && (
-        <button
-          aria-label={`Ajustar duração de ${item.action.title}`}
-          className={cn(
-            "absolute inset-y-0 right-0 z-20 flex cursor-ew-resize touch-none items-center justify-center rounded-r-xl opacity-0 transition-opacity group-focus-within/bar:opacity-100 group-hover/bar:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-            handleSize,
-            isResizingEnd && "opacity-100",
-          )}
-          onClick={(e) => e.stopPropagation()}
-          onKeyDown={handleResizeEndKeyDown}
-          onPointerDown={(e) => startPointerGesture(e, "resize-end")}
-          type="button"
-        >
-          <span className="h-4 w-0.5 max-w-full rounded-full bg-foreground/50" />
-        </button>
-      )}
+      <button
+        aria-label={`Ajustar início de ${item.action.title}`}
+        className={cn(
+          "pointer-events-none absolute inset-y-0 left-0 z-20 flex cursor-ew-resize touch-none items-center justify-center rounded-l-xl border border-transparent opacity-0 transition-opacity focus-visible:pointer-events-auto focus-visible:opacity-100",
+          handleSize,
+          showPointerHandles &&
+            "pointer-fine:group-hover/bar:pointer-events-auto pointer-fine:group-hover/bar:opacity-100",
+          isResizingStart && "pointer-events-auto opacity-100",
+        )}
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={handleResizeStartKeyDown}
+        onPointerDown={(e) => startPointerGesture(e, "resize-start")}
+        type="button"
+      >
+        <span className="h-4 w-0.5 max-w-full rounded-full bg-foreground/50" />
+      </button>
+
+      <button
+        aria-label={`Ajustar duração de ${item.action.title}`}
+        className={cn(
+          "pointer-events-none absolute inset-y-0 right-0 z-20 flex cursor-ew-resize touch-none items-center justify-center rounded-r-xl border border-transparent opacity-0 transition-opacity focus-visible:pointer-events-auto focus-visible:opacity-100",
+          handleSize,
+          showPointerHandles &&
+            "pointer-fine:group-hover/bar:pointer-events-auto pointer-fine:group-hover/bar:opacity-100",
+          isResizingEnd && "pointer-events-auto opacity-100",
+        )}
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={handleResizeEndKeyDown}
+        onPointerDown={(e) => startPointerGesture(e, "resize-end")}
+        type="button"
+      >
+        <span className="h-4 w-0.5 max-w-full rounded-full bg-foreground/50" />
+      </button>
     </div>
   );
 }

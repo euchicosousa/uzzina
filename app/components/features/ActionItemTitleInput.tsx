@@ -42,7 +42,7 @@ export function ActionItemTitleInput({
           ref={inputRef}
           aria-label="Editar título da ação"
           className={cn(
-            "-mx-1.5 -my-0.5 w-full px-1.5 py-0.5 text-[length:inherit] leading-[inherit] text-foreground outline-none focus:outline-none",
+            "-mx-1.5 -my-0.5 w-full px-1.5 py-0.5 text-[length:inherit] leading-[inherit] text-foreground outline-none",
             InputButtonClassName,
           )}
           onBlur={() => {
@@ -95,7 +95,7 @@ export function ActionItemTitleInput({
         <button
           type="button"
           className={cn(
-            "w-full cursor-text text-left leading-[inherit] focus-visible:underline",
+            "w-full cursor-text text-left leading-[inherit]",
             multiline
               ? "line-clamp-2 wrap-break-word whitespace-normal"
               : "truncate",

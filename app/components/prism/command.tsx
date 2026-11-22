@@ -190,7 +190,7 @@ function CommandList<T extends object>({ className, ...props }: MenuProps<T>) {
     <Menu
       {...props}
       className={cn(
-        "no-scrollbar max-h-72 scroll-py-2 overflow-x-hidden overflow-y-auto p-1 outline-none",
+        "no-scrollbar max-h-72 scroll-py-2 overflow-x-hidden overflow-y-auto p-1.5 outline-none",
         className,
       )}
       data-slot="command-list"
@@ -218,7 +218,7 @@ function CommandGroup<T extends object>({
   return (
     <MenuSection
       className={cn(
-        "space-y-1 overflow-hidden p-0 text-foreground **:[[cmdk-group-heading]]:px-3 **:[[cmdk-group-heading]]:py-1.5 **:[[cmdk-group-heading]]:text-xs **:[[cmdk-group-heading]]:font-medium **:[[cmdk-group-heading]]:text-secondary-foreground",
+        "space-y-1 p-0 text-foreground **:[[cmdk-group-heading]]:px-3 **:[[cmdk-group-heading]]:py-1.5 **:[[cmdk-group-heading]]:text-xs **:[[cmdk-group-heading]]:font-medium **:[[cmdk-group-heading]]:text-secondary-foreground",
         className,
       )}
       data-slot="command-group"
@@ -273,7 +273,7 @@ function CommandItem<T extends object>({
         onAction?.({ shiftKey });
       }}
       className={cn(
-        "group/command-item relative flex h-8 min-h-7 cursor-default items-center gap-2 rounded-xl px-3 outline-hidden select-none squircle data-focused:bg-secondary data-focused:text-foreground data-[checked=true]:bg-secondary data-[checked=true]:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-[selected=true]:bg-secondary data-[selected=true]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-5",
+        "group/command-item relative flex h-8 min-h-7 cursor-default items-center gap-2 rounded-xl px-3 outline-hidden select-none squircle data-hovered:bg-secondary data-[checked=true]:bg-secondary data-[checked=true]:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-[selected=true]:bg-secondary data-[selected=true]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-5",
         className,
       )}
       data-checked={selected ? "true" : undefined}

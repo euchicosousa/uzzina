@@ -116,12 +116,12 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     section: "tokens",
     keywords: ["foco", "focus", "ring", "anel", "outline", "teclado", "tab"],
     subsections: [
-      { id: "focus-outer", label: "Anel externo (padrão)" },
-      { id: "focus-inset", label: "Anel por dentro (ring-inset)" },
-      { id: "focus-background", label: "Foco por fundo" },
-      { id: "focus-none", label: "Sem anel de propósito" },
+      { id: "focus-outer", label: "Foco nos controles" },
+      { id: "focus-inset", label: "Região rolável" },
+      { id: "focus-background", label: "Menus, listas, abas e hora" },
+      { id: "focus-none", label: "Links e edição de texto" },
       { id: "focus-selection", label: "Estados de seleção" },
-      { id: "focus-global", label: "Fallback global (outline)" },
+      { id: "focus-global", label: "Regra global" },
     ],
   },
   {

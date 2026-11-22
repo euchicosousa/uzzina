@@ -157,8 +157,6 @@ export function ActionItem({
     border-action-top-border
     z-0
     ring ring-action-ring
-    focus-within:outline-2
-    focus-within:outline-primary
     hover:z-10
     hover:shadow-action-hover
     hover:bg-action-hover

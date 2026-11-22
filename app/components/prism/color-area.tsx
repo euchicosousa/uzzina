@@ -23,7 +23,7 @@ function PrismColorArea({
   return (
     <ColorAreaPrimitive
       className={cn(
-        "relative h-36 w-full shrink-0 cursor-crosshair overflow-hidden rounded-2xl squircle",
+        "relative h-36 w-full shrink-0 cursor-crosshair rounded-2xl squircle",
         className,
       )}
       colorSpace={colorSpace}
@@ -35,7 +35,7 @@ function PrismColorArea({
     >
       <ColorThumbPrimitive
         className={cn(
-          "box-border size-4 rounded-full border-2 border-white shadow-md transition-transform outline-none data-dragging:scale-125 data-[focus-visible]:ring-3 data-[focus-visible]:ring-ring-halo",
+          "box-border size-4 rounded-full border-2 border-white shadow-md transition-transform outline-none data-dragging:scale-125",
           thumbClassName,
         )}
       />

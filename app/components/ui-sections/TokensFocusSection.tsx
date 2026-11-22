@@ -184,18 +184,14 @@ export function TokensFocusSection() {
           {/* 1. Anel externo (padrão) */}
           <FocusFamily
             id="focus-outer"
-            title="Anel externo (padrão)"
-            rule="Todo foco por anel: 3px, ring-ring a 30%, com borda border-ring a 60% quando o elemento tem borda. Destrutivo usa a mesma lógica toda em vermelho. É o padrão do PrismButton."
-            classes="outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring-halo (também focus-within: e data-[focus-visible]:; destrutivo: focus-visible:border-error/60 focus-visible:ring-error/30)"
+            title="Foco nos controles"
+            rule="O foco usa anel primário sólido de 3 px sem afastamento. Campos compostos aplicam o indicador ao alvo visível."
+            classes="outline: 3px solid var(--primary); outline-offset: 0;"
             usedBy={[
-              "Prism: button, input, textarea, select, toggle, checkbox, radio-group, calendar (dia), color-field, time-field, date-range-picker, input-group, combobox, badge (borda border-ring + anel)",
-              "Prism: slider, color-area e color-slider (thumb: só anel ring-3 ring-ring-halo em data-[focus-visible])",
-              "Prism: button e badge destrutivos (border-error/60 + ring-error/30)",
               "features/ComboboxTrigger.tsx (ghost icon-lg no rodapé da gaveta: anel padrão do PrismButton)",
               "features/action-drawer/ActionDatePicker.tsx (data da gaveta: ghost sm com anel padrão do PrismButton)",
               "features/PartnersCombobox.tsx e busca global (filtro de parceiros: foco padrão do Prism)",
               "features/media/FileManagerDialog.tsx (alça e caixa de seleção, classe image-icon)",
-              "features/ActionItem.tsx (item da Ação: focus-within:outline-2 outline-primary, exceção aprovada)",
               "routes/app/admin/partner/$slug.tsx (editores de texto: focus-within)",
             ]}
           >
@@ -300,7 +296,7 @@ export function TokensFocusSection() {
                     >
                       <button
                         aria-label="Réplica da alça"
-                        className="absolute top-1 left-1 flex size-6 cursor-grab touch-none items-center justify-center rounded-lg image-icon outline-none focus-visible:ring-2 focus-visible:ring-white active:cursor-grabbing"
+                        className="absolute top-1 left-1 flex size-6 cursor-grab touch-none items-center justify-center rounded-lg image-icon outline-none active:cursor-grabbing"
                         type="button"
                       >
                         <svg
@@ -319,7 +315,7 @@ export function TokensFocusSection() {
                       </button>
                       <button
                         aria-label="Réplica da caixa de seleção"
-                        className="absolute top-1 right-1 flex size-6 items-center justify-center rounded-lg image-icon outline-none focus-visible:ring-2 focus-visible:ring-white"
+                        className="absolute top-1 right-1 flex size-6 items-center justify-center rounded-lg image-icon outline-none"
                         type="button"
                       >
                         <svg
@@ -342,7 +338,7 @@ export function TokensFocusSection() {
               label="Editor de texto (focus-within)"
               source="Réplica de routes/app/admin/partner/$slug.tsx"
             >
-              <div className="min-h-25 w-72 overflow-hidden rounded-2xl border border-transparent bg-input text-base transition-[color,box-shadow] squircle focus-within:border-ring focus-within:ring-3 focus-within:ring-ring-halo md:text-sm">
+              <div className="min-h-25 w-72 overflow-hidden rounded-2xl border border-transparent bg-input text-base transition-[color,box-shadow] squircle md:text-sm">
                 <textarea
                   aria-label="Réplica do editor admin"
                   className="h-full min-h-25 w-full resize-none bg-transparent p-3 outline-none"
@@ -354,7 +350,7 @@ export function TokensFocusSection() {
               label="Item da Ação (focus-within)"
               source="Réplica de features/ActionItem.tsx"
             >
-              <div className="w-72 rounded-2xl border-t border-action-top-border bg-card p-3 text-sm shadow-action ring ring-action-ring transition-[color,background-color,border-color,box-shadow,padding] duration-500 focus-within:outline-2 focus-within:outline-primary hover:shadow-action-hover motion-reduce:transition-none">
+              <div className="w-72 rounded-2xl border-t border-action-top-border bg-card p-3 text-sm shadow-action ring ring-action-ring transition-[color,background-color,border-color,box-shadow,padding] duration-500 hover:shadow-action-hover motion-reduce:transition-none">
                 <input
                   aria-label="Réplica do item da Ação"
                   className="w-full bg-transparent outline-none"
@@ -387,7 +383,7 @@ export function TokensFocusSection() {
             >
               <PrismInput
                 aria-label="Campo de cor inválido"
-                className="h-8 w-32 bg-error-background font-mono tracking-wider text-error uppercase ring-error focus-visible:border-error focus-visible:ring-error-background"
+                className="h-8 w-32 bg-error-background font-mono tracking-wider text-error uppercase ring-error"
                 defaultValue="#ZZZZZZ"
               />
             </Example>
@@ -415,9 +411,9 @@ export function TokensFocusSection() {
           {/* 2. Anel por dentro (ring-inset) */}
           <FocusFamily
             id="focus-inset"
-            title="Anel por dentro (ring-inset)"
-            rule="Mesmo anel de 3px a 30%, desenhado para dentro. Usado onde um contêiner com overflow cortaria o anel externo. Regiões roláveis com filhos focáveis (Kanban, perfil, célula do dia) e o carrossel do Instagram deixaram de receber foco (03/11/2026); resta a coluna de campos do comparador de conflito, que não tem filhos focáveis e exige tabIndex no Safari."
-            classes="outline-none focus-visible:ring-3 focus-visible:ring-ring-halo focus-visible:ring-inset"
+            title="Região rolável"
+            rule="A coluna do comparador de conflito continua acessível pelo teclado e recebe o anel padrão."
+            classes="outline: 3px solid var(--primary); outline-offset: 0;"
             usedBy={[
               "features/action-drawer/conflict-comparison.tsx (coluna de campos, lista só de texto)",
             ]}
@@ -427,7 +423,7 @@ export function TokensFocusSection() {
               source="Réplica de features/action-drawer/conflict-comparison.tsx"
             >
               <div
-                className="h-24 w-72 overflow-y-auto overscroll-contain px-3 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring-halo focus-visible:ring-inset"
+                className="h-24 w-72 overflow-y-auto overscroll-contain px-3 text-sm outline-none"
                 tabIndex={0}
               >
                 Lista de campos alterados, somente texto. Role com o teclado
@@ -439,16 +435,13 @@ export function TokensFocusSection() {
           {/* 3. Foco por fundo */}
           <FocusFamily
             id="focus-background"
-            title="Foco por fundo"
-            rule="Exceção aprovada: o foco muda a cor de fundo (e a barra/linha do item), sem anel. Vale para itens de lista/menu/select/command/combobox (bg-secondary), abas e botão Fechar da gaveta."
-            classes="focus-visible:bg-secondary | data-focused:bg-secondary | data-[focus-visible]:bg-secondary | focus:bg-error-background | focus:bg-primary"
+            title="Menus, listas, abas e hora"
+            rule="O anel mostra o foco no item ativo. Fundos de seleção e hover são estados independentes."
+            classes="outline: 3px solid var(--primary); outline-offset: 0;"
             usedBy={[
               "Prism: dropdown-menu, select, combobox, command (itens: secondary com texto foreground)",
-              "Prism: tabs (underline e drawer: bg-secondary)",
               "Prism: time-field (segmento: bg-primary)",
-              "features/action-drawer/ActionFormDrawer.tsx (botão Fechar: bg-secondary)",
               "layout/Header.tsx (Sair: bg-error-background)",
-              "features/HelpPage.tsx e routes/app/notifications.tsx (linhas: bg-secondary)",
             ]}
           >
             <Example
@@ -461,10 +454,7 @@ export function TokensFocusSection() {
                 <PrismMenuContent className="w-56" placement="bottom start">
                   <PrismMenuItem id="item-1">Item comum</PrismMenuItem>
                   <PrismMenuItem id="item-2">Outro item</PrismMenuItem>
-                  <PrismMenuItem
-                    className="text-error focus:bg-error-background focus:text-error"
-                    id="sair"
-                  >
+                  <PrismMenuItem className="text-error" id="sair">
                     Sair
                   </PrismMenuItem>
                 </PrismMenuContent>
@@ -553,7 +543,7 @@ export function TokensFocusSection() {
             >
               <button
                 aria-label="Réplica fechar"
-                className="flex cursor-pointer items-center justify-center border-b px-3 py-3 text-sm font-medium outline-none focus-visible:bg-secondary sm:p-5"
+                className="flex cursor-pointer items-center justify-center border-b px-3 py-3 text-sm font-medium outline-none sm:p-5"
                 type="button"
               >
                 Fechar
@@ -565,7 +555,7 @@ export function TokensFocusSection() {
               source="Réplica de features/HelpPage.tsx"
             >
               <button
-                className="w-56 rounded-md px-2 py-1.5 text-left text-sm outline-none squircle hover:bg-secondary focus-visible:bg-secondary"
+                className="w-56 rounded-md px-2 py-1.5 text-left text-sm outline-none squircle hover:bg-secondary"
                 type="button"
               >
                 Linha de lista
@@ -576,14 +566,12 @@ export function TokensFocusSection() {
           {/* 4. Sem anel de propósito */}
           <FocusFamily
             id="focus-none"
-            title="Sem anel de propósito"
-            rule="Exceção aprovada: o próprio campo se apresenta como edição (fundo/cursor) ou o anel fica no contêiner. Foco discreto: sublinhado (links e gatilhos de texto), fundo ou nenhum."
-            classes="ring-0 | focus:ring-0 focus:outline-none | outline-none hover:underline focus-visible:underline | sem classe de foco"
+            title="Links e edição de texto"
+            rule="Links, botões simples e campos de edição recebem o anel padrão."
+            classes="outline: 3px solid var(--primary); outline-offset: 0;"
             usedBy={[
-              "features/ActionItemTitleInput.tsx (título inline: fundo muda para bg-secondary)",
               "features/ActionComments/CommentInput.tsx (comentário)",
-              "features/home/HomeCalendarView.tsx e HomeTodayView.tsx (link do dia: sublinhado, sem anel)",
-              "Prism: accordion (gatilho: hover:underline focus-visible:underline)",
+              "Prism: accordion (gatilho: hover:underline)",
               "Prism: button variante unstyled e input-group (o anel fica no grupo)",
             ]}
           >
@@ -593,14 +581,14 @@ export function TokensFocusSection() {
             >
               <input
                 aria-label="Réplica do título inline"
-                className="w-56 rounded-md border-0 bg-secondary px-1.5 py-0.5 text-sm text-foreground ring-0 transition-colors outline-none squircle focus:bg-secondary focus:ring-0 focus:outline-none"
+                className="w-56 rounded-md border-0 bg-secondary px-1.5 py-0.5 text-sm text-foreground ring-0 transition-colors outline-none squircle"
                 defaultValue="Título da ação"
               />
             </Example>
             <Example label="Comentário" source="Prism real">
               <PrismTextarea
                 aria-label="Exemplo de comentário"
-                className="min-h-20 w-56 rounded-none border-0 p-0 text-sm shadow-none focus:border-0 focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
+                className="min-h-20 w-56 rounded-none border-0 p-0 text-sm shadow-none"
                 placeholder="Escreva um comentário"
               />
             </Example>
@@ -609,7 +597,7 @@ export function TokensFocusSection() {
               source="Réplica de features/home/HomeCalendarView.tsx"
             >
               <a
-                className="block rounded-sm underline-offset-4 outline-none squircle hover:underline focus-visible:underline"
+                className="block rounded-sm underline-offset-4 outline-none squircle hover:underline"
                 href="#tokens-focus"
               >
                 Link do dia
@@ -665,9 +653,9 @@ export function TokensFocusSection() {
           {/* 6. Fallback global */}
           <FocusFamily
             id="focus-global"
-            title="Fallback global (outline)"
-            rule="Todo elemento que não define o próprio foco e não usa outline-none ganha um anel único: outline sólido de 3px, offset 0, na cor outline-ring a 30% (sem folga branca)."
-            classes=":focus-visible { outline-style: solid; outline-width: 3px; outline-offset: 0 } + * { @apply outline-ring/30 } (app/tailwind.css)"
+            title="Regra global"
+            rule="O CSS aplica o anel primário sólido de 3 px com offset zero ao receber foco visível."
+            classes="outline: 3px solid var(--primary); outline-offset: 0;"
             usedBy={["app/tailwind.css (camada base, todos os elementos)"]}
           >
             <Example

@@ -196,7 +196,7 @@ export function ClientCalendar<
                         <PrismButton
                           key={action.id}
                           className={cn(
-                            "w-full rounded-xl px-1.5 py-1 text-left font-normal transition-colors squircle hover:bg-secondary focus-visible:ring-3 focus-visible:ring-ring-halo",
+                            "w-full rounded-xl px-1.5 py-1 text-left font-normal transition-colors squircle hover:bg-secondary",
                             view === "week" && "px-2 py-1.5",
                           )}
                           onPress={() => onActionClick(action)}

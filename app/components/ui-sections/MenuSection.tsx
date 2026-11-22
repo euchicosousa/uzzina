@@ -152,7 +152,7 @@ function MenuPlayground() {
               <span>Arquivar</span>
             </PrismMenuItem>
             <PrismMenuItem
-              className="text-error focus:text-error"
+              className="text-error"
               id="delete"
               onAction={() => toast.warning("Excluir ação")}
             >

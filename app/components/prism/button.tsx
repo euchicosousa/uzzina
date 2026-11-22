@@ -30,13 +30,13 @@ const buttonVariantClasses = {
   ghost:
     "bg-clip-border hover:bg-secondary border-transparent aria-expanded:bg-secondary aria-expanded:hover:bg-secondary-hover",
   "ghost-error":
-    "bg-transparent border-transparent hover:bg-error-background hover:text-error-foreground hover:border-error focus-visible:border-error focus-visible:ring-error-background focus-visible:text-error-foreground focus-visible:bg-error-background dark:hover:bg-error-background dark:focus-visible:bg-error-background",
+    "bg-transparent border-transparent hover:bg-error-background hover:text-error-foreground hover:border-error dark:hover:bg-error-background",
   error:
-    "bg-error-background text-error-foreground hover:bg-error-background border-error focus-visible:border-error focus-visible:ring-error-background dark:bg-error-background dark:hover:bg-error-background",
+    "bg-error-background text-error-foreground hover:bg-error-background border-error dark:bg-error-background dark:hover:bg-error-background",
   warning:
-    "bg-warning-background text-warning-foreground border-warning-background hover:bg-warning-background focus-visible:border-warning focus-visible:ring-warning-background",
+    "bg-warning-background text-warning-foreground border-warning-background hover:bg-warning-background",
   success:
-    "bg-success-strong border-success-strong text-success-strong-foreground hover:bg-success-strong-hover focus-visible:border-success-strong focus-visible:ring-success-strong-halo",
+    "bg-success-strong border-success-strong text-success-strong-foreground hover:bg-success-strong-hover",
   link: "text-foreground underline-offset-4 hover:underline border-transparent",
   unstyled: "",
 } as const;
@@ -50,7 +50,7 @@ const buttonSelectedClasses = {
     "data-selected:border-primary data-selected:bg-primary data-selected:text-primary-foreground data-selected:hover:border-primary-hover data-selected:hover:bg-primary-hover",
 } as const;
 const styledButtonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-2xl border bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring-halo active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-error aria-invalid:ring-error-background [&_svg]:pointer-events-none [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5",
+  "group/button inline-flex shrink-0 items-center justify-center rounded-2xl border bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-error aria-invalid:ring-error-background [&_svg]:pointer-events-none [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5",
   {
     variants: {
       variant: buttonVariantClasses,

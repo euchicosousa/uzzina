@@ -116,7 +116,7 @@ export function HomeCalendarView({
               to="/app/today"
               search={{ date: format(day, "yyyy-MM-dd") }}
               aria-label={`Ver ações de ${format(day, "dd/MM/yyyy")}`}
-              className="block rounded-sm underline-offset-4 outline-none squircle hover:underline focus-visible:underline"
+              className="block rounded-sm underline-offset-4 outline-none squircle hover:underline"
             >
               {label}
             </Link>

@@ -60,7 +60,7 @@
   --border: oklch(from var(--background) calc(l + var(--border-l-delta)) c h);
   --input: oklch(from var(--background) calc(l + var(--input-l-delta)) c h);
 
-  /* Accent: palette color (today a copy of primary); the focus ring uses it. */
+  /* Accent: palette color (today a copy of primary). */
   --accent: var(
     --accent-override,
     oklch(var(--primary-l) var(--primary-c) var(--primary-h))
@@ -585,13 +585,7 @@ html[data-dragging-item] * {
 
 @layer base {
   * {
-    @apply border-border outline-ring/30;
-  }
-
-  :focus-visible {
-    outline-style: solid;
-    outline-width: 3px;
-    outline-offset: 0;
+    @apply border-border;
   }
 
   body {
@@ -606,6 +600,56 @@ html[data-dragging-item] * {
   html {
     @apply font-sans;
   }
+}
+
+/* The focus indicator belongs to the visible control. React Aria may keep
+   DOM focus on a hidden input or on the field that owns a list of options. */
+:focus-visible:where(
+  :not(
+    [tabindex="-1"]:not(
+      [role="option"],
+      [role="menuitem"],
+      [role="menuitemcheckbox"],
+      [role="menuitemradio"],
+      [role="tab"],
+      [role="spinbutton"]
+    ),
+    [data-slot="input-group-control"],
+    [data-slot="checkbox"] input,
+    [data-slot="radio"] input,
+    [data-slot="slider-thumb"] input,
+    [data-slot="color-area"] input,
+    [data-slot="color-slider"] input,
+    [data-focus-calendar-cell],
+    [data-focus-calendar-cell] *,
+    [data-focus-thumbnail-control],
+    [data-thumb-control] input,
+    [data-focus-editor] .tiptap
+  )
+),
+:where(
+  [data-slot="input-group"]:has(
+    [data-slot="input-group-control"]:focus-visible
+  ),
+  [data-slot="checkbox"][data-focus-visible] [data-slot="checkbox-box"],
+  [data-slot="radio"][data-focus-visible] [data-slot="radio-dot"],
+  [data-slot="slider-thumb"][data-focus-visible],
+  [data-slot="color-area"] [data-focus-visible],
+  [data-slot="color-slider"] [data-focus-visible],
+  [data-focus-calendar-cell]:is(:focus-visible, [data-focus-visible])
+    [data-focus-calendar-target],
+  [data-focus-thumbnail]:has(> [data-focus-thumbnail-control]:focus-visible),
+  [data-thumb-control][data-focus-visible],
+  [data-focus-editor]:has(.tiptap:focus-visible),
+  [data-slot="command-item"][data-focus-visible],
+  [data-slot="combobox-item"][data-focus-visible],
+  [data-slot="select-item"][data-focus-visible],
+  [data-slot="dropdown-menu-item"][data-focus-visible],
+  [data-slot="dropdown-menu-sub-trigger"][data-focus-visible],
+  [role="tab"][data-focus-visible]
+) {
+  outline: 3px solid var(--primary);
+  outline-offset: 0;
 }
 
 @layer components {

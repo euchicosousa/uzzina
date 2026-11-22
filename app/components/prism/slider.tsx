@@ -76,7 +76,7 @@ export function PrismSliderThumb({
   return (
     <SliderThumbPrimitive
       className={cn(
-        "top-1/2 box-border size-5 rounded-full border-2 border-primary bg-background shadow-sm transition-transform outline-none data-disabled:cursor-not-allowed data-dragging:scale-110 data-[focus-visible]:ring-3 data-[focus-visible]:ring-ring-halo",
+        "top-1/2 box-border size-5 rounded-full border-2 border-primary bg-background shadow-sm transition-transform outline-none data-disabled:cursor-not-allowed data-dragging:scale-110",
         className,
       )}
       data-slot="slider-thumb"

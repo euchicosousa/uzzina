@@ -182,7 +182,7 @@ export function InstagramPreview({ files, compact }: InstagramPreviewProps) {
             variant="unstyled"
             onClick={() => scrollToSlide(i)}
             aria-label={`Ir para o slide ${i + 1}`}
-            className={`size-1.5 rounded-full drop-shadow-[0_1px_2px_rgb(0_0_0/0.55)] transition outline-none focus-visible:ring-3 focus-visible:ring-ring-halo ${
+            className={`size-1.5 rounded-full drop-shadow-[0_1px_2px_rgb(0_0_0/0.55)] transition outline-none ${
               i === carouselIndex ? "bg-white" : "bg-white/50"
             }`}
           />

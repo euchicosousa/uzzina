@@ -77,7 +77,7 @@ const BUTTON_DEMO_ROWS: ReadonlyArray<{
     variant: "default",
     actionLabel: "Salvar",
     hoverClass: "border-primary-hover bg-primary-hover",
-    focusClass: "border-ring ring-3 ring-ring-halo",
+    focusClass: "outline-3 outline-primary",
     targets: ["primary", "primaryFg", "primaryHover", "ring", "ringHalo"],
   },
   {
@@ -85,7 +85,7 @@ const BUTTON_DEMO_ROWS: ReadonlyArray<{
     variant: "secondary",
     actionLabel: "Filtrar",
     hoverClass: "border-secondary-hover bg-secondary-hover",
-    focusClass: "border-ring ring-3 ring-ring-halo",
+    focusClass: "outline-3 outline-primary",
     targets: ["secondary", "fg", "ring", "ringHalo"],
   },
   {
@@ -93,7 +93,7 @@ const BUTTON_DEMO_ROWS: ReadonlyArray<{
     variant: "outline",
     actionLabel: "Duplicar",
     hoverClass: "bg-secondary",
-    focusClass: "border-ring ring-3 ring-ring-halo",
+    focusClass: "outline-3 outline-primary",
     targets: ["border", "secondary", "fg", "ring", "ringHalo"],
   },
   {
@@ -101,7 +101,7 @@ const BUTTON_DEMO_ROWS: ReadonlyArray<{
     variant: "ghost",
     actionLabel: "Cancelar",
     hoverClass: "bg-secondary",
-    focusClass: "border-ring ring-3 ring-ring-halo",
+    focusClass: "outline-3 outline-primary",
     targets: ["secondary", "fg", "ring", "ringHalo"],
   },
   {
@@ -109,7 +109,7 @@ const BUTTON_DEMO_ROWS: ReadonlyArray<{
     variant: "error",
     actionLabel: "Excluir",
     hoverClass: "bg-error-background",
-    focusClass: "border-error ring-3 ring-error-background",
+    focusClass: "outline-3 outline-primary",
     targets: ["error", "ringHalo"],
   },
   {
@@ -118,7 +118,7 @@ const BUTTON_DEMO_ROWS: ReadonlyArray<{
     actionLabel: "Remover",
     hoverClass: "bg-error-background text-error-foreground border-error",
     focusClass:
-      "border-error ring-3 ring-error-background text-error-foreground bg-error-background",
+      "border-error outline-3 outline-primary text-error-foreground bg-error-background",
     targets: ["error"],
   },
   {
@@ -126,7 +126,7 @@ const BUTTON_DEMO_ROWS: ReadonlyArray<{
     variant: "success",
     actionLabel: "Concluir",
     hoverClass: "bg-success-strong-hover",
-    focusClass: "border-success-strong ring-3 ring-success-strong-halo",
+    focusClass: "outline-3 outline-primary",
     targets: ["success"],
   },
 ];
@@ -359,7 +359,7 @@ export function ThemePreviewPane({
               <PrismInput
                 aria-label="Campo em foco de prévia"
                 className={cn(
-                  "pointer-events-none border-ring ring-3 ring-ring-halo",
+                  "pointer-events-none outline-3 outline-primary",
                   isHighlighted(["input", "ring", "ringHalo"]),
                 )}
                 readOnly

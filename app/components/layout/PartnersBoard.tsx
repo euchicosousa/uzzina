@@ -71,7 +71,7 @@ function PartnerColumn({
       {/* Header do parceiro */}
       <div className="flex items-center justify-between gap-4 overflow-hidden p-2 pb-4">
         <Link
-          className="group flex items-center gap-2 overflow-hidden outline-none focus:underline"
+          className="group flex items-center gap-2 overflow-hidden outline-none"
           params={{
             slug: partner.slug,
           }}

@@ -114,7 +114,7 @@ export function SidebarAnchorLink({
   return (
     <a
       className={cn(
-        "flex w-full max-w-full min-w-0 items-center justify-between overflow-hidden border-l py-2 pr-2 pl-4 text-secondary-foreground transition-colors outline-none hover:bg-secondary hover:text-foreground focus:ring-0 focus:outline-none focus-visible:bg-secondary focus-visible:ring-0 focus-visible:outline-none",
+        "flex w-full max-w-full min-w-0 items-center justify-between overflow-hidden border-l py-2 pr-2 pl-4 text-secondary-foreground transition-colors outline-none hover:bg-secondary hover:text-foreground",
         active
           ? "border-foreground font-medium text-foreground"
           : "border-border/40",
@@ -172,7 +172,7 @@ export function SidebarSubsectionLink({
   return (
     <a
       className={cn(
-        "flex w-full max-w-full min-w-0 items-center overflow-hidden border-l py-1.5 pr-2 pl-7 text-xs font-normal transition-colors outline-none hover:bg-secondary hover:text-foreground focus:ring-0 focus:outline-none focus-visible:bg-secondary focus-visible:ring-0 focus-visible:outline-none",
+        "flex w-full max-w-full min-w-0 items-center overflow-hidden border-l py-1.5 pr-2 pl-7 text-xs font-normal transition-colors outline-none hover:bg-secondary hover:text-foreground",
         active
           ? "border-border/40 bg-secondary text-foreground"
           : "border-border/40 text-secondary-foreground",

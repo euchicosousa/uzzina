@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>UZZINA · Galeria de estados de foco</title>
+  <style>
+    :root { color-scheme: light; --background: oklch(.96 .002 200); --foreground: oklch(0 0 0); --popover: oklch(.98 .002 200); --card: oklch(.94 .002 200); --input: oklch(.92 .002 200); --secondary: oklch(.9 .002 200); --secondary-hover: oklch(.88 .002 200); --border: oklch(.87 .002 200); --primary: oklch(0 0 0); --primary-foreground: white; --ring: var(--primary); --halo: color-mix(in srgb,var(--ring) 30%,transparent); --error: oklch(.65 .16 16); --error-bg: color-mix(in oklab,var(--error) 10%,var(--background)); --error-fg: oklch(.35 .16 16); --focus-bg: var(--secondary); --focus-outline: color-mix(in srgb,var(--ring) 30%,transparent); --shadow: 0 4px 16px color-mix(in srgb,var(--foreground) 12%,transparent); font: 16px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--background); color: var(--foreground); }
+    header, main { width: min(96vw, 3400px); margin-inline: auto; }
+    header { padding: 32px 0 20px; }
+    h1,h2,h3,p { margin-top: 0; }
+    h1 { font-size: clamp(2rem,4vw,3rem); line-height: 1.08; margin-bottom: 12px; }
+    h2 { font-size: 1.5rem; margin-bottom: 8px; }
+    h3 { font-size: 1.05rem; margin-bottom: 6px; }
+    .lead { color: var(--muted); max-width: 74ch; }
+    .muted, small { color: var(--muted); }
+    main { padding-bottom: 60px; }
+    section { padding: 26px 0; border-top: 1px solid var(--border); }
+    .controls { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin: 22px 0; }
+    label { display: grid; gap: 5px; font-size: .9rem; }
+    select, .control-button, .demo-button, .demo-link { color: inherit; font: inherit; }
+    select, .control-button { min-height: 40px; border: 1px solid var(--border); border-radius: 12px; background: var(--input); padding: 7px 12px; }
+    button, a, select, input { font: inherit; }
+    :focus-visible { outline: 3px solid var(--focus-outline); outline-offset: 0; }
+    .control-button:focus-visible, select:focus-visible { border-color: var(--ring); box-shadow: 0 0 0 3px var(--halo); outline: none; }
+    .selected-summary { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; color: var(--muted); font-size: .9rem; }
+    .token-chip { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--border); border-radius: 999px; padding: 5px 11px; }
+    .token-swatch { width: 16px; height: 16px; border: 1px solid color-mix(in srgb,var(--foreground) 24%,transparent); border-radius: 50%; }
+    .samples { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; margin-top: 18px; }
+    .sample { min-width: 0; border: 1px solid var(--border); border-radius: 16px; padding: 20px; background: var(--popover); }
+    .sample p { color: var(--muted); font-size: .92rem; margin-bottom: 9px; }
+    .compare-panes { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+    .compare-pane { min-width: 0; padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--background); }
+    .compare-pane h4 { margin: 0 0 10px; font-size: .9rem; }
+    .proposal-pane { --proposal-surface: var(--background); --proposal-ring-width: 3px; --proposal-ring-offset: 0px; }
+    .proposal-pane .ring-demo, .proposal-pane .focused-bg, .proposal-pane .underline-demo, .proposal-pane .invalid, .proposal-pane .input-group, .proposal-pane .action-item[tabindex], .proposal-pane .thumb, .proposal-pane .handle, .proposal-pane [data-force-global], .proposal-pane .no-ring, .proposal-pane .focus-error, .proposal-pane .focus-success, .proposal-pane .time-segment-focus, .proposal-pane .danger-focused { outline: none !important; box-shadow: 0 0 0 var(--proposal-ring-offset) var(--proposal-surface), 0 0 0 calc(var(--proposal-ring-width) + var(--proposal-ring-offset)) var(--primary) !important; text-decoration: none; }
+    .proposal-pane .ring-demo, .proposal-pane .handle, .proposal-pane .input-group { border-color: transparent; }
+    .proposal-pane .focused-bg { background: var(--proposal-surface) !important; }
+    .proposal-pane .tab.focused-bg { background: var(--proposal-surface) !important; }
+    .selected-state, .proposal-pane .selected-state { background: var(--secondary); }
+    .time-segment-focus { display: inline-flex; align-items: center; min-height: 34px; border-radius: 7px; padding: 4px 8px; background: var(--primary); color: var(--primary-foreground); font-variant-numeric: tabular-nums; }
+    .proposal-pane .time-segment-focus { background: var(--proposal-surface) !important; color: inherit !important; }
+    .focus-error { background: var(--error-bg); color: var(--error-fg); border: 1px solid var(--error); }
+    .focus-success { background: var(--success-bg); color: var(--success); border: 1px solid var(--success); }
+    .danger-focused { background: var(--error-bg); color: var(--error-fg); }
+    .proposal-pane .danger-focused { background: var(--proposal-surface) !important; }
+    .proposal-pane input:focus-visible { outline: none; }
+    .source { display: block; color: var(--muted); font-size: .76rem; margin-top: 12px; overflow-wrap: anywhere; }
+    .state-row { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; min-height: 46px; }
+    .demo-button { border: 1px solid transparent; border-radius: 12px; background: transparent; padding: 7px 12px; cursor: pointer; }
+    .global-demo[data-force-global] { outline: 3px solid var(--focus-outline); outline-offset: 0; }
+    .ring-demo { border-color: var(--ring); box-shadow: 0 0 0 3px var(--halo); }
+    .focused-bg { background: var(--focus-bg); }
+    .demo-link { color: inherit; text-underline-offset: 4px; }
+    .underline-demo { text-decoration: underline; }
+    .invalid { background: var(--error-bg); color: var(--error-fg); border: 1px solid var(--error); box-shadow: 0 0 0 3px var(--error-bg); }
+    .input-group { display: flex; align-items: center; gap: 8px; padding: 5px 10px; border: 1px solid var(--ring); border-radius: 12px; background: var(--input); box-shadow: 0 0 0 3px var(--halo); }
+    .input-group input { min-width: 50px; flex: 1; border: 0; outline: 0; background: transparent; color: inherit; }
+    .prefix { color: var(--muted); }
+    .thumb { display: inline-block; width: 19px; height: 19px; border: 2px solid white; border-radius: 50%; background: var(--primary); box-shadow: 0 1px 5px #0005,0 0 0 3px var(--halo); }
+    .track { width: 150px; height: 5px; border-radius: 99px; background: var(--border); display: flex; align-items: center; }
+    .action-item { border-radius: 10px; padding: 10px 12px; background: var(--card); outline: 2px solid var(--primary); outline-offset: 0; }
+    .handle { border: 1px solid var(--ring); border-radius: 8px; box-shadow: 0 0 0 3px var(--halo); padding: 5px 8px; }
+    .no-ring { outline: none; border: 1px dashed var(--border); background: var(--input); border-radius: 8px; padding: 6px 10px; }
+    .tabline { display: flex; border-bottom: 1px solid var(--border); gap: 2px; }
+    .tab { border: 0; background: transparent; color: inherit; border-bottom: 1px solid var(--border); padding: 7px 12px; }
+    .tab[aria-selected="true"] { border-bottom: 1px solid var(--primary); }
+    .tab.focused-bg { background: var(--secondary); }
+    .compare { display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap: 8px; }
+    .compare > div { display: grid; gap: 5px; align-content: start; }
+    .compare-label { font-size: .75rem; color: var(--muted); }
+    .notice { border-left: 3px solid var(--ring); padding: 9px 12px; background: var(--card); }
+    .inset-sample { display: grid; gap: 7px; width: min(100%, 240px); min-height: 66px; overflow: hidden; border: 1px solid var(--border); padding: 8px; font-size: .8rem; }
+    .inset-focus { display: inline-flex; align-items: center; width: fit-content; border: 1px solid var(--ring); border-radius: 7px; padding: 4px 7px; box-shadow: inset 0 0 0 3px var(--halo); }
+    .image-samples { display: flex; gap: 18px; padding: 10px; overflow: visible; }
+    .image-focus { width: 44px; height: 44px; border: 0; border-radius: 10px; background: #fff; color: #111; box-shadow: 0 0 0 2px #fff; }
+    .dark-image { background: #171717; color: white; }
+    .proposal-pane .inset-focus { box-shadow: 0 0 0 var(--proposal-ring-offset) var(--proposal-surface), 0 0 0 calc(var(--proposal-ring-width) + var(--proposal-ring-offset)) var(--primary) !important; border-color: transparent; }
+    .proposal-pane .image-focus.proposed-focus { outline: none !important; box-shadow: 0 0 0 var(--proposal-ring-offset) var(--proposal-surface), 0 0 0 calc(var(--proposal-ring-width) + var(--proposal-ring-offset)) var(--primary) !important; }
+    .proposal-controls { position: sticky; top: 0; z-index: 20; display: flex; flex-wrap: wrap; gap: 18px 28px; margin: 22px calc((100vw - min(96vw, 3400px)) / -2) 0; padding: 14px max(2vw, calc((100vw - min(96vw, 3400px)) / 2)); border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--background) 94%, transparent); backdrop-filter: blur(12px); }
+    .map-scroll { overflow-x: auto; margin-top: 16px; border: 1px solid var(--border); border-radius: 14px; background: var(--popover); }
+    .change-map { width: 100%; border-collapse: collapse; text-align: left; }
+    .change-map th, .change-map td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .change-map thead { background: var(--card); }
+    .change-map thead th { font-size: .9rem; }
+    .change-map tbody th { min-width: 150px; font-size: .92rem; }
+    .change-map td { min-width: 240px; font-size: .88rem; }
+    .change-map code { overflow-wrap: anywhere; }
+    .samples-section { padding: 26px 0; border-top: 1px solid var(--border); }
+    .toggle-set { display: grid; gap: 7px; margin: 0; padding: 0; border: 0; }
+    .toggle-set legend { margin-bottom: 2px; font-size: .9rem; font-weight: 600; }
+    .toggle-group { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid var(--border); border-radius: 14px; background: var(--popover); }
+    .toggle-option { min-height: 36px; min-width: 56px; border: 0; border-radius: 10px; padding: 6px 12px; background: transparent; color: inherit; cursor: pointer; font: inherit; }
+    .toggle-option[aria-pressed="true"] { background: var(--secondary); }
+    .toggle-option:focus-visible { outline: 3px solid var(--focus-outline); outline-offset: 2px; }
+    .controls-summary { align-self: end; padding-bottom: 8px; color: var(--muted); font-size: .9rem; }
+    .footer-note { margin-top: 20px; font-size: .85rem; color: var(--muted); }
+    @media (max-width: 1100px) { .samples { grid-template-columns: 1fr; } }
+    @media (max-width: 680px) { header,main { width: min(100% - 24px, 3400px); } .compare-panes { grid-template-columns: 1fr; } .sample { padding: 14px; } .proposal-controls { margin-inline: -12px; padding-inline: 12px; gap: 12px 18px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <p><strong>UZZINA · auditoria visual</strong></p>
+    <h1>Estados de foco</h1>
+    <p class="lead">Levantamento visual dos estados de foco encontrados no app. Compare o antes com a proposta uniforme <code>ring-3 ring-primary ring-offset-0</code> em cada paleta e nos modos claro e escuro. Nada nesta página altera o app.</p>
+  </header>
+  <main>
+    <section aria-labelledby="palettes-title">
+      <h2 id="palettes-title">Paleta para conferência</h2>
+      <p class="muted">Escolha qualquer paleta e modo. A proposta usa ring primário e offset da superfície do exemplo.</p>
+      <div class="controls">
+        <label>Paleta<select id="palette-select"></select></label>
+        <label>Modo<select id="mode-select"><option value="light">Claro</option><option value="dark">Escuro</option></select></label>
+        <button class="control-button" id="toggle-mode" type="button">Alternar modo</button>
+      </div>
+      <div id="selected-summary" class="selected-summary" aria-live="polite"></div>
+    </section>
+    <section aria-labelledby="index-title">
+      <h2 id="index-title">Índice de padrões</h2>
+      <div class="compare" aria-label="Comparação rápida dos padrões de foco">
+        <div><span class="compare-label">Anel Prism</span><button class="demo-button ring-demo">Salvar</button></div>
+        <div><span class="compare-label">Fundo</span><button class="demo-button focused-bg">Opção</button></div>
+        <div><span class="compare-label">Sublinhado</span><a class="demo-link underline-demo" href="#samples">Abrir detalhe</a></div>
+        <div><span class="compare-label">Item da Ação</span><div class="action-item">Ação de hoje</div></div>
+        <div><span class="compare-label">Erro</span><button class="demo-button invalid">Campo inválido</button></div>
+        <div><span class="compare-label">Fallback global</span><button class="demo-button global-demo">Botão sem estilo local</button></div>
+      </div>
+      <div class="proposal-controls" aria-label="Ajustes visuais da proposta">
+        <fieldset class="toggle-set">
+          <legend>Offset do ring</legend>
+          <div class="toggle-group" role="group" aria-label="Offset do ring">
+            <button class="toggle-option" type="button" data-control="offset" data-value="1" aria-pressed="false">1</button>
+            <button class="toggle-option" type="button" data-control="offset" data-value="2" aria-pressed="false">2</button>
+            <button class="toggle-option" type="button" data-control="offset" data-value="0" aria-pressed="true">0</button>
+          </div>
+        </fieldset>
+        <fieldset class="toggle-set">
+          <legend>Espessura do ring</legend>
+          <div class="toggle-group" role="group" aria-label="Espessura do ring">
+            <button class="toggle-option" type="button" data-control="width" data-value="2" aria-pressed="false">2</button>
+            <button class="toggle-option" type="button" data-control="width" data-value="3" aria-pressed="true">3</button>
+            <button class="toggle-option" type="button" data-control="width" data-value="4" aria-pressed="false">4</button>
+          </div>
+        </fieldset>
+        <span id="proposal-summary" class="controls-summary" aria-live="polite">Proposta: ring-3 ring-primary ring-offset-0</span>
+      </div>
+    <div class="samples-section" aria-labelledby="change-map-title">
+      <h2 id="change-map-title">Levantamento completo: antes e depois</h2>
+      <p class="muted">A proposta troca somente o indicador de foco. Cor semântica do controle, seleção, estado de arraste, hover e conteúdo permanecem; fundos, bordas ou sublinhados aplicados apenas para indicar foco deixam de aparecer.</p>
+      <div class="map-scroll">
+        <table class="change-map">
+          <thead><tr><th scope="col">Padrão / uso</th><th scope="col">Antes · app anterior</th><th scope="col">Depois · proposta</th><th scope="col">Onde conferir no código</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Anel padrão Prism</th><td><code>ring-3 ring-ring-halo</code> (halo a 30%) e, em campos com borda, <code>border-ring</code>.</td><td><code>ring-3 ring-primary ring-offset-0</code>. Sem halo translúcido nem realce de borda como segundo sinal de foco.</td><td>Botões, campos, selects, toggles, checkbox/radio, calendário, data/hora, combobox e badge; componentes em <code>app/components/prism/</code>.</td></tr>
+            <tr><th scope="row">Erro, ação destrutiva e sucesso</th><td>Anel pode assumir cor semântica de erro ou sucesso; itens destrutivos também trocam fundo ao receber foco.</td><td>Anel primário único. Mantém texto, fundo e borda que identificam erro ou sucesso; remove só o fundo aplicado exclusivamente por foco.</td><td><code>prism/button.tsx</code>, <code>badge.tsx</code>, <code>input.tsx</code> e saída do menu em <code>layout/Header.tsx</code>.</td></tr>
+            <tr><th scope="row">Composto / foco dentro</th><td>O anel aparece no grupo, campo de hora, editor, busca ou cartão; o controle interno pode não ter anel próprio.</td><td>O grupo/contêiner continua sendo o alvo visual, com ring primário de 3 px e offset zero. Filhos não duplicam o foco.</td><td><code>PrismInputGroup</code>, <code>PrismTimeField</code>, editores em Administração → Parceiro, <code>ActionItem</code>.</td></tr>
+            <tr><th scope="row">Anel interno</th><td>Ring de 3 px desenhado para dentro para evitar corte por overflow, usado na comparação de conflito.</td><td>Ring primário com offset zero, conforme a regra escolhida. Conferir se o contêiner recorta o anel.</td><td><code>features/action-drawer/conflict-comparison.tsx</code>.</td></tr>
+            <tr><th scope="row">Foco por fundo</th><td>Itens de menu/lista/select/combobox/comando e linhas de Ajuda/notificação recebem fundo <code>secondary</code>; algumas opções mudam o texto.</td><td>O fundo de foco sai; o item focado recebe apenas <code>ring-3 ring-primary ring-offset-0</code>. Cor semântica permanente do texto continua.</td><td><code>prism/dropdown-menu.tsx</code>, <code>select.tsx</code>, <code>combobox.tsx</code>, <code>command.tsx</code>, <code>HelpPage.tsx</code>, <code>NotificationsPage.tsx</code>.</td></tr>
+            <tr><th scope="row">Abas e segmento de hora</th><td>Foco acrescenta <code>secondary</code> às abas; segmento de hora focado usa fundo primário.</td><td>Sem fundo de foco; apenas ring primário com offset zero. Linha de aba selecionada e valor do segmento permanecem como estados próprios.</td><td><code>prism/tabs.tsx</code> e <code>prism/time-field.tsx</code>.</td></tr>
+            <tr><th scope="row">Links e gatilhos de texto</th><td>Links do dia, breadcrumb do parceiro e accordion indicam foco com sublinhado.</td><td>O sublinhado de foco é substituído pelo ring primário com offset zero. Sublinhado de hover permanece independente.</td><td><code>HomeCalendarView.tsx</code>, <code>HomeTodayView.tsx</code>, <code>PartnersBoard.tsx</code>, <code>prism/accordion.tsx</code>.</td></tr>
+            <tr><th scope="row">Sem anel local / fallback</th><td>Alguns campos removem o anel; controles sem regra própria recebem outline global de 3 px a 30%, offset zero.</td><td>Um ring primário de 3 px com offset zero em cada alvo focável; em campo composto, aplicar ao grupo, sem duplicar no filho.</td><td><code>CommentInput.tsx</code>, título inline, botão unstyled, <code>app/tailwind.css</code>.</td></tr>
+            <tr><th scope="row">Thumbs, alças e imagem</th><td>Thumbs usam halo; alças da linha do tempo usam ring-3; controles sobre miniaturas usam ring-2 branco; miniatura focada pode usar outline interno.</td><td>Todos passam ao ring primário de 3 px com offset zero. A amostra inclui fundos claros e escuros para conferir a leitura.</td><td><code>prism/slider.tsx</code>, <code>color-area.tsx</code>, <code>color-slider.tsx</code>, <code>TimelineBoard.tsx</code>, <code>FileManagerDialog.tsx</code>.</td></tr>
+            <tr><th scope="row">Não é foco · não muda</th><td>Anel de item selecionado/arrastado, cor do dia-alvo, hover e conteúdo são estados separados.</td><td>Continuam iguais. A proposta muda o indicador de foco, não seleção, drag/drop, hover ou estado semântico.</td><td><code>ActionItem.tsx</code>, editor de cores e calendário do Planejamento; sem alteração.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h2 id="samples">Amostras visuais</h2>
+      <p class="muted">Cada card mantém o antes à esquerda e mostra a proposta à direita. A decisão aprovada é <code>ring-3 ring-primary ring-offset-0</code>; os toggles acima permitem conferir alternativas. A página não altera o app.</p>
+      <div class="samples">
+        <article class="sample"><h3>Anel padrão Prism</h3><p>Borda sólida + anel de 3 px com halo; estado repouso ao lado do foco.</p><div class="compare-panes"><div class="compare-pane"><h4>Antes</h4><div class="state-row"><button class="demo-button">Repouso</button><button class="demo-button ring-demo">Foco</button><button class="demo-button ring-demo" aria-pressed="true">Selecionado + foco</button></div></div><div class="compare-pane proposal-pane"><h4>Proposta</h4><div class="state-row"><button class="demo-button">Repouso</button><button class="demo-button ring-demo">Foco</button><button class="demo-button ring-demo" aria-pressed="true">Selecionado + foco</button></div></div></div><span class="source">PrismButton · app/components/prism/button.tsx · botão default</span></article>
+        <article class="sample"><h3>Campos e foco inválido</h3><p>O foco padrão usa <code>ring-ring-halo</code>; inválido troca borda, texto e anel para tokens semânticos de erro.</p><div class="compare-panes"><div class="compare-pane"><h4>Antes</h4><div class="state-row"><input aria-label="Campo de texto" placeholder="Repouso" class="demo-button"><input aria-label="Campo inválido focado" aria-invalid="true" value="Inválido" class="demo-button invalid"></div></div><div class="compare-pane proposal-pane"><h4>Proposta</h4><div class="state-row"><input aria-label="Campo de texto" placeholder="Repouso" class="demo-button"><input aria-label="Campo inválido focado" aria-invalid="true" value="Inválido" class="demo-button invalid"></div></div></div><span class="source">PrismInput / Textarea / Select · app/components/prism/input.tsx</span></article>
+        <article class="sample"><h3>Grupo de entrada composto</h3><p>O anel aparece no grupo quando o controle interno recebe foco; prefixo e sufixo ficam dentro do contorno.</p><div class="compare-panes"><div class="compare-pane"><h4>Antes</h4><div class="state-row"><div class="input-group"><span class="prefix">https://</span><input aria-label="Endereço dentro do grupo" value="uzzina.app"><span class="prefix">↗</span></div></div></div><div class="compare-pane proposal-pane"><h4>Proposta</h4><div class="state-row"><div class="input-group"><span class="prefix">https://</span><input aria-label="Endereço dentro do grupo" value="uzzina.app"><span class="prefix">↗</span></div></div></div></div><span class="source">PrismInputGroup · app/components/prism/input-group.tsx</span></article>
+        <article class="sample"><h3>Menu, lista e comando</h3><p>Itens focados por teclado usam o fundo secundário. Seleção/checagem pode usar o mesmo fundo, mas é um estado independente.</p><div class="compare-panes"><div class="compare-pane"><h4>Antes</h4><div class="state-row"><button class="demo-button">Repouso</button><button class="demo-button focused-bg">Foco</button><button class="demo-button selected-state" aria-pressed="true">Selecionado</button></div></div><div class="compare-pane proposal-pane"><h4>Proposta</h4><div class="state-row"><button class="demo-button">Repouso</button><button class="demo-button focused-bg">Foco</button><button class="demo-button selected-state" aria-pressed="true">Selecionado</button></div></div></div><span class="source">SelectItem / CommandItem / ListBoxItem · prism/select.tsx, command.tsx, combobox.tsx</span></article>
+        <article class="sample"><h3>Abas</h3><p>Aba selecionada ganha linha primária; foco acrescenta fundo secundário. O selecionado não significa foco.</p><div class="compare-panes"><div class="compare-pane"><h4>Antes</h4><div class="tabline"><button class="tab">Geral</button><button class="tab" aria-selected="true">Selecionada</button><button class="tab focused-bg">Focada</button></div></div><div class="compare-pane proposal-pane"><h4>Proposta</h4><div class="tabline"><button class="tab">Geral</button><button class="tab" aria-selected="true">Selecionada</button><button class="tab focused-bg">Focada</button></div></div></div><span class="source">PrismTab · app/components/prism/tabs.tsx · variantes underline/drawer</span></article>
+        <article class="sample"><h3>Link e gatilho de texto</h3><p>Foco por teclado é comunicado com sublinhado, sem anel.</p><div class="compare-panes"><div class="compare-pane"><h4>Antes</h4><div class="state-row"><a class="demo-link" href="#samples">Repouso</a><a class="demo-link underline-demo" href="#samples">Foco por teclado</a></div></div><div class="compare-pane proposal-pane"><h4>Proposta</h4><div class="state-row"><a class="demo-link" href="#samples">Repouso</a><a class="demo-link underline-demo" href="#samples">Foco por teclado</a></div></div></div><span class="source">PrismAccordionTrigger e links do Hoje · prism/accordion.tsx, features/home/HomeTodayView.tsx</span></article>
+        <article class="sample"><h3>Item da Ação</h3><p>Foco interno no cartão usa contorno de 2 px na cor primária; seleção de ação pode usar um anel primário à parte.</p><div class="compare-panes"><div class="compare-pane"><h4>Antes</h4><div class="state-row"><div class="action-item" tabindex="0">Foco dentro do cartão</div><button class="demo-button" style="box-shadow:0 0 0 2px var(--primary)">Selecionada (ring-primary)</button></div></div><div class="compare-pane proposal-pane"><h4>Proposta</h4><div class="state-row"><div class="action-item" tabindex="0">Foco dentro do cartão</div><button class="demo-button" style="box-shadow:0 0 0 2px var(--primary)">Selecionada (ring-primary)</button></div></div></div><span class="source">ActionItem · app/components/features/ActionItem.tsx</span></article>
+        <article class="sample"><h3>Slider e campo de cor</h3><p>O thumb recebe halo de 3 px; o anel é desenhado ao redor do controle circular.</p><div class="compare-panes"><div class="compare-pane"><h4>Antes</h4><div class="state-row"><div class="track"><span class="thumb" tabindex="0" aria-label="Controle de slider"></span></div><span class="thumb" tabindex="0" aria-label="Seletor de cor"></span></div></div><div class="compare-pane proposal-pane"><h4>Proposta</h4><div class="state-row"><div class="track"><span class="thumb" tabindex="0" aria-label="Controle de slider"></span></div><span class="thumb" tabindex="0" aria-label="Seletor de cor"></span></div></div></div><span class="source">PrismSlider / PrismColorSlider / PrismColorArea · app/components/prism/slider.tsx, color-slider.tsx, color-area.tsx</span></article>
+        <article class="sample"><h3>Alças e controles de ícone</h3><p>Alças de ajuste da linha do tempo usam anel padrão, ficam visíveis no foco e aparecem acima da barra.</p><div class="compare-panes"><div class="compare-pane"><h4>Antes</h4><div class="state-row"><button class="demo-button handle" aria-label="Alça esquerda">↔</button><button class="demo-button ring-demo" aria-label="Controle de ícone">•••</button></div></div><div class="compare-pane proposal-pane"><h4>Proposta</h4><div class="state-row"><button class="demo-button handle" aria-label="Alça esquerda">↔</button><button class="demo-button ring-demo" aria-label="Controle de ícone">•••</button></div></div></div><span class="source">TimelineBoard · app/components/layout/TimelineBoard.tsx · UIconButton usa o padrão Prism</span></article>
+        <article class="sample"><h3>Fallback global</h3><p>Sem estilo local específico: outline sólido de 3 px, deslocamento zero e ring a 30%.</p><div class="compare-panes"><div class="compare-pane"><h4>Antes</h4><div class="state-row"><button class="demo-button global-demo">Repouso</button><button class="demo-button global-demo" data-force-global>Foco de fallback</button></div></div><div class="compare-pane proposal-pane"><h4>Proposta</h4><div class="state-row"><button class="demo-button global-demo">Repouso</button><button class="demo-button global-demo" data-force-global>Foco de fallback</button></div></div></div><span class="source">Base global · app/tailwind.css · :focus-visible</span></article>
+        <article class="sample"><h3>Exceção intencional sem anel</h3><p>Alguns campos removem o foco local para evitar duplicidade no editor. Esta réplica mostra o contorno local ausente; o navegador ainda pode indicar foco global conforme a configuração.</p><div class="compare-panes"><div class="compare-pane"><h4>Antes</h4><div class="state-row"><input class="no-ring" aria-label="Campo sem anel local" value="Comentário" readonly><span class="notice">Título inline: sublinhado ao editar</span></div></div><div class="compare-pane proposal-pane"><h4>Proposta</h4><div class="state-row"><input class="no-ring" aria-label="Campo sem anel local" value="Comentário" readonly><span class="notice">Título inline: sublinhado ao editar</span></div></div></div><span class="source">CommentInput · app/components/features/ActionComments/CommentInput.tsx; título inline · ActionItemTitleInput.tsx</span></article>
+        <article class="sample"><h3>Anel interno e controles sobre imagem</h3><p>O padrão uniforme também substitui o ring interno no comparador e o ring branco dos ícones sobre miniaturas.</p><div class="compare-panes"><div class="compare-pane"><h4>Antes</h4><div class="state-row"><div class="inset-sample">Lista de conflito <span class="inset-focus">Campo focado</span></div><div class="image-samples"><button class="image-focus" aria-label="Controle focado sobre fundo claro">□</button><button class="image-focus dark-image" aria-label="Controle focado sobre fundo escuro">□</button></div></div></div><div class="compare-pane proposal-pane"><h4>Proposta</h4><div class="state-row"><div class="inset-sample">Lista de conflito <span class="inset-focus">Campo focado</span></div><div class="image-samples"><button class="image-focus proposed-focus" aria-label="Controle focado sobre fundo claro">□</button><button class="image-focus dark-image proposed-focus" aria-label="Controle focado sobre fundo escuro">□</button></div></div></div></div><span class="source">conflict-comparison.tsx · FileManagerDialog.tsx · TokensFocusSection.tsx</span></article>
+        <article class="sample"><h3>Foco composto e seleção</h3><p>O foco no campo interno aparece no grupo; a seleção é um estado separado e não muda.</p><div class="compare-panes"><div class="compare-pane"><h4>Antes</h4><div class="state-row"><div class="input-group">Buscar parceiro <span class="inset-focus">⌕</span></div><div class="action-item selected-state">Ação selecionada</div></div></div><div class="compare-pane proposal-pane"><h4>Proposta</h4><div class="state-row"><div class="input-group proposed-focus">Buscar parceiro <span>⌕</span></div><div class="action-item selected-state">Ação selecionada</div></div></div></div><span class="source">PrismInputGroup · ActionItem · ColorListEditor</span></article>
+        <article class="sample"><h3>Abas e segmento de hora</h3><p>O foco da aba usa fundo secondary; o segmento de hora usa fundo primário. A proposta troca ambos pelo mesmo ring.</p><div class="compare-panes"><div class="compare-pane"><h4>Antes</h4><div class="state-row"><button class="tab focused-bg">Aba focada</button><span class="time-segment-focus">12</span></div></div><div class="compare-pane proposal-pane"><h4>Proposta</h4><div class="state-row"><button class="tab focused-bg">Aba focada</button><span class="time-segment-focus">12</span></div></div></div><span class="source">PrismTab · PrismTimeField · app/components/prism/tabs.tsx, time-field.tsx</span></article>
+        <article class="sample"><h3>Foco em erro e sucesso</h3><p>O indicador muda para ring primário nos dois casos; fundo e texto que comunicam o estado semântico permanecem.</p><div class="compare-panes"><div class="compare-pane"><h4>Antes</h4><div class="state-row"><button class="demo-button focus-error">Ação destrutiva</button><button class="demo-button focus-success">Ação de sucesso</button></div></div><div class="compare-pane proposal-pane"><h4>Proposta</h4><div class="state-row"><button class="demo-button focus-error">Ação destrutiva</button><button class="demo-button focus-success">Ação de sucesso</button></div></div></div><span class="source">PrismButton / PrismBadge · app/components/prism/button.tsx, badge.tsx</span></article>
+        <article class="sample"><h3>Saída destrutiva do menu</h3><p>Hoje, o foco no comando “Sair” também colore o fundo de vermelho. Na proposta, permanece o texto de ação destrutiva e entra apenas o ring.</p><div class="compare-panes"><div class="compare-pane"><h4>Antes</h4><div class="state-row"><button class="demo-button danger-focused">Sair</button></div></div><div class="compare-pane proposal-pane"><h4>Proposta</h4><div class="state-row"><button class="demo-button danger-focused">Sair</button></div></div></div><span class="source">layout/Header.tsx · features/admin/themes/ThemePreviewPane.tsx</span></article>
+      </div>
+      <p class="footer-note">Limite: esta página permite avaliação visual e navegação local; não executa componentes React Aria, não valida comportamento de leitor de tela nem certifica contraste. A amostra “foco” permanente facilita comparar paletas; use Tab para ver o foco real no navegador.</p>
+    </div>
+    </section>
+  </main>
+  <script>
+    const PALETTES = [{"id":"default","label":"Ônix","relief":true,"light":{"primary":{"h":0,"c":0,"l":0},"primaryFgDelta":{"l":1,"c":0,"h":0},"bg":{"h":200,"c":0.002,"l":0.96},"fgLDelta":-0.96,"popoverLDelta":0.02,"popoverBorderLDelta":-0.049,"cardLDelta":-0.02,"inputLDelta":-0.04,"secondaryLDelta":-0.06,"secondaryHoverLDelta":-0.08,"borderLDelta":-0.09,"actionLDelta":0.02,"actionHoverLDelta":0.1,"accent":{"h":0,"c":0,"l":0}},"dark":{"primary":{"h":0,"c":0,"l":1},"primaryFgDelta":{"l":-1,"c":0,"h":0},"bg":{"h":250,"c":0.01,"l":0.2},"fgLDelta":0.8,"popoverLDelta":-0.03,"popoverBorderLDelta":0.083,"cardLDelta":0.05,"inputLDelta":-0.06,"secondaryLDelta":0.12,"secondaryHoverLDelta":0.15,"borderLDelta":0.15,"actionLDelta":0.1,"actionHoverLDelta":0.2,"accent":{"h":0,"c":0,"l":1}}},{"id":"carbon","label":"Carbono","relief":false,"light":{"primary":{"h":240,"c":0.02,"l":0.3},"primaryFgDelta":{"l":0.7,"c":-0.02,"h":120},"bg":{"h":0,"c":0,"l":1},"fgLDelta":-1,"popoverLDelta":0.02,"popoverBorderLDelta":-0.05,"cardLDelta":-0.02,"inputLDelta":-0.04,"secondaryLDelta":-0.06,"secondaryHoverLDelta":-0.08,"borderLDelta":-0.09,"actionLDelta":0.02,"actionHoverLDelta":0.1,"accent":{"h":240,"c":0.02,"l":0.3}},"dark":{"primary":{"h":240,"c":0.01,"l":0.99},"primaryFgDelta":{"l":-0.69,"c":0.01,"h":0},"bg":{"h":240,"c":0.015,"l":0.25},"fgLDelta":0.75,"popoverLDelta":-0.03,"popoverBorderLDelta":0.078,"cardLDelta":0.05,"inputLDelta":-0.06,"secondaryLDelta":0.12,"secondaryHoverLDelta":0.15,"borderLDelta":0.15,"actionLDelta":0.1,"actionHoverLDelta":0.2,"accent":{"h":240,"c":0.01,"l":0.99}}},{"id":"red","label":"Rubi","light":{"primary":{"h":20,"c":0.25,"l":0.62},"primaryFgDelta":{"l":0.38,"c":-0.25,"h":-20},"bg":{"h":0,"c":0,"l":0.98},"fgLDelta":-0.98,"popoverLDelta":0.02,"popoverBorderLDelta":-0.05,"cardLDelta":-0.02,"inputLDelta":-0.04,"secondaryLDelta":-0.06,"secondaryHoverLDelta":-0.08,"borderLDelta":-0.09,"actionLDelta":0.02,"actionHoverLDelta":0.1,"accent":{"h":20,"c":0.25,"l":0.62}},"dark":{"primary":{"h":20,"c":0.25,"l":0.68},"primaryFgDelta":{"l":0.32,"c":-0.25,"h":-20},"bg":{"h":285,"c":0.005,"l":0.141},"fgLDelta":0.9,"popoverLDelta":0.03,"popoverBorderLDelta":0.083,"cardLDelta":0.05,"inputLDelta":0.06,"secondaryLDelta":0.2,"secondaryHoverLDelta":0.15,"borderLDelta":0.15,"actionLDelta":0.1,"actionHoverLDelta":0.2,"accent":{"h":20,"c":0.25,"l":0.68}}},{"id":"orange","label":"Coral","light":{"primary":{"h":25,"c":0.18,"l":0.65},"primaryFgDelta":{"l":0.35,"c":-0.18,"h":-25},"bg":{"h":130,"c":0.01,"l":0.95},"fgLDelta":-0.95,"popoverLDelta":0.02,"popoverBorderLDelta":-0.049,"cardLDelta":-0.02,"inputLDelta":-0.04,"secondaryLDelta":-0.06,"secondaryHoverLDelta":-0.08,"borderLDelta":-0.09,"actionLDelta":0.02,"actionHoverLDelta":0.1,"accent":{"h":25,"c":0.18,"l":0.65}},"dark":{"primary":{"h":25,"c":0.18,"l":0.65},"primaryFgDelta":{"l":0.25,"c":-0.16,"h":105},"bg":{"h":190,"c":0.01,"l":0.25},"fgLDelta":0.7,"popoverLDelta":-0.03,"popoverBorderLDelta":0.073,"cardLDelta":0.05,"inputLDelta":-0.06,"secondaryLDelta":0.12,"secondaryHoverLDelta":0.15,"borderLDelta":0.15,"actionLDelta":0.1,"actionHoverLDelta":0.2,"accent":{"h":25,"c":0.18,"l":0.65}}},{"id":"yellow","label":"Damasco","light":{"primary":{"h":100,"c":0.5,"l":0.8},"primaryFgDelta":{"l":-0.8,"c":-0.5,"h":-100},"bg":{"h":0,"c":0,"l":0.98},"fgLDelta":-0.98,"popoverLDelta":0.02,"popoverBorderLDelta":-0.05,"cardLDelta":-0.02,"inputLDelta":-0.04,"secondaryLDelta":-0.06,"secondaryHoverLDelta":-0.08,"borderLDelta":-0.09,"actionLDelta":0.02,"actionHoverLDelta":0.1,"accent":{"h":100,"c":0.5,"l":0.8}},"dark":{"primary":{"h":100,"c":0.4,"l":0.8},"primaryFgDelta":{"l":-0.8,"c":-0.4,"h":-100},"bg":{"h":285,"c":0.005,"l":0.141},"fgLDelta":0.859,"popoverLDelta":-0.03,"popoverBorderLDelta":0.089,"cardLDelta":0.05,"inputLDelta":-0.06,"secondaryLDelta":0.12,"secondaryHoverLDelta":0.15,"borderLDelta":0.15,"actionLDelta":0.1,"actionHoverLDelta":0.2,"accent":{"h":100,"c":0.4,"l":0.8}}},{"id":"energy","label":"Elétrico","light":{"primary":{"h":120,"c":0.15,"l":0.94},"primaryFgDelta":{"l":-0.94,"c":-0.15,"h":-120},"bg":{"h":240,"c":0.004,"l":0.96},"fgLDelta":-0.96,"popoverLDelta":0.02,"popoverBorderLDelta":-0.049,"cardLDelta":-0.02,"inputLDelta":-0.04,"secondaryLDelta":-0.06,"secondaryHoverLDelta":-0.08,"borderLDelta":-0.09,"actionLDelta":0.02,"actionHoverLDelta":0.1,"accent":{"h":120,"c":0.15,"l":0.94}},"dark":{"primary":{"h":120,"c":0.18,"l":0.9},"primaryFgDelta":{"l":-0.9,"c":-0.18,"h":-120},"bg":{"h":250,"c":0.01,"l":0.2},"fgLDelta":0.8,"popoverLDelta":-0.03,"popoverBorderLDelta":0.083,"cardLDelta":0.05,"inputLDelta":-0.06,"secondaryLDelta":0.12,"secondaryHoverLDelta":0.15,"borderLDelta":0.15,"actionLDelta":0.1,"actionHoverLDelta":0.2,"accent":{"h":120,"c":0.18,"l":0.9}}},{"id":"cyan","label":"Turquesa","light":{"primary":{"h":200,"c":0.12,"l":0.7},"primaryFgDelta":{"l":0.3,"c":-0.12,"h":160},"bg":{"h":260,"c":0.005,"l":0.98},"fgLDelta":-0.98,"popoverLDelta":0.02,"popoverBorderLDelta":-0.05,"cardLDelta":-0.02,"inputLDelta":-0.04,"secondaryLDelta":-0.06,"secondaryHoverLDelta":-0.08,"borderLDelta":-0.09,"actionLDelta":0.02,"actionHoverLDelta":0.1,"accent":{"h":200,"c":0.12,"l":0.7}},"dark":{"primary":{"h":200,"c":0.15,"l":0.6},"primaryFgDelta":{"l":0.3,"c":-0.13,"h":0},"bg":{"h":290,"c":0.05,"l":0.2},"fgLDelta":0.8,"popoverLDelta":-0.03,"popoverBorderLDelta":0.083,"cardLDelta":0.05,"inputLDelta":-0.06,"secondaryLDelta":0.12,"secondaryHoverLDelta":0.15,"borderLDelta":0.15,"actionLDelta":0.1,"actionHoverLDelta":0.2,"accent":{"h":200,"c":0.15,"l":0.6}}},{"id":"blue","label":"Cobalto","relief":false,"light":{"primary":{"h":264,"c":0.31,"l":0.45},"primaryFgDelta":{"l":0.55,"c":-0.31,"h":96},"bg":{"h":0,"c":0,"l":1},"fgLDelta":-1,"popoverLDelta":0.02,"popoverBorderLDelta":-0.05,"cardLDelta":-0.02,"inputLDelta":-0.04,"secondaryLDelta":-0.06,"secondaryHoverLDelta":-0.08,"borderLDelta":-0.09,"actionLDelta":0.02,"actionHoverLDelta":0.1,"accent":{"h":264,"c":0.31,"l":0.45}},"dark":{"primary":{"h":264,"c":0.31,"l":0.58},"primaryFgDelta":{"l":0.42,"c":-0.31,"h":96},"bg":{"h":285,"c":0.005,"l":0.141},"fgLDelta":0.859,"popoverLDelta":-0.03,"popoverBorderLDelta":0.089,"cardLDelta":0.05,"inputLDelta":-0.06,"secondaryLDelta":0.12,"secondaryHoverLDelta":0.15,"borderLDelta":0.15,"actionLDelta":0.1,"actionHoverLDelta":0.2,"accent":{"h":264,"c":0.31,"l":0.58}}},{"id":"purple","label":"Violeta","light":{"primary":{"h":290,"c":0.28,"l":0.54},"primaryFgDelta":{"l":0.46,"c":-0.28,"h":70},"bg":{"h":0,"c":0,"l":1},"fgLDelta":-1,"popoverLDelta":0.02,"popoverBorderLDelta":-0.05,"cardLDelta":-0.02,"inputLDelta":-0.04,"secondaryLDelta":-0.06,"secondaryHoverLDelta":-0.08,"borderLDelta":-0.09,"actionLDelta":0.02,"actionHoverLDelta":0.1,"accent":{"h":290,"c":0.28,"l":0.54}},"dark":{"primary":{"h":290,"c":0.28,"l":0.68},"primaryFgDelta":{"l":0.32,"c":-0.28,"h":70},"bg":{"h":285,"c":0.005,"l":0.141},"fgLDelta":0.859,"popoverLDelta":-0.03,"popoverBorderLDelta":0.089,"cardLDelta":0.05,"inputLDelta":0.07,"secondaryLDelta":0.12,"secondaryHoverLDelta":0.15,"borderLDelta":0.15,"actionLDelta":0.1,"actionHoverLDelta":0.2,"accent":{"h":290,"c":0.28,"l":0.68}}},{"id":"magenta","label":"Fúcsia","light":{"primary":{"h":350,"c":0.4,"l":0.9},"primaryFgDelta":{"l":-0.9,"c":-0.4,"h":10},"bg":{"h":320,"c":0.02,"l":0.98},"fgLDelta":-0.98,"popoverLDelta":0.02,"popoverBorderLDelta":-0.05,"cardLDelta":-0.02,"inputLDelta":-0.04,"secondaryLDelta":-0.06,"secondaryHoverLDelta":-0.08,"borderLDelta":-0.09,"actionLDelta":0.02,"actionHoverLDelta":0.1,"accent":{"h":350,"c":0.4,"l":0.9}},"dark":{"primary":{"h":350,"c":0.4,"l":0.8},"primaryFgDelta":{"l":-0.8,"c":-0.4,"h":10},"bg":{"h":340,"c":0.1,"l":0.3},"fgLDelta":0.7,"popoverLDelta":-0.03,"popoverBorderLDelta":0.073,"cardLDelta":0.05,"inputLDelta":-0.06,"secondaryLDelta":0.12,"secondaryHoverLDelta":0.15,"borderLDelta":0.15,"actionLDelta":0.1,"actionHoverLDelta":0.2,"accent":{"h":350,"c":0.4,"l":0.8}}}];
+    const ALPHA = {"light":30,"dark":30};
+    const PRIMARY_HOVER_MIX = {"light":20,"dark":20};
+    const $ = (id) => document.getElementById(id);
+    const color = (x) => `oklch(${x.l} ${x.c} ${x.h})`;
+    const clamp = (x) => Math.max(0,Math.min(1,x));
+    function colors(palette, mode) {
+      const p = palette[mode], bg = p.bg;
+      const primary = color(p.primary), fg = `oklch(${clamp(p.primary.l+p.primaryFgDelta.l)} ${Math.max(0,p.primary.c+p.primaryFgDelta.c)} ${(p.primary.h+p.primaryFgDelta.h+360)%360})`;
+      const background = color(bg), foreground = `oklch(${clamp(bg.l+p.fgLDelta)} 0 ${bg.h})`;
+      const ring = color(p.accent || p.primary);
+      const neutral = (delta) => `oklch(${clamp(bg.l+delta)} ${bg.c} ${bg.h})`;
+      const popover=neutral(p.popoverLDelta);
+      const success=color(mode === "light" ? {h:163,c:.11,l:.65} : {h:163,c:.1,l:.75});
+      const successBg=`color-mix(in oklab, ${success} ${mode === "dark" ? 30 : 10}%, ${background})`;
+      return { background, foreground, primary, primaryHover:`color-mix(in oklab, ${primary}, ${background} ${PRIMARY_HOVER_MIX[mode]}%)`, primaryForeground:fg, ring, halo:`color-mix(in srgb, ${ring} ${ALPHA[mode]}%, transparent)`, popover, popoverBorder:`oklch(${clamp(bg.l+p.popoverLDelta+p.popoverBorderLDelta)} ${bg.c} ${bg.h})`, card:neutral(p.cardLDelta), input:neutral(p.inputLDelta), secondary:neutral(p.secondaryLDelta), secondaryHover:neutral(p.secondaryHoverLDelta), border:neutral(p.borderLDelta), action:neutral(p.actionLDelta), actionHover:neutral(p.actionHoverLDelta), error:"oklch(.65 .16 16)", success, successBg };
+    }
+    function setTheme(palette,mode) {
+      const c=colors(palette,mode), root=document.documentElement;
+      for (const [key,val] of Object.entries(c)) root.style.setProperty(`--${key.replace(/[A-Z]/g,m=>`-${m.toLowerCase()}`)}`,val);
+      root.style.setProperty("--error-bg",`color-mix(in oklab, ${c.error} ${mode === "dark" ? 30 : 10}%, ${c.background})`);
+      root.style.setProperty("--error-fg",mode === "dark" ? c.error : "oklch(.35 .16 16)");
+      root.style.setProperty("--focus-outline",`color-mix(in srgb, ${c.ring} 30%, transparent)`);
+      root.style.setProperty("--muted",mode === "dark" ? "color-mix(in srgb, var(--foreground) 65%, transparent)" : "color-mix(in srgb, var(--foreground) 58%, transparent)");
+      document.documentElement.dataset.mode=mode;
+      $("selected-summary").innerHTML=`<strong>${palette.label} · ${mode === "light" ? "Claro" : "Escuro"}</strong><span class="token-chip"><span class="token-swatch" style="background:${c.primary}"></span>Primária ${c.primary}</span><span class="token-chip"><span class="token-swatch" style="background:${c.ring}"></span>Anel ${c.ring}</span><span class="token-chip"><span class="token-swatch" style="background:${c.background}"></span>Fundo ${c.background}</span>`;
+    }
+    function updateProposal(){
+      const width=document.querySelector('[data-control="width"][aria-pressed="true"]')?.dataset.value||"3";
+      const offset=document.querySelector('[data-control="offset"][aria-pressed="true"]')?.dataset.value||"0";
+      document.querySelectorAll(".proposal-pane").forEach((pane)=>{
+        pane.style.setProperty("--proposal-ring-width",`${width}px`);
+        pane.style.setProperty("--proposal-ring-offset",`${offset}px`);
+      });
+      $("proposal-summary").textContent=`Proposta: ring-${width} ring-primary${offset === "0" ? " sem ring-offset" : ` ring-offset-${offset}`}`;
+    }
+    function update(){ const palette=PALETTES.find(p=>p.id===$("palette-select").value)||PALETTES[0]; setTheme(palette,$("mode-select").value); }
+    for(const p of PALETTES){const o=document.createElement("option");o.value=p.id;o.textContent=p.label;$("palette-select").append(o);}
+    $("palette-select").addEventListener("change",update); $("mode-select").addEventListener("change",update); $("toggle-mode").addEventListener("click",()=>{ $("mode-select").value=$("mode-select").value==="light"?"dark":"light"; update(); });
+    document.querySelectorAll(".toggle-option").forEach((button)=>button.addEventListener("click",()=>{
+      document.querySelectorAll(`[data-control="${button.dataset.control}"]`).forEach((option)=>option.setAttribute("aria-pressed",String(option===button)));
+      updateProposal();
+    }));
+    updateProposal();
+    $("palette-select").value="default"; $("mode-select").value="light"; update();
+  </script>
+</body>
+</html>

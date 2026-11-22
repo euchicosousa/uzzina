@@ -522,12 +522,15 @@ function AdminPartnerEditPage() {
               {savingFields.has("context") && <ULoader />}
             </div>
             <input name="context" type="hidden" value={contextValue} />
-            <div className="min-h-30 overflow-hidden rounded-2xl border border-transparent bg-input text-base transition-[color,box-shadow] duration-200 outline-none squircle focus-within:border-ring focus-within:ring-3 focus-within:ring-ring-halo md:text-sm">
+            <div
+              data-focus-editor=""
+              className="min-h-30 overflow-hidden rounded-2xl border border-transparent bg-input text-base transition-[color,box-shadow] duration-200 outline-none squircle md:text-sm"
+            >
               <Suspense fallback={<PrismSkeleton className="h-full w-full" />}>
                 <Tiptap
                   aria-labelledby="context-label"
                   id="context"
-                  className="prose prose-sm dark:prose-invert h-full max-w-none focus:outline-none"
+                  className="prose prose-sm dark:prose-invert h-full max-w-none"
                   content={contextValue}
                   handleBlur={(content: string) => {
                     setContextValue(content);
@@ -553,12 +556,15 @@ function AdminPartnerEditPage() {
               {savingFields.has("voice") && <ULoader />}
             </div>
             <input name="voice" type="hidden" value={voiceValue} />
-            <div className="min-h-30 overflow-hidden rounded-2xl border border-transparent bg-input text-base transition-[color,box-shadow] duration-200 outline-none squircle focus-within:border-ring focus-within:ring-3 focus-within:ring-ring-halo md:text-sm">
+            <div
+              data-focus-editor=""
+              className="min-h-30 overflow-hidden rounded-2xl border border-transparent bg-input text-base transition-[color,box-shadow] duration-200 outline-none squircle md:text-sm"
+            >
               <Suspense fallback={<PrismSkeleton className="h-full w-full" />}>
                 <Tiptap
                   aria-labelledby="voice-label"
                   id="voice"
-                  className="prose prose-sm dark:prose-invert h-full max-w-none focus:outline-none"
+                  className="prose prose-sm dark:prose-invert h-full max-w-none"
                   content={voiceValue}
                   handleBlur={(content: string) => {
                     setVoiceValue(content);

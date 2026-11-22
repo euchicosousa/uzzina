@@ -483,9 +483,8 @@ export function Header({
                     <PrismButton
                       key={notif.id}
                       className={cn(
-                        "flex w-full flex-col items-start gap-1 px-4 py-2 text-left font-normal transition hover:bg-secondary focus-visible:bg-secondary",
-                        !notif.read_at &&
-                          "bg-card hover:bg-secondary-hover focus-visible:bg-secondary-hover",
+                        "flex w-full flex-col items-start gap-1 px-4 py-2 text-left font-normal transition hover:bg-secondary",
+                        !notif.read_at && "bg-card hover:bg-secondary-hover",
                       )}
                       onPress={() => handleNotificationClick(notif)}
                       variant="unstyled"
@@ -687,7 +686,7 @@ export const HeaderMenu = ({
           </PrismMenuItem>
 
           <PrismMenuItem
-            className="text-error focus:bg-error-background focus:text-error"
+            className="text-error"
             onAction={onSignOut}
             textValue="Sair"
             variant="error"

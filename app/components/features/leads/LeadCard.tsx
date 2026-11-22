@@ -18,7 +18,7 @@ export function LeadCard({ lead, isSelected, onClick }: LeadCardProps) {
   return (
     <PrismButton
       className={cn(
-        "flex w-full cursor-pointer flex-col gap-2 rounded-2xl p-4 text-left font-normal transition-all outline-none squircle focus-visible:ring-3 focus-visible:ring-ring-halo",
+        "flex w-full cursor-pointer flex-col gap-2 rounded-2xl p-4 text-left font-normal transition-all outline-none squircle",
         isSelected ? "bg-primary text-background" : "hover:bg-secondary",
       )}
       data-lead-id={lead.id}

@@ -19,7 +19,7 @@ function useInputGroupContext() {
 }
 
 const inputGroupVariants = cva(
-  "group/input-group relative flex w-full min-w-0 items-center rounded-2xl border border-transparent bg-input transition-[color,box-shadow] duration-200 outline-none squircle in-data-[slot=combobox-content]:focus-within:border-inherit in-data-[slot=combobox-content]:focus-within:ring-0 has-[[data-slot=input-group-control]:focus-visible]:border-ring has-[[data-slot=input-group-control]:focus-visible]:ring-3 has-[[data-slot=input-group-control]:focus-visible]:ring-ring-halo has-[[data-slot][aria-invalid=true]]:bg-error-background has-[[data-slot][aria-invalid=true]]:text-error-foreground has-[[data-slot][aria-invalid=true]]:border-error has-[[data-slot][aria-invalid=true]]:ring-error-background has-[>[data-align=block-end]]:h-auto has-[>[data-align=block-end]]:flex-col has-[>[data-align=block-start]]:h-auto has-[>[data-align=block-start]]:flex-col has-[>textarea]:h-auto has-[>[data-align=block-end]]:[&>input]:pt-3 has-[>[data-align=block-start]]:[&>input]:pb-3",
+  "group/input-group relative flex w-full min-w-0 items-center rounded-2xl border border-transparent bg-input transition-[color,box-shadow] duration-200 outline-none squircle has-[[data-slot][aria-invalid=true]]:bg-error-background has-[[data-slot][aria-invalid=true]]:text-error-foreground has-[[data-slot][aria-invalid=true]]:border-error has-[[data-slot][aria-invalid=true]]:ring-error-background has-[>[data-align=block-end]]:h-auto has-[>[data-align=block-end]]:flex-col has-[>[data-align=block-start]]:h-auto has-[>[data-align=block-start]]:flex-col has-[>textarea]:h-auto has-[>[data-align=block-end]]:[&>input]:pt-3 has-[>[data-align=block-start]]:[&>input]:pb-3",
   {
     variants: {
       size: {
@@ -242,7 +242,7 @@ function InputGroupInput({
   return (
     <PrismInput
       className={cn(
-        "h-full flex-1 rounded-none border-0 bg-transparent shadow-none ring-0 focus-visible:ring-0 aria-invalid:ring-0 dark:bg-transparent",
+        "h-full flex-1 rounded-none border-0 bg-transparent shadow-none ring-0 aria-invalid:ring-0 dark:bg-transparent",
         className,
       )}
       data-slot="input-group-control"
@@ -259,7 +259,7 @@ function InputGroupTextarea({
   return (
     <Textarea
       className={cn(
-        "flex-1 resize-none rounded-none border-0 bg-transparent py-2 shadow-none ring-0 focus-visible:ring-0 aria-invalid:ring-0 dark:bg-transparent",
+        "flex-1 resize-none rounded-none border-0 bg-transparent py-2 shadow-none ring-0 aria-invalid:ring-0 dark:bg-transparent",
         className,
       )}
       data-slot="input-group-control"

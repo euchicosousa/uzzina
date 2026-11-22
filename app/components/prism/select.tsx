@@ -81,7 +81,7 @@ function SelectTrigger({
   return (
     <ButtonPrimitive
       className={cn(
-        "flex w-full items-center justify-between gap-1.5 rounded-2xl border border-transparent bg-input px-3 py-2 text-sm whitespace-nowrap transition-[color,box-shadow] duration-200 outline-none squircle focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring-halo disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-error aria-invalid:bg-error-background aria-invalid:text-error-foreground aria-invalid:ring-error-background data-placeholder:text-secondary-foreground data-[size=default]:h-10 data-[size=lg]:h-12 data-[size=lg]:rounded-3xl data-[size=lg]:text-base data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "flex w-full items-center justify-between gap-1.5 rounded-2xl border border-transparent bg-input px-3 py-2 text-sm whitespace-nowrap transition-[color,box-shadow] duration-200 outline-none squircle disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-error aria-invalid:bg-error-background aria-invalid:text-error-foreground aria-invalid:ring-error-background data-placeholder:text-secondary-foreground data-[size=default]:h-10 data-[size=lg]:h-12 data-[size=lg]:rounded-3xl data-[size=lg]:text-base data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       data-size={size}
@@ -156,7 +156,7 @@ function SelectList<T extends object>({
   return (
     <ListBoxPrimitive
       className={cn(
-        "group/select-list max-h-[inherit] overflow-x-hidden overflow-y-auto p-1 outline-hidden",
+        "group/select-list max-h-[inherit] overflow-x-hidden overflow-y-auto p-1.5 outline-hidden",
         className,
       )}
       data-slot="select-list"
@@ -204,7 +204,7 @@ function SelectItem({
   return (
     <ListBoxItemPrimitive
       className={cn(
-        "relative flex min-h-7 w-full cursor-default items-center gap-2 rounded-xl py-1.5 pr-12 pl-2 text-sm outline-hidden select-none squircle focus:bg-secondary data-disabled:pointer-events-none data-disabled:opacity-50 data-focused:bg-secondary [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+        "relative flex min-h-7 w-full cursor-default items-center gap-2 rounded-xl py-1.5 pr-12 pl-2 text-sm outline-hidden select-none squircle data-disabled:pointer-events-none data-disabled:opacity-50 data-hovered:bg-secondary [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
         className,
       )}
       data-slot="select-item"

@@ -77,7 +77,7 @@ function AccordionTrigger({
           slot="trigger"
           data-slot="accordion-trigger"
           className={cn(
-            "group/accordion-trigger relative flex w-full min-w-0 flex-1 items-center justify-between gap-4 overflow-hidden border border-transparent p-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:underline disabled:pointer-events-none disabled:opacity-50",
+            "group/accordion-trigger relative flex w-full min-w-0 flex-1 items-center justify-between gap-4 overflow-hidden border border-transparent p-4 text-left text-sm font-medium transition-all outline-none hover:underline disabled:pointer-events-none disabled:opacity-50",
             className,
           )}
           {...props}

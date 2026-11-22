@@ -7,7 +7,7 @@ import {
 import { cn } from "cnfast";
 
 const colorFieldVariants = cva(
-  "squircle w-full min-w-0 rounded-2xl text-sm placeholder:text-sm border border-transparent bg-input uppercase font-mono transition-[color,box-shadow] duration-200 outline-none placeholder:text-secondary-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring-halo disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:bg-error-background aria-invalid:text-error-foreground aria-invalid:border-error aria-invalid:ring-error-background",
+  "squircle w-full min-w-0 rounded-2xl text-sm placeholder:text-sm border border-transparent bg-input uppercase font-mono transition-[color,box-shadow] duration-200 outline-none placeholder:text-secondary-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:bg-error-background aria-invalid:text-error-foreground aria-invalid:border-error aria-invalid:ring-error-background",
   {
     variants: {
       size: {
