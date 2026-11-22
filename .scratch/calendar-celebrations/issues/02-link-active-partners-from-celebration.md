@@ -8,7 +8,7 @@
 
 **Bloqueado por** — Nenhum outro ticket.
 
-**Status** — Aberto na main local. Aguardando implementação, verificação da gravação e revisão visual antes de publicar.
+**Status.** Encerrado: aprovado pelo proprietário em 21/11/2026 e publicado no GitHub (`main` = `origin/main` em 22/11).
 
 - [ ] Selecionar e remover um ou mais parceiros ativos ao criar ou editar e poder salvar uma data sem seleção. Na edição, carregar os vínculos existentes e preservar vínculos de parceiros inativos ao salvar outras alterações.
 - [ ] Reaproveitar o vínculo já gerenciado pela edição do parceiro. Reabrir a data e conferir o mesmo vínculo na edição do parceiro. Uma falha parcial não deve produzir confirmação de sucesso nem duplicar vínculos ao tentar novamente.

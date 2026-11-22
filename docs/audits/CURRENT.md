@@ -1,8 +1,8 @@
 # UZZINA — estado atual
 
-Atualizado em 19/11/2026. [Contratos](../../AGENTS.md) · [Operação](../../README.md) · [Ideias futuras](../../TODO.md).
+Atualizado em 22/11/2026. [Contratos](../../AGENTS.md) · [Operação](../../README.md) · [Ideias futuras](../../TODO.md).
 
-**Fila vigente em 19/11.** O [tracker local](../../.scratch/README.md) mantém 12 tickets abertos: 7 de Planejamento (T01, T03, T04, T09, T10, T11 e T12), o estudo de fundos e cinzas, três ajustes de uso e o visual do seletor de modelos em espera. A auditoria de arquitetura e a reorganização dos cartões Linha e Bloco (ARQ-02) foram encerradas pelo proprietário. Registro documental na main local.
+**Fila vigente em 22/11: vazia.** O [tracker local](../../.scratch/README.md) não tem tickets abertos. HOJE-05, CAL-02, GAV-01, IA-M10, DS35–DS37 e o Planejamento (T01–T12) foram aprovados e estão no GitHub (`main` = `origin/main`); o proprietário conferiu o site publicado. Sobras sem ticket: ensaios de IA em /private/tmp, remover generator.ts/storage.ts e conferir telas fora do Planejamento após remover o tracking dos títulos `h1`–`h5`.
 
 **Hoje e Home → Linha do tempo (HOJE-04).** Concluído e aprovado pelo proprietário em 18/11. Slider, Ajustar às ações, barras compactas e alças integrados em Hoje e Home. Verificação de navegador em ambas com dados fictícios, mais 18 testes da régua e typecheck aprovados. Commit fa740ef, sem publicação. [Histórico do ticket](../../.scratch/today-views/issues/04-timeline-zoom-fit-compact-bars.md).
 

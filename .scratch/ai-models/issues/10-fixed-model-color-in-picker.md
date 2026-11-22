@@ -1,6 +1,6 @@
 # IA-M10 — Usar fundo fixo da cor no seletor de modelos de IA
 
-**Status.** Aguardando retomada pelo proprietário.
+**Status.** Encerrado: aprovado pelo proprietário em 21/11/2026 e publicado no GitHub (`main` = `origin/main` em 22/11).
 
 **Bloqueado por.** Nenhuma dependência técnica identificada.
 

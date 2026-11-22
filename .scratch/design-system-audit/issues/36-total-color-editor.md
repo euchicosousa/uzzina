@@ -1,6 +1,6 @@
 # DS36 — Um só lugar para editar todas as cores do app
 
-**Status.** Concluído em 22/11/2026: o proprietário conferiu na tela e tudo passou; falta apenas o deploy do frontend. Transparências escritas à mão seguem no [DS37](37-manual-transparencies-in-editor.md). Aberto em 21/11/2026 a pedido do proprietário. Só estudo e desenho; nenhuma alteração além da página "Cores dos temas" atual sem aprovação de cada etapa. Continua o DS35 (fase 5 e o editor do Admin, antigo DS32).
+**Status.** Encerrado em 22/11/2026: o proprietário conferiu na tela e o frontend está publicado (`main` = `origin/main`). Transparências escritas à mão foram tratadas no [DS37](37-manual-transparencies-in-editor.md).
 
 ## O que é
 

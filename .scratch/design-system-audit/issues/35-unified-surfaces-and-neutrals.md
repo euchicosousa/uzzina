@@ -1,6 +1,6 @@
 # DS35 — Um sistema único e simples para os fundos e os cinzas do app
 
-**Status.** Aberto em 17/11/2026 a pedido do proprietário, como ticket principal de todos os assuntos de cinzas e fundos. Absorve como fases o DS23, DS30, DS31, DS32, DS33 e DS34 (os arquivos continuam como detalhe de cada fase). Começa por estudo e decisão; nenhuma alteração no código do app sem a aprovação de cada fase.
+**Status.** Encerrado em 22/11/2026: as fases foram concluídas no [DS36](36-total-color-editor.md) e no [DS37](37-manual-transparencies-in-editor.md), aprovados pelo proprietário. Contrato em [surfaces-and-neutrals](../../../docs/contracts/surfaces-and-neutrals.md).
 
 **Fase 1, 19/11.** [Bancada de estudo](../ds35-bancada-de-estudo.html) disponível na `main` local. Reúne cinco comparativos do uso atual com hipóteses em Ônix e Carbono, nos dois modos, e recomendações para P1–P8. A separação de cartão neutro e flutuante sobre o fundo branco do Carbono claro merece conferência pela borda e pela sombra. Controles e larguras de 320 a 1440 px verificados no Chromium isolado. Os exemplos são maquetes. As oito decisões seguem pendentes.
 

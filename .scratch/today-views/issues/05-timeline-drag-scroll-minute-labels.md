@@ -8,7 +8,7 @@
 
 **Bloqueado por** — Nenhum outro ticket.
 
-**Status** — Aberto na main local. Aguardando implementação e revisão visual antes de publicar.
+**Status.** Encerrado: aprovado pelo proprietário em 21/11/2026 e publicado no GitHub (`main` = `origin/main` em 22/11).
 
 - [ ] Em Hoje e Home, mover uma ação para um horário inicialmente fora da tela, nos dois sentidos, em um só arraste. A prévia considera a distância rolada e o horário salvo coincide com a prévia. A rolagem para ao sair da faixa da borda, ao soltar ou cancelar e no limite do dia.
 - [ ] Conferir que clique para abrir, gestos das alças, teclado e deslize por toque mantêm o comportamento atual. Cancelar o arraste preserva o horário original.

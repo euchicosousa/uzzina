@@ -10,7 +10,7 @@
 
 **Bloqueios** — Nenhum.
 
-**Status** — Em execução. [Inventário inicial e revisão independente do V44](../../../docs/audits/2026-11-05-ds01-visual-deviations.md). Cobertura por rota e comparação visual pendentes.
+**Status** — Encerrado por substituição: o design system foi fechado pelo proprietário em 11/11/2026 e a revisão por rota foi encerrada no [DS02](02-route-coverage-and-visual-review.md). Inventário em [2026-11-05-ds01-visual-deviations](../../../docs/audits/2026-11-05-ds01-visual-deviations.md).
 
 - [ ] Cobrir cores, padrões de componentes e estados, tipografia, dimensões, espaçamento, bordas, raios, sombras e foco. Registrar tela/componente, estilo atual, referência Prism ou token aplicável e evidência verificável.
 - [ ] Começar pelas classes amber do feriado no calendário. Comparar com as cores semânticas e paletas do sistema em claro/escuro, considerando significado e contraste além de proximidade visual. Cruzar com o [CAL01](../../calendar-celebrations/issues/01-calendar-celebration-markers.md).

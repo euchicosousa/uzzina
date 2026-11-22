@@ -8,7 +8,7 @@
 
 **Bloqueado por** — Nenhum outro ticket.
 
-**Status** — Aberto na main local. Aguardando implementação e conferência do fluxo antes de publicar.
+**Status.** Encerrado: aprovado pelo proprietário em 21/11/2026 e publicado no GitHub (`main` = `origin/main` em 22/11).
 
 - [ ] Ao salvar sem parceiro, exibir uma mensagem legível em português, como “Selecione pelo menos um parceiro”, sem o objeto JSON no alerta.
 - [ ] Manter os dados digitados, adicionar um parceiro e salvar o mesmo rascunho normalmente. Continuar impedindo a criação sem parceiro.

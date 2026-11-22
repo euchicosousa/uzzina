@@ -1,6 +1,6 @@
 # DS37 — Transparências escritas à mão passam para o editor de cores
 
-**Status.** Aberto em 22/11/2026 a pedido do proprietário, para depois do DS36. Só levantamento pronto; nenhuma alteração no código do app. Continua o [DS33](33-manual-transparencies-and-secondary.md) (absorvido pelo DS35) e o [DS36](36-total-color-editor.md).
+**Status.** Encerrado em 22/11/2026 (commit `b5bf3b2c`): as transparências escritas à mão passaram para o editor de temas. Continua o [DS33](33-manual-transparencies-and-secondary.md) e o [DS36](36-total-color-editor.md).
 
 ## O que é
 

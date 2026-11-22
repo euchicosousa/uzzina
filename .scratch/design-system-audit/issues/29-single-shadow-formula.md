@@ -1,6 +1,6 @@
 # DS29 — Sombra única por fórmula (fim da sombra por paleta)
 
-**Status.** Dependência aberta do [DS35](35-unified-surfaces-and-neutrals.md) desde 18/11/2026. A fórmula já foi escolhida. Sua aplicação continua pendente e será tratada na fase de CSS e paletas.
+**Status.** Encerrado em 22/11/2026: a sombra única (`--shadow-color`) foi aplicada na etapa 4 do [DS36](36-total-color-editor.md), aprovada pelo proprietário.
 
 **Registro anterior.** Aberto em 17/11/2026. Decisão de valores já tomada pelo proprietário em 17/11 no laboratório [ds27-sombras.html](../ds27-sombras.html) (registrada em [DS26, seção "Decisão do proprietário: sombra"](../../../docs/audits/2026-11-16-ds26-inventario-cores.md)). Nada aplicado no app.
 
