@@ -245,7 +245,7 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     approved: true,
     label: "UAdminItemCard",
     section: "uzzina",
-    keywords: ["admin", "cartao", "lista", "item", "parceiro"],
+    keywords: ["admin", "cartao", "card", "lista", "item", "parceiro"],
   },
   {
     id: "uzzina-avatar",

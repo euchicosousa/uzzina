@@ -991,7 +991,7 @@ function ProfilePage() {
 
           <ProfileSetting
             title="Cor da fase"
-            description="Pinta cada cartão de ação com a cor da fase em que ele está, em todas as telas. Suave usa um tom leve; Viva usa a cor cheia."
+            description="Pinta cada item da Ação com a cor da fase em que ele está, em todas as telas. Suave usa um tom leve; Viva usa a cor cheia."
           >
             <PrismToggleGroup
               fullWidth

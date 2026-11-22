@@ -89,7 +89,7 @@ export function InstagramPreview({ files, compact }: InstagramPreviewProps) {
           <track kind="captions" />
         </video>
         {/* Badge vídeo */}
-        <div className="absolute top-2 right-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white">
+        <div className="absolute top-2 right-2 px-2 py-0.5 text-[10px] font-medium image-text">
           Vídeo
         </div>
       </div>
@@ -156,7 +156,7 @@ export function InstagramPreview({ files, compact }: InstagramPreviewProps) {
           size="icon-xs"
           variant="ghost"
           onClick={() => scrollToSlide(carouselIndex - 1)}
-          className="absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white"
+          className="absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-transparent image-icon hover:bg-transparent"
           aria-label="Imagem anterior"
         >
           <ChevronLeftIcon className="size-4 opacity-100" />
@@ -167,7 +167,7 @@ export function InstagramPreview({ files, compact }: InstagramPreviewProps) {
           size="icon-xs"
           variant="ghost"
           onClick={() => scrollToSlide(carouselIndex + 1)}
-          className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white"
+          className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-transparent image-icon hover:bg-transparent"
           aria-label="Próxima imagem"
         >
           <ChevronRightIcon className="size-4 opacity-100" />
@@ -182,15 +182,15 @@ export function InstagramPreview({ files, compact }: InstagramPreviewProps) {
             variant="unstyled"
             onClick={() => scrollToSlide(i)}
             aria-label={`Ir para o slide ${i + 1}`}
-            className={`size-1.5 rounded-full transition outline-none focus-visible:ring-3 focus-visible:ring-ring-halo ${
-              i === carouselIndex ? "bg-white" : "bg-white/40"
+            className={`size-1.5 rounded-full drop-shadow-[0_1px_2px_rgb(0_0_0/0.55)] transition outline-none focus-visible:ring-3 focus-visible:ring-ring-halo ${
+              i === carouselIndex ? "bg-white" : "bg-white/50"
             }`}
           />
         ))}
       </div>
 
       {/* Contador */}
-      <div className="absolute top-2 right-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white">
+      <div className="absolute top-2 right-2 px-2 py-0.5 text-[10px] font-medium image-text">
         {carouselIndex + 1}/{total}
       </div>
     </div>

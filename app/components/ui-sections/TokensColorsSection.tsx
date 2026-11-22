@@ -307,15 +307,15 @@ export function TokensColorsSection() {
               />
             </SemanticCategory>
 
-            {/* Categoria 2 — Cartão de Ação e Versões (action) */}
+            {/* Categoria 2 — Item da Ação e Versões (action) */}
             <SemanticCategory
-              description="Superfície do cartão de ação, relevo de borda superior, contorno e versões de repouso e hover. Em paletas planas (--action-relief: 0), o anel e a borda superior ficam transparentes."
-              title="Cartão de Ação e Versões (Action)"
+              description="Superfície do item da Ação, relevo de borda superior, contorno e versões de repouso e hover. Em paletas planas (--action-relief: 0), o anel e a borda superior ficam transparentes."
+              title="Item da Ação e Versões (Action)"
             >
               <SemanticSwatch
                 cssClass="bg-action"
                 name="Action"
-                note="Superfície base do cartão (background L +0,02 claro, +0,10 escuro, pelo ajuste da paleta)"
+                note="Superfície base do item da Ação (background L +0,02 claro, +0,10 escuro, pelo ajuste da paleta)"
                 preview={
                   <div className="size-11 rounded-xl border border-border/40 bg-action shadow-action ring ring-action-ring squircle" />
                 }
@@ -331,7 +331,7 @@ export function TokensColorsSection() {
               <SemanticSwatch
                 cssClass="ring-action-ring"
                 name="Action Ring"
-                note="Contorno do cartão (--shadow-color a 5% no claro e 20% no escuro; desligado em paletas planas)"
+                note="Contorno do item da Ação (--shadow-color a 5% no claro e 20% no escuro; desligado em paletas planas)"
                 preview={
                   <div className="flex size-11 items-center justify-center rounded-xl bg-action ring-2 ring-action-ring squircle">
                     <div className="size-4.5 rounded-md bg-action-ring squircle" />
@@ -582,11 +582,11 @@ export function TokensColorsSection() {
           </div>
 
           <div className="flex flex-col divide-y divide-border">
-            {/* SHOWCASE 1: Cartões Reais de Ação do Workflow */}
+            {/* SHOWCASE 1: Itens Reais de Ação do Workflow */}
             <div className="flex flex-col gap-6 py-8 first:pt-0 last:pb-0">
               <div className="flex flex-col gap-1.5">
                 <h4 className="text-base font-semibold text-foreground">
-                  1. Cartões de Ação do Workflow (Relevo, Status e Cores de
+                  1. Itens das Ações do Workflow (Relevo, Status e Cores de
                   Fase)
                 </h4>
                 <p className="text-sm text-secondary-foreground">

@@ -132,7 +132,7 @@ export function applyPaletteVars(
     }
   }
 
-  // 5. Relevo de ações e cartões (border-t, ring e sombras)
+  // 5. Relevo dos itens da Ação (border-t, ring e sombras)
   if (palette.relief === false) {
     // Flat cards: lets tinted rings (phase-surface) fade out like the base ring.
     root.style.setProperty("--action-relief", "0");

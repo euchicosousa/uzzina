@@ -776,6 +776,39 @@ html {
   }
 }
 
+/* Text over an image (same rule as image-icon): white, no background, with a
+   shadow that follows the letters. */
+@utility image-text {
+  color: white;
+  text-shadow:
+    0 0 1px rgb(0 0 0 / 0.7),
+    0 1px 2px rgb(0 0 0 / 0.55);
+}
+
+/* Toast shadow tinted by its state (DS36). The toast sets --toast-state-color;
+   the shadow color is derived exactly like the phase shadow (same shared L, C
+   and alpha, light and dark), so colored items share one shadow rule. */
+@utility toast-state-shadow {
+  --toast-shadow: oklch(
+    from var(--toast-state-color) var(--shared-phase-shadow-l)
+      var(--shared-phase-shadow-c) h
+  );
+  --toast-shadow-alpha: var(--shared-phase-shadow-alpha);
+  &:is(.dark *) {
+    --toast-shadow: oklch(
+      from var(--toast-state-color) var(--shared-dark-phase-shadow-l)
+        var(--shared-dark-phase-shadow-c) h
+    );
+    --toast-shadow-alpha: var(--shared-dark-phase-shadow-alpha);
+  }
+  box-shadow: 0 12px 24px -6px
+    color-mix(
+      in srgb,
+      var(--toast-shadow) calc(var(--toast-shadow-alpha) * 1),
+      transparent
+    ) !important;
+}
+
 /* Action card tinted by its phase (DS11). The card sets --phase-color inline.
    Each mode sets only the knobs; the formulas below are shared. Resting shadow
    stays the app's shadow-action. Flat palettes (--action-relief: 0, set by

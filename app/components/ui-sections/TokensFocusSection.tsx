@@ -195,7 +195,7 @@ export function TokensFocusSection() {
               "features/action-drawer/ActionDatePicker.tsx (data da gaveta: ghost sm com anel padrão do PrismButton)",
               "features/PartnersCombobox.tsx e busca global (filtro de parceiros: foco padrão do Prism)",
               "features/media/FileManagerDialog.tsx (alça e caixa de seleção, classe image-icon)",
-              "features/ActionItem.tsx (cartão: focus-within:outline-2 outline-primary, exceção aprovada)",
+              "features/ActionItem.tsx (item da Ação: focus-within:outline-2 outline-primary, exceção aprovada)",
               "routes/app/admin/partner/$slug.tsx (editores de texto: focus-within)",
             ]}
           >
@@ -351,12 +351,12 @@ export function TokensFocusSection() {
               </div>
             </Example>
             <Example
-              label="Cartão de ação (focus-within)"
+              label="Item da Ação (focus-within)"
               source="Réplica de features/ActionItem.tsx"
             >
               <div className="w-72 rounded-2xl border-t border-action-top-border bg-card p-3 text-sm shadow-action ring ring-action-ring transition-[color,background-color,border-color,box-shadow,padding] duration-500 focus-within:outline-2 focus-within:outline-primary hover:shadow-action-hover motion-reduce:transition-none">
                 <input
-                  aria-label="Réplica do cartão de ação"
+                  aria-label="Réplica do item da Ação"
                   className="w-full bg-transparent outline-none"
                   placeholder="Clique ou Tab aqui"
                 />
@@ -644,7 +644,7 @@ export function TokensFocusSection() {
           >
             <Example
               hint="Estado estático: não é foco"
-              label="Cartão selecionado"
+              label="Item da Ação selecionado"
               source="Réplica de features/ActionItem.tsx"
             >
               <div className="w-56 rounded-2xl border bg-card p-3 text-sm ring-2 ring-primary">
