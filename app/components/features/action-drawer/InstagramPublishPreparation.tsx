@@ -167,6 +167,7 @@ export function InstagramPublishPreparation({
   const [uncertain, setUncertain] = useState(false);
   const [scheduleDates, setScheduleDates] = useState<(Date | null)[]>([null]);
   const sendLock = useRef(false);
+  const pendingNoticeShown = useRef(false);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, {
@@ -247,6 +248,14 @@ export function InstagramPublishPreparation({
       item.partner_id === partner?.id &&
       ["pending", "uncertain", "partial"].includes(item.status),
   );
+  useEffect(() => {
+    if (!open || loading || busy || !blocked || pendingNoticeShown.current)
+      return;
+    pendingNoticeShown.current = true;
+    toast(
+      "Há um envio pendente ou parcial. Confira o Instagram antes de tentar novamente.",
+    );
+  }, [blocked, busy, loading, open]);
   const scheduleHasInvalidDate = scheduleDates.some(
     (date) => date !== null && date.getTime() <= Date.now(),
   );
@@ -256,6 +265,7 @@ export function InstagramPublishPreparation({
     setSelected(files.map((_, index) => index));
     setMode("publish");
     setUncertain(false);
+    pendingNoticeShown.current = false;
     setOpen(true);
     setLoading(true);
     void refresh().finally(() => setLoading(false));
@@ -292,6 +302,7 @@ export function InstagramPublishPreparation({
     )
       return;
     sendLock.current = true;
+    pendingNoticeShown.current = true;
     setBusy(true);
     try {
       await instagramPublishRequest(actionId, {
@@ -497,14 +508,7 @@ export function InstagramPublishPreparation({
                     ))}
                 </div>
               )}
-            {(mediaError || blocked || uncertain) && (
-              <p className="text-base text-error">
-                {mediaError ||
-                  (blocked
-                    ? "Há um envio pendente ou parcial. Confira o Instagram antes de tentar novamente."
-                    : "Confira o resultado no Instagram antes de tentar novamente.")}
-              </p>
-            )}
+            {mediaError && <p className="text-base text-error">{mediaError}</p>}
           </PrismDialogBody>
           <PrismTabList aria-label="Modo de publicação">
             <PrismTab id="publish">Publicar</PrismTab>
