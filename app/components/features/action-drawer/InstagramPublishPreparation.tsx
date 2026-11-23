@@ -260,12 +260,6 @@ export function InstagramPublishPreparation({
     void refresh().finally(() => setLoading(false));
   }, [actionId, refresh]);
 
-  useEffect(() => {
-    if (!open || !actionId) return;
-    const timer = setInterval(() => void refresh(true), 5000);
-    return () => clearInterval(timer);
-  }, [open, actionId, refresh]);
-
   const connectedPartners =
     state?.partners.filter(
       (item) => partnerSlugs.includes(item.slug) && item.username,
