@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Instagram na UZZINA · Plano de integração</title>
+<style>
+/* Standalone export of the default palette from app/lib/palettes.ts. */
+:root {
+  color-scheme: light;
+  --paper: oklch(.96 .002 200); --ink: oklch(0 0 0);
+  --rule: oklch(.87 .002 200); --surface: oklch(.94 .002 200);
+  --primary: oklch(0 0 0); --on-primary: oklch(1 0 0);
+}
+@media (prefers-color-scheme: dark) {
+  :root { color-scheme: dark; --paper: oklch(.2 .01 250); --ink: oklch(1 0 0);
+    --rule: oklch(.35 .01 250); --surface: oklch(.25 .01 250);
+    --primary: oklch(1 0 0); --on-primary: oklch(0 0 0); }
+}
+* { box-sizing: border-box; }
+body { margin: 0 auto; max-width: 1440px; padding: 0 clamp(20px,5vw,84px) 3rem; background: var(--paper); color: var(--ink); font: 17px/1.55 Inter, Helvetica, Arial, sans-serif; }
+header, footer, .line { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+header { padding: 1.35rem 0; border-bottom: 3px solid; }
+.brand { font-size: 1.5rem; font-weight: 900; letter-spacing: -.04em; }
+.meta, .index, dt, .label { font: 600 .8rem/1.5 ui-monospace, monospace; }
+.hero { padding: clamp(3rem,7vw,7rem) 0 3rem; }
+h1, h2, h3, p { margin: 0; }
+h1 { font-size: clamp(3rem,8.5vw,8rem); line-height: .94; letter-spacing: -.065em; }
+.hero p { max-width: 42rem; margin-top: 1.7rem; font-size: clamp(1.15rem,2vw,1.5rem); }
+.layout { display: grid; grid-template-columns: minmax(10rem,1fr) minmax(0,3fr); gap: 5%; border-top: 2px solid; }
+aside { padding-top: 2rem; }
+nav { position: sticky; top: 1.5rem; display: grid; }
+a { color: inherit; text-underline-offset: .22em; }
+nav a { text-decoration: none; padding: .65rem 0; border-bottom: 1px solid var(--rule); }
+nav a:hover, summary:hover { text-decoration: underline; }
+.index { margin-right: .75rem; }
+section { padding: 2rem 0 3rem; border-bottom: 1px solid var(--rule); scroll-margin-top: 1rem; }
+h2 { font-size: clamp(2rem,4.5vw,4.2rem); letter-spacing: -.05em; line-height: 1.05; margin: .5rem 0 1rem; }
+h3 { font-size: 1.15rem; margin: 1.5rem 0 .4rem; }
+p + p { margin-top: .8rem; }
+.demo { background: var(--surface); padding: clamp(1rem,3vw,2rem); margin-top: 1.5rem; }
+fieldset { border: 0; padding: 0; margin: 0; }
+legend { font-size: 1.3rem; font-weight: 700; padding: 0; }
+.choices { display: grid; grid-template-columns: repeat(auto-fit,minmax(7rem,1fr)); gap: .35rem; margin: 1rem 0; }
+.choices label { display: flex; align-items: center; gap: .45rem; padding: .55rem; cursor: pointer; border: 1px solid var(--rule); }
+.choices label:has(:checked) { background: var(--primary); color: var(--on-primary); }
+input { accent-color: var(--primary); }
+output { display: block; border-top: 1px solid var(--rule); padding-top: .8rem; }
+details { border-top: 1px solid var(--rule); padding: .8rem 0; }
+summary { font-weight: 700; cursor: pointer; }
+details p { padding-top: .65rem; }
+dl { display: grid; grid-template-columns: minmax(6rem,1fr) 3fr; margin: 1.3rem 0 0; }
+dt, dd { border-top: 1px solid var(--rule); padding: .7rem 0; margin: 0; }
+ol { padding-left: 1.5rem; } li { padding: .3rem 0; }
+.figures { display: grid; grid-template-columns: repeat(3,1fr); border-block: 1px solid var(--rule); margin: 1.4rem 0; }
+.figures div { padding: .9rem .6rem .9rem 0; }
+.figures strong { display: block; font-size: clamp(1.7rem,4vw,3.7rem); letter-spacing: -.05em; line-height: 1.15; }
+footer { padding-top: 1.2rem; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+@media(max-width:720px) { .layout { display: block; } nav { grid-template-columns: 1fr 1fr; gap: 0 1rem; } aside { padding-top: .4rem; } .figures { grid-template-columns: 1fr; } .figures div { display:flex; align-items: baseline; gap: .8rem; } }
+</style>
+</head>
+<body>
+<header><span class="brand">UZZINA</span><span class="meta">PLANO DE INTEGRAÇÃO &nbsp; / &nbsp; 22.11.2026</span></header>
+<div class="hero"><h1>Instagram<br>na UZZINA<span aria-hidden="true">.</span></h1>
+<p>Uma proposta para programar o conteúdo de cada parceiro e acompanhar seus resultados, da escolha dos Stories ao relatório anual.</p></div>
+<div class="layout">
+<aside><nav aria-label="Etapas do plano"><a href="#conectar"><span class="index">01</span>Conectar</a><a href="#publicar"><span class="index">02</span>Publicar</a><a href="#coletar"><span class="index">03</span>Guardar dados</a><a href="#relatar"><span class="index">04</span>Ver resultados</a><a href="#piloto"><span class="index">05</span>Validar o piloto</a></nav></aside>
+<main>
+<section id="conectar"><span class="label">01 / PARCEIRO</span><h2>Conectar o perfil.</h2><p>A clínica autoriza o acesso na Meta. A UZZINA vincula o @perfil ao cadastro do parceiro e o mostra antes de cada envio. O piloto precisa confirmar que a mesma conexão da Composio permite publicar e ler insights.</p></section>
+<section id="publicar"><span class="label">02 / AÇÃO</span><h2>Escolher o que vai ao ar.</h2><p>Na gaveta da ação, a primeira proposta é colocar <b>Publicar agora</b> e <b>Programar</b> abaixo da prévia do Instagram. A equipe confere perfil, arquivos, ordem, legenda e horário. A posição dos controles e as regras de aprovação editorial ainda estão em discussão.</p>
+<div class="demo"><fieldset><legend>Clínica · Stories de segunda</legend><p>Experimente selecionar quem atende na segunda. Cada nome representa um Story disponível na mesma ação.</p><div class="choices">
+<label><input type="checkbox" checked>Ana</label><label><input type="checkbox">Bia</label><label><input type="checkbox" checked>Caio</label><label><input type="checkbox">Davi</label><label><input type="checkbox">Eva</label><label><input type="checkbox">Iara</label><label><input type="checkbox" checked>João</label><label><input type="checkbox">Lia</label><label><input type="checkbox">Rui</label><label><input type="checkbox">Téo</label>
+</div></fieldset><output aria-live="polite">Segunda · 3 Stories · Ana → Caio → João</output></div>
+<h3>Como as datas funcionariam</h3>
+<details open><summary>Uma ação, vários agendamentos</summary><p>A ação da clínica guarda todos os dez arquivos. Cada data guarda uma seleção e sua ordem. Ao duplicar a ação, a cópia começa com os arquivos e a agenda vazia. Um novo envio só entra na fila quando a equipe confirma.</p></details>
+<details open><summary>Hamburgueria · quatro datas ou toda segunda</summary><p>Escolha a oferta uma vez. Marque quatro datas avulsas ou todas as segundas durante dois meses. Confira a lista antes de confirmar. Cada ocorrência poderá ser alterada ou cancelada individualmente.</p></details>
+<details><summary>O que acontece quando chega a hora?</summary><p>O Supabase guarda a programação. O Cron verifica a fila, o servidor chama a Composio e a UZZINA registra o resultado de cada Story. Se uma resposta se perder, o servidor confere o resultado antes de reenviar.</p></details></section>
+<section id="coletar"><span class="label">03 / HISTÓRICO</span><h2>Guardar o que a conta revela.</h2><dl><dt>Ao conectar</dt><dd>Escolher a data inicial e a final em <b>Importar publicações</b>. A UZZINA percorre a lista do perfil, guarda os posts disponíveis do período, inclusive os publicados fora do app, e mostra quantos conseguiu importar.</dd><dt>A cada coleta</dt><dd>Salvar os insights por perfil e por mídia no Supabase com a data da medição. Capturar os dados de Stories enquanto estiverem disponíveis.</dd><dt>No fim do ano</dt><dd>Mostrar o período coberto e as lacunas. Um post antigo pode estar disponível mesmo quando parte das métricas históricas já expirou.</dd></dl></section>
+<section id="relatar"><span class="label">04 / RELATÓRIOS DO PARCEIRO</span><h2>Quais posts tiveram mais salvamentos em outubro?</h2><p>Em <b>Relatórios → Instagram</b>, escolher perfil, período, formato e métrica. A equipe poderá ver o ranking, consultar todos os posts e exportar CSV para analisar em planilha ou no Claude.</p><p>Os filtros consultam o histórico salvo. Para medir o ganho durante outubro, são necessárias medições que cubram esse intervalo. O relatório identifica quando o valor disponível é o acumulado até a última coleta.</p><h3>O que as pessoas perguntaram nesses posts?</h3><p>Selecione todos os posts importados do período ou marque alguns. Em <b>Analisar comentários</b>, a proposta é reunir os textos disponíveis e suas respostas, guardar a coleta e identificar dúvidas recorrentes. O resultado mostra quantos comentários foram lidos, até qual data e quais posts concentraram cada tema.</p><p>Um post de outubro pode receber comentários em novembro. A data da publicação e a data da conversa aparecem separadamente. A leitura do texto depende de permissão a confirmar no piloto.</p></section>
+<section id="piloto"><span class="label">05 / VALIDAÇÃO</span><h2>Começar por uma conta.</h2><ol><li>Autorizar um perfil Empresa de teste e comprovar publicação e leitura de insights na mesma conexão.</li><li>Publicar agora, agendar três de dez Stories e conferir destino, ordem e resultado. Depois, validar duplicação, datas avulsas e recorrência.</li><li>Importar um período curto, comparar os números com o Instagram e gerar ranking e CSV usando os dados guardados.</li></ol>
+<h3>Estimativa mensal para 15 parceiros</h3><div class="figures"><div><strong>2.670</strong>publicações</div><div><strong>5.340</strong>chamadas básicas</div><div><strong>10.680</strong>com status e insights¹</div></div><p>¹ Cinco Stories por dia por parceiro e um post simples em cada dia útil, considerando 31 dias e 23 dias úteis. O último cenário inclui uma consulta de status e uma de insights por mídia. A referência do plano é de 20 mil chamadas gerenciadas em sessão. O piloto deve medir também listagens, atualizações e novas tentativas.</p>
+<details><summary>O que pode vir depois?</summary><p>Moderação de comentários, menções e mensagens dependem das permissões concedidas. Sheets e Drive podem apoiar a entrega dos relatórios. TikTok fica para uma avaliação futura, pois publicar conteúdo público depende da aprovação de um app próprio.</p></details></section>
+</main></div><footer><a href="instagram-composio.md">Plano completo e fontes ↗</a><span class="meta">UZZINA / ESTUDO DE PRODUTO</span></footer>
+<script>
+const choices = document.querySelector('.choices');
+const result = document.querySelector('output');
+function showSelection() {
+  const names = Array.from(choices.querySelectorAll('input:checked'), input => input.parentElement.textContent.trim());
+  result.textContent = names.length
+    ? 'Segunda · ' + names.length + (names.length === 1 ? ' Story · ' : ' Stories · ') + names.join(' → ')
+    : 'Segunda · Nenhum Story selecionado';
+}
+choices.addEventListener('change', showSelection);
+showSelection();
+</script></body></html>

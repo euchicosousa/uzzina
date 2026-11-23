@@ -11,6 +11,10 @@ Ao criar um ticket ou mudar seu escopo, inclua as três opções da seção `Mod
 **IA-M02 encerrado.** Abas de Minha Conta publicadas conforme confirmação do proprietário e integradas à main local em 06/11.
 
 
+## Investigação solicitada
+
+- [Limite e unificação de funções da Vercel](vercel-functions/issues/01-investigar-limite-e-unificacoes.md) — confirmar cota/contagem e recomendar agrupamentos, sem alterar código.
+
 ## Referências fora da fila de execução
 
 - [Planejamento original](social-planning/README.md): nove tickets antigos com registros divergentes; a recuperação T01–T11 é a fila vigente. Mantidos para referência, sem declarar os antigos pendentes como resolvidos.

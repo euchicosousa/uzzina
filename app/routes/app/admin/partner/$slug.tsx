@@ -1,9 +1,8 @@
-import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
-import { getQuerySessionGeneration } from "~/lib/query-client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   ArchiveIcon,
+  ArchiveRestoreIcon,
   BadgeCheckIcon,
   CloudIcon,
   MailCheckIcon,
@@ -13,44 +12,47 @@ import {
 } from "lucide-react";
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { UPaletteEditor } from "~/components/uzzina/UPaletteEditor";
-
-const Tiptap = lazy(() =>
-  import("~/components/features/RichTextEditor").then((module) => ({
-    default: module.Tiptap,
-  })),
-);
+import { AdminGuard } from "~/components/features/AdminGuard";
+import { PartnerInstagramConnection } from "~/components/features/PartnerInstagramConnection";
+import { PartnerTopicsEditor } from "~/components/features/PartnerTopicsEditor";
+import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
+import { FormSection } from "~/components/layout/FormSection";
 import {
   PrismButton,
   PrismInput,
   PrismLabel,
   PrismSkeleton,
   PrismTextarea,
-  PrismToggle,
   PrismToggleGroup,
   PrismToggleGroupItem,
   buttonVariants,
 } from "~/components/prism";
-import { QUERY_KEYS } from "~/lib/query-keys";
-import { getAllCelebrations } from "~/models/celebrations";
-import { UPartnerCelebrationsSelector } from "~/components/uzzina/UPartnerCelebrationsSelector";
-import { UAvatarUpload } from "~/components/uzzina/UAvatarUpload";
 import { UAvatarSelector } from "~/components/uzzina/UAvatarSelector";
+import { UAvatarUpload } from "~/components/uzzina/UAvatarUpload";
 import { ULoader } from "~/components/uzzina/ULoader";
+import { UPaletteEditor } from "~/components/uzzina/UPaletteEditor";
+import { UPartnerCelebrationsSelector } from "~/components/uzzina/UPartnerCelebrationsSelector";
 import { useAppContext } from "~/contexts/AppContext";
+import { getQuerySessionGeneration } from "~/lib/query-client";
+import { QUERY_KEYS } from "~/lib/query-keys";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { fetchPeople } from "~/lib/supabase.queries";
+import { getAllCelebrations } from "~/models/celebrations";
 import {
   createPartner,
   getPartnerBySlug,
   getPartnerHolidayIds,
-  type PartnerFormValues,
   partnerSlugExists,
   updatePartnerBySlug,
   updatePartnerHolidays,
+  type PartnerFormValues,
 } from "~/models/partners";
-import { AdminGuard } from "~/components/features/AdminGuard";
-import { PartnerTopicsEditor } from "~/components/features/PartnerTopicsEditor";
+
+const Tiptap = lazy(() =>
+  import("~/components/features/RichTextEditor").then((module) => ({
+    default: module.Tiptap,
+  })),
+);
 export const Route = createFileRoute("/app/admin/partner/$slug")({
   component: AdminPartnerEditPageWrapper,
 });
@@ -318,6 +320,7 @@ function AdminPartnerEditPage() {
     });
     try {
       await saveMutation.mutateAsync(currentData);
+      return true;
     } catch {
       // O erro já é tratado no onError da mutation
     } finally {
@@ -424,49 +427,53 @@ function AdminPartnerEditPage() {
       >
         <input name="image" type="hidden" value={imageUrl || ""} />
 
-        {/* Avatar / UploadIcon Widget */}
-        <div className="flex items-center gap-6">
-          <UAvatarUpload
-            aria-label="Alterar imagem do parceiro"
-            cloudName={appData.cloudName}
-            fallback={partner?.short || "?"}
-            folder="uzzina/partners"
-            image={imageUrl}
-            onUpload={(url) => {
-              setImageUrl(url);
-              triggerAutoSave({
-                image: url,
-              });
-            }}
-            uploadPreset={appData.uploadPreset}
-          />
+        <FormSection
+          title="Identidade da Marca"
+          description="Defina como a marca aparece na UZZINA."
+        >
+          {/* Avatar / UploadIcon Widget */}
+          <div className="relative flex items-center gap-6">
+            <UAvatarUpload
+              aria-label="Alterar imagem do parceiro"
+              cloudName={appData.cloudName}
+              fallback={partner?.short || "?"}
+              folder="uzzina/partners"
+              image={imageUrl}
+              onUpload={(url) => {
+                setImageUrl(url);
+                triggerAutoSave({
+                  image: url,
+                });
+              }}
+              uploadPreset={appData.uploadPreset}
+            />
 
-          <div className="flex flex-1 flex-col gap-1">
-            <div className="flex items-center justify-between gap-2 font-medium">
-              <span>Logotipo da Marca</span>
-              {savingFields.has("image") && <ULoader />}
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center justify-between gap-2 font-medium">
+                <span>Logotipo da Marca</span>
+                {savingFields.has("image") && <ULoader />}
+              </div>
+              <div className="text-sm text-secondary-foreground">
+                Clique para fazer upload e recortar
+              </div>
+              {imageUrl && (
+                <PrismButton
+                  onPress={() => {
+                    setImageUrl(null);
+                    triggerAutoSave({
+                      image: null,
+                    });
+                  }}
+                  className="absolute bottom-0 left-16"
+                  size="icon-sm"
+                  variant="error"
+                >
+                  <Trash2Icon />
+                </PrismButton>
+              )}
             </div>
-            <div className="text-sm text-secondary-foreground">
-              Clique para fazer upload e recortar
-            </div>
-            {imageUrl && (
-              <PrismButton
-                onPress={() => {
-                  setImageUrl(null);
-                  triggerAutoSave({
-                    image: null,
-                  });
-                }}
-                size="xs"
-                variant="link"
-              >
-                Remover imagem
-              </PrismButton>
-            )}
           </div>
-        </div>
 
-        <div className="grid gap-8">
           <div className="grid gap-4">
             <div className="flex items-center justify-between gap-2">
               <PrismLabel htmlFor="title">Nome</PrismLabel>
@@ -512,6 +519,27 @@ function AdminPartnerEditPage() {
             </div>
           </div>
 
+          <div className="grid gap-4">
+            <div className="flex items-center justify-between gap-2 font-medium">
+              <span>Cores da Marca</span>
+              {savingFields.has("colors") && <ULoader />}
+            </div>
+            <UPaletteEditor
+              initialColors={partner?.colors || []}
+              onChange={(colors) => {
+                setBrandColors(colors);
+                triggerAutoSave({
+                  colors,
+                });
+              }}
+            />
+          </div>
+        </FormSection>
+        <hr />
+        <FormSection
+          title="Orientações de Conteúdo"
+          description="Reúna as referências para criar e planejar conteúdo."
+        >
           <div className="grid gap-4">
             <div className="flex items-center justify-between gap-2">
               <PrismLabel
@@ -606,6 +634,19 @@ function AdminPartnerEditPage() {
               }
             />
           </div>
+        </FormSection>
+        <hr />
+        <FormSection
+          title="Instagram"
+          description="Configure o perfil e a assinatura das legendas."
+        >
+          <PartnerInstagramConnection
+            isArchived={partner?.archived === true}
+            isLoading={isLoadingPartner}
+            partnerId={partner?.id ?? null}
+            partnerSlug={partner?.slug ?? slug}
+            supabase={supabase}
+          />
 
           <div className="grid gap-4">
             <div className="flex items-center justify-between gap-2">
@@ -625,7 +666,37 @@ function AdminPartnerEditPage() {
               placeholder="#hashtags @mentions..."
             />
           </div>
+        </FormSection>
+        <hr />
+        <FormSection
+          title="Datas Comemorativas da Marca"
+          description="Selecione as datas comemorativas e feriados relevantes para esta marca."
+          trailing={savingFields.has("holidays") ? <ULoader /> : undefined}
+        >
+          <UPartnerCelebrationsSelector
+            celebrations={celebrations}
+            selectedIds={selectedHolidays}
+            isLoading={isLoadingCelebrations}
+            onToggle={handleToggleHoliday}
+            onClear={handleClearHolidays}
+            saving={savingFields.has("holidays")}
+          />
+        </FormSection>
+        <hr />
+        {!isNew && partner?.id && (
+          <>
+            <PartnerTopicsEditor
+              brandColors={brandColors}
+              partnerId={partner.id}
+            />
+            <hr />
+          </>
+        )}
 
+        <FormSection
+          title="Equipe e Escopo"
+          description="Escolha quem trabalha com a marca e o serviço contratado."
+        >
           <div className="grid gap-4">
             <div className="flex items-center justify-between gap-2 font-medium">
               <span>Usuários Vinculados</span>
@@ -648,50 +719,6 @@ function AdminPartnerEditPage() {
                 title: person.name,
                 subtitle: person.surname || undefined,
               }))}
-            />
-          </div>
-
-          <div className="grid gap-4">
-            <div className="flex items-center justify-between gap-2 font-medium">
-              <span>Cores da Marca</span>
-              {savingFields.has("colors") && <ULoader />}
-            </div>
-            <UPaletteEditor
-              initialColors={partner?.colors || []}
-              onChange={(colors) => {
-                setBrandColors(colors);
-                triggerAutoSave({
-                  colors,
-                });
-              }}
-            />
-          </div>
-
-          {!isNew && partner?.id && (
-            <PartnerTopicsEditor
-              brandColors={brandColors}
-              partnerId={partner.id}
-            />
-          )}
-
-          <div className="grid gap-4">
-            <div className="flex items-center justify-between gap-2 font-medium">
-              <div>
-                <span>Datas Comemorativas da Marca</span>
-                <p className="text-xs font-normal text-secondary-foreground">
-                  Selecione as datas comemorativas e feriados relevantes para
-                  esta marca.
-                </p>
-              </div>
-              {savingFields.has("holidays") && <ULoader />}
-            </div>
-            <UPartnerCelebrationsSelector
-              celebrations={celebrations}
-              selectedIds={selectedHolidays}
-              isLoading={isLoadingCelebrations}
-              onToggle={handleToggleHoliday}
-              onClear={handleClearHolidays}
-              saving={savingFields.has("holidays")}
             />
           </div>
 
@@ -729,31 +756,34 @@ function AdminPartnerEditPage() {
               </div>
             </div>
           </div>
-        </div>
+        </FormSection>
+
+        <hr />
 
         <div className="flex items-center justify-between gap-4">
           {isArchived && <input name="archived" type="hidden" value="on" />}
           <div className="flex items-center gap-3">
-            <PrismToggle
-              id="archived"
-              isDisabled={isSubmitting}
-              isSelected={isArchived}
-              onChange={(selected) => {
-                setIsArchived(selected);
-                stateRef.current.archived = selected;
-                triggerAutoSave({
-                  archived: selected,
-                });
+            <PrismButton
+              isDisabled={isSubmitting || savingFields.has("archived")}
+              onPress={async () => {
+                const archived = !isArchived;
+                if (!isNew && !(await triggerAutoSave({ archived }))) return;
+                if (!isCurrentSession()) return;
+                stateRef.current.archived = archived;
+                setIsArchived(archived);
               }}
+              type="button"
               variant="outline"
             >
-              {isArchived ? "Arquivado" : "Visível"}
+              {isArchived ? "Desarquivar" : "Arquivar"}
               {savingFields.has("archived") ? (
                 <ULoader className="size-4" />
+              ) : isArchived ? (
+                <ArchiveRestoreIcon className="size-4" />
               ) : (
                 <ArchiveIcon className="size-4" />
               )}
-            </PrismToggle>
+            </PrismButton>
 
             {!isNew &&
               partner &&

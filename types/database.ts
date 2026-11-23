@@ -711,6 +711,109 @@ export type Database = {
         };
         Relationships: [];
       };
+      partner_instagram_connections: {
+        Row: {
+          id: string;
+          partner_id: string;
+          connected_account_id: string;
+          composio_user_id: string;
+          profile_username: string;
+          profile_name: string | null;
+          biography: string | null;
+          website: string | null;
+          profile_picture_url: string | null;
+          media_count: number | null;
+          status: string;
+          is_current: boolean;
+          connected_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          partner_id: string;
+          connected_account_id: string;
+          composio_user_id: string;
+          profile_username: string;
+          profile_name?: string | null;
+          biography?: string | null;
+          website?: string | null;
+          profile_picture_url?: string | null;
+          media_count?: number | null;
+          status?: string;
+          is_current?: boolean;
+          connected_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          partner_id?: string;
+          connected_account_id?: string;
+          composio_user_id?: string;
+          profile_username?: string;
+          profile_name?: string | null;
+          biography?: string | null;
+          website?: string | null;
+          profile_picture_url?: string | null;
+          media_count?: number | null;
+          status?: string;
+          is_current?: boolean;
+          connected_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "partner_instagram_connections_partner_id_fkey";
+            columns: ["partner_id"];
+            isOneToOne: false;
+            referencedRelation: "partners";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      partner_instagram_connection_attempts: {
+        Row: {
+          id: string;
+          partner_id: string;
+          started_by: string;
+          state_hash: string;
+          connected_account_id: string | null;
+          status: string;
+          expires_at: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          partner_id: string;
+          started_by: string;
+          state_hash: string;
+          connected_account_id?: string | null;
+          status?: string;
+          expires_at: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          partner_id?: string;
+          started_by?: string;
+          state_hash?: string;
+          connected_account_id?: string | null;
+          status?: string;
+          expires_at?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "partner_instagram_connection_attempts_partner_id_fkey";
+            columns: ["partner_id"];
+            isOneToOne: false;
+            referencedRelation: "partners";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       people: {
         Row: {
           admin: boolean;
@@ -877,6 +980,20 @@ export type Database = {
           p_celebration_ids: string[];
         };
         Returns: string[];
+      };
+      save_partner_instagram_connection: {
+        Args: {
+          p_partner_id: string;
+          p_connected_account_id: string;
+          p_composio_user_id: string;
+          p_profile_username: string;
+          p_profile_name: string | null;
+          p_biography: string | null;
+          p_website: string | null;
+          p_profile_picture_url: string | null;
+          p_media_count: number | null;
+        };
+        Returns: undefined;
       };
       admin_update_person: {
         Args: { p_user_id: string; p_changes: Json };

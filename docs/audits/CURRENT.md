@@ -1,6 +1,10 @@
 # UZZINA — estado atual
 
-Atualizado em 22/11/2026. [Contratos](../../AGENTS.md) · [Operação](../../README.md) · [Ideias futuras](../../TODO.md).
+Atualizado em 23/11/2026. [Contratos](../../AGENTS.md) · [Operação](../../README.md) · [Ideias futuras](../../TODO.md).
+
+**Instagram — conexão e prévia do perfil (23/11).** O proprietário confirmou que o cartão com dados do perfil apareceu corretamente; a mensagem separada de sucesso foi removida. A migration de dados do perfil foi aplicada ao Supabase `uzzina`; typecheck passou. Código local, aguardando publicação.
+
+**EST-07 — funções da Vercel (23/11).** Ticket de investigação criado após o proprietário informar o limite do plano gratuito. Vai conferir a cota e a contagem publicada e propor unificações seguras; nenhuma fusão foi implementada.
 
 **Menu do avatar, 22/11.** A cor escolhida agora exibe um visto. Nos itens do menu, o contorno acompanha o foco visível indicado pelo React Aria. Falta conferir com mouse e teclado no app publicado.
 
