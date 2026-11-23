@@ -21,9 +21,25 @@ export type PublishAttempt = {
   detail: string | null;
   created_at: string;
 };
+export type PublishSchedule = {
+  id: string;
+  batch_id: string;
+  ordinal: number;
+  scheduled_at: string;
+  status: string;
+  results: PublishResult[];
+  detail: string | null;
+  instagram_schedule_batches: {
+    action_id: string;
+    partner_id: string;
+    profile_username: string;
+    format: string;
+  };
+};
 export type PublishState = {
   partners: PublishPartner[];
   attempts: PublishAttempt[];
+  schedules: PublishSchedule[];
 };
 export type PublishInput = {
   actionId: string;
@@ -33,6 +49,16 @@ export type PublishInput = {
   files: string[];
   caption: string;
   confirmed: true;
+};
+export type ScheduleInput = {
+  operation: "schedule";
+  actionId: string;
+  partnerSlug: string;
+  profileUsername: string;
+  format: "stories";
+  files: string[];
+  scheduledAt: string[];
+  timezone: string;
 };
 
 export class InstagramPublishError extends Error {
@@ -46,7 +72,7 @@ export class InstagramPublishError extends Error {
 }
 export async function instagramPublishRequest(
   actionId: string,
-  input?: PublishInput,
+  input?: PublishInput | ScheduleInput,
 ): Promise<PublishState | null> {
   const { data } = await createSupabaseBrowserClient().auth.getSession();
   const token = data.session?.access_token;
@@ -109,9 +135,83 @@ export async function instagramPublishRequest(
         created_at: z.string(),
       }),
     ),
+    schedules: z.array(
+      z.object({
+        id: z.string(),
+        batch_id: z.string(),
+        ordinal: z.number(),
+        scheduled_at: z.string(),
+        status: z.string(),
+        results: z.array(
+          z.object({ id: z.string(), permalink: z.string().nullable() }),
+        ),
+        detail: z.string().nullable(),
+        instagram_schedule_batches: z.object({
+          action_id: z.string(),
+          partner_id: z.string(),
+          profile_username: z.string(),
+          format: z.string(),
+        }),
+      }),
+    ),
   });
   const parsed = schema.safeParse(body);
   if (!parsed.success)
     throw new Error("Resposta inválida ao consultar as publicações.");
   return parsed.data;
+}
+
+export async function instagramScheduleRequest(
+  input: ScheduleInput,
+): Promise<void> {
+  const { data } = await createSupabaseBrowserClient().auth.getSession();
+  const token = data.session?.access_token;
+  if (!token) throw new Error("Sua sessão expirou.");
+  const response = await fetch("/api/instagram-publish", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(input),
+  });
+  const body: unknown = await response.json().catch(() => null);
+  if (!response.ok) {
+    const message =
+      typeof body === "object" &&
+      body !== null &&
+      "error" in body &&
+      typeof body.error === "string"
+        ? body.error
+        : "Não foi possível salvar a programação.";
+    throw new InstagramPublishError(message, response.status, null);
+  }
+}
+
+export async function instagramCancelScheduleRequest(
+  actionId: string,
+  scheduleId: string,
+): Promise<void> {
+  const { data } = await createSupabaseBrowserClient().auth.getSession();
+  const token = data.session?.access_token;
+  if (!token) throw new Error("Sua sessão expirou.");
+  const response = await fetch("/api/instagram-publish", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ operation: "cancelSchedule", actionId, scheduleId }),
+  });
+  const body: unknown = await response.json().catch(() => null);
+  if (!response.ok) {
+    const message =
+      typeof body === "object" &&
+      body !== null &&
+      "error" in body &&
+      typeof body.error === "string"
+        ? body.error
+        : "Não foi possível cancelar a programação.";
+    throw new InstagramPublishError(message, response.status, null);
+  }
 }

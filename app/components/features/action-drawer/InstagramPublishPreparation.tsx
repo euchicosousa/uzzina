@@ -33,6 +33,8 @@ import {
 } from "~/components/prism";
 import { LinkButton } from "~/components/prism/button";
 import {
+  instagramCancelScheduleRequest,
+  instagramScheduleRequest,
   instagramPublishRequest,
   InstagramPublishError,
   type PublishInput,
@@ -58,6 +60,25 @@ function getAttemptStatus(status: string) {
       return { label: "Falhou", variant: "error" as const };
     case "partial":
       return { label: "Parcial", variant: "warning" as const };
+    default:
+      return { label: "Conferir", variant: "warning" as const };
+  }
+}
+
+function getScheduleStatus(status: string) {
+  switch (status) {
+    case "scheduled":
+      return { label: "Programado", variant: "info" as const };
+    case "processing":
+      return { label: "Publicando", variant: "warning" as const };
+    case "published":
+      return { label: "Publicado", variant: "success" as const };
+    case "failed":
+      return { label: "Falhou", variant: "error" as const };
+    case "partial":
+      return { label: "Parcial", variant: "warning" as const };
+    case "cancelled":
+      return { label: "Cancelado", variant: "secondary" as const };
     default:
       return { label: "Conferir", variant: "warning" as const };
   }
@@ -181,6 +202,11 @@ export function InstagramPublishPreparation({
   const [loading, setLoading] = useState(false);
   const [connectionFailed, setConnectionFailed] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [scheduleBusy, setScheduleBusy] = useState(false);
+  const scheduleLock = useRef(false);
+  const [cancellingScheduleId, setCancellingScheduleId] = useState<
+    string | null
+  >(null);
   const [uncertain, setUncertain] = useState(false);
   const [scheduleDates, setScheduleDates] = useState<(Date | null)[]>([null]);
   const sendLock = useRef(false);
@@ -349,6 +375,68 @@ export function InstagramPublishPreparation({
     }
   }
 
+  async function scheduleStories() {
+    const dates = scheduleDates
+      .filter((date): date is Date => date !== null)
+      .map((date) => date.toISOString());
+    if (
+      !actionId ||
+      actionCategory !== "stories" ||
+      !partner?.username ||
+      !format ||
+      mediaError ||
+      dates.length === 0 ||
+      scheduleHasInvalidDate ||
+      scheduleBusy ||
+      scheduleLock.current
+    )
+      return;
+    scheduleLock.current = true;
+    setScheduleBusy(true);
+    try {
+      await instagramScheduleRequest({
+        operation: "schedule",
+        actionId,
+        partnerSlug: partner.slug,
+        profileUsername: partner.username,
+        format: "stories",
+        files: selected.map((index) => files[index]),
+        scheduledAt: dates,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      });
+      toast.success("Programação salva.");
+      await refresh(true);
+      setScheduleDates([null]);
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível salvar a programação.",
+      );
+    } finally {
+      scheduleLock.current = false;
+      setScheduleBusy(false);
+    }
+  }
+
+  async function cancelSchedule(scheduleId: string) {
+    if (!actionId || cancellingScheduleId) return;
+    setCancellingScheduleId(scheduleId);
+    try {
+      await instagramCancelScheduleRequest(actionId, scheduleId);
+      toast.success("Programação cancelada.");
+      await refresh(true);
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível cancelar a programação.",
+      );
+    } finally {
+      setCancellingScheduleId(null);
+    }
+  }
+
   const hasConnectedProfile = connectedPartners.length > 0;
   if (!actionId) return null;
 
@@ -513,6 +601,20 @@ export function InstagramPublishPreparation({
                           <PrismBadge variant={status.variant}>
                             {status.label}
                           </PrismBadge>
+                          {item.status === "scheduled" && (
+                            <PrismButton
+                              isDisabled={
+                                cancellingScheduleId !== null || scheduleBusy
+                              }
+                              size="xs"
+                              variant="ghost"
+                              onPress={() => void cancelSchedule(item.id)}
+                            >
+                              {cancellingScheduleId === item.id
+                                ? "Cancelando…"
+                                : "Cancelar"}
+                            </PrismButton>
+                          )}
                           {item.results.map(
                             (result, resultIndex) =>
                               result.permalink && (
@@ -561,12 +663,6 @@ export function InstagramPublishPreparation({
 
           <PrismTabPanel id="schedule">
             <PrismDialogBody className="flex flex-col gap-4 p-4">
-              <p className="text-warning-foreground">
-                O salvamento e o envio automático ainda não estão ligados. Esta
-                etapa prepara a interface; o botão será ativado quando o fluxo
-                de agendamento estiver pronto.
-              </p>
-
               <div className="flex flex-col gap-2">
                 {scheduleDates.map((date, index) => (
                   <div
@@ -605,6 +701,47 @@ export function InstagramPublishPreparation({
                 O mesmo conteúdo será programado para cada data e hora. Fuso
                 horário: {Intl.DateTimeFormat().resolvedOptions().timeZone}.
               </p>
+              {(state?.schedules.filter(
+                (item) =>
+                  item.instagram_schedule_batches.partner_id === partner?.id,
+              ).length ?? 0) > 0 && (
+                <div className="flex flex-col gap-2">
+                  <p className="text-base font-medium">
+                    Stories programados desta ação
+                  </p>
+                  {state?.schedules
+                    .filter(
+                      (item) =>
+                        item.instagram_schedule_batches.partner_id ===
+                        partner?.id,
+                    )
+                    .map((item) => {
+                      const status = getScheduleStatus(item.status);
+                      return (
+                        <div
+                          className="flex items-center justify-between gap-2 text-sm"
+                          key={item.id}
+                        >
+                          <time dateTime={item.scheduled_at}>
+                            {new Date(item.scheduled_at).toLocaleString(
+                              "pt-BR",
+                              {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              },
+                            )}
+                          </time>
+                          <PrismBadge variant={status.variant}>
+                            {status.label}
+                          </PrismBadge>
+                        </div>
+                      );
+                    })}
+                </div>
+              )}
               {(scheduleHasInvalidDate || mediaError) && (
                 <p className="text-base text-error">
                   {scheduleHasInvalidDate
@@ -612,7 +749,21 @@ export function InstagramPublishPreparation({
                     : mediaError}
                 </p>
               )}
-              <PrismButton isDisabled>Programar publicação</PrismButton>
+              <PrismButton
+                isDisabled={
+                  scheduleBusy ||
+                  !partner?.username ||
+                  actionCategory !== "stories" ||
+                  !format ||
+                  selected.length === 0 ||
+                  !!mediaError ||
+                  scheduledCount === 0 ||
+                  scheduleHasInvalidDate
+                }
+                onPress={() => void scheduleStories()}
+              >
+                {scheduleBusy ? "Salvando…" : "Salvar programação"}
+              </PrismButton>
             </PrismDialogBody>
           </PrismTabPanel>
         </PrismTabs>

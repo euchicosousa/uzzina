@@ -52,6 +52,7 @@ As variáveis de publicação configuradas na Vercel são:
 | ANTHROPIC_API_KEY                                         | Modelos Claude, somente no servidor. Opcional enquanto só o Luna estiver em uso; sem ela, a API recusa os modelos Claude com 503 antes de reservar quota |
 | APP_ORIGIN                                                | Legado sem uso no portal; não restringe login, logout ou mutações                                                                                        |
 | AI_DAILY_LIMIT                                            | Limite técnico opcional, padrão100 tentativas por usuário/dia UTC                                                                                        |
+| INSTAGRAM_SCHEDULER_SECRET                                | Segredo do endpoint worker de agendamento Instagram; mínimo 32 caracteres, mesmo valor configurado na Vercel e no Supabase Vault                         |
 
 As variáveis de banco/servidor do arquivo local vêm da cópia de produção, sem credenciais de staging. APP_ORIGIN não é mais exigido pelo portal. Cloudinary e OpenAI também são os serviços reais.
 

@@ -1,6 +1,6 @@
 # Programar uma publicação do Instagram para uma data
 
-**Status:** escopo ampliado em 23/11/2026; implementação ainda não iniciada.
+**Status:** salvamento/listagem/cancelamento e executor de Stories preparados localmente; RPCs aplicadas à produção (`20261123190136`); segredo confirmado na Vercel e no Supabase Vault. Aguardando commit, deploy Ready e configuração do Cron.
 
 **Bloqueado por:** 03
 
@@ -10,21 +10,46 @@ Na gaveta da ação → Instagram → Publicação, programar o conteúdo da aç
 
 ## Critérios de aceite
 
-- [ ] Guardar seleção, snapshot das mídias, perfil conectado, formato fixo da categoria, data, fuso, legenda aplicável e ordem.
+- [x] Preparar salvamento autenticado e listagem local de ocorrências de Stories com snapshot dos arquivos, perfil, horário UTC e fuso; SQL ainda não aplicado.
 - [ ] Aceitar imagem de feed, carrossel, vídeo de feed, Reel e Stories, com a validação de mídia já usada na publicação imediata.
-- [ ] Executar e apresentar resultados por ocorrência; sequência de Stories preserva a ordem e registra cada Story individualmente.
-- [ ] Publicar com app fechado e permitir cancelar ou alterar agendamentos pendentes.
+- [x] Preparar executor para sequência de Stories, com resultado individual e estados de falha/resultado incerto; ainda sem execução real via Cron.
+- [ ] Publicar com app fechado e permitir alterar agendamentos pendentes.
 - [ ] Tratar falha parcial, concorrência, reconexão e resposta incerta.
 - [ ] Duplicar a ação copia arquivos e conteúdo, sem copiar agendamentos nem histórico.
 - [ ] Validar separadamente os cinco formatos no perfil de teste; não considerar testes manuais no painel do Composio como validação do fluxo da UZZINA.
 
 ## Etapas de implementação
 
-1. Salvar e listar programações autenticadas, validando autorização da ação, perfil atual, formato, arquivos e horário futuro. Reusar as tabelas já aplicadas em produção.
-2. Implementar reserva atômica das ocorrências vencidas e um executor protegido que reutilize o fluxo de publicação da UZZINA sem exigir sessão interativa. Ele será adicionado ao endpoint Instagram já existente para não aumentar a contagem de funções Vercel.
-3. Acionar esse executor por Supabase Cron e acompanhar estados, resultados, erros e itens parciais/incertos.
-4. Permitir cancelar ou alterar ocorrências ainda pendentes e mostrar a programação na ação.
-5. Validar no perfil de teste, com atenção especial a sequência parcial de Stories e a não duplicação após timeout.
+1. **Preparado localmente:** salvar/listar autenticado, validar parceiro/ação/perfil/conteúdo e cancelar ocorrências pendentes. A gravação em lote é atômica via RPC.
+2. **Preparado localmente:** reserva atômica e executor protegido reutilizando o endpoint Instagram existente e o proxy Composio. Envia a sequência na ordem; timeout após pedido de publicação fica incerto, sem repetição automática.
+3. **Verificado:** `bun run typecheck`, `bun run test:serverless` (9 endpoints) e build passaram. A migration está aplicada em produção como `20261123190136`; o segredo está confirmado na Vercel e no Vault. Falta publicar e confirmar o deploy Ready.
+4. **Pendente:** após o deploy Ready, criar Cron a cada minuto com `pg_cron`/`pg_net` e confirmar estados, erros e chamadas nos logs.
+5. Validar no perfil de teste, com atenção especial à ordem, falha parcial e não duplicação após timeout.
+
+### Ativação do worker
+
+Não agendar jobs antes do deploy Ready da API e da configuração segura do segredo. Gerar um valor próprio com `openssl rand -hex 32`; cadastrá-lo na Vercel como `INSTAGRAM_SCHEDULER_SECRET` e no Supabase Vault como `uzzina_instagram_scheduler_secret`. Não gravar o valor no repositório nem em logs. Depois que a migration estiver aplicada e o deploy estiver Ready, agendar:
+
+```sql
+select cron.schedule(
+  'uzzina-instagram-publish-worker',
+  '* * * * *',
+  $$
+    select net.http_post(
+      url := 'https://uzzina.cnvt.com.br/api/instagram-publish',
+      headers := jsonb_build_object(
+        'Content-Type', 'application/json',
+        'Authorization', 'Bearer ' || (
+          select decrypted_secret
+          from vault.decrypted_secrets
+          where name = 'uzzina_instagram_scheduler_secret'
+        )
+      ),
+      body := '{"operation":"runDue"}'::jsonb
+    );
+  $$
+);
+```
 
 O plano Hobby da Vercel permite Cron no máximo uma vez ao dia, então não atende horário de postagem; o desenho usa Supabase Cron para chamar por HTTP o endpoint existente da UZZINA. Um disparo por minuto equivaleria a 44.640 chamadas em 31 dias; como referência, a página de preços da Vercel mostra 1 milhão de invocações de função por mês incluídas no Hobby. O consumo de computação e o comportamento sob pico precisam ser conferidos no projeto antes de ativar o job. [Supabase Cron](https://supabase.com/docs/guides/cron) · [Preços da Vercel](https://vercel.com/pricing) · [Limites de Cron da Vercel](https://vercel.com/docs/schedules/cron-jobs/usage-and-pricing)
 
