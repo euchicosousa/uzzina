@@ -82,8 +82,8 @@ export async function listInstagramMedia(input: {
   apiKey: string;
   connectedAccountId: string;
   composioUserId: string;
-  since: number;
-  until: number;
+  since?: number;
+  until?: number;
   after?: string;
 }): Promise<unknown> {
   const parameters: Array<{
@@ -98,9 +98,13 @@ export async function listInstagramMedia(input: {
       type: "query",
     },
     { name: "limit", value: 50, type: "query" },
-    { name: "since", value: input.since, type: "query" },
-    { name: "until", value: input.until, type: "query" },
   ];
+  if (input.since !== undefined && input.until !== undefined) {
+    parameters.push(
+      { name: "since", value: input.since, type: "query" },
+      { name: "until", value: input.until, type: "query" },
+    );
+  }
   if (input.after) {
     parameters.push({ name: "after", value: input.after, type: "query" });
   }
@@ -117,25 +121,34 @@ export async function getInstagramUserInsights(input: {
   apiKey: string;
   connectedAccountId: string;
   composioUserId: string;
-  since: number;
-  until: number;
+  since?: number;
+  until?: number;
 }): Promise<unknown> {
+  const parameters: Array<{
+    name: string;
+    value: string | number;
+    type: "query";
+  }> = [
+    {
+      name: "metric",
+      value: "reach,accounts_engaged,total_interactions,views,profile_views",
+      type: "query",
+    },
+    { name: "period", value: "day", type: "query" },
+    { name: "metric_type", value: "time_series", type: "query" },
+  ];
+  if (input.since !== undefined && input.until !== undefined) {
+    parameters.push(
+      { name: "since", value: input.since, type: "query" },
+      { name: "until", value: input.until, type: "query" },
+    );
+  }
   return getInstagramGraphData({
     apiKey: input.apiKey,
     connectedAccountId: input.connectedAccountId,
     composioUserId: input.composioUserId,
     endpoint: "/v21.0/me/insights",
-    parameters: [
-      {
-        name: "metric",
-        value: "reach,accounts_engaged,total_interactions,views,profile_views",
-        type: "query",
-      },
-      { name: "period", value: "day", type: "query" },
-      { name: "metric_type", value: "time_series", type: "query" },
-      { name: "since", value: input.since, type: "query" },
-      { name: "until", value: input.until, type: "query" },
-    ],
+    parameters,
   });
 }
 

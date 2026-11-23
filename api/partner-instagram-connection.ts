@@ -48,11 +48,17 @@ const disconnectBodySchema = z
 const readRangeSchema = z
   .object({
     partnerSlug: partnerSlugSchema,
-    since: z.number().int().nonnegative(),
-    until: z.number().int().positive(),
+    since: z.number().int().nonnegative().optional(),
+    until: z.number().int().positive().optional(),
   })
   .strict()
-  .refine((body) => body.since < body.until);
+  .refine(
+    (body) =>
+      (body.since === undefined && body.until === undefined) ||
+      (body.since !== undefined &&
+        body.until !== undefined &&
+        body.since < body.until),
+  );
 const readMediaSchema = readRangeSchema.extend({
   action: z.literal("media"),
   after: z.string().min(1).max(2048).optional(),
@@ -265,8 +271,9 @@ async function handleReadMedia(
       apiKey,
       connectedAccountId: connection.connected_account_id,
       composioUserId: connection.composio_user_id,
-      since: parsed.data.since,
-      until: parsed.data.until,
+      ...(parsed.data.since !== undefined && parsed.data.until !== undefined
+        ? { since: parsed.data.since, until: parsed.data.until }
+        : {}),
       ...(parsed.data.after ? { after: parsed.data.after } : {}),
     });
     const page = parsePartnerInstagramMediaPage(result);
@@ -318,8 +325,9 @@ async function handleReadInsights(
       apiKey,
       connectedAccountId: connection.connected_account_id,
       composioUserId: connection.composio_user_id,
-      since: parsed.data.since,
-      until: parsed.data.until,
+      ...(parsed.data.since !== undefined && parsed.data.until !== undefined
+        ? { since: parsed.data.since, until: parsed.data.until }
+        : {}),
     });
     const insights = parsePartnerInstagramInsights(result);
     if (!insights) {

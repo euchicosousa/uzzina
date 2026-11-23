@@ -106,8 +106,8 @@ export async function fetchPartnerInstagramMedia(
   supabase: SupabaseClient<Database>,
   input: {
     partnerSlug: string;
-    since: number;
-    until: number;
+    since?: number;
+    until?: number;
     after?: string;
   },
 ): Promise<PartnerInstagramMediaPage> {
@@ -123,7 +123,7 @@ export async function fetchPartnerInstagramMedia(
 
 export async function fetchPartnerInstagramInsights(
   supabase: SupabaseClient<Database>,
-  input: { partnerSlug: string; since: number; until: number },
+  input: { partnerSlug: string; since?: number; until?: number },
 ): Promise<PartnerInstagramInsightsResult> {
   const result = await requestPartnerInstagram<unknown>(supabase, {
     method: "POST",

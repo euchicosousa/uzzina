@@ -6,15 +6,15 @@ Aplicação da agência CNVT para ações, parceiros, calendário, Kanban e foco
 
 React com TanStack Router em SPA e TanStack Query; Supabase para banco/Auth; Tailwind CSS v4 e Prism sobre React Aria; Tiptap para edição; Cloudinary para upload; OpenAI nas APIs de servidor. Publicação na Vercel.
 
-| Pasta | Conteúdo |
-|---|---|
-| app/routes | Rotas; árvore gerada em app/routeTree.gen.ts |
-| app/components/prism, uzzina, features, layout | Design system e fluxos de interface |
-| app/components/ui-sections | Galeria de componentes em `/ui` |
-| app/hooks, lib, models, services | Estado, cache, contratos e acesso a dados/API |
-| api, server | Funções Vercel e adaptação local dos mesmos handlers |
-| supabase | Migrations incrementais e arquivos específicos de implantação/staging |
-| tests, scripts | Testes automatizados, percursos de navegador e verificações do banco |
+| Pasta                                          | Conteúdo                                                              |
+| ---------------------------------------------- | --------------------------------------------------------------------- |
+| app/routes                                     | Rotas; árvore gerada em app/routeTree.gen.ts                          |
+| app/components/prism, uzzina, features, layout | Design system e fluxos de interface                                   |
+| app/components/ui-sections                     | Galeria de componentes em `/ui`                                       |
+| app/hooks, lib, models, services               | Estado, cache, contratos e acesso a dados/API                         |
+| api, server                                    | Funções Vercel e adaptação local dos mesmos handlers                  |
+| supabase                                       | Migrations incrementais e arquivos específicos de implantação/staging |
+| tests, scripts                                 | Testes automatizados, percursos de navegador e verificações do banco  |
 
 ## Desenvolvimento
 
@@ -31,27 +31,27 @@ Por decisão do proprietário em27/10/2026, `bun run dev` usa **o banco de produ
 
 ## Arquivos de ambiente
 
-| Arquivo privado | Finalidade |
-|---|---|
+| Arquivo privado       | Finalidade                                                                      |
+| --------------------- | ------------------------------------------------------------------------------- |
 | .env.production.local | Configuração ativa de desenvolvimento/build local, com banco/chaves de produção |
-| .env.backup.local | Conexão privada para backup/operações PostgreSQL; não importar na Vercel |
+| .env.backup.local     | Conexão privada para backup/operações PostgreSQL; não importar na Vercel        |
 
 O build local (`bun run build`) também carrega `.env.production.local`. A Vercel usa suas próprias variáveis, mantidas no painel do projeto (não há mais cópia local). Os envs históricos de staging foram movidos para fora do projeto, em `~/uzzina-env-arquivo/`; os scripts de staging só funcionam se eles voltarem à raiz. Todos esses arquivos ficam fora do Git. O arquivo de produção da pasta lead pertence a outro projeto Vercel. Mantenha os envs específicos por modo: um `.env` genérico pode ser pré-carregado pelo Bun e sobrepor valores antes do Vite.
 
-**Composio / Instagram:** `COMPOSIO_API_KEY` e `COMPOSIO_INSTAGRAM_AUTH_CONFIG_ID` são configuração somente de servidor. No ambiente local ficam em `.env.production.local` (ignorado pelo Git); na Vercel devem ser segredos sem prefixo `VITE_`. Confira presença/formato com `bun run check:composio-config`, que não exibe valores. Em 22/11/2026 a leitura oficial confirmou HTTP 200 e toolkit Instagram para o ID configurado. A conexão e os campos do perfil estão no deploy confirmado pelo proprietário; consultas de publicações e insights estão no código local e seguem para publicação nesta rodada. O fluxo usa callback URL por parceiro com estado de uso único. A verificação global de identidade OAuth do projeto Composio estava `Not configured` na captura de 22/11; essa implementação depende de permanecer assim, pois ativá-la muda o callback para `session_uri` global e exige outro fluxo.
+**Composio / Instagram:** `COMPOSIO_API_KEY` e `COMPOSIO_INSTAGRAM_AUTH_CONFIG_ID` são configuração somente de servidor. No ambiente local ficam em `.env.production.local` (ignorado pelo Git); na Vercel devem ser segredos sem prefixo `VITE_`. Confira presença/formato com `bun run check:composio-config`, que não exibe valores. Em 22/11/2026 a leitura oficial confirmou HTTP 200 e toolkit Instagram para o ID configurado. A conexão, os campos do perfil e as consultas de publicações e insights estão publicadas; falta validar as respostas reais das duas consultas. O fluxo usa callback URL por parceiro com estado de uso único. A verificação global de identidade OAuth do projeto Composio estava `Not configured` na captura de 22/11; essa implementação depende de permanecer assim, pois ativá-la muda o callback para `session_uri` global e exige outro fluxo.
 
 As variáveis de publicação configuradas na Vercel são:
 
-| Variável | Uso |
-|---|---|
-| VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY | Cliente público do navegador |
-| VITE_CLOUDINARY_CLOUD_NAME, VITE_CLOUDINARY_UPLOAD_PRESET | Widget de upload |
-| SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY | APIs; mesmos valores das correspondentes públicas, exigidos diretamente por create-user |
-| SUPABASE_SERVICE_ROLE_KEY | Acesso privilegiado somente no servidor; aceita a secret key moderna configurada |
-| OPENAI_API_KEY | Geração de IA somente no servidor |
-| ANTHROPIC_API_KEY | Modelos Claude, somente no servidor. Opcional enquanto só o Luna estiver em uso; sem ela, a API recusa os modelos Claude com 503 antes de reservar quota |
-| APP_ORIGIN | Legado sem uso no portal; não restringe login, logout ou mutações |
-| AI_DAILY_LIMIT | Limite técnico opcional, padrão100 tentativas por usuário/dia UTC |
+| Variável                                                  | Uso                                                                                                                                                      |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY                 | Cliente público do navegador                                                                                                                             |
+| VITE_CLOUDINARY_CLOUD_NAME, VITE_CLOUDINARY_UPLOAD_PRESET | Widget de upload                                                                                                                                         |
+| SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY                    | APIs; mesmos valores das correspondentes públicas, exigidos diretamente por create-user                                                                  |
+| SUPABASE_SERVICE_ROLE_KEY                                 | Acesso privilegiado somente no servidor; aceita a secret key moderna configurada                                                                         |
+| OPENAI_API_KEY                                            | Geração de IA somente no servidor                                                                                                                        |
+| ANTHROPIC_API_KEY                                         | Modelos Claude, somente no servidor. Opcional enquanto só o Luna estiver em uso; sem ela, a API recusa os modelos Claude com 503 antes de reservar quota |
+| APP_ORIGIN                                                | Legado sem uso no portal; não restringe login, logout ou mutações                                                                                        |
+| AI_DAILY_LIMIT                                            | Limite técnico opcional, padrão100 tentativas por usuário/dia UTC                                                                                        |
 
 As variáveis de banco/servidor do arquivo local vêm da cópia de produção, sem credenciais de staging. APP_ORIGIN não é mais exigido pelo portal. Cloudinary e OpenAI também são os serviços reais.
 
