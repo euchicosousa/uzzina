@@ -113,7 +113,7 @@ mock.module("@supabase/supabase-js", () => ({
     },
   }),
 }));
-import handler from "../api/dash-action";
+import handler from "../server/dash-action-handler";
 
 beforeEach(() => {
   process.env.SUPABASE_URL = "https://example.supabase.co";

@@ -1,4 +1,3 @@
-import { filterOperationalActions } from "~/utils/partner-visibility";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Link,
@@ -6,6 +5,7 @@ import {
   useNavigate,
   useParams,
 } from "@tanstack/react-router";
+import { cn } from "cnfast";
 import {
   endOfDay,
   endOfMonth,
@@ -16,7 +16,6 @@ import {
   startOfMonth,
   startOfWeek,
 } from "date-fns";
-import { parseU } from "~/utils/date";
 import {
   BellIcon,
   BriefcaseIcon,
@@ -24,6 +23,7 @@ import {
   CalendarIcon,
   CalendarRangeIcon,
   CheckCircle2Icon,
+  CheckIcon,
   CloudIcon,
   HelpCircleIcon,
   LaptopIcon,
@@ -45,7 +45,6 @@ import {
   useState,
 } from "react";
 import { toast } from "sonner";
-import { usePreferencePersistence } from "~/hooks/usePreferencePersistence";
 import { useAppContext } from "~/contexts/AppContext";
 import {
   Theme,
@@ -53,8 +52,9 @@ import {
   useAppThemeContext,
 } from "~/hooks/useAppTheme";
 import { useNotifications } from "~/hooks/useNotifications";
-import { PALLETE } from "~/lib/palettes";
+import { usePreferencePersistence } from "~/hooks/usePreferencePersistence";
 import { SIZE } from "~/lib/CONSTANTS";
+import { PALLETE } from "~/lib/palettes";
 import { getQuerySessionGeneration } from "~/lib/query-client";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
@@ -63,12 +63,13 @@ import {
   fetchHomeActions,
   fetchPartnerActions,
 } from "~/lib/supabase.queries";
-import { cn } from "cnfast";
+import { getActionById } from "~/models/actions";
 import type { Notification } from "~/types";
+import { parseU } from "~/utils/date";
+import { filterOperationalActions } from "~/utils/partner-visibility";
 import { notificationExcerptText } from "~/utils/sanitize";
 import { DashboardMetrics } from "../features/home/DashboardMetrics";
 import { UZZINALogo } from "../logo";
-import { getActionById } from "~/models/actions";
 import {
   PrismBadge,
   PrismButton,
@@ -642,9 +643,7 @@ export const HeaderMenu = ({
                     backgroundColor: `oklch(${currentColors.primary.l} ${currentColors.primary.c} ${currentColors.primary.h})`,
                   }}
                 >
-                  {isSelected && (
-                    <CheckCircle2Icon className="size-4 opacity-100" />
-                  )}
+                  {isSelected && <CheckIcon className="size-4 opacity-100" />}
                 </div>
               </PrismMenuItem>
             );
@@ -661,16 +660,6 @@ export const HeaderMenu = ({
             <UsersIcon className="size-4" />
             Leads
           </PrismMenuItem>
-
-          {person.admin && person.visible && (
-            <PrismMenuItem
-              onAction={() => onNavigate(planningTo)}
-              textValue="Planejamento"
-            >
-              <CalendarRangeIcon className="size-4" />
-              Planejamento
-            </PrismMenuItem>
-          )}
 
           <PrismMenuItem
             onAction={() => onNavigate("/app/profile")}
@@ -755,6 +744,13 @@ export const HeaderMenu = ({
               >
                 <CalendarIcon className="size-4" />
                 Datas Comemorativas
+              </PrismMenuItem>
+              <PrismMenuItem
+                onAction={() => onNavigate(planningTo)}
+                textValue="Planejamento"
+              >
+                <CalendarRangeIcon className="size-4" />
+                Planejamento
               </PrismMenuItem>
               <PrismMenuItem
                 onAction={() => onNavigate("/app/admin/themes")}

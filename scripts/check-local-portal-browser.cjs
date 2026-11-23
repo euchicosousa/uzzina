@@ -80,7 +80,10 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright");
       const req = route.request();
       const url = new URL(req.url());
       if (![base, alias].includes(url.origin)) return route.abort();
-      if (url.pathname === "/api/dash-auth") {
+      if (
+        url.pathname === "/api/dash" &&
+        url.searchParams.get("scope") === "auth"
+      ) {
         const input = req.postDataJSON();
         const cookie = req.headers().cookie || "";
         requests.push({
@@ -120,7 +123,10 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright");
           ? route.fulfill({ status: 401, json: { error: "No session" } })
           : route.fulfill({ json: { client: clients[index] } });
       }
-      if (url.pathname === "/api/dash-data")
+      if (
+        url.pathname === "/api/dash" &&
+        url.searchParams.get("scope") === "data"
+      )
         return route.fulfill({
           json:
             url.searchParams.get("op") === "partners"
@@ -162,7 +168,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright");
       await page.waitForURL((url) => url.pathname === "/dash");
       await page.getByRole("button", { name: "Sair", exact: true }).waitFor();
       await page.getByText(client.name, { exact: false }).first().waitFor();
-      const cookies = await context.cookies(`${alias}/api/dash-auth`);
+      const cookies = await context.cookies(`${alias}/api/dash`);
       assert(
         cookies.some(
           (cookie) =>

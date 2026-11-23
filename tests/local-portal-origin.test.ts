@@ -4,8 +4,7 @@ import { createDevApiMiddleware } from "../server/dev-api";
 
 // Empty login/session requests must not consult the external database.
 mock.module("@supabase/supabase-js", () => ({ createClient: () => ({}) }));
-import dashAuth from "../api/dash-auth";
-import dashAction from "../api/dash-action";
+import dashHandler from "../api/dash";
 
 const savedEnv = {
   APP_ORIGIN: process.env.APP_ORIGIN,
@@ -19,8 +18,7 @@ let base: string;
 let port: number;
 beforeAll(async () => {
   const middleware = createDevApiMiddleware(async (path) => {
-    if (path === "./api/dash-auth.ts") return dashAuth;
-    if (path === "./api/dash-action.ts") return dashAction;
+    if (path === "./api/dash.ts") return dashHandler;
     throw new Error("Unexpected API");
   });
   server = createServer((req, res) => {
@@ -82,7 +80,7 @@ it.each([
       ["verify", 401],
       ["logout", 200],
     ] as const) {
-      const response = await fetch(base + "/api/dash-auth", {
+      const response = await fetch(`${base}/api/dash?scope=auth`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -106,7 +104,7 @@ it.each([
 it.each(["POST", "PATCH", "DELETE"])(
   "portal %s still requires a session, independent of address",
   async (method) => {
-    const response = await fetch(base + "/api/dash-action", {
+    const response = await fetch(`${base}/api/dash?scope=action`, {
       method,
       headers: {
         "Content-Type": "application/json",
@@ -118,3 +116,20 @@ it.each(["POST", "PATCH", "DELETE"])(
     expect((await response.json()).error).toBe("Sessão inválida ou expirada.");
   },
 );
+it("validates scope and per-scope HTTP methods on /api/dash", async () => {
+  const missingScope = await fetch(`${base}/api/dash`);
+  expect(missingScope.status).toBe(400);
+
+  const invalidScope = await fetch(`${base}/api/dash?scope=unknown`);
+  expect(invalidScope.status).toBe(400);
+
+  const getAuth = await fetch(`${base}/api/dash?scope=auth`);
+  expect(getAuth.status).toBe(405);
+
+  const postData = await fetch(`${base}/api/dash?scope=data`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: "{}",
+  });
+  expect(postData.status).toBe(405);
+});

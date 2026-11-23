@@ -1,8 +1,8 @@
 # Tickets abertos da UZZINA
 
-Atualizado em 22/11/2026. **Fila principal vazia.** Os ajustes de uso (HOJE-05, CAL-02, GAV-01), o seletor de modelos (IA-M10) e o design system (DS35 a DS37) foram aprovados pelo proprietário e estão no GitHub (`main` = `origin/main`); o site publicado foi conferido por ele. Planejamento T01 a T12 aceito (T11 como parecer parcial). Sobras removidas em 22/11 (`generator.ts`, `storage.ts`, o teste antigo e os ensaios em /private/tmp).
+Atualizado em 22/11/2026. HOJE-06 foi aprovado e encerrado pelo proprietário; implementação local, sem publicação, registrada no [histórico](archive/resolved-tickets.md). Os demais ajustes de uso (HOJE-05, CAL-02, GAV-01), o seletor de modelos (IA-M10), design system (DS35 a DS37) e Planejamento (T01–T12, T11 aceito como parecer parcial) foram aprovados; o site publicado foi conferido pelo proprietário. HOJE-04 também foi conferido no app publicado em 22/11.
 
-[Histórico consolidado](archive/resolved-tickets.md): 97 documentos encerrados/aprovados e 11 da antiga série C do Planejamento, substituída pela recuperação. Os antigos arquivos individuais foram retirados e seus links redirecionados.
+[Histórico consolidado](archive/resolved-tickets.md): tickets encerrados/aprovados e os 11 registros da antiga série C do Planejamento, substituída pela recuperação. Os antigos arquivos individuais foram retirados e seus links redirecionados.
 
 Ao criar um ticket ou mudar seu escopo, inclua as três opções da seção `Modelos sugeridos` conforme o [guia de agentes](../AGENTS.md#recomendações-de-agentes-nos-tickets).
 
@@ -10,10 +10,14 @@ Ao criar um ticket ou mudar seu escopo, inclua as três opções da seção `Mod
 
 **IA-M02 encerrado.** Abas de Minha Conta publicadas conforme confirmação do proprietário e integradas à main local em 06/11.
 
+## Propostas para revisão do proprietário
 
-## Investigação solicitada
-
-- [Limite e unificação de funções da Vercel](vercel-functions/issues/01-investigar-limite-e-unificacoes.md) — confirmar cota/contagem e recomendar agrupamentos, sem alterar código.
+- [Formulários administrativos no padrão de Parceiros](admin-forms/issues/01-align-admin-forms.md) — adequar Novo e Editar em Usuários e Clientes e mapear outras páginas administrativas que se beneficiariam do padrão.
+- [Exclusão definitiva de parceiro arquivado](partner-cleanup/issues/01-exclusao-parceiro.md) — gestão de parceiros, com prévia das ações e definição para registros compartilhados.
+- [Limpeza de arquivos sem uso no Cloudinary](cloudinary-cleanup/issues/01-arquivos-sem-vinculo.md) — inventário, revisão e exclusão selecionada.
+- [Integração Instagram pela Composio](instagram-composio/issues/01-piloto-conexao.md) — sete etapas, do piloto de permissões aos relatórios e análise de comentários. O plano visual continua em [HTML](../docs/plans/instagram-composio.html).
+- [Limite e unificação de funções da Vercel](vercel-functions/issues/01-investigar-limite-e-unificacoes.md) — confirmar o limite do plano, contar as funções atuais e recomendar possíveis unificações sem implementação neste estudo.
+- [EST-06 — Cron de geração de estratégias](action-strategy/issues/06-investigate-strategy-worker-cron.md) — investigar por que o processamento persistente de estratégias da gaveta de ação precisa de um cron e se o recurso continua desejado.
 
 ## Referências fora da fila de execução
 

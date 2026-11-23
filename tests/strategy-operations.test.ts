@@ -55,7 +55,8 @@ mock.module("@supabase/supabase-js", () => ({
         data:
           name === "strategy_ready"
             ? true
-            : name === "claim_strategy_operation_with_model"
+            : name === "claim_strategy_operation_with_model" ||
+                name === "claim_direct_strategy_operation"
               ? claim
               : name === "store_strategy_result" ||
                   name === "fail_strategy_operation"
@@ -204,13 +205,14 @@ it("rejects unauthenticated, inactive and unsupported calls before private work"
 it("binds acceptance to the authenticated actor and only accepts canonical identity/version", async () => {
   expect(
     (await request(handler, { method: "POST", body: accept })).status,
-  ).toBe(202);
+  ).toBe(200);
   expect(events[0]).toEqual({
-    name: "accept_strategy_operation",
+    name: "accept_direct_strategy_operation",
     args: {
       p_user_id: userId,
       p_action_id: actionId,
       p_operation_id: operationId,
+      p_model: "gpt-6-luna",
       p_expected_version: accept.expectedVersion,
     },
   });
@@ -280,6 +282,30 @@ it("rejects malformed/large bodies and mismatched recovery identity", async () =
       })
     ).status,
   ).toBe(409);
+});
+it("generates and saves the requested operation before responding", async () => {
+  claim = {
+    id: operationId,
+    payload: {
+      intent: "ai-strategy",
+      category: "post",
+      partner_name: "Hospital",
+    },
+    result: null,
+  };
+  expect(
+    (await request(handler, { method: "POST", body: accept })).status,
+  ).toBe(200);
+  expect(events.map((event) => event.name)).toEqual([
+    "accept_direct_strategy_operation",
+    "claim_direct_strategy_operation",
+    "record_ai_generation",
+    "store_strategy_result",
+    "finish_strategy_operation",
+    "read_direct_strategy_operation",
+  ]);
+  expect(events[1]?.args).toMatchObject({ p_operation_id: operationId });
+  expect(providerCalls).toBe(1);
 });
 it("authenticates worker with a separate secret before claiming jobs", async () => {
   expect((await request(worker)).status).toBe(405);
@@ -410,7 +436,7 @@ it("accepts permanent strategy work with real configuration and no rollout flag"
   ).toEqual({ configured: true, ready: true });
   expect(
     (await request(handler, { method: "POST", body: accept })).status,
-  ).toBe(202);
+  ).toBe(200);
 });
 it("runs the configured permanent worker with a signed wake and no rollout flag", async () => {
   delete process.env.UZZINA_DURABLE_STRATEGIES;

@@ -23,10 +23,10 @@ const assert = require("node:assert/strict");
     });
     const base = process.env.PORTAL_TEST_URL || "http://127.0.0.1:5176";
     for (const [path, options, statuses] of [
-      ["/api/dash-data?op=partners", {}, [401, 503]],
-      ["/api/dash-auth", {}, [405]],
+      ["/api/dash?scope=data&op=partners", {}, [401, 503]],
+      ["/api/dash?scope=auth", {}, [405]],
       [
-        "/api/dash-auth",
+        "/api/dash?scope=auth",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -59,7 +59,10 @@ const assert = require("node:assert/strict");
       const request = route.request();
       const url = new URL(request.url());
       if (url.origin !== base) return route.abort();
-      if (url.pathname === "/api/dash-auth") {
+      if (
+        url.pathname === "/api/dash" &&
+        url.searchParams.get("scope") === "auth"
+      ) {
         const { action } = request.postDataJSON();
         if (action === "logout" && logoutFails)
           return route.fulfill({
@@ -74,7 +77,10 @@ const assert = require("node:assert/strict");
           json: action === "logout" ? { success: true } : { client },
         });
       }
-      if (url.pathname === "/api/dash-data") {
+      if (
+        url.pathname === "/api/dash" &&
+        url.searchParams.get("scope") === "data"
+      ) {
         if (
           unavailable ||
           (calendarUnavailable && url.searchParams.get("op") === "actions")

@@ -141,7 +141,7 @@ export interface ClientAuthResult {
 }
 
 /**
- * Autentica um cliente pelo servidor (/api/dash-auth) emitindo cookie HttpOnly no mesmo domínio.
+ * Autentica um cliente pelo servidor (/api/dash?scope=auth) emitindo cookie HttpOnly no mesmo domínio.
  * Não expõe senha nem token bruto ao código cliente.
  */
 export async function authenticateClient(
@@ -152,7 +152,7 @@ export async function authenticateClient(
 
   try {
     const data = await portalRequest<{ client: Client }>(
-      "/api/dash-auth",
+      "/api/dash?scope=auth",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -176,7 +176,7 @@ export async function authenticateClient(
 export async function verifyDashSession(): Promise<Client | null> {
   try {
     const data = await portalRequest<{ client: Client }>(
-      "/api/dash-auth",
+      "/api/dash?scope=auth",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -196,7 +196,7 @@ export async function verifyDashSession(): Promise<Client | null> {
 /** Revoga a sessão; falha de infraestrutura não confirma saída. */
 export async function logoutDashSession(): Promise<boolean> {
   const data = await portalRequest<{ success: boolean }>(
-    "/api/dash-auth",
+    "/api/dash?scope=auth",
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },

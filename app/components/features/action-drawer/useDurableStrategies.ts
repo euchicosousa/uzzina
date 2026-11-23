@@ -27,7 +27,7 @@ const usageObservableStates = new Set<StrategyOperation["state"]>([
   "uncertain",
 ]);
 
-/** Server work survives this hook. The hook only observes the current action/session. */
+/** Observe only the current action and session while the request is in progress. */
 export function useDurableStrategies({
   actionId,
   isActive,
@@ -157,7 +157,7 @@ export function useDurableStrategies({
       if (!isCurrent()) return true;
       if (!capability.configured || !capability.ready)
         throw new Error(
-          "A geração persistente está temporariamente indisponível. A operação existente continua no servidor; confira novamente em instantes.",
+          "A geração está temporariamente indisponível. Confira novamente em instantes.",
         );
       const saved = await callbacks.current.prepareAction();
       if (!isCurrent()) return true;

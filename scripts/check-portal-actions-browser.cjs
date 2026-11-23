@@ -65,65 +65,71 @@ const assert = require("node:assert/strict");
       const req = route.request();
       const url = new URL(req.url());
       if (url.origin !== base) return route.abort();
-      if (url.pathname === "/api/dash-auth")
-        return route.fulfill({ json: { client } });
-      if (url.pathname === "/api/dash-data")
-        return route.fulfill({
-          json:
-            url.searchParams.get("op") === "partners"
-              ? {
-                  partners: [
-                    {
-                      slug: "smartmed",
-                      title: "Smartmed",
-                      short: "SM",
-                      image: null,
-                      colors: ["#112233", "#ffffff"],
-                    },
-                  ],
-                }
-              : { action },
-        });
-      if (url.pathname === "/api/dash-action") {
-        const op = url.searchParams.get("op");
-        if (req.method() === "GET")
-          return route.fulfill(
-            failComments
-              ? { status: 503, json: { error: "Falha" } }
-              : { json: { comments } },
-          );
-        const body = req.postDataJSON();
-        writes.push({ method: req.method(), op, body });
-        if (op === "work-files") {
-          if (failFiles)
-            return route.fulfill({ status: 503, json: { error: "Falha" } });
-          action.work_files = body.work_files;
+      if (url.pathname === "/api/dash") {
+        const scope = url.searchParams.get("scope");
+        if (scope === "auth") return route.fulfill({ json: { client } });
+        if (scope === "data")
           return route.fulfill({
-            json: {
-              actionId: action.id,
-              work_files: action.work_files,
-              count: action.work_files.length,
-            },
+            json:
+              url.searchParams.get("op") === "partners"
+                ? {
+                    partners: [
+                      {
+                        slug: "smartmed",
+                        title: "Smartmed",
+                        short: "SM",
+                        image: null,
+                        colors: ["#112233", "#ffffff"],
+                      },
+                    ],
+                  }
+                : { action },
           });
-        }
-        if (req.method() === "POST") {
-          if (failCreate)
+        if (scope === "action") {
+          const op = url.searchParams.get("op");
+          if (req.method() === "GET")
+            return route.fulfill(
+              failComments
+                ? { status: 503, json: { error: "Falha" } }
+                : { json: { comments } },
+            );
+          const body = req.postDataJSON();
+          writes.push({ method: req.method(), op, body });
+          if (op === "work-files") {
+            if (failFiles)
+              return route.fulfill({ status: 503, json: { error: "Falha" } });
+            action.work_files = body.work_files;
+            return route.fulfill({
+              json: {
+                actionId: action.id,
+                work_files: action.work_files,
+                count: action.work_files.length,
+              },
+            });
+          }
+          if (req.method() === "POST") {
+            if (failCreate)
+              return route.fulfill({ status: 503, json: { error: "Falha" } });
+            const comment = {
+              ...comments[0],
+              id: "new",
+              content: body.content,
+            };
+            comments.push(comment);
+            return route.fulfill({ status: 201, json: { comment } });
+          }
+          if (req.method() === "PATCH") {
+            if (failEdit)
+              return route.fulfill({ status: 503, json: { error: "Falha" } });
+            const comment = comments.find((c) => c.id === body.commentId);
+            comment.content = body.content;
+            return route.fulfill({ json: { comment } });
+          }
+          if (failDelete)
             return route.fulfill({ status: 503, json: { error: "Falha" } });
-          const comment = { ...comments[0], id: "new", content: body.content };
-          comments.push(comment);
-          return route.fulfill({ status: 201, json: { comment } });
+          comments = comments.filter((c) => c.id !== body.commentId);
+          return route.fulfill({ json: { deletedId: body.commentId } });
         }
-        if (req.method() === "PATCH") {
-          if (failEdit)
-            return route.fulfill({ status: 503, json: { error: "Falha" } });
-          const comment = comments.find((c) => c.id === body.commentId);
-          comment.content = body.content;
-          return route.fulfill({ json: { comment } });
-        }
-        if (failDelete)
-          return route.fulfill({ status: 503, json: { error: "Falha" } });
-        comments = comments.filter((c) => c.id !== body.commentId);
-        return route.fulfill({ json: { deletedId: body.commentId } });
       }
       return route.continue();
     });

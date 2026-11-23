@@ -2,7 +2,11 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "types/database";
 import {
   isPartnerInstagramConnection,
+  parsePartnerInstagramInsights,
+  parsePartnerInstagramMediaPage,
   type PartnerInstagramConnection,
+  type PartnerInstagramInsightsResult,
+  type PartnerInstagramMediaPage,
 } from "~/lib/partner-instagram-contract";
 
 export class PartnerInstagramApiError extends Error {
@@ -96,4 +100,36 @@ export async function disconnectPartnerInstagram(
     method: "DELETE",
     body: { partnerSlug },
   });
+}
+
+export async function fetchPartnerInstagramMedia(
+  supabase: SupabaseClient<Database>,
+  input: {
+    partnerSlug: string;
+    since: number;
+    until: number;
+    after?: string;
+  },
+): Promise<PartnerInstagramMediaPage> {
+  const result = await requestPartnerInstagram<unknown>(supabase, {
+    method: "POST",
+    body: { action: "media", ...input },
+  });
+  const page = parsePartnerInstagramMediaPage(result);
+  if (!page)
+    throw new Error("A lista de publicações retornou dados inválidos.");
+  return page;
+}
+
+export async function fetchPartnerInstagramInsights(
+  supabase: SupabaseClient<Database>,
+  input: { partnerSlug: string; since: number; until: number },
+): Promise<PartnerInstagramInsightsResult> {
+  const result = await requestPartnerInstagram<unknown>(supabase, {
+    method: "POST",
+    body: { action: "insights", ...input },
+  });
+  const insights = parsePartnerInstagramInsights(result);
+  if (!insights) throw new Error("Os insights retornaram dados inválidos.");
+  return insights;
 }

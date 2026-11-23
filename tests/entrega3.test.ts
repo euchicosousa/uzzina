@@ -230,7 +230,7 @@ mock.module("@supabase/supabase-js", () => ({
   }),
 }));
 
-import dashDataHandler from "../api/dash-data";
+import dashDataHandler from "../server/dash-data-handler";
 
 interface MockResHelper {
   statusCode: number;
@@ -855,7 +855,7 @@ describe("Ticket 03 - API /api/dash-data & Isolamento de Dados do Portal", () =>
 });
 
 describe("Ticket 03 - fetchers reais com HTTP controlado", () => {
-  it("fetchDashPartners chama /api/dash-data com credenciais e op=partners", async () => {
+  it("fetchDashPartners chama /api/dash?scope=data&op=partners com credenciais", async () => {
     let capturedUrl = "";
     let capturedOptions: RequestInit | undefined;
 
@@ -883,7 +883,7 @@ describe("Ticket 03 - fetchers reais com HTTP controlado", () => {
 
     try {
       const partners = await fetchDashPartners();
-      expect(capturedUrl).toBe("/api/dash-data?op=partners");
+      expect(capturedUrl).toBe("/api/dash?scope=data&op=partners");
       expect(capturedOptions?.credentials).toBe("same-origin");
       expect(partners.length).toBe(1);
       expect(partners[0].slug).toBe("smartmed");
@@ -922,6 +922,7 @@ describe("Ticket 03 - fetchers reais com HTTP controlado", () => {
         from: "2026-10-01",
         to: "2026-10-31",
       });
+      expect(capturedUrl).toContain("scope=data");
       expect(capturedUrl).toContain("op=actions");
       expect(capturedUrl).toContain("partner=smartmed");
       expect(capturedUrl).toContain("from=2026-10-01");

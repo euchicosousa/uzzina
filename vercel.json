@@ -2,6 +2,7 @@
   "functions": {
     "api/ai.ts": { "maxDuration": 180 },
     "api/planning-theme.ts": { "maxDuration": 180 },
+    "api/strategy-operations.ts": { "maxDuration": 180 },
     "api/strategy-worker.ts": { "maxDuration": 180 }
   },
   "rewrites": [
@@ -12,6 +13,18 @@
     {
       "source": "/api/cloudinary-audit",
       "destination": "/api/admin-cleanup?scope=cloudinary-audit"
+    },
+    {
+      "source": "/api/dash-auth",
+      "destination": "/api/dash?scope=auth"
+    },
+    {
+      "source": "/api/dash-data",
+      "destination": "/api/dash?scope=data"
+    },
+    {
+      "source": "/api/dash-action",
+      "destination": "/api/dash?scope=action"
     },
     {
       "source": "/((?!api/).*)",

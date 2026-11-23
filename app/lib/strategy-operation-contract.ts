@@ -51,6 +51,8 @@ export function strategyOperationMessage(
     return "Seu acesso a esta ação mudou. As estratégias não foram aplicadas.";
   if (operation.errorCode === "QUOTA_EXCEEDED")
     return "Seu limite diário de IA foi atingido. Aguarde a renovação às 00h UTC.";
+  if (operation.errorCode === "REQUEST_INTERRUPTED")
+    return "A solicitação foi interrompida antes de começar. Você pode tentar novamente.";
   if (operation.errorCode === "SAVE_FAILED")
     return "A IA terminou, mas as estratégias ainda não foram salvas. Tente aplicar o resultado preservado.";
   if (operation.state === "failed")

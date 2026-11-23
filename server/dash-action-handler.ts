@@ -1,10 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import {
-  createServiceClient,
-  getServiceConfig,
-} from "../server/supabase-admin.js";
 import type { Database } from "../types/database";
-import { findDashSession } from "../server/dash-session.js";
+import { findDashSession } from "./dash-session.js";
+import { createServiceClient, getServiceConfig } from "./supabase-admin.js";
 
 async function handleRequest(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Cache-Control", "no-store");
@@ -296,7 +293,10 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
   }
   return res.status(400).json({ error: "Operação não suportada." });
 }
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function dashActionHandler(
+  req: VercelRequest,
+  res: VercelResponse,
+) {
   try {
     return await handleRequest(req, res);
   } catch {

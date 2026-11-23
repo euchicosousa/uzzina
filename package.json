@@ -5,6 +5,7 @@
   "scripts": {
     "build": "vite build",
     "dev": "node scripts/dev-server.cjs",
+    "check:composio-config": "bun scripts/check-composio-config.ts",
     "test:dev-imports": "node scripts/check-dev-module-loading.cjs",
     "preview": "vite preview",
     "typecheck": "tsc",

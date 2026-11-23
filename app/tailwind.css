@@ -614,10 +614,12 @@ html[data-dragging-item] * {
       [role="tab"],
       [role="spinbutton"]
     ),
+    [data-slot="button"][data-variant="default"],
     [data-slot="dropdown-menu-item"],
     [data-slot="dropdown-menu-sub-trigger"],
     [data-slot="command-input"],
     [data-slot="command-item"],
+    [data-drawer-focus="title"] textarea,
     [data-slot="input-group-control"],
     [data-slot="checkbox"] input,
     [data-slot="radio"] input,
@@ -628,7 +630,8 @@ html[data-dragging-item] * {
     [data-focus-calendar-cell] *,
     [data-focus-thumbnail-control],
     [data-thumb-control] input,
-    [data-focus-editor] .tiptap
+    [data-focus-editor] .tiptap,
+    [data-drawer-focus="description"] .tiptap
   )
 ),
 :where(
@@ -644,7 +647,9 @@ html[data-dragging-item] * {
     [data-focus-calendar-target],
   [data-focus-thumbnail]:has(> [data-focus-thumbnail-control]:focus-visible),
   [data-thumb-control][data-focus-visible],
-  [data-focus-editor]:has(.tiptap:focus-visible),
+  [data-focus-editor]:has(.tiptap:focus-visible):not(
+      [data-drawer-focus="description"]
+    ),
   [data-slot="combobox-item"][data-focus-visible],
   [data-slot="select-item"][data-focus-visible],
   [data-slot="dropdown-menu-item"][data-focus-visible],
@@ -653,6 +658,16 @@ html[data-dragging-item] * {
 ) {
   outline: 3px solid var(--primary);
   outline-offset: 0;
+}
+
+[data-action-panel] [role="tab"][data-focus-visible] {
+  outline: none;
+  background-color: var(--secondary);
+}
+
+[data-action-panel-close]:is(:focus-visible, [data-focus-visible]) {
+  outline: none;
+  background-color: var(--secondary);
 }
 
 @layer components {

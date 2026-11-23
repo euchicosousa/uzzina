@@ -22,12 +22,13 @@ export function ActionTitleInput({
   const [overrideTitle, setOverrideTitle] = useState<string | null>(null);
   const localTitle = overrideTitle !== null ? overrideTitle : title;
   return (
-    <div className={cn("relative border-b px-4 py-2", className)}>
+    <div className={cn("relative flex flex-col border-b", className)}>
       <textarea
         aria-label="Título da ação"
+        data-focus-indicator="background"
         autoFocus={autoFocus}
         className={cn(
-          "wrap-break-words w-full shrink-0 resize-none overflow-hidden bg-transparent pt-2 pb-1 leading-none outline-none",
+          "wrap-break-words w-full shrink-0 resize-none overflow-hidden bg-transparent px-4 py-3 leading-none outline-none focus-visible:bg-secondary",
           textareaClassName ||
             (localTitle.length > 70
               ? "text-2xl text-error sm:text-4xl"

@@ -2,7 +2,7 @@
 
 **Onde abrir.** Hoje → Linha do tempo. A Home também usa o mesmo quadro.
 
-**Status.** Concluído e aprovado pelo proprietário em 18/11/2026. Implementado em Hoje e na Home, commit fa740ef. Verificação de navegador com dados fictícios confirmou zoom, enquadramento, régua, Agora, alças e abertura da gaveta. Publicação não realizada.
+**Status.** Concluído, conferido no app publicado e aprovado pelo proprietário em 22/11/2026. Zoom, enquadramento, régua, Agora, alças, abertura e movimentação das ações foram conferidos em Hoje e Home. A ressalva anterior sobre publicação foi superada pela confirmação direta do proprietário de que fez a conferência no app publicado. A correção descoberta durante o aceite de teclado está registrada separadamente em [HOJE-06](06-timeline-keyboard-focus.md).
 
 **Bloqueado por.** Nenhum ticket para estudar.
 
@@ -27,13 +27,13 @@ O cartão já tem uma variante própria para a Linha do tempo. O que ela ainda c
 
 **Escala.** Recomenda-se multiplicar ou dividir por 1,25 a partir de 100%. O mínimo mostra o dia inteiro e depende da largura disponível. A 200%, dez minutos já medem 120 px. A 400%, medem 240 px e restam apenas 13 minutos visíveis no quadro estreito. A prévia permite comparar os dois tetos.
 
-| Medida calculada | Quadro de 1.200 px | Quadro de 360 px |
-| --- | ---: | ---: |
-| Espaço para horários, descontando 56 px do responsável | 1.144 px | 304 px |
-| Zoom para ver o dia inteiro | 13,2% | 3,5% |
-| Minutos visíveis a 80% / 100% / 125% | 238 / 191 / 153 | 63 / 51 / 41 |
-| Zoom para enquadrar das 9h às 13h | 76,1% | 18,9% |
-| Largura de uma ação de 10 min nesse enquadramento | 46 px | 11 px |
+| Medida calculada                                       | Quadro de 1.200 px | Quadro de 360 px |
+| ------------------------------------------------------ | -----------------: | ---------------: |
+| Espaço para horários, descontando 56 px do responsável |           1.144 px |           304 px |
+| Zoom para ver o dia inteiro                            |              13,2% |             3,5% |
+| Minutos visíveis a 80% / 100% / 125%                   |    238 / 191 / 153 |     63 / 51 / 41 |
+| Zoom para enquadrar das 9h às 13h                      |              76,1% |            18,9% |
+| Largura de uma ação de 10 min nesse enquadramento      |              46 px |            11 px |
 
 Para o ajuste automático, medir a área de horários e reservar 4% dela de cada lado, com mínimo de 16 px e máximo de 24 px por lado. Dividir o espaço restante pelo intervalo das ações visíveis, limitar a escala e centralizar o intervalo. Nas extremidades, a margem pode diminuir para respeitar 0h e 24h. Para ações que passam da meia-noite, enquadrar a parcela do dia exibido. A régua espaça seus rótulos conforme o zoom; o teclado continua ajustando de cinco em cinco minutos.
 
@@ -43,13 +43,13 @@ Para o ajuste automático, medir a área de horários e reservar 4% dela de cada
 
 A largura real da barra depois do zoom define quanto espaço existe para controles. O gesto também importa: em um notebook com tela sensível ao toque, usar o dedo deve permitir percorrer o dia mesmo quando há mouse conectado.
 
-| Entrada | Proposta |
-| --- | --- |
-| Dedo, qualquer largura | Toque abre a ação, deslizar percorre o quadro. Sem alças ou alteração de horário pelo gesto de rolagem. |
-| Mouse, barra abaixo de 24 px ou escala abaixo de 1,5 px/min | Clique abre a ação. Aumentar o zoom permite edição mais precisa. |
-| Mouse, de 24 até menos de 72 px, em escala suficiente | Clique abre e arraste pelo corpo move a ação. |
-| Mouse, a partir de 72 px, em escala suficiente | Duas extremidades de 24 px para ajustar o intervalo e pelo menos 24 px centrais para abrir ou mover. |
-| Teclado, qualquer largura | Foco na ação, Enter/Espaço abre, setas movem cinco minutos, Shift + setas ajusta o fim. Alças recolhidas não devem receber foco invisível. |
+| Entrada                                                     | Proposta                                                                                                                                   |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Dedo, qualquer largura                                      | Toque abre a ação, deslizar percorre o quadro. Sem alças ou alteração de horário pelo gesto de rolagem.                                    |
+| Mouse, barra abaixo de 24 px ou escala abaixo de 1,5 px/min | Clique abre a ação. Aumentar o zoom permite edição mais precisa.                                                                           |
+| Mouse, de 24 até menos de 72 px, em escala suficiente       | Clique abre e arraste pelo corpo move a ação.                                                                                              |
+| Mouse, a partir de 72 px, em escala suficiente              | Duas extremidades de 24 px para ajustar o intervalo e pelo menos 24 px centrais para abrir ou mover.                                       |
+| Teclado, qualquer largura                                   | Foco na ação, Enter/Espaço abre, setas movem cinco minutos, Shift + setas ajusta o fim. Alças recolhidas não devem receber foco invisível. |
 
 A condição de escala evita permitir um arraste impreciso até em barras longas: a 1,5 px/min, cada passo de cinco minutos ocupa 7,5 px diante do limiar atual de 5 px para iniciar arraste. Tanto a escala quanto as larguras são hipóteses para ensaio. Preservar o comprimento temporal e a divisa entre ações adjacentes, inclusive com 1–2 px de largura.
 
@@ -73,7 +73,6 @@ A condição de escala evita permitir um arraste impreciso até em barras longas
 - [x] Roteiro de aceite que distinga clicar no título, arrastar pelo título e ajustar duração pelas alças em mais de uma escala. Registrar quais comportamentos foram observados e quais ainda são proposta.
 
 O proprietário decide os limites de zoom, a altura, os limites para mostrar alças e se deseja o comando de organização no celular antes de autorizar mudanças no app.
-
 
 ## Comparação com a grade real na galeria
 

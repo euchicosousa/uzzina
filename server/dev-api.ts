@@ -7,11 +7,10 @@ const HANDLERS: Record<string, string> = {
   "/api/planning-theme": "./api/planning-theme.ts",
   "/api/strategy-operations": "./api/strategy-operations.ts",
   "/api/strategy-worker": "./api/strategy-worker.ts",
-  "/api/dash-auth": "./api/dash-auth.ts",
-  "/api/dash-data": "./api/dash-data.ts",
-  "/api/dash-action": "./api/dash-action.ts",
+  "/api/dash": "./api/dash.ts",
   "/api/client-accounts": "./api/client-accounts.ts",
   "/api/admin-cleanup": "./api/admin-cleanup.ts",
+  "/api/partner-instagram-connection": "./api/partner-instagram-connection.ts",
   "/api/create-user": "./api/create-user.ts",
 };
 

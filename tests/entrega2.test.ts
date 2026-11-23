@@ -146,7 +146,7 @@ mock.module("@supabase/supabase-js", () => ({
   }),
 }));
 
-import dashAuthHandler from "../api/dash-auth";
+import dashAuthHandler from "../server/dash-auth-handler";
 
 interface MockResHelper {
   statusCode: number;

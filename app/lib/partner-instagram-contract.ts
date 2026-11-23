@@ -20,6 +20,35 @@ export type PartnerInstagramLink = {
   expiresAt: string;
 };
 
+export type PartnerInstagramMediaItem = {
+  id: string;
+  caption: string | null;
+  mediaType: string | null;
+  mediaProductType: string | null;
+  permalink: string | null;
+  timestamp: string | null;
+  thumbnailUrl: string | null;
+  likeCount: number | null;
+  commentsCount: number | null;
+  viewCount: number | null;
+};
+
+export type PartnerInstagramMediaPage = {
+  media: PartnerInstagramMediaItem[];
+  nextCursor: string | null;
+};
+
+export type PartnerInstagramInsight = {
+  name: string;
+  title: string;
+  period: string;
+  values: Array<{ value: number; endTime: string | null }>;
+};
+
+export type PartnerInstagramInsightsResult = {
+  insights: PartnerInstagramInsight[];
+};
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -148,10 +177,99 @@ export function isPartnerInstagramConnection(
   );
 }
 
+export function parsePartnerInstagramMediaPage(
+  value: unknown,
+): PartnerInstagramMediaPage | null {
+  if (!isRecord(value) || !Array.isArray(value.data)) return null;
+  const media: PartnerInstagramMediaItem[] = [];
+  for (const entry of value.data) {
+    if (!isRecord(entry) || typeof entry.id !== "string") continue;
+    media.push({
+      id: entry.id,
+      caption: optionalString(entry.caption, 2200),
+      mediaType: optionalString(entry.media_type, 32),
+      mediaProductType: optionalString(entry.media_product_type, 32),
+      permalink: optionalHttpsUrl(entry.permalink, 2048),
+      timestamp: optionalIsoDate(entry.timestamp),
+      thumbnailUrl: optionalHttpsUrl(entry.thumbnail_url, 4096),
+      likeCount: optionalCount(entry.like_count),
+      commentsCount: optionalCount(entry.comments_count),
+      viewCount: optionalCount(entry.view_count ?? entry.total_views_count),
+    });
+  }
+  const paging = isRecord(value.paging) ? value.paging : null;
+  const cursors = paging && isRecord(paging.cursors) ? paging.cursors : null;
+  const cursor = cursors?.after;
+  return {
+    media,
+    nextCursor:
+      typeof cursor === "string" && cursor.length <= 2048 ? cursor : null,
+  };
+}
+
+export function parsePartnerInstagramInsights(
+  value: unknown,
+): PartnerInstagramInsightsResult | null {
+  if (!isRecord(value) || !Array.isArray(value.data)) return null;
+  const insights: PartnerInstagramInsight[] = [];
+  for (const entry of value.data) {
+    if (
+      !isRecord(entry) ||
+      typeof entry.name !== "string" ||
+      typeof entry.period !== "string"
+    ) {
+      continue;
+    }
+    const values = Array.isArray(entry.values)
+      ? entry.values.flatMap((item) => {
+          if (!isRecord(item) || typeof item.value !== "number") return [];
+          return [
+            {
+              value: item.value,
+              endTime: optionalIsoDate(item.end_time),
+            },
+          ];
+        })
+      : [];
+    insights.push({
+      name: entry.name,
+      title:
+        typeof entry.title === "string" && entry.title.length <= 120
+          ? entry.title
+          : entry.name,
+      period: entry.period,
+      values,
+    });
+  }
+  return { insights };
+}
+
 function isHttpsUrl(value: string): boolean {
   try {
     return new URL(value).protocol === "https:";
   } catch {
     return false;
   }
+}
+
+function optionalString(value: unknown, maxLength: number): string | null {
+  return typeof value === "string" && value.length <= maxLength ? value : null;
+}
+
+function optionalHttpsUrl(value: unknown, maxLength: number): string | null {
+  if (typeof value !== "string" || value.length > maxLength) return null;
+  return isHttpsUrl(value) ? value : null;
+}
+
+function optionalCount(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0
+    ? value
+    : null;
+}
+
+function optionalIsoDate(value: unknown): string | null {
+  if (typeof value !== "string" || !Number.isFinite(Date.parse(value))) {
+    return null;
+  }
+  return value;
 }

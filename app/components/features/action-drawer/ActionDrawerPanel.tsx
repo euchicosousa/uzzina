@@ -107,6 +107,7 @@ export function ActionDrawerPanel({
       >
         <PrismTabs
           className="flex h-full min-h-0 flex-col"
+          data-focus-indicator="background"
           selectedKey={activeKey ?? undefined}
           onSelectionChange={(key) => activateAction(String(key))}
         >

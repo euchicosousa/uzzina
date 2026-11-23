@@ -27,28 +27,30 @@ const assert = require("node:assert/strict");
     await page.route("**/*", async (route) => {
       const url = new URL(route.request().url());
       if (url.origin !== base) return route.abort();
-      if (url.pathname === "/api/dash-auth")
-        return route.fulfill({ json: { client } });
-      if (url.pathname === "/api/dash-data") {
-        if (url.searchParams.get("op") === "partners")
-          return route.fulfill({
-            json: {
-              partners: [
-                {
-                  slug: "smartmed",
-                  title: "Smartmed",
-                  short: "SM",
-                  colors: ["#112233", "#ffffff"],
-                },
-              ],
-            },
+      if (url.pathname === "/api/dash") {
+        const scope = url.searchParams.get("scope");
+        if (scope === "auth") return route.fulfill({ json: { client } });
+        if (scope === "data") {
+          if (url.searchParams.get("op") === "partners")
+            return route.fulfill({
+              json: {
+                partners: [
+                  {
+                    slug: "smartmed",
+                    title: "Smartmed",
+                    short: "SM",
+                    colors: ["#112233", "#ffffff"],
+                  },
+                ],
+              },
+            });
+          periods.push({
+            from: url.searchParams.get("from"),
+            to: url.searchParams.get("to"),
+            partner: url.searchParams.get("partner"),
           });
-        periods.push({
-          from: url.searchParams.get("from"),
-          to: url.searchParams.get("to"),
-          partner: url.searchParams.get("partner"),
-        });
-        return route.fulfill({ json: { actions: [] } });
+          return route.fulfill({ json: { actions: [] } });
+        }
       }
       return route.continue();
     });

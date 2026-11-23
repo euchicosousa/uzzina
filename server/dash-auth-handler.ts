@@ -1,10 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import bcrypt from "bcryptjs";
 import {
-  createServiceClient,
-  getServiceConfig,
-} from "../server/supabase-admin.js";
-import {
   SESSION_COOKIE_NAME,
   SESSION_TTL_SECONDS,
   extractCookie,
@@ -14,7 +10,8 @@ import {
   hashSessionToken,
   serializeClearSessionCookie,
   serializeSessionCookie,
-} from "../server/dash-session.js";
+} from "./dash-session.js";
+import { createServiceClient, getServiceConfig } from "./supabase-admin.js";
 
 async function handleRequest(req: VercelRequest, res: VercelResponse) {
   // Configura cabeçalho para evitar qualquer cache de respostas de autenticação
@@ -243,7 +240,10 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
   return res.status(400).json({ error: "Ação não suportada." });
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function dashAuthHandler(
+  req: VercelRequest,
+  res: VercelResponse,
+) {
   try {
     return await handleRequest(req, res);
   } catch {

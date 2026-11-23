@@ -840,7 +840,7 @@ export function ActionFormDrawer({
         } else isCheckingRef.current = false;
       }
     },
-    [queryClient, syncFieldsFromBase],
+    [queryClient, syncFieldsFromBase, setRawAction],
   );
   checkRemoteVersionRef.current = checkRemoteVersion;
   const completedStrategies =
@@ -1237,7 +1237,12 @@ export function ActionFormDrawer({
             </PrismTabList>
             <PrismButton
               aria-label="Fechar"
-              className={cn(tabVariants(), "size-16 flex-none px-0")}
+              className={cn(
+                tabVariants(),
+                "size-16 flex-none px-0 data-[focus-visible]:bg-secondary data-[focus-visible]:outline-none",
+              )}
+              data-action-panel-close
+              data-focus-indicator="background"
               onPress={handleSafeClose}
               variant="unstyled"
             >
@@ -1451,11 +1456,13 @@ export function ActionFormDrawer({
             </PrismDialogDescription>
           ) : isInitialGenerating ? (
             <PrismDialogDescription className="text-secondary-foreground">
-              Aguarde a criação das opções para esta ação.
+              Aguarde a criação das opções para esta ação e mantenha a aba
+              aberta.
             </PrismDialogDescription>
           ) : isRecreating ? (
             <PrismDialogDescription className="text-secondary-foreground">
-              Uma nova geração de estratégias está em andamento.
+              Uma nova geração de estratégias está em andamento. Mantenha a aba
+              aberta até terminar.
             </PrismDialogDescription>
           ) : null}
         </PrismDialogHeader>

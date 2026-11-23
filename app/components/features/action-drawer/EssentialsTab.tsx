@@ -365,6 +365,7 @@ export function EssentialsTab({
       <div
         className="min-h-50 w-full max-w-full flex-1 shrink-0 overflow-hidden"
         data-drawer-focus="description"
+        data-focus-indicator="background"
       >
         <Suspense
           fallback={<PrismSkeleton className="h-full min-h-50 w-full" />}
@@ -372,7 +373,7 @@ export function EssentialsTab({
           <Tiptap
             key={descriptionVersion}
             className={cn(
-              "h-full min-h-50 w-full bg-popover [&_.tiptap]:transition-colors",
+              "h-full min-h-50 w-full bg-popover [&_.tiptap]:transition-colors [&_.tiptap:focus-visible]:bg-secondary",
               isAIProcessing && "opacity-40",
             )}
             content={RawAction.description || ""}

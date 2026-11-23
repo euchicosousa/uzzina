@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { PlusIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { FormSection } from "~/components/layout/FormSection";
 import {
   PrismButton,
   PrismDialog,
@@ -123,18 +124,11 @@ export function PartnerTopicsEditor({
 
   const atLimit = topics.length >= MAX_TOPICS_PER_PARTNER;
   return (
-    <div className="grid gap-4">
-      <div className="flex items-center justify-between gap-2 font-medium">
-        <div>
-          <span>Tópicos</span>
-          <p className="text-xs font-normal text-secondary-foreground">
-            Cada tópico tem nome e cor. A ação com tópico usa a cor dele; sem
-            tópico, usa a própria cor. Até {MAX_TOPICS_PER_PARTNER} tópicos.
-          </p>
-        </div>
-        {isCreating && <ULoader />}
-      </div>
-
+    <FormSection
+      title="Tópicos"
+      description={`Organize as ações da marca com até ${MAX_TOPICS_PER_PARTNER} tópicos. Cada ação categorizada usa a cor do tópico.`}
+      trailing={isCreating ? <ULoader /> : undefined}
+    >
       {topics.length === 0 ? (
         <p className="text-sm text-secondary-foreground">
           Este parceiro ainda não tem tópicos.
@@ -220,7 +214,7 @@ export function PartnerTopicsEditor({
           </PrismButton>
         </PrismDialogFooter>
       </PrismDialog>
-    </div>
+    </FormSection>
   );
 }
 

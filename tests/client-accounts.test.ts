@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { hashLegacyPassword } from "../server/dash-session";
 import clientAccountsHandler from "../api/client-accounts";
-import dashAuthHandler from "../api/dash-auth";
+import dashAuthHandler from "../server/dash-auth-handler";
 
 type Row = Record<string, unknown>;
 const db: Record<string, Row[]> = {

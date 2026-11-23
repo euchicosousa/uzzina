@@ -4,6 +4,8 @@ import { z } from "zod";
 import {
   makePartnerComposioUserId,
   parseInstagramAccountObservation,
+  parsePartnerInstagramInsights,
+  parsePartnerInstagramMediaPage,
   type PartnerInstagramConnection,
 } from "../app/lib/partner-instagram-contract.js";
 import { extractBearerToken } from "../server/auth.js";
@@ -12,6 +14,8 @@ import {
   createInstagramConnectLink,
   getInstagramConnectedAccount,
   getInstagramProfile,
+  getInstagramUserInsights,
+  listInstagramMedia,
   revokeInstagramConnectedAccount,
   type InstagramProfile,
 } from "../server/composio-instagram.js";
@@ -41,6 +45,21 @@ const callbackBodySchema = z
 const disconnectBodySchema = z
   .object({ partnerSlug: partnerSlugSchema })
   .strict();
+const readRangeSchema = z
+  .object({
+    partnerSlug: partnerSlugSchema,
+    since: z.number().int().nonnegative(),
+    until: z.number().int().positive(),
+  })
+  .strict()
+  .refine((body) => body.since < body.until);
+const readMediaSchema = readRangeSchema.extend({
+  action: z.literal("media"),
+  after: z.string().min(1).max(2048).optional(),
+});
+const readInsightsSchema = readRangeSchema.extend({
+  action: z.literal("insights"),
+});
 
 type ServiceClient = ReturnType<typeof createServiceClient>;
 
@@ -209,6 +228,119 @@ async function loadCurrentConnection(
     .maybeSingle();
   if (error) throw new Error("CONNECTION_LOOKUP_FAILED");
   return data;
+}
+
+async function getActiveCurrentConnection(
+  client: ServiceClient,
+  partner: PartnerRow,
+): Promise<ConnectionRow | null> {
+  const row = await loadCurrentConnection(client, partner.id);
+  return row?.status === "active" ? row : null;
+}
+
+async function handleReadMedia(
+  req: VercelRequest,
+  res: VercelResponse,
+  client: ServiceClient,
+  apiKey: string,
+): Promise<void> {
+  const parsed = readMediaSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Período ou parceiro inválido." });
+    return;
+  }
+  const partner = await getPartner(client, parsed.data.partnerSlug);
+  if (!partner) {
+    res.status(404).json({ error: "Parceiro não encontrado ou arquivado." });
+    return;
+  }
+  const connection = await getActiveCurrentConnection(client, partner);
+  if (!connection) {
+    res.status(409).json({ error: "Conecte ou reconecte o Instagram." });
+    return;
+  }
+
+  try {
+    const result = await listInstagramMedia({
+      apiKey,
+      connectedAccountId: connection.connected_account_id,
+      composioUserId: connection.composio_user_id,
+      since: parsed.data.since,
+      until: parsed.data.until,
+      ...(parsed.data.after ? { after: parsed.data.after } : {}),
+    });
+    const page = parsePartnerInstagramMediaPage(result);
+    if (!page) {
+      res
+        .status(502)
+        .json({ error: "O Instagram retornou uma resposta inválida." });
+      return;
+    }
+    res.status(200).json(page);
+  } catch (error) {
+    const status = error instanceof ComposioInstagramError ? error.status : 0;
+    if (status === 401 || status === 403) {
+      res.status(409).json({
+        error: "A autorização do Instagram expirou. Reconecte o perfil.",
+      });
+      return;
+    }
+    res.status(status >= 400 && status < 500 ? 422 : 502).json({
+      error: "Não foi possível buscar as publicações deste período.",
+    });
+  }
+}
+
+async function handleReadInsights(
+  req: VercelRequest,
+  res: VercelResponse,
+  client: ServiceClient,
+  apiKey: string,
+): Promise<void> {
+  const parsed = readInsightsSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Período ou parceiro inválido." });
+    return;
+  }
+  const partner = await getPartner(client, parsed.data.partnerSlug);
+  if (!partner) {
+    res.status(404).json({ error: "Parceiro não encontrado ou arquivado." });
+    return;
+  }
+  const connection = await getActiveCurrentConnection(client, partner);
+  if (!connection) {
+    res.status(409).json({ error: "Conecte ou reconecte o Instagram." });
+    return;
+  }
+
+  try {
+    const result = await getInstagramUserInsights({
+      apiKey,
+      connectedAccountId: connection.connected_account_id,
+      composioUserId: connection.composio_user_id,
+      since: parsed.data.since,
+      until: parsed.data.until,
+    });
+    const insights = parsePartnerInstagramInsights(result);
+    if (!insights) {
+      res
+        .status(502)
+        .json({ error: "O Instagram retornou uma resposta inválida." });
+      return;
+    }
+    res.status(200).json(insights);
+  } catch (error) {
+    const status = error instanceof ComposioInstagramError ? error.status : 0;
+    if (status === 401 || status === 403) {
+      res.status(409).json({
+        error: "A autorização do Instagram expirou. Reconecte o perfil.",
+      });
+      return;
+    }
+    res.status(status >= 400 && status < 500 ? 422 : 502).json({
+      error: "Não foi possível buscar os insights deste período.",
+    });
+  }
 }
 
 async function updateConnectionStatus(
@@ -867,6 +999,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         composio.apiKey,
         composio.instagramAuthConfigId,
       );
+      return;
+    }
+    if (action === "media") {
+      await handleReadMedia(req, res, admin.client, composio.apiKey);
+      return;
+    }
+    if (action === "insights") {
+      await handleReadInsights(req, res, admin.client, composio.apiKey);
       return;
     }
     res.status(400).json({ error: "Operação do Instagram inválida." });

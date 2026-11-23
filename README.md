@@ -38,6 +38,8 @@ Por decisão do proprietário em27/10/2026, `bun run dev` usa **o banco de produ
 
 O build local (`bun run build`) também carrega `.env.production.local`. A Vercel usa suas próprias variáveis, mantidas no painel do projeto (não há mais cópia local). Os envs históricos de staging foram movidos para fora do projeto, em `~/uzzina-env-arquivo/`; os scripts de staging só funcionam se eles voltarem à raiz. Todos esses arquivos ficam fora do Git. O arquivo de produção da pasta lead pertence a outro projeto Vercel. Mantenha os envs específicos por modo: um `.env` genérico pode ser pré-carregado pelo Bun e sobrepor valores antes do Vite.
 
+**Composio / Instagram:** `COMPOSIO_API_KEY` e `COMPOSIO_INSTAGRAM_AUTH_CONFIG_ID` são configuração somente de servidor. No ambiente local ficam em `.env.production.local` (ignorado pelo Git); na Vercel devem ser segredos sem prefixo `VITE_`. Confira presença/formato com `bun run check:composio-config`, que não exibe valores. Em 22/11/2026 a leitura oficial confirmou HTTP 200 e toolkit Instagram para o ID configurado. A conexão e os campos do perfil estão no deploy confirmado pelo proprietário; consultas de publicações e insights estão no código local e seguem para publicação nesta rodada. O fluxo usa callback URL por parceiro com estado de uso único. A verificação global de identidade OAuth do projeto Composio estava `Not configured` na captura de 22/11; essa implementação depende de permanecer assim, pois ativá-la muda o callback para `session_uri` global e exige outro fluxo.
+
 As variáveis de publicação configuradas na Vercel são:
 
 | Variável | Uso |

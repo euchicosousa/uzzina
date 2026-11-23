@@ -1,11 +1,8 @@
 import { parseISO } from "date-fns";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import {
-  createServiceClient,
-  getServiceConfig,
-} from "../server/supabase-admin.js";
-import { findDashSession } from "../server/dash-session.js";
 import { pickActionColor } from "../app/lib/action-color.js";
+import { findDashSession } from "./dash-session.js";
+import { createServiceClient, getServiceConfig } from "./supabase-admin.js";
 
 const MAX_PERIOD_DAYS = 62;
 const BATCH_SIZE = 500;
@@ -303,7 +300,10 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
   return res.status(400).json({ error: "Operação não suportada." });
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function dashDataHandler(
+  req: VercelRequest,
+  res: VercelResponse,
+) {
   try {
     return await handleRequest(req, res);
   } catch {

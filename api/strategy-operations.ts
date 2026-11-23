@@ -13,6 +13,7 @@ import {
 import {
   StrategyStoreError,
   strategyRPC,
+  runStrategyWorker,
 } from "../server/strategy-operations.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -54,16 +55,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         configured: true,
         ready:
           process.env.UZZINA_STRATEGY_ACCEPTING !== "false" &&
-          (await strategyRPC(client, "strategy_ready")) === true,
+          !!process.env.OPENAI_API_KEY &&
+          /^\d+$/.test(process.env.AI_DAILY_LIMIT ?? "100") &&
+          Number(process.env.AI_DAILY_LIMIT ?? "100") >= 1 &&
+          Number(process.env.AI_DAILY_LIMIT ?? "100") <= 10000,
       });
     if (req.method === "GET") {
       const actionId = z.uuid().safeParse(req.query.actionId);
       if (!actionId.success)
         return res.status(400).json({ error: "Ação inválida." });
-      const operation = await strategyRPC(client, "read_strategy_operation", {
-        p_user_id: user.id,
-        p_action_id: actionId.data,
-      });
+      const operation = await strategyRPC(
+        client,
+        "read_direct_strategy_operation",
+        {
+          p_user_id: user.id,
+          p_action_id: actionId.data,
+        },
+      );
       return res.status(200).json({
         operation:
           operation === null ? null : strategyOperationSchema.parse(operation),
@@ -91,7 +99,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     const current =
       command.command === "retry"
-        ? await strategyRPC(client, "read_strategy_operation", {
+        ? await strategyRPC(client, "read_direct_strategy_operation", {
             p_user_id: user.id,
             p_action_id: command.actionId,
           })
@@ -109,44 +117,53 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         ? findAIModel(command.model ?? defaultAIModelId)
         : undefined;
     if (command.command === "accept" && !model?.intents.includes("ai-strategy"))
-      return res
-        .status(400)
-        .json({
-          error: "O modelo escolhido não está disponível para estratégias.",
-        });
+      return res.status(400).json({
+        error: "O modelo escolhido não está disponível para estratégias.",
+      });
     if (model?.provider === "anthropic" && !process.env.ANTHROPIC_API_KEY)
+      return res.status(503).json({
+        error: "O modelo escolhido não está configurado neste ambiente.",
+      });
+    const selectedModel = model?.id ?? defaultAIModelId;
+    const rawLimit = process.env.AI_DAILY_LIMIT ?? "100";
+    if (
+      !process.env.OPENAI_API_KEY ||
+      !/^\d+$/.test(rawLimit) ||
+      Number(rawLimit) < 1 ||
+      Number(rawLimit) > 10000
+    )
       return res
         .status(503)
-        .json({
-          error: "O modelo escolhido não está configurado neste ambiente.",
-        });
-    const selectedModel = model?.id ?? defaultAIModelId;
+        .json({ error: "A geração está temporariamente indisponível." });
     const operation =
       command.command === "accept"
-        ? await strategyRPC(
-            client,
-            selectedModel === defaultAIModelId
-              ? "accept_strategy_operation"
-              : "accept_strategy_operation_with_model",
-            {
-              ...(selectedModel === defaultAIModelId
-                ? {}
-                : { p_model: selectedModel }),
-              p_user_id: user.id,
-              p_action_id: command.actionId,
-              p_operation_id: command.operationId,
-              p_expected_version: command.expectedVersion,
-            },
-          )
+        ? await strategyRPC(client, "accept_direct_strategy_operation", {
+            p_model: selectedModel,
+            p_user_id: user.id,
+            p_action_id: command.actionId,
+            p_operation_id: command.operationId,
+            p_expected_version: command.expectedVersion,
+          })
         : await strategyRPC(client, "retry_strategy_result", {
             p_user_id: user.id,
             p_operation_id: command.operationId,
             p_expected_version: command.expectedVersion,
             p_confirm_changed_source: command.confirmChangedSource,
           });
+    const accepted = strategyOperationSchema.parse(operation);
+    if (["queued", "generated"].includes(accepted.state))
+      await runStrategyWorker(client, Number(rawLimit), accepted.id);
+    const updated = await strategyRPC(
+      client,
+      "read_direct_strategy_operation",
+      {
+        p_user_id: user.id,
+        p_action_id: command.actionId,
+      },
+    );
     return res
-      .status(command.command === "accept" ? 202 : 200)
-      .json({ operation: strategyOperationSchema.parse(operation) });
+      .status(200)
+      .json({ operation: strategyOperationSchema.parse(updated) });
   } catch (error) {
     if (error instanceof SyntaxError)
       return res.status(400).json({ error: "JSON inválido." });

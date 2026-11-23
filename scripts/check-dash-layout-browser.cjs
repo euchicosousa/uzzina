@@ -29,7 +29,10 @@ const assert = require("node:assert/strict");
       if (url.origin !== base) return route.abort();
       const json = (body, status = 200) =>
         route.fulfill({ status, json: body });
-      if (url.pathname === "/api/dash-auth") {
+      if (
+        url.pathname === "/api/dash" &&
+        url.searchParams.get("scope") === "auth"
+      ) {
         const request = route.request().postDataJSON();
         if (request.action === "login") {
           loginAttempts++;
@@ -42,7 +45,10 @@ const assert = require("node:assert/strict");
         }
         return json({ client });
       }
-      if (url.pathname === "/api/dash-data") {
+      if (
+        url.pathname === "/api/dash" &&
+        url.searchParams.get("scope") === "data"
+      ) {
         if (url.searchParams.get("op") === "partners")
           return json({
             partners: Array.from({ length: partnerCount }, (_, i) => ({

@@ -6,6 +6,8 @@ Os documentos completos abaixo substituem os antigos arquivos individuais. Nenhu
 
 ## Encerramentos de 22/11/2026
 
+- [KEYBOARD-FOCUS-04 · Foco visual uniforme](../keyboard-focus/issues/04-visual-focus-states-gallery.md) — encerrado a pedido do proprietário. Contorno primário de 3 px com offset zero no commit `b5d25a25`. Publicação não confirmada.
+
 <a id="today-views-issues-06-timeline-keyboard-focus"></a>
 - [HOJE-06 · Simplificar o foco de teclado nas ações da Linha do tempo](../today-views/issues/06-timeline-keyboard-focus.md) — aprovado e encerrado pelo proprietário em 22/11. Três paradas de Tab por ação (ação inteira, alça esquerda, alça direita); setas movem a ação em passos de cinco minutos e os handles ajustam as extremidades. Typecheck, build e diff-check aprovados. Código local, sem publicação; proprietário aprovou o encerramento.
 

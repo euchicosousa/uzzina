@@ -29,7 +29,7 @@ export interface DashActionDto {
  */
 export async function fetchDashPartners(): Promise<DashPartnerDto[]> {
   const data = await portalRequest<{ partners: DashPartnerDto[] }>(
-    "/api/dash-data?op=partners",
+    "/api/dash?scope=data&op=partners",
     { method: "GET" },
     "Falha ao buscar parceiros",
   );
@@ -46,6 +46,7 @@ export async function fetchDashActions(params: {
   to: string;
 }): Promise<DashActionDto[]> {
   const query = new URLSearchParams({
+    scope: "data",
     op: "actions",
     partner: params.partner,
     from: params.from,
@@ -53,7 +54,7 @@ export async function fetchDashActions(params: {
   });
 
   const data = await portalRequest<{ actions: DashActionDto[] }>(
-    `/api/dash-data?${query.toString()}`,
+    `/api/dash?${query.toString()}`,
     { method: "GET" },
     "Falha ao consultar ações",
   );
@@ -68,13 +69,14 @@ export async function fetchDashAction(
   id: string,
 ): Promise<DashActionDto | null> {
   const query = new URLSearchParams({
+    scope: "data",
     op: "action",
     id,
   });
 
   try {
     const data = await portalRequest<{ action: DashActionDto }>(
-      `/api/dash-data?${query.toString()}`,
+      `/api/dash?${query.toString()}`,
       { method: "GET" },
       "Falha ao obter detalhe da ação",
     );
@@ -91,9 +93,13 @@ export type DashCommentDto =
 export async function fetchDashComments(
   actionId: string,
 ): Promise<DashCommentDto[]> {
-  const query = new URLSearchParams({ op: "comments", actionId });
+  const query = new URLSearchParams({
+    scope: "action",
+    op: "comments",
+    actionId,
+  });
   const data = await portalRequest<{ comments: DashCommentDto[] }>(
-    `/api/dash-action?${query}`,
+    `/api/dash?${query}`,
     { method: "GET" },
     "Falha ao obter observações",
   );
@@ -107,7 +113,7 @@ export async function createDashComment(
   content: string,
 ): Promise<DashCommentDto> {
   const data = await portalRequest<{ comment: DashCommentDto }>(
-    "/api/dash-action?op=comment",
+    "/api/dash?scope=action&op=comment",
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -126,7 +132,7 @@ export async function updateDashComment(
   content: string,
 ): Promise<DashCommentDto> {
   const data = await portalRequest<{ comment: DashCommentDto }>(
-    "/api/dash-action?op=comment",
+    "/api/dash?scope=action&op=comment",
     {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -144,7 +150,7 @@ export async function deleteDashComment(
   commentId: string,
 ): Promise<void> {
   const data = await portalRequest<{ deletedId: string }>(
-    "/api/dash-action?op=comment",
+    "/api/dash?scope=action&op=comment",
     {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
@@ -167,7 +173,7 @@ export async function updateDashWorkFiles(
     count: number;
     updated_at: string;
   }>(
-    "/api/dash-action?op=work-files",
+    "/api/dash?scope=action&op=work-files",
     {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },

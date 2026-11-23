@@ -22,11 +22,11 @@ const buttonSizeClasses = {
 // Single source of truth for variant looks (also used by Toggle).
 const buttonVariantClasses = {
   default:
-    "bg-primary border-primary text-primary-foreground not-data-[focus-visible]:hover:border-primary-hover not-data-[focus-visible]:hover:bg-primary-hover",
+    "bg-primary border-primary text-primary-foreground data-[focus-visible]:outline-offset-2 not-data-[focus-visible]:hover:border-primary-hover not-data-[focus-visible]:hover:bg-primary-hover",
   outline:
     "bg-transparent not-data-[focus-visible]:hover:bg-secondary aria-expanded:bg-secondary aria-expanded:not-data-[focus-visible]:hover:bg-secondary-hover",
   secondary:
-    "bg-secondary text-foreground border-secondary not-data-[focus-visible]:hover:border-secondary-hover not-data-[focus-visible]:hover:bg-secondary-hover aria-expanded:bg-secondary aria-expanded:text-foreground",
+    "bg-secondary text-foreground not-data-[focus-visible]:hover:border-secondary-hover not-data-[focus-visible]:hover:bg-secondary-hover aria-expanded:bg-secondary aria-expanded:text-foreground",
   ghost:
     "bg-clip-border not-data-[focus-visible]:hover:bg-secondary border-transparent aria-expanded:bg-secondary aria-expanded:not-data-[focus-visible]:hover:bg-secondary-hover",
   "ghost-error":
