@@ -4,7 +4,7 @@
 
 **Onde conferir.** Abra `docs/audits/focus-state-gallery.html` em um navegador desktop. No topo, selecione uma das dez paletas e o modo claro/escuro. Em cada card, compare **Atual** (esquerda) com **Proposta** (direita).
 
-**O que este ticket entrega.** Um levantamento dos tipos de foco do app, com matriz prática **Antes × Depois** e amostras comparativas. Abre em `docs/audits/focus-state-gallery.html`; escolha paleta e modo e compare cada painel. Foco por fundo ou sublinhado passa ao mesmo ring; seleção, arraste, hover e estados semânticos ficam identificados como não foco.
+**O que este ticket entrega.** Um levantamento que separa foco visível por teclado de hover, seleção/checagem, estado aberto e foco de gerenciamento React Aria. A galeria `docs/audits/focus-state-gallery.html` compara **Atual × Proposta** por paleta e modo; apenas as amostras de foco por teclado recebem o contorno uniforme. Outros estados mantêm seus próprios indicadores.
 
 ## Histórico da implementação anterior
 
@@ -32,9 +32,9 @@ O proprietário conferiu a galeria e escolheu espessura 3 px e offset zero. O ap
 ## Escopo da retomada
 
 - Distinguir foco visível de teclado (`:focus-visible`/`data-focus-visible`) de hover, seleção/checagem e estado aberto; registrar também foco de gerenciamento quando o componente o expuser sem indicar modalidade de teclado.
-- Só desenhar o ring de teclado nas amostras que representam foco por Tab. Mostrar o tratamento de hover separado, sem ring; manter seleção e estado aberto como estados independentes.
+- Só desenhar o ring de teclado nas amostras que representam foco por Tab/setas. Mostrar o tratamento de hover separado, sem ring; manter seleção e estado aberto como estados independentes.
 - Revisar especialmente o item de menu “Sair” do Header e a `PrismTab`, sem generalizar uma amostra estática de “foco” para todos os estados.
-- Atualizar a galeria HTML depois de fechar a classificação. A mudança aprovada nesta retomada é documental; o estudo não encontrou ajuste adicional necessário no app.
+- Galeria revisada e commitada em `b28efb4`. A mudança aprovada nesta retomada é documental; o estudo não encontrou ajuste adicional necessário no app, cuja regra de foco já está em `b5d25a25`.
 
 ## Fora do escopo
 

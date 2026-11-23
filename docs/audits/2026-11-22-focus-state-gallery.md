@@ -1,7 +1,7 @@
 # Comparação visual dos estados de foco
 
 **Ticket:** KEYBOARD-FOCUS-04  
-**Status:** proposta de foco visível implementada no commit `b5d25a25`, presente em `main` e `origin/main`; galeria revisada em 22/11. Publicação/aceite visual do app ainda não confirmados.
+**Status:** distinção documentada e galeria revisada; documentação publicada no commit `b28efb4` em `main`/`origin/main`. A regra no app está no commit `b5d25a25`, também em `main`/`origin/main`. Deploy/aceite visual do app continuam sem confirmação.
 
 ## Reauditoria solicitada em 22/11/2026
 
@@ -15,21 +15,28 @@ O que o código atual mostra:
 - No menu do Header, o item “Sair” perdeu o fundo vermelho ligado a `focus`; o texto de erro permanece. Os itens usam o hover genérico do menu. Notificações do Header também mantêm hover e perderam o fundo exclusivo de `focus-visible`.
 - Segmentos de hora tiveram removido o fundo primário de foco e estão cobertos pela regra global `[data-focus-visible]`.
 
-Conclusão do estudo: o código atual não aplica ring só por hover/seleção; o ring é ligado a `:focus-visible`/`data-focus-visible`. A divergência principal está na **classificação e demonstração**: o ticket e a HTML juntaram todos os exemplos antes descritos como “foco” numa regra única, sem separar foco de teclado, hover, estado selecionado, foco de gerenciamento React Aria e estado aberto. A matriz e as réplicas foram revisadas para marcar as origens e mostrar repouso, hover de ponteiro, foco por Tab e seleção quando aplicável, com exemplos próprios para o menu do Header e PrismTab. Nenhuma correção no app foi feita nesta reauditoria.
+Conclusão do estudo: o código atual não aplica ring só por hover/seleção; o ring é ligado a `:focus-visible`/`data-focus-visible`. A divergência principal estava na **classificação e demonstração**: ticket e HTML haviam juntado estados diferentes sob “foco”. A galeria foi revisada para mostrar repouso, foco por teclado, hover de ponteiro e seleção quando aplicável, com exemplos do menu do Header e da PrismTab. Nenhuma correção adicional no app foi necessária nesta reauditoria.
 
-Verificação desta reauditoria: leitura estática do CSS global, do diff do commit `b5d25a25` e dos componentes Header, DropdownMenu, Tabs, TimeField, Select, Combobox e Command. Não houve teste de navegador; as réplicas HTML não executam React Aria e a sessão anterior registrou bloqueio a `file://`.
+| Estado | Indicador vigente | Exemplo |
+|---|---|---|
+| Foco visível por teclado (`:focus-visible`/`data-focus-visible`) | Contorno primário de 3 px, offset zero | Menu do Header, itens de lista, PrismTab |
+| Hover de ponteiro (`data-hovered`/`:hover`) | Fundo `secondary`; sem contorno | Itens de menu e PrismTab |
+| Selecionado/checado | Indicador próprio do componente; sem contorno por seleção | Aba selecionada, item marcado |
+| Aberto | Indicador próprio do componente; sem contorno por estar aberto | Gatilho de submenu |
 
-## Implementação aprovada
+Verificação desta reauditoria: leitura estática do CSS global, do diff do commit `b5d25a25` e dos componentes Header, DropdownMenu, Tabs, TimeField, Select, Combobox e Command; `git diff --check` passou para a atualização da galeria. Não houve teste de navegador; as réplicas HTML não executam React Aria e não certificam o comportamento do app publicado.
+
+## Implementação do app (histórico)
 
 O proprietário conferiu a galeria e escolheu espessura 3 px e offset zero. O app local recebe um contorno único no foco visível, com seletores globais que encaminham o indicador ao alvo visual composto. A conferência visual do app e a publicação continuam pendentes.
 
-## Escopo do levantamento
+## Escopo e mapa originais (histórico)
 
 Revisei os seis grupos da galeria `/ui` (`TokensFocusSection`), o contrato Prism, o fallback em `app/tailwind.css` e ocorrências de classes de foco no app. A matriz e as amostras da [galeria](focus-state-gallery.html) mostram o tratamento atual e a proposta lado a lado, em cada paleta e nos modos claro e escuro. Os toggles permanecem disponíveis para comparação e iniciam em espessura 3 e offset zero.
 
-Na proposta, todo indicador de foco — inclusive fundo, sublinhado, ring interno, halo semântico e fallback — passa para ring primário de 3 px com offset zero. Fundo, borda ou sublinhado que existiam apenas para mostrar foco são removidos. Aparência semântica permanente (por exemplo campo inválido ou item destrutivo), seleção, drag/drop e hover ficam iguais. Nos grupos compostos, o ring continua no contêiner que recebe o foco, sem duplicar no filho.
+O texto e o mapa abaixo registram a classificação da rodada original. A reauditoria acima substitui essa leitura quando “foco” não estava separado de hover, estado selecionado, estado aberto ou foco de gerenciamento React Aria.
 
-## Mapa completo de antes e depois
+### Mapa original de antes e depois
 
 | Padrão atual | Onde aparece | Proposta visual |
 |---|---|---|
@@ -60,6 +67,6 @@ As amostras são réplicas HTML/CSS para revisão visual, não instâncias React
 
 - HTML e JavaScript local; sem dependências externas.
 - Script embutido validado com `node --check` e `git diff --check`.
-- Navegador desta sessão bloqueou a abertura direta de arquivos `file://`; não foi possível conferir o sticky nem a aparência por captura automatizada.
-- TypeScript e build Vite verificados no workspace.
-- A implementação está na main local. Sem commit ou deploy nesta rodada.
+- A abertura direta em `file://` havia sido bloqueada na sessão anterior; a galeria continua sendo uma réplica estática e não confirma o comportamento do app.
+- TypeScript e build Vite foram verificados na rodada original da implementação, antes desta reauditoria documental.
+- A regra do app está no commit `b5d25a25`; esta atualização documental foi commitada como `b28efb4`. O deploy da regra do app não foi confirmado.
