@@ -2,6 +2,8 @@
 
 Atualizado em 23/11/2026. [Contratos](../../AGENTS.md) · [Operação](../../README.md) · [Ideias futuras](../../TODO.md).
 
+**DropdownMenu — recuo interno (23/11).** Removido `p-[3px]` do contêiner de itens; o padding externo do menu e os espaçamentos próprios dos itens continuam. A origem do `p-[3px]` não tinha documentação: foi adicionado junto com o foco de teclado de 3 px, possivelmente para evitar corte do contorno. O proprietário confirmou visualmente que o espaçamento removido corrigiu a apresentação.
+
 **Linha do tempo — sombra inferior (23/11).** A faixa mais baixa da última pessoa usa `pb-6` para a sombra da ação não ser cortada; as alturas das outras faixas não mudam. O proprietário confirmou que essa folga corrige o recorte. Alteração local, sem publicação.
 
 **Foco nos Commands, 23/11.** O campo de busca fica sem fundo extra e sem contorno. A opção atual voltou a usar o fundo que acompanha as setas, sem contorno. Estilo conferido contra o padrão anterior do Prism. Build e diff conferidos. Falta conferência visual.

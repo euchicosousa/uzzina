@@ -52,7 +52,7 @@ function DropdownMenu({
       placement={placement}
     >
       <MenuPrimitive
-        className="max-h-[inherit] overflow-x-hidden overflow-y-auto p-[3px] outline-hidden"
+        className="max-h-[inherit] overflow-x-hidden overflow-y-auto outline-hidden"
         {...props}
       >
         {children}
