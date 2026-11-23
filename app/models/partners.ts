@@ -1,5 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "types/database";
+import type {
+  PartnerDeletePreview,
+  PartnerDeleteRequest,
+  PartnerDeleteResult,
+} from "~/lib/partner-delete-contract";
 import type { Partner, PartnerTopic } from "~/types";
 
 export async function getPartnerBySlug(
@@ -187,4 +192,79 @@ export async function countActionsByTopic(
     .eq("topic_id", topicId);
   if (error) throw error;
   return count ?? 0;
+}
+
+export class PartnerDeleteApiError extends Error {
+  status: number;
+  code?: string;
+
+  constructor(message: string, status: number, code?: string) {
+    super(message);
+    this.name = "PartnerDeleteApiError";
+    this.status = status;
+    this.code = code;
+  }
+}
+
+async function getPartnerDeleteAuthHeader(
+  supabase: SupabaseClient<Database>,
+): Promise<string | null> {
+  const { data } = await supabase.auth.getSession();
+  return data.session?.access_token
+    ? `Bearer ${data.session.access_token}`
+    : null;
+}
+
+export async function getPartnerDeletePreview(
+  supabase: SupabaseClient<Database>,
+  slug: string,
+): Promise<PartnerDeletePreview> {
+  const authHeader = await getPartnerDeleteAuthHeader(supabase);
+  const response = await fetch(
+    `/api/partner-delete?slug=${encodeURIComponent(slug)}`,
+    {
+      headers: {
+        ...(authHeader ? { Authorization: authHeader } : {}),
+      },
+    },
+  );
+  const payload = (await response.json().catch(() => ({}))) as {
+    error?: string;
+    code?: string;
+  };
+  if (!response.ok) {
+    throw new PartnerDeleteApiError(
+      payload.error || "Não foi possível carregar o levantamento do parceiro.",
+      response.status,
+      payload.code,
+    );
+  }
+  return payload as unknown as PartnerDeletePreview;
+}
+
+export async function deleteArchivedPartner(
+  supabase: SupabaseClient<Database>,
+  request: PartnerDeleteRequest,
+): Promise<PartnerDeleteResult> {
+  const authHeader = await getPartnerDeleteAuthHeader(supabase);
+  const response = await fetch("/api/partner-delete", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(authHeader ? { Authorization: authHeader } : {}),
+    },
+    body: JSON.stringify(request),
+  });
+  const payload = (await response.json().catch(() => ({}))) as {
+    error?: string;
+    code?: string;
+  };
+  if (!response.ok) {
+    throw new PartnerDeleteApiError(
+      payload.error || "Não foi possível excluir o parceiro.",
+      response.status,
+      payload.code,
+    );
+  }
+  return payload as unknown as PartnerDeleteResult;
 }

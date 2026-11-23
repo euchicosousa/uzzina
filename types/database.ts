@@ -341,6 +341,40 @@ export type Database = {
         };
         Relationships: [];
       };
+      social_plans: {
+        Row: {
+          id: string;
+          partner_slug: string;
+          user_id: string;
+          mode: string;
+          status: string;
+          input: Json;
+          suggestions: Json;
+          version: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          partner_slug: string;
+          user_id: string;
+          mode: string;
+          status?: string;
+          input?: Json;
+          suggestions?: Json;
+          version?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          mode?: string;
+          status?: string;
+          input?: Json;
+          suggestions?: Json;
+          version?: number;
+        };
+        Relationships: [];
+      };
       social_plan_action_links: {
         Row: {
           plan_id: string;
@@ -868,6 +902,17 @@ export type Database = {
           p_client_id: string;
         };
         Returns: undefined;
+      };
+      delete_archived_partner: {
+        Args: {
+          p_partner_id: string;
+          p_expected_slug: string;
+          p_expected_exclusive_action_count: number;
+          p_expected_shared_action_count: number;
+          p_expected_exclusive_client_count: number;
+          p_expected_shared_client_count: number;
+        };
+        Returns: Json;
       };
       client_migrate_legacy_password: {
         Args: {

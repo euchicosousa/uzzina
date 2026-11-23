@@ -36,6 +36,7 @@ import { Route as AppAdminCelebrationsRouteImport } from './routes/app/admin/cel
 import { Route as AppAdminUserUserIdRouteImport } from './routes/app/admin/user/$userId'
 import { Route as AppAdminPartnerSlugRouteImport } from './routes/app/admin/partner/$slug'
 import { Route as AppAdminClientUserIdRouteImport } from './routes/app/admin/client/$userId'
+import { Route as AppAdminPartnerSlugDeleteRouteImport } from './routes/app/admin/partner/$slug_.delete'
 
 const UiRoute = UiRouteImport.update({
   id: '/ui',
@@ -172,6 +173,12 @@ const AppAdminClientUserIdRoute = AppAdminClientUserIdRouteImport.update({
   path: '/admin/client/$userId',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminPartnerSlugDeleteRoute =
+  AppAdminPartnerSlugDeleteRouteImport.update({
+    id: '/admin/partner/$slug_/delete',
+    path: '/admin/partner/$slug/delete',
+    getParentRoute: () => AppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -201,6 +208,7 @@ export interface FileRoutesByFullPath {
   '/app/admin/client/$userId': typeof AppAdminClientUserIdRoute
   '/app/admin/partner/$slug': typeof AppAdminPartnerSlugRoute
   '/app/admin/user/$userId': typeof AppAdminUserUserIdRoute
+  '/app/admin/partner/$slug/delete': typeof AppAdminPartnerSlugDeleteRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -228,6 +236,7 @@ export interface FileRoutesByTo {
   '/app/admin/client/$userId': typeof AppAdminClientUserIdRoute
   '/app/admin/partner/$slug': typeof AppAdminPartnerSlugRoute
   '/app/admin/user/$userId': typeof AppAdminUserUserIdRoute
+  '/app/admin/partner/$slug/delete': typeof AppAdminPartnerSlugDeleteRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -258,6 +267,7 @@ export interface FileRoutesById {
   '/app/admin/client/$userId': typeof AppAdminClientUserIdRoute
   '/app/admin/partner/$slug': typeof AppAdminPartnerSlugRoute
   '/app/admin/user/$userId': typeof AppAdminUserUserIdRoute
+  '/app/admin/partner/$slug_/delete': typeof AppAdminPartnerSlugDeleteRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -289,6 +299,7 @@ export interface FileRouteTypes {
     | '/app/admin/client/$userId'
     | '/app/admin/partner/$slug'
     | '/app/admin/user/$userId'
+    | '/app/admin/partner/$slug/delete'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -316,6 +327,7 @@ export interface FileRouteTypes {
     | '/app/admin/client/$userId'
     | '/app/admin/partner/$slug'
     | '/app/admin/user/$userId'
+    | '/app/admin/partner/$slug/delete'
   id:
     | '__root__'
     | '/'
@@ -345,6 +357,7 @@ export interface FileRouteTypes {
     | '/app/admin/client/$userId'
     | '/app/admin/partner/$slug'
     | '/app/admin/user/$userId'
+    | '/app/admin/partner/$slug_/delete'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -548,6 +561,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminClientUserIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/admin/partner/$slug_/delete': {
+      id: '/app/admin/partner/$slug_/delete'
+      path: '/admin/partner/$slug/delete'
+      fullPath: '/app/admin/partner/$slug/delete'
+      preLoaderRoute: typeof AppAdminPartnerSlugDeleteRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
@@ -568,6 +588,7 @@ interface AppRouteChildren {
   AppAdminClientUserIdRoute: typeof AppAdminClientUserIdRoute
   AppAdminPartnerSlugRoute: typeof AppAdminPartnerSlugRoute
   AppAdminUserUserIdRoute: typeof AppAdminUserUserIdRoute
+  AppAdminPartnerSlugDeleteRoute: typeof AppAdminPartnerSlugDeleteRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -587,6 +608,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminClientUserIdRoute: AppAdminClientUserIdRoute,
   AppAdminPartnerSlugRoute: AppAdminPartnerSlugRoute,
   AppAdminUserUserIdRoute: AppAdminUserUserIdRoute,
+  AppAdminPartnerSlugDeleteRoute: AppAdminPartnerSlugDeleteRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

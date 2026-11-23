@@ -5,9 +5,11 @@ import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   ArchiveIcon,
   BadgeCheckIcon,
+  CloudIcon,
   MailCheckIcon,
   MegaphoneIcon,
   PrinterIcon,
+  Trash2Icon,
 } from "lucide-react";
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -27,6 +29,7 @@ import {
   PrismToggle,
   PrismToggleGroup,
   PrismToggleGroupItem,
+  buttonVariants,
 } from "~/components/prism";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { getAllCelebrations } from "~/models/celebrations";
@@ -46,7 +49,6 @@ import {
   updatePartnerBySlug,
   updatePartnerHolidays,
 } from "~/models/partners";
-import { CloudIcon } from "lucide-react";
 import { AdminGuard } from "~/components/features/AdminGuard";
 import { PartnerTopicsEditor } from "~/components/features/PartnerTopicsEditor";
 export const Route = createFileRoute("/app/admin/partner/$slug")({
@@ -729,28 +731,49 @@ function AdminPartnerEditPage() {
           </div>
         </div>
 
-        <div className="mb-18 flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between gap-4">
           {isArchived && <input name="archived" type="hidden" value="on" />}
-          <PrismToggle
-            id="archived"
-            isDisabled={isSubmitting}
-            isSelected={isArchived}
-            onChange={(selected) => {
-              setIsArchived(selected);
-              stateRef.current.archived = selected;
-              triggerAutoSave({
-                archived: selected,
-              });
-            }}
-            variant="outline"
-          >
-            {isArchived ? "Arquivado" : "Visível"}
-            {savingFields.has("archived") ? (
-              <ULoader className="size-4" />
-            ) : (
-              <ArchiveIcon className="size-4" />
-            )}
-          </PrismToggle>
+          <div className="flex items-center gap-3">
+            <PrismToggle
+              id="archived"
+              isDisabled={isSubmitting}
+              isSelected={isArchived}
+              onChange={(selected) => {
+                setIsArchived(selected);
+                stateRef.current.archived = selected;
+                triggerAutoSave({
+                  archived: selected,
+                });
+              }}
+              variant="outline"
+            >
+              {isArchived ? "Arquivado" : "Visível"}
+              {savingFields.has("archived") ? (
+                <ULoader className="size-4" />
+              ) : (
+                <ArchiveIcon className="size-4" />
+              )}
+            </PrismToggle>
+
+            {!isNew &&
+              partner &&
+              isArchived &&
+              (savingFields.has("archived") || isSubmitting ? (
+                <PrismButton isDisabled type="button" variant="error">
+                  Excluir
+                  <Trash2Icon />
+                </PrismButton>
+              ) : (
+                <Link
+                  className={buttonVariants({ variant: "error" })}
+                  params={{ slug: partner.slug }}
+                  to="/app/admin/partner/$slug/delete"
+                >
+                  Excluir
+                  <Trash2Icon />
+                </Link>
+              ))}
+          </div>
 
           <PrismButton
             className="rounded-2xl squircle"

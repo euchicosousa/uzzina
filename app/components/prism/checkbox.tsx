@@ -8,7 +8,7 @@ import {
 } from "react-aria-components";
 import { cn } from "cnfast";
 const checkboxVariants = cva(
-  "group flex cursor-pointer items-center gap-2 text-sm font-medium transition-colors select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
+  "group relative flex cursor-pointer items-center gap-2 text-sm font-medium transition-colors select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
   {
     variants: {
       size: {
@@ -23,7 +23,7 @@ const checkboxVariants = cva(
   },
 );
 const boxVariants = cva(
-  "flex shrink-0 items-center justify-center bg-input transition-all outline-none group-data-[invalid]:border-error group-data-[selected]:bg-primary group-data-[selected]:border-primary group-data-[selected]:text-primary-foreground group-data-[indeterminate]:bg-primary group-data-[indeterminate]:border-primary group-data-[indeterminate]:text-primary-foreground",
+  "flex shrink-0 border items-center justify-center bg-input transition-all outline-none group-data-[invalid]:border-error group-data-[selected]:bg-primary group-data-[selected]:border-primary group-data-[selected]:text-primary-foreground group-data-[indeterminate]:bg-primary group-data-[indeterminate]:border-primary group-data-[indeterminate]:text-primary-foreground",
   {
     variants: {
       size: {
