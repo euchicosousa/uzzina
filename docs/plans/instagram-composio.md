@@ -2,7 +2,7 @@
 
 Proposta de 22/11/2026. A UZZINA usaria a Composio para conectar perfis, publicar e buscar dados no Instagram. O Supabase guardaria a programação e os dados coletados. A equipe poderia consultar e exportar relatórios a partir do que já está no banco, sem repetir a importação a cada consulta.
 
-**Ordem de execução:** depois da conexão, a prioridade é publicar agora e programar Stories (seções 2 e tickets 03–05). A conexão e a leitura básica dos dados são suficientes para começar essa frente. A página própria para consultar e analisar publicações/insights, com histórico salvo, fica na fase final de dados e relatórios (seções 3–4, ticket 06); os resultados de leitura não devem ocupar a tela de configuração do perfil. A análise de comentários vem depois dessa página (ticket 07). A importação de referências públicas para Arquivos (ticket 08) é independente.
+**Ordem de execução:** depois da conexão, a prioridade é publicar agora e programar todos os formatos básicos (seções 2 e tickets 03–05): imagem/carrossel no feed, vídeo no feed, Reel e Stories. A conexão e a leitura básica dos dados são suficientes para começar essa frente. A página própria para consultar e analisar publicações/insights, com histórico salvo, fica na fase final de dados e relatórios (seções 3–4, ticket 06); os resultados de leitura não devem ocupar a tela de configuração do perfil. A análise de comentários vem depois dessa página (ticket 07). A importação de referências públicas para Arquivos (ticket 08) é independente.
 
 ## 1. Conectar o perfil do parceiro
 
@@ -14,17 +14,17 @@ O piloto começa pelo OAuth gerenciado da Composio com um perfil **Empresa** de 
 
 A [aba Instagram da ação](../../app/components/features/action-drawer/InstagramTab.tsx) já mostra a prévia e o gerenciador de arquivos na mesma coluna. A primeira proposta é colocar **Publicar agora** e **Programar** abaixo da prévia, perto dos arquivos. Conferir a composição em gaveta estreita antes de fechar a posição. Se a aba ficar apertada, experimentar um diálogo **Publicação no Instagram** aberto a partir da ação.
 
-**Publicar agora** é a próxima etapa de implementação (Ticket 03) e deve permitir enviar, após confirmação, imagem/carrossel no feed, vídeo no feed, Reel ou sequência de Stories. A equipe confere perfil, formato, ordem e legenda antes de cada envio. A operação é imediata e não cria agendamento. A programação futura é uma etapa posterior, nos Tickets 04 e 05.
+**Publicar agora** envia imagem/carrossel no feed, vídeo no feed, Reel ou sequência de Stories. A equipe confere perfil, formato, ordem e legenda antes de cada envio. A operação é imediata e não cria agendamento. A programação futura deve oferecer os mesmos formatos, com formato derivado da categoria da ação; os Tickets 04 e 05 detalham esse trabalho.
 
 Antes de publicar agora, a equipe vê o @ de destino, os arquivos finais e sua ordem e a legenda quando aplicável. Para uma publicação programada, também confere o horário no fuso do parceiro; o agendamento guarda essa versão dos materiais. A autorização para conectar o perfil e a eventual aprovação editorial da peça são decisões separadas. Definir com a agência quais parceiros exigem aprovação antes do envio e quem pode publicar.
 
-### Selecionar Stories para cada dia
+### Programar posts e Stories
 
-Uma ação de Stories pode reunir todos os arquivos disponíveis e ter vários agendamentos ligados a ela. Na ação da clínica, a equipe carrega os dez Stories dos profissionais e, em **Programar**, marca os três que atendem na segunda, define a ordem e confirma o horário. Os dez arquivos continuam disponíveis na ação. Para terça, a equipe abre a mesma ação e marca outra seleção. Cada agendamento guarda os arquivos selecionados, o @ de destino, a data, o horário e a ordem. Cada Story tem resultado próprio, para identificar quais saíram e quais precisam de atenção.
+Uma ação pode ter arquivos disponíveis e vários agendamentos independentes. Em **Programar**, a equipe seleciona os materiais que correspondem ao formato fixo da categoria e define a ordem quando houver sequência. Para uma clínica, pode escolher três entre dez Stories para segunda e outra seleção para terça; cada Story tem resultado próprio. Em feed e Reel, a ocorrência guarda o post ou carrossel escolhido. Cada agendamento guarda snapshot dos arquivos selecionados, perfil de destino, formato, data, horário, fuso e legenda quando o formato a aceita. Os arquivos originais continuam na ação.
 
 ### Duplicar uma ação
 
-A cópia leva o conteúdo e os arquivos da ação. Ela começa com a lista de agendamentos vazia. A programação, os resultados e o histórico pertencem à ação original. Para usar a cópia, a equipe seleciona os Stories, escolhe as datas e confirma. A UZZINA cria novos agendamentos vinculados à cópia nesse momento.
+A cópia leva o conteúdo e os arquivos da ação. Ela começa com a lista de agendamentos vazia. A programação, os resultados e o histórico pertencem à ação original. Para usar a cópia, a equipe escolhe o conteúdo compatível com a categoria, define as datas e confirma. A UZZINA cria novos agendamentos vinculados à cópia nesse momento.
 
 ### Programar em várias datas
 
@@ -33,9 +33,9 @@ Para a oferta da hamburgueria, a equipe pode selecionar uma vez o material e o h
 - **Datas específicas.** Marcar quatro datas no calendário e confirmar todas de uma vez.
 - **Repetição semanal.** Escolher toda segunda-feira, com início e fim definidos, por exemplo, durante dois meses.
 
-A proposta é mostrar as datas e o horário antes da confirmação e criar uma ocorrência independente para cada data. Assim a equipe pode cancelar ou mudar uma segunda específica sem alterar as outras. O primeiro fluxo a validar é a seleção de Stories para uma data. As duas opções de várias datas ficam previstas como evolução desse mesmo fluxo.
+A proposta é mostrar as datas e o horário antes da confirmação e criar uma ocorrência independente para cada data, usando o mesmo formato e conteúdo em todas. Assim a equipe pode cancelar ou mudar uma segunda específica sem alterar as outras. Repetição semanal e criação em várias datas entram depois que o fluxo de uma ocorrência estiver estável para cada formato.
 
-**Programar** grava a data futura no Supabase. Um Supabase Cron aciona o servidor para buscar itens no horário e chamar a Composio. A UZZINA guarda o resultado e o identificador do Instagram, exibe o link quando disponível e permite cancelar ou reprogramar itens ainda pendentes. Se a resposta do Instagram se perder, o servidor verifica o resultado antes de tentar publicar outra vez. [Supabase Cron](https://supabase.com/docs/guides/cron) · [Publicação na API da Meta](https://developers.facebook.com/documentation/instagram-platform/content-publishing) · [Publicação pela Composio](https://docs.composio.dev/kb/guide/toolkits-instagram)
+**Programar** grava a data futura no Supabase. Um Supabase Cron chama por HTTP o endpoint Instagram já existente da UZZINA, que reserva ocorrências vencidas atomicamente, respeita a conexão ativa e grava cada resultado. Assim, o executor não adiciona uma nova função Vercel. O plano Hobby da Vercel permite Cron nativo só uma vez por dia e com até 59 minutos de variação; por isso não usamos o Cron da Vercel para horário de postagem. Um disparo por minuto do Supabase equivale a 44.640 chamadas mensais em 31 dias, frente a 1 milhão de invocações mensais incluídas no Hobby da Vercel; o consumo de computação e o comportamento sob picos ainda precisam de validação no projeto. A UZZINA exibe o estado e o link quando disponível e permite cancelar/reprogramar apenas itens ainda pendentes. Se a resposta do Instagram se perder, a ocorrência fica incerta e exige conferência antes de qualquer nova tentativa automática. [Supabase Cron](https://supabase.com/docs/guides/cron) · [Preços da Vercel](https://vercel.com/pricing) · [Limites de Cron da Vercel](https://vercel.com/docs/schedules/cron-jobs/usage-and-pricing) · [Publicação na API da Meta](https://developers.facebook.com/documentation/instagram-platform/content-publishing) · [Publicação pela Composio](https://docs.composio.dev/kb/guide/toolkits-instagram)
 
 ## 3. Guardar os dados do Instagram na UZZINA
 

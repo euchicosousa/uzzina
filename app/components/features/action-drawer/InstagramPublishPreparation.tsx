@@ -20,6 +20,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import {
   PrismButton,
+  PrismBadge,
   PrismDialog,
   PrismDialogBody,
   PrismDialogDescription,
@@ -30,6 +31,7 @@ import {
   PrismTabPanel,
   PrismTabs,
 } from "~/components/prism";
+import { LinkButton } from "~/components/prism/button";
 import {
   instagramPublishRequest,
   InstagramPublishError,
@@ -45,6 +47,21 @@ import { GripVerticalIcon, XIcon } from "lucide-react";
 
 type Format = PublishInput["format"];
 type PublishMode = "publish" | "schedule";
+
+function getAttemptStatus(status: string) {
+  switch (status) {
+    case "published":
+      return { label: "Publicado", variant: "success" as const };
+    case "pending":
+      return { label: "Em andamento", variant: "info" as const };
+    case "failed":
+      return { label: "Falhou", variant: "error" as const };
+    case "partial":
+      return { label: "Parcial", variant: "warning" as const };
+    default:
+      return { label: "Conferir", variant: "warning" as const };
+  }
+}
 
 function usernameWithoutAt(username: string | null) {
   return username?.replace(/^@+/, "") ?? "";
@@ -470,42 +487,52 @@ export function InstagramPublishPreparation({
             {partner &&
               (state?.attempts.filter((item) => item.partner_id === partner.id)
                 .length ?? 0) > 0 && (
-                <div className="flex flex-col gap-2">
+                <div className="mb-4 flex flex-col gap-2">
                   <p className="text-base font-medium">
                     Histórico de envios desta ação
                   </p>
                   {state?.attempts
                     .filter((item) => item.partner_id === partner.id)
-                    .map((item) => (
-                      <div key={item.id} className="text-base">
-                        <p>
-                          {new Date(item.created_at).toLocaleString("pt-BR")} —{" "}
-                          {item.status === "published"
-                            ? "Publicado"
-                            : item.status === "pending"
-                              ? "Em andamento ou aguardando verificação"
-                              : item.status === "failed"
-                                ? "Não publicado"
-                                : "Precisa de conferência"}
-                        </p>
-                        {item.detail && <p>{item.detail}</p>}
-                        {item.results.map((result) => (
-                          <p key={result.id}>
-                            ID: {result.id}{" "}
-                            {result.permalink && (
-                              <a
-                                href={result.permalink}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="underline"
-                              >
-                                Ver publicação
-                              </a>
-                            )}
-                          </p>
-                        ))}
-                      </div>
-                    ))}
+                    .map((item) => {
+                      const status = getAttemptStatus(item.status);
+                      const dateLabel = new Date(
+                        item.created_at,
+                      ).toLocaleString("pt-BR", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      });
+                      return (
+                        <div
+                          key={item.id}
+                          className="flex w-full items-center justify-between gap-2 text-sm whitespace-nowrap"
+                        >
+                          <time dateTime={item.created_at}>{dateLabel}</time>
+                          <PrismBadge variant={status.variant}>
+                            {status.label}
+                          </PrismBadge>
+                          {item.results.map(
+                            (result, resultIndex) =>
+                              result.permalink && (
+                                <LinkButton
+                                  href={result.permalink}
+                                  key={result.id}
+                                  rel="noreferrer"
+                                  size="xs"
+                                  target="_blank"
+                                  variant="ghost"
+                                >
+                                  {item.results.length > 1
+                                    ? `Ver publicação ${resultIndex + 1}`
+                                    : "Ver publicação"}
+                                </LinkButton>
+                              ),
+                          )}
+                        </div>
+                      );
+                    })}
                 </div>
               )}
             {mediaError && <p className="text-base text-error">{mediaError}</p>}

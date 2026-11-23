@@ -4,7 +4,7 @@
 
 **Bloqueado por:** Nenhum. A conexão do perfil já está disponível; a página de consulta de dados ficará para uma etapa posterior.
 
-**Status:** migrations aplicadas em produção; código local preparado e typecheck/diff aprovados; falta validação visual e teste real de publicação pela UZZINA após publicar o código.
+**Status:** implementação enviada para `main`; proprietário confirmou publicação real pela UZZINA em 23/11/2026. A matriz individual de imagem/carrossel, vídeo, Reel e Stories pela UZZINA ainda precisa ser conferida antes de marcar todos os formatos como validados.
 
 ## Etapas previstas
 
@@ -47,10 +47,10 @@
 
 A gaveta da ação → Instagram oferece um botão **Publicar ou programar**. Sem perfil conectado, ele é substituído por uma mensagem para conectar; com perfil mas sem arquivo de mídia, fica visível e desabilitado pela variante/estado padrão Prism; o upload reativa o botão imediatamente. Ao abrir o diálogo, a compatibilidade do arquivo é validada antes do envio. O destino é automático e mostra foto/@; o formato indica a categoria e não pode ser trocado. Arquivos da ação aparecem em ordem e podem ser reorganizados; legenda vazia é permitida e não há checkbox de confirmação. O servidor confirma a conexão e registra a tentativa antes de usar a Composio. O diálogo mostra andamento e resultados; IDs e links retornados são guardados. A aba de programação é somente visual e não salva horários.
 
-O proprietário definiu que toda a equipe ativa pode publicar, respeitado o acesso existente à ação e ao parceiro, sem aprovação editorial adicional. A implementação prepara imagem JPEG/carrossel de imagens e vídeos, vídeo no feed, Reel e sequência de Stories JPEG/MP4/MOV, até 20 arquivos. A Meta exige mídia acessível publicamente e pode impor restrições adicionais; formatos, permissões efetivas e envio ainda não foram validados no provedor.
+O proprietário definiu que toda a equipe ativa pode publicar, respeitado o acesso existente à ação e ao parceiro, sem aprovação editorial adicional. A implementação prepara imagem JPEG/PNG/carrossel de imagens e vídeos, vídeo no feed, Reel e sequência de Stories, até 20 arquivos. A Meta exige mídia acessível publicamente e pode impor restrições adicionais. Em 23/11, o proprietário confirmou publicação real pela UZZINA; a conversa não registrou de forma inequívoca quais formatos além desse envio foram testados pelo app.
 
 A migration `20261123153257_instagram_publish_attempts.sql` foi aplicada ao projeto de produção `uzzina` (`dfepmjcozszswocwvdpq`) e registrada como `20261123153257`; guarda tentativas, contêiner atual e resultados e bloqueia novo envio da mesma ação e parceiro enquanto houver estado pendente, incerto ou parcial. Não repete automaticamente. Uma interrupção ou sequência parcial exige conferência no Instagram e intervenção operacional; a interface ainda não oferece liberação dessas tentativas. Cada publicação de Story bem sucedida é registrada antes de passar à próxima.
 
-Migration aplicada e RLS/grants conferidos em produção. Prettier, typecheck e `git diff --check` passaram após o ajuste de estados. Não houve teste com post real pela API da UZZINA, commit, push ou deploy. A autorização real de membro, formatos e aceite visual permanecem pendentes; a conta do Composio já publicou posts manualmente em testes anteriores.
+Migration aplicada e RLS/grants conferidos em produção. Prettier, typecheck, build e `git diff --check` passaram após o ajuste de estados. Commits `72a58813` e `ca4b305d` enviados para `main` em 23/11; o push não confirma que o deploy ficou Ready. A autorização real de membro, matriz de formatos e aceite visual ainda precisam de validação.
 
 Fontes: [Composio — publicação de mídia](https://docs.composio.dev/kb/guide/toolkits-instagram), [proxy Composio](https://docs.composio.dev/reference/api-reference/tools/postToolsExecuteProxy) e [publicação Meta](https://developers.facebook.com/documentation/instagram-platform/content-publishing).

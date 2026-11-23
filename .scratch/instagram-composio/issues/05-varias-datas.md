@@ -1,16 +1,17 @@
-# Programar em várias datas e repetir por período
+# Programar publicações do Instagram em várias datas
 
-**Status:** migração de banco aplicada em produção; interface local no diálogo compartilhado; API e execução automática pendentes.
+**Status:** migração de banco aplicada em produção; interface local no diálogo compartilhado; API e execução automática pendentes. Em 23/11/2026, escopo confirmado para todos os formatos publicáveis, não apenas Stories.
 
 **Bloqueado por:** 04
 
 ## Resultado esperado
 
-Para o mesmo conteúdo, selecionar até dez datas e horários específicos, rever as ocorrências e programá-las como publicações independentes. Repetição semanal dentro de um período permanece como uma possibilidade posterior e não faz parte desta prévia de interface.
+Para o mesmo conteúdo (imagem/carrossel no feed, vídeo no feed, Reel ou sequência de Stories), selecionar até dez datas e horários específicos, rever as ocorrências e programá-las como publicações independentes. A categoria da ação determina o formato e cada ocorrência guarda o mesmo snapshot confirmado dos arquivos, da ordem e da legenda aplicável. Repetição semanal dentro de um período permanece como possibilidade posterior e não faz parte desta primeira entrega.
 
 ## Critérios de aceite
 
 - [ ] Criar ocorrências independentes para as datas selecionadas.
+- [ ] Aplicar o mesmo fluxo a imagem/carrossel no feed, vídeo no feed, Reel e Stories; Stories mantêm resultado por item.
 - [ ] Permitir mudar ou cancelar uma data individualmente.
 - [ ] Validar horário, fuso e limites do período.
 - [ ] O botão Programar abre o mesmo diálogo de publicação, já na aba Programar; não há tela inline independente.
