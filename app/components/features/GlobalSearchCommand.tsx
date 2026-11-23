@@ -30,6 +30,7 @@ import {
   CalendarIcon,
   PaletteIcon,
   CalendarRangeIcon,
+  CloudIcon,
   BellIcon,
   UsersIcon,
   HelpCircleIcon,
@@ -416,6 +417,12 @@ function GlobalSearchContent({
           label: "Cores dos temas",
           Icon: PaletteIcon,
           to: "/app/admin/themes",
+        },
+        {
+          id: "manage-cloudinary",
+          label: "Arquivos no Cloudinary",
+          Icon: CloudIcon,
+          to: "/app/admin/cloudinary",
         },
       ].map(({ to, ...command }) => ({
         ...command,

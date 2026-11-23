@@ -24,6 +24,7 @@ import {
   CalendarIcon,
   CalendarRangeIcon,
   CheckCircle2Icon,
+  CloudIcon,
   HelpCircleIcon,
   LaptopIcon,
   LogOutIcon,
@@ -761,6 +762,13 @@ export const HeaderMenu = ({
               >
                 <PaletteIcon className="size-4" />
                 Cores dos temas
+              </PrismMenuItem>
+              <PrismMenuItem
+                onAction={() => onNavigate("/app/admin/cloudinary")}
+                textValue="Cloudinary"
+              >
+                <CloudIcon className="size-4" />
+                Cloudinary
               </PrismMenuItem>
             </PrismMenuGroup>
           </>

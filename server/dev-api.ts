@@ -14,6 +14,7 @@ const HANDLERS: Record<string, string> = {
   "/api/review": "./api/review.ts",
   "/api/client-accounts": "./api/client-accounts.ts",
   "/api/partner-delete": "./api/partner-delete.ts",
+  "/api/cloudinary-audit": "./api/cloudinary-audit.ts",
   "/api/create-user": "./api/create-user.ts",
 };
 

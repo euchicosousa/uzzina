@@ -1,4 +1,4 @@
--- Prepared locally for Partner Cleanup (Fase 2). NOT APPLIED to production yet.
+-- Applied in production (dfepmjcozszswocwvdpq) on 2026-11-22 via Supabase SQL Editor (verified in pg_proc).
 -- Atomically deletes an archived partner, unlinks shared actions and shared clients,
 -- deletes exclusive actions, exclusive clients and review links, and checks
 -- optimistic snapshot counts so concurrent changes cannot silently delete new records.

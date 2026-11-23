@@ -67,7 +67,9 @@ const { FileFsRef } = require("@vercel/build-utils");
       "api/review-links.ts",
       "api/client-accounts.ts",
       "api/partner-delete.ts",
+      "api/cloudinary-audit.ts",
       "app/lib/action-color.ts",
+      "app/lib/cloudinary-audit-contract.ts",
       "app/lib/cloudinary-references.ts",
       "app/lib/partner-delete-contract.ts",
       "app/lib/ai-contract.ts",
@@ -88,6 +90,7 @@ const { FileFsRef } = require("@vercel/build-utils");
       "server/strategy-operations.ts",
       "server/dash-session.ts",
       "server/auth.ts",
+      "server/cloudinary-admin.ts",
       "server/supabase-admin.ts",
       "types/database.ts",
     ];
