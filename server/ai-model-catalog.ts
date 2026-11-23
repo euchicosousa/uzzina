@@ -266,7 +266,7 @@ export function findAIModel(id: string): AIModel | undefined {
 export const aiOutputLimits = {
   "ai-strategy": 8192,
   "ai-content": 8192,
-  "ai-caption": 2048,
+  "ai-caption": 4096,
   "ai-planning-theme": 8192,
   "ai-planning-period": 4096,
   "ai-transcribe": 8192,
