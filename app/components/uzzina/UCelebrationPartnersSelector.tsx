@@ -108,6 +108,7 @@ export function UCelebrationPartnersSelector({
           options={partnerOptions}
           selectedIds={selectedIds}
           showLabel={false}
+          variant={"ghost"}
         />
       )}
     </div>

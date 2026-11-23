@@ -28,7 +28,7 @@ export function ActionTitleInput({
         data-focus-indicator="background"
         autoFocus={autoFocus}
         className={cn(
-          "wrap-break-words w-full shrink-0 resize-none overflow-hidden bg-transparent px-4 py-3 leading-none outline-none focus-visible:bg-secondary",
+          "wrap-break-words w-full shrink-0 resize-none overflow-hidden bg-transparent px-4 py-3 leading-none outline-none focus-visible:bg-card",
           textareaClassName ||
             (localTitle.length > 70
               ? "text-2xl text-error sm:text-4xl"

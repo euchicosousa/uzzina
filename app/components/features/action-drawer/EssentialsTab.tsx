@@ -373,7 +373,7 @@ export function EssentialsTab({
           <Tiptap
             key={descriptionVersion}
             className={cn(
-              "h-full min-h-50 w-full bg-popover [&_.tiptap]:transition-colors [&_.tiptap:focus-visible]:bg-secondary",
+              "h-full min-h-50 w-full bg-popover [&_.tiptap]:transition-colors [&_.tiptap:focus-visible]:bg-card",
               isAIProcessing && "opacity-40",
             )}
             content={RawAction.description || ""}
