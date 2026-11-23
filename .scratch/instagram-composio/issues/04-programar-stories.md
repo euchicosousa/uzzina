@@ -1,6 +1,6 @@
 # Programar uma publicação do Instagram para uma data
 
-**Status:** salvamento/listagem/cancelamento e executor de Stories preparados localmente; RPCs aplicadas à produção (`20261123190136`); segredo confirmado na Vercel e no Supabase Vault. Aguardando commit, deploy Ready e configuração do Cron.
+**Status:** código de salvamento/listagem/cancelamento e executor de Stories em produção (`aa63f990`, deploy READY); RPCs aplicadas (`20261123190136`); segredo confirmado na Vercel e no Supabase Vault. Cron ainda não ativado; falta validar a publicação automática real.
 
 **Bloqueado por:** 03
 
@@ -22,8 +22,8 @@ Na gaveta da ação → Instagram → Publicação, programar o conteúdo da aç
 
 1. **Preparado localmente:** salvar/listar autenticado, validar parceiro/ação/perfil/conteúdo e cancelar ocorrências pendentes. A gravação em lote é atômica via RPC.
 2. **Preparado localmente:** reserva atômica e executor protegido reutilizando o endpoint Instagram existente e o proxy Composio. Envia a sequência na ordem; timeout após pedido de publicação fica incerto, sem repetição automática.
-3. **Verificado:** `bun run typecheck`, `bun run test:serverless` (9 endpoints) e build passaram. A migration está aplicada em produção como `20261123190136`; o segredo está confirmado na Vercel e no Vault. Falta publicar e confirmar o deploy Ready.
-4. **Pendente:** após o deploy Ready, criar Cron a cada minuto com `pg_cron`/`pg_net` e confirmar estados, erros e chamadas nos logs.
+3. **Concluído:** `bun run typecheck`, `bun run test:serverless` (9 endpoints) e build passaram. Migration aplicada como `20261123190136`; segredo confirmado na Vercel e Vault; commit `aa63f990` está publicado em produção com deploy READY.
+4. **Pendente:** criar Cron a cada minuto com `pg_cron`/`pg_net` e confirmar estados, erros e chamadas nos logs. A ativação iniciará a publicação automática de ocorrências vencidas.
 5. Validar no perfil de teste, com atenção especial à ordem, falha parcial e não duplicação após timeout.
 
 ### Ativação do worker
