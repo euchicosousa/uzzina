@@ -7,7 +7,6 @@ import {
   CloudIcon,
   FileTextIcon,
   LayersIcon,
-  Link2Icon,
   ShieldAlertIcon,
   Trash2Icon,
   UsersIcon,
@@ -663,12 +662,11 @@ function AdminPartnerDeletePage() {
       <SectionCard
         acknowledgment={{
           isSelected: acknowledged.otherRecords,
-          label:
-            "Entendi o que acontecerá com tópicos, planejamento, datas e links de revisão.",
+          label: "Entendi o que acontecerá com tópicos, planejamento e datas.",
           onChange: (checked) =>
             setSectionAcknowledged("otherRecords", checked),
         }}
-        description="Tópicos da marca, propostas de planejamento, datas comemorativas vinculadas e links públicos de revisão."
+        description="Tópicos da marca, propostas de planejamento e datas comemorativas vinculadas."
         icon={<CalendarIcon className="size-5" />}
         title="Outros registros do parceiro (serão excluídos)"
       >
@@ -701,7 +699,7 @@ function AdminPartnerDeletePage() {
 
           <div className="flex flex-col gap-2 text-sm">
             <h3 className="font-medium text-foreground">
-              Planejamento, datas e revisão
+              Planejamento e datas
             </h3>
             <ul className="grid gap-1 text-xs text-secondary-foreground">
               <li>
@@ -723,14 +721,6 @@ function AdminPartnerDeletePage() {
                 <strong className="text-foreground">
                   {preview.holidaysCount}
                 </strong>
-              </li>
-              <li className="inline-flex items-center gap-1.5">
-                <Link2Icon className="size-3.5" />
-                Links públicos de revisão:{" "}
-                <strong className="text-foreground">
-                  {preview.reviewLinks.totalCount}
-                </strong>{" "}
-                ({preview.reviewLinks.activeCount} ativo(s) no momento)
               </li>
             </ul>
           </div>

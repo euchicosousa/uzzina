@@ -532,47 +532,6 @@ export type Database = {
           },
         ];
       };
-      review_links: {
-        Row: {
-          action_ids: string[];
-          created_at: string;
-          created_by: string;
-          expires_at: string;
-          id: string;
-          partner_slug: string;
-          revoked_at: string | null;
-          token_hash: string;
-        };
-        Insert: {
-          action_ids: string[];
-          created_at?: string;
-          created_by: string;
-          expires_at: string;
-          id?: string;
-          partner_slug: string;
-          revoked_at?: string | null;
-          token_hash: string;
-        };
-        Update: {
-          action_ids?: string[];
-          created_at?: string;
-          created_by?: string;
-          expires_at?: string;
-          id?: string;
-          partner_slug?: string;
-          revoked_at?: string | null;
-          token_hash?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "review_links_created_by_fkey";
-            columns: ["created_by"];
-            isOneToOne: false;
-            referencedRelation: "people";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
       leads: {
         Row: {
           answers: Json | null;

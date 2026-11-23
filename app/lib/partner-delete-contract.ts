@@ -30,15 +30,6 @@ export interface PartnerDeleteTopicItem {
   color: string;
 }
 
-export interface PartnerDeleteReviewLinkItem {
-  id: string;
-  createdAt: string;
-  expiresAt: string;
-  revokedAt: string | null;
-  active: boolean;
-  actionsCount: number;
-}
-
 export interface PartnerDeleteMediaSummary {
   totalCount: number;
   orphanCandidatesCount: number;
@@ -81,11 +72,6 @@ export interface PartnerDeletePreview {
     themeRequestsCount: number;
   };
   holidaysCount: number;
-  reviewLinks: {
-    totalCount: number;
-    activeCount: number;
-    items: PartnerDeleteReviewLinkItem[];
-  };
   media: PartnerDeleteMediaSummary;
 }
 
@@ -113,7 +99,6 @@ export interface PartnerDeleteResult {
       socialPlans: number;
       themeRequests: number;
       holidays: number;
-      reviewLinks: number;
     };
     unlinked: {
       sharedActions: number;

@@ -78,11 +78,6 @@ const samplePreview: PartnerDeletePreview = {
     themeRequestsCount: 1,
   },
   holidaysCount: 2,
-  reviewLinks: {
-    totalCount: 1,
-    activeCount: 1,
-    items: [],
-  },
   media: {
     totalCount: 4,
     orphanCandidatesCount: 3,

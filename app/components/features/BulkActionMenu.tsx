@@ -4,14 +4,12 @@ import {
   FlagIcon,
   KanbanIcon,
   PaletteIcon,
-  SendIcon,
   TagIcon,
   UserIcon,
   XIcon,
 } from "lucide-react";
 import { ULoader } from "~/components/uzzina/ULoader";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useParams } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { getTimeForCategoryChange } from "~/utils/factory";
 import { toast } from "sonner";
@@ -32,7 +30,6 @@ import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
 import type { BulkActionResult } from "~/lib/supabase.mutations";
 import type { ActionPatchInput } from "~/utils/validation";
-import type { Partner } from "~/types";
 import {
   PrismButton,
   PrismMenu,
@@ -66,16 +63,6 @@ export function BulkActionMenu() {
     queryFn: fetchPeople,
     staleTime: 30 * 60 * 1000,
   });
-  const params = useParams({
-    strict: false,
-  }) as Record<string, string | undefined>;
-
-  // ─── Parceiro da página atual ────────────────────────────────────────────────
-  const currentPartner: Partner | undefined =
-    params.slug && params.slug !== "new"
-      ? partners.find((p) => p.slug === params.slug)
-      : undefined;
-
   // Topics can change in bulk only when every selected action has the same partners.
   const { topics } = usePartnerTopics();
   const sharedPartnerSlugs = useMemo(
@@ -99,7 +86,6 @@ export function BulkActionMenu() {
   const [sprintOpen, setSprintOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
 
   const [conflictedIds, setConflictedIds] = useState<string[]>([]);
 
@@ -218,58 +204,6 @@ export function BulkActionMenu() {
     await performBulkAction({
       archived: true,
     });
-  };
-
-  // ─── Handler: Enviar para Aprovação ─────────────────────────────────────
-  const handleSendForApproval = async () => {
-    const targetIds = targets.map((action) => action.id);
-    if (!currentPartner || targetIds.length === 0 || isGeneratingLink) return;
-    setIsGeneratingLink(true);
-    try {
-      const { createSupabaseBrowserClient } =
-        await import("~/lib/supabase.client");
-      const supabase = createSupabaseBrowserClient();
-      const { data: sessionData } = await supabase.auth.getSession();
-      const token = sessionData.session?.access_token;
-
-      if (!token) {
-        toast.error("Sessão não encontrada para gerar link.");
-        return;
-      }
-
-      const res = await fetch("/api/review-links", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          partner_slug: currentPartner.slug,
-          action_ids: targetIds,
-        }),
-      });
-
-      if (!res.ok) {
-        const errorJson = (await res.json().catch(() => ({}))) as {
-          error?: string;
-        };
-        toast.error(errorJson.error || "Falha ao gerar link de revisão.");
-        return;
-      }
-
-      const data = (await res.json()) as { link: { url: string } };
-      const fullUrl = `${window.location.origin}${data.link.url}`;
-      await navigator.clipboard.writeText(fullUrl);
-      toast.success("Link seguro de revisão copiado!", {
-        description: fullUrl,
-        duration: 5000,
-      });
-    } catch (err) {
-      console.error("Erro ao gerar link de revisão:", err);
-      toast.error("Erro ao gerar link de revisão.");
-    } finally {
-      setIsGeneratingLink(false);
-    }
   };
 
   // ─── Render ──────────────────────────────────────────────────────────────────
@@ -502,17 +436,6 @@ export function BulkActionMenu() {
             textValue="Responsáveis"
           >
             <UserIcon /> Alterar Responsáveis
-          </PrismMenuItem>
-
-          <PrismMenuSeparator />
-
-          {/* Compartilhar para Revisão */}
-          <PrismMenuItem
-            isDisabled={!currentPartner || isGeneratingLink}
-            onAction={handleSendForApproval}
-            textValue="Compartilhar para Revisão"
-          >
-            <SendIcon /> Compartilhar para Revisão
           </PrismMenuItem>
 
           <PrismMenuSeparator />

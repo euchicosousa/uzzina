@@ -78,8 +78,7 @@ export function PartnerDeleteConfirmDialog({
                 {preview.exclusiveActions.length} ação(ões) exclusiva(s),{" "}
                 {preview.exclusiveClients.length} conta(s) de cliente,{" "}
                 {preview.topics.length} tópico(s),{" "}
-                {preview.planning.socialPlansCount} proposta(s) de planejamento
-                e {preview.reviewLinks.totalCount} link(s) de revisão.
+                {preview.planning.socialPlansCount} proposta(s) de planejamento.
               </li>
               <li>
                 <strong className="text-foreground">Serão mantidos:</strong>{" "}

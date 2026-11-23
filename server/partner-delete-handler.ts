@@ -10,7 +10,6 @@ import type {
   PartnerDeleteClientItem,
   PartnerDeletePreview,
   PartnerDeleteResult,
-  PartnerDeleteReviewLinkItem,
   PartnerDeleteSharedActionItem,
 } from "../app/lib/partner-delete-contract.js";
 import { extractBearerToken } from "./auth.js";
@@ -287,7 +286,6 @@ async function handleGetPreview(
     plansResult,
     themeRequestsResult,
     holidaysResult,
-    reviewLinksResult,
   ] = await Promise.all([
     fetchPaginated<ActionPreviewRow>((from, to) =>
       supabaseAdmin
@@ -329,11 +327,6 @@ async function handleGetPreview(
       .from("partner_holidays")
       .select("celebration_id", { count: "exact", head: true })
       .eq("partner_id", partner.id),
-    supabaseAdmin
-      .from("review_links")
-      .select("id, created_at, expires_at, revoked_at, action_ids")
-      .eq("partner_slug", partner.slug)
-      .order("created_at", { ascending: false }),
   ]);
 
   if (topicsResult.error) {
@@ -348,10 +341,6 @@ async function handleGetPreview(
   if (holidaysResult.error && !isMissingRelationError(holidaysResult.error)) {
     return res.status(500).json({ error: holidaysResult.error.message });
   }
-  if (reviewLinksResult.error) {
-    return res.status(500).json({ error: reviewLinksResult.error.message });
-  }
-
   const topics = topicsResult.data ?? [];
   const topicIds = new Set(topics.map((topic) => topic.id));
 
@@ -464,21 +453,6 @@ async function handleGetPreview(
     ),
   ]);
 
-  const now = Date.now();
-  const reviewLinkItems: PartnerDeleteReviewLinkItem[] = (
-    reviewLinksResult.data ?? []
-  ).map((link) => {
-    const expiresMs = new Date(link.expires_at).getTime();
-    return {
-      id: link.id,
-      createdAt: link.created_at,
-      expiresAt: link.expires_at,
-      revokedAt: link.revoked_at,
-      active: !link.revoked_at && !Number.isNaN(expiresMs) && expiresMs > now,
-      actionsCount: Array.isArray(link.action_ids) ? link.action_ids.length : 0,
-    };
-  });
-
   const preview: PartnerDeletePreview = {
     partner: {
       id: partner.id,
@@ -512,11 +486,6 @@ async function handleGetPreview(
       themeRequestsCount: themeRequestsResult.count ?? 0,
     },
     holidaysCount: holidaysResult.error ? 0 : (holidaysResult.count ?? 0),
-    reviewLinks: {
-      totalCount: reviewLinkItems.length,
-      activeCount: reviewLinkItems.filter((item) => item.active).length,
-      items: reviewLinkItems,
-    },
     media: mediaSummary,
   };
 

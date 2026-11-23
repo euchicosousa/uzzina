@@ -21,7 +21,6 @@ const db: Record<string, Row[]> = {
   social_plan_action_links: [],
   planning_theme_requests: [],
   partner_holidays: [],
-  review_links: [],
 };
 
 let forcedRpcError: { code?: string; message?: string } | null = null;
@@ -137,10 +136,6 @@ mock.module("@supabase/supabase-js", () => ({
       const holidaysCount = db.partner_holidays.filter(
         (row) => row.partner_id === partner.id,
       ).length;
-      const reviewLinksCount = db.review_links.filter(
-        (row) => row.partner_slug === slug,
-      ).length;
-
       for (const action of sharedActions) {
         action.partners = ((action.partners as string[]) ?? []).filter(
           (item) => item !== slug,
@@ -159,9 +154,6 @@ mock.module("@supabase/supabase-js", () => ({
       );
       db.clients = db.clients.filter(
         (row) => !exclusiveClientIds.has(String(row.id)),
-      );
-      db.review_links = db.review_links.filter(
-        (row) => row.partner_slug !== slug,
       );
       db.partner_topics = db.partner_topics.filter(
         (row) => row.partner_id !== partner.id,
@@ -185,7 +177,6 @@ mock.module("@supabase/supabase-js", () => ({
             socialPlans: socialPlansCount,
             themeRequests: themeRequestsCount,
             holidays: holidaysCount,
-            reviewLinks: reviewLinksCount,
           },
           unlinked: {
             sharedActions: sharedActions.length,
@@ -487,16 +478,6 @@ describe("API /api/partner-delete", () => {
         celebration_id: "cel-1",
       },
     ];
-    db.review_links = [
-      {
-        id: "rev-1",
-        partner_slug: "marca-arquivada",
-        created_at: "2026-11-01T10:00:00Z",
-        expires_at: "2099-01-01T10:00:00Z",
-        revoked_at: null,
-        action_ids: ["action-excl-1"],
-      },
-    ];
   });
 
   it("blocks unauthenticated, non-admin, and inactive-admin callers", async () => {
@@ -581,11 +562,6 @@ describe("API /api/partner-delete", () => {
       themeRequestsCount: 1,
     });
     expect(body.holidaysCount).toBe(1);
-    expect(
-      (body.reviewLinks as { totalCount: number; activeCount: number })
-        .totalCount,
-    ).toBe(1);
-    expect((body.reviewLinks as { activeCount: number }).activeCount).toBe(1);
     expect(body.media).toEqual({
       totalCount: 3,
       orphanCandidatesCount: 2,
@@ -663,7 +639,6 @@ describe("API /api/partner-delete", () => {
     expect(db.actions[0].partners).toEqual(["marca-ativa"]);
     expect(db.clients).toHaveLength(1);
     expect(db.clients[0].partners).toEqual(["marca-ativa"]);
-    expect(db.review_links).toHaveLength(0);
     expect(db.partner_topics).toHaveLength(0);
   });
 });

@@ -10,8 +10,6 @@ const HANDLERS: Record<string, string> = {
   "/api/dash-auth": "./api/dash-auth.ts",
   "/api/dash-data": "./api/dash-data.ts",
   "/api/dash-action": "./api/dash-action.ts",
-  "/api/review-links": "./api/review-links.ts",
-  "/api/review": "./api/review.ts",
   "/api/client-accounts": "./api/client-accounts.ts",
   "/api/admin-cleanup": "./api/admin-cleanup.ts",
   "/api/create-user": "./api/create-user.ts",

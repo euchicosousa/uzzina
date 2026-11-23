@@ -63,8 +63,6 @@ const { FileFsRef } = require("@vercel/build-utils");
       "api/dash-auth.ts",
       "api/dash-data.ts",
       "api/dash-action.ts",
-      "api/review.ts",
-      "api/review-links.ts",
       "api/client-accounts.ts",
       "api/admin-cleanup.ts",
       "app/lib/action-color.ts",

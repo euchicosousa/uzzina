@@ -51,16 +51,11 @@ function DashLayout() {
     select: (state) =>
       state.matches.some((match) => match.routeId === "/dash/login"),
   });
-  const isReviewPath = useRouterState({
-    select: (state) =>
-      state.matches.some((match) => match.routeId === "/dash/review/$slug"),
-  });
   const bootstrapGeneration = useRef(0);
   const [bootstrapAttempt, setBootstrapAttempt] = useState(0);
   const [logoutError, setLogoutError] = useState<string | null>(null);
   const [clientId, setClientId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [reviewReady, setReviewReady] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [clientData, setClientData] = useState<Client | null>(null);
   const [partners, setPartners] = useState<DashPartnerDto[]>([]);
@@ -69,13 +64,12 @@ function DashLayout() {
     let cancelled = false;
     const generation = ++bootstrapGeneration.current;
     resetQuerySession(queryClient);
-    setReviewReady(isReviewPath);
     setClientId(null);
     setClientData(null);
     setPartners([]);
     setHasError(false);
     setLogoutError(null);
-    if (isLoginPath || isReviewPath) {
+    if (isLoginPath) {
       setLoading(false);
       return;
     }
@@ -111,7 +105,7 @@ function DashLayout() {
     return () => {
       cancelled = true;
     };
-  }, [navigate, isLoginPath, isReviewPath, queryClient, bootstrapAttempt]);
+  }, [navigate, isLoginPath, queryClient, bootstrapAttempt]);
   const preferredPartner =
     searchParams.partner || localStorage.getItem("uzzina_dash_last_partner");
   const currentPartnerSlug = partners.some((p) => p.slug === preferredPartner)
@@ -142,10 +136,7 @@ function DashLayout() {
       }),
     });
   };
-  if (isReviewPath && reviewReady) {
-    return <Outlet />;
-  }
-  if ((loading || (isReviewPath && !reviewReady)) && !isLoginPath) {
+  if (loading && !isLoginPath) {
     return (
       <div className="flex h-screen w-screen flex-col items-center justify-center gap-4 bg-background">
         <ULoader size="2xl" className="text-primary" />
