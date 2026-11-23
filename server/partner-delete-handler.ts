@@ -13,11 +13,8 @@ import type {
   PartnerDeleteReviewLinkItem,
   PartnerDeleteSharedActionItem,
 } from "../app/lib/partner-delete-contract.js";
-import { extractBearerToken } from "../server/auth.js";
-import {
-  createServiceClient,
-  getServiceConfig,
-} from "../server/supabase-admin.js";
+import { extractBearerToken } from "./auth.js";
+import { createServiceClient, getServiceConfig } from "./supabase-admin.js";
 
 const PAGE_SIZE = 1000;
 const BATCH_SIZE = 100;
@@ -604,7 +601,10 @@ async function handlePostDelete(
   return res.status(200).json(result);
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function partnerDeleteHandler(
+  req: VercelRequest,
+  res: VercelResponse,
+) {
   res.setHeader("Cache-Control", "no-store");
 
   const allowedMethods = ["GET", "POST"];

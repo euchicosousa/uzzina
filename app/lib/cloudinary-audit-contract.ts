@@ -4,7 +4,28 @@ export type CloudinaryAssetOrigin =
   "uzzina_folder" | "partner_legacy_folder" | "unknown_external";
 
 export type CloudinaryAssetStatus =
-  "orphan_candidate" | "protected_recent" | "protected_unknown_origin";
+  | "orphan_candidate"
+  | "protected_recent"
+  | "protected_unknown_origin"
+  | "in_use";
+
+export type CloudinaryAssetReferenceSource =
+  | "action_work_files"
+  | "action_content_files"
+  | "action_text"
+  | "partner_image"
+  | "person_image"
+  | "client_image"
+  | "comment"
+  | "social_plan"
+  | "lead";
+
+export interface CloudinaryAssetReference {
+  source: CloudinaryAssetReferenceSource;
+  entityId: string;
+  label: string;
+  partners?: string[];
+}
 
 export interface CloudinaryAuditAsset {
   assetKey: string;
@@ -20,6 +41,8 @@ export interface CloudinaryAuditAsset {
   folder: string;
   origin: CloudinaryAssetOrigin;
   status: CloudinaryAssetStatus;
+  references?: CloudinaryAssetReference[];
+  canUnlinkFromActions?: boolean;
 }
 
 export interface CloudinaryAuditCoverage {
@@ -49,6 +72,7 @@ export interface CloudinaryAuditSummary {
 export interface CloudinaryAuditResponse {
   coverage: CloudinaryAuditCoverage;
   summary: CloudinaryAuditSummary;
+  inUseAssets: CloudinaryAuditAsset[];
   orphanCandidates: CloudinaryAuditAsset[];
   protectedRecent: CloudinaryAuditAsset[];
   protectedUnknown: CloudinaryAuditAsset[];
@@ -64,10 +88,15 @@ export interface CloudinaryDeleteItemRequest {
 
 export interface CloudinaryDeleteRequest {
   items: CloudinaryDeleteItemRequest[];
+  allowReferencedInActions?: boolean;
 }
 
 export type CloudinaryDeleteSkipReason =
-  "now_referenced" | "recent_upload" | "unknown_origin" | "not_found";
+  | "now_referenced"
+  | "protected_reference"
+  | "recent_upload"
+  | "unknown_origin"
+  | "not_found";
 
 export interface CloudinaryDeleteDeletedItem {
   publicId: string;
@@ -94,6 +123,7 @@ export interface CloudinaryDeleteResponse {
   deleted: CloudinaryDeleteDeletedItem[];
   deletedCount: number;
   freedBytes: number;
+  unlinkedActionsCount: number;
   skipped: CloudinaryDeleteSkippedItem[];
   failed: CloudinaryDeleteFailedItem[];
 }

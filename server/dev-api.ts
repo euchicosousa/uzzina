@@ -13,8 +13,7 @@ const HANDLERS: Record<string, string> = {
   "/api/review-links": "./api/review-links.ts",
   "/api/review": "./api/review.ts",
   "/api/client-accounts": "./api/client-accounts.ts",
-  "/api/partner-delete": "./api/partner-delete.ts",
-  "/api/cloudinary-audit": "./api/cloudinary-audit.ts",
+  "/api/admin-cleanup": "./api/admin-cleanup.ts",
   "/api/create-user": "./api/create-user.ts",
 };
 

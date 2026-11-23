@@ -6,6 +6,14 @@
   },
   "rewrites": [
     {
+      "source": "/api/partner-delete",
+      "destination": "/api/admin-cleanup?scope=partner-delete"
+    },
+    {
+      "source": "/api/cloudinary-audit",
+      "destination": "/api/admin-cleanup?scope=cloudinary-audit"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }

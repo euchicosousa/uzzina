@@ -58,4 +58,24 @@ describe("CloudinaryDeleteConfirmDialog", () => {
       screen.getByText("Sem permissão para excluir arquivos."),
     ).toBeTruthy();
   });
+
+  it("shows an action unlinking warning when affectedActionsCount is greater than zero", () => {
+    render(
+      <CloudinaryDeleteConfirmDialog
+        affectedActionsCount={4}
+        errorMessage={null}
+        formattedTotalBytes="3,2 MB"
+        isDeleting={false}
+        isOpen={true}
+        onConfirm={() => {}}
+        onOpenChange={() => {}}
+        selectedCount={2}
+      />,
+    );
+
+    expect(
+      screen.getByText("Atenção: desvinculação automática em ações"),
+    ).toBeTruthy();
+    expect(screen.getByText(/4 ação\(ões\) da UZZINA/i)).toBeTruthy();
+  });
 });

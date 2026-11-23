@@ -35,16 +35,27 @@ mock.module("@supabase/supabase-js", () => ({
       const filters: ((row: Row) => boolean)[] = [];
       let start = 0;
       let end = Infinity;
+      let pendingUpdate: Row | null = null;
 
       const execute = () => {
         const rows = (db[table] || []).filter((row) =>
           filters.every((filter) => filter(row)),
         );
+        if (pendingUpdate) {
+          for (const row of rows) {
+            Object.assign(row, pendingUpdate);
+          }
+          return { data: rows, error: null };
+        }
         return { data: rows.slice(start, end + 1), error: null };
       };
 
       const chain = {
         select: () => chain,
+        update: (patch: Row) => {
+          pendingUpdate = patch;
+          return chain;
+        },
         eq: (key: string, value: unknown) => {
           filters.push((row) => row[key] === value);
           return chain;
@@ -72,17 +83,18 @@ mock.module("@supabase/supabase-js", () => ({
 }));
 
 const { default: cloudinaryAuditHandler } =
-  await import("../api/cloudinary-audit");
+  await import("../api/admin-cleanup");
 
 function createMockReqRes(options: {
   method?: string;
   headers?: Record<string, string>;
+  query?: Record<string, string | string[]>;
   body?: unknown;
 }) {
   const req = {
     method: options.method || "GET",
     headers: options.headers || {},
-    query: {},
+    query: options.query ?? { scope: "cloudinary-audit" },
     body: options.body ?? {},
   } as unknown as VercelRequest;
 
@@ -123,6 +135,36 @@ describe("buildCloudinaryAuditReport", () => {
       referencedKeys: new Set([
         "dvfpxjskm/image/uzzina/content/used-cropped",
         "dvfpxjskm/raw/uzzina/work/briefing.pdf",
+      ]),
+      referencesByKey: new Map([
+        [
+          "dvfpxjskm/image/uzzina/content/used-cropped",
+          [
+            {
+              source: "action_content_files",
+              entityId: "act-1",
+              label: "Post utilizado",
+              partners: ["marca-antiga"],
+            },
+          ],
+        ],
+        [
+          "dvfpxjskm/raw/uzzina/work/briefing.pdf",
+          [
+            {
+              source: "action_work_files",
+              entityId: "act-1",
+              label: "Post utilizado",
+              partners: ["marca-antiga"],
+            },
+            {
+              source: "partner_image",
+              entityId: "marca-antiga",
+              label: "Marca Antiga",
+              partners: ["marca-antiga"],
+            },
+          ],
+        ],
       ]),
       knownPartnerSlugs: new Set(["marca-antiga"]),
       pagesScanned: 4,
@@ -198,6 +240,21 @@ describe("buildCloudinaryAuditReport", () => {
       protectedUnknownCount: 1,
       protectedUnknownBytes: 800_000,
     });
+    expect(
+      report.inUseAssets.map((item) => ({
+        publicId: item.publicId,
+        canUnlinkFromActions: item.canUnlinkFromActions,
+      })),
+    ).toEqual([
+      {
+        publicId: "uzzina/content/used-cropped",
+        canUnlinkFromActions: true,
+      },
+      {
+        publicId: "uzzina/work/briefing.pdf",
+        canUnlinkFromActions: false,
+      },
+    ]);
     expect(report.orphanCandidates.map((item) => item.publicId)).toEqual([
       "marca-antiga/2024/10/post-antigo",
     ]);
@@ -264,6 +321,24 @@ describe("API /api/cloudinary-audit", () => {
     db.action_comments = [];
     db.social_plans = [];
     db.leads = [];
+  });
+
+  it("rejects missing or invalid scope on /api/admin-cleanup", async () => {
+    const missingScope = createMockReqRes({
+      method: "GET",
+      headers: { authorization: "Bearer admin-token" },
+      query: {},
+    });
+    await cloudinaryAuditHandler(missingScope.req, missingScope.res);
+    expect(missingScope.getStatus()).toBe(400);
+
+    const invalidScope = createMockReqRes({
+      method: "GET",
+      headers: { authorization: "Bearer admin-token" },
+      query: { scope: "unknown-scope" },
+    });
+    await cloudinaryAuditHandler(invalidScope.req, invalidScope.res);
+    expect(invalidScope.getStatus()).toBe(400);
   });
 
   it("blocks unsupported methods, unauthenticated callers, non-admins, and inactive admins", async () => {
@@ -660,6 +735,262 @@ describe("API /api/cloudinary-audit", () => {
       expect(deletedUrls[0]).not.toContain("post-em-uso");
       expect(deletedUrls[0]).not.toContain("recem-enviado");
       expect(deletedUrls[0]).not.toContain("outro-projeto");
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it("lists in-use references and unlinks deleted action files without touching protected references", async () => {
+    const originalFetch = globalThis.fetch;
+    const recentCreatedAt = new Date(Date.now() - 2 * 3600_000).toISOString();
+    const deletedUrls: string[] = [];
+
+    db.partners = [
+      {
+        slug: "clinicadengo",
+        title: "Clínica Dengo",
+        image:
+          "https://res.cloudinary.com/dvfpxjskm/image/upload/v1/clinicadengo/logo-compartilhado.png",
+      },
+    ];
+    db.actions = [
+      {
+        id: "act-1",
+        title: "Carrossel Abril",
+        partners: ["clinicadengo"],
+        work_files: [
+          "https://res.cloudinary.com/dvfpxjskm/image/upload/v1/clinicadengo/2025/4/post-em-uso.jpg",
+          "https://res.cloudinary.com/dvfpxjskm/image/upload/v1/clinicadengo/2025/4/manter.jpg",
+        ],
+        content_files: [
+          "https://res.cloudinary.com/dvfpxjskm/image/upload/w_400,c_limit/v2/clinicadengo/2025/4/post-em-uso.jpg",
+          "https://res.cloudinary.com/dvfpxjskm/image/upload/v1/clinicadengo/logo-compartilhado.png",
+        ],
+        description: null,
+        content_description: null,
+        instagram_caption: null,
+        strategies: null,
+      },
+      {
+        id: "act-2",
+        title: "Post com link no texto",
+        partners: ["clinicadengo"],
+        work_files: [
+          "https://res.cloudinary.com/dvfpxjskm/video/upload/v1/uzzina/video-recente.mp4",
+        ],
+        content_files: [],
+        description:
+          "Referência no briefing https://res.cloudinary.com/dvfpxjskm/image/upload/v1/uzzina/citado-no-texto.png",
+        content_description: null,
+        instagram_caption: null,
+        strategies: null,
+      },
+    ];
+
+    globalThis.fetch = (async (
+      input: RequestInfo | URL,
+      init?: RequestInit,
+    ) => {
+      const urlStr = String(input);
+      const method = init?.method || "GET";
+
+      if (method === "GET" && urlStr.includes("/resources/image/upload")) {
+        return new Response(
+          JSON.stringify({
+            resources: [
+              {
+                public_id: "clinicadengo/2025/4/post-em-uso",
+                resource_type: "image",
+                format: "jpg",
+                bytes: 220_000,
+                width: 1080,
+                height: 1080,
+                created_at: "2025-04-01T10:00:00Z",
+                secure_url:
+                  "https://res.cloudinary.com/dvfpxjskm/image/upload/v1/clinicadengo/2025/4/post-em-uso.jpg",
+              },
+              {
+                public_id: "clinicadengo/logo-compartilhado",
+                resource_type: "image",
+                format: "png",
+                bytes: 180_000,
+                width: 500,
+                height: 500,
+                created_at: "2024-04-01T10:00:00Z",
+                secure_url:
+                  "https://res.cloudinary.com/dvfpxjskm/image/upload/v1/clinicadengo/logo-compartilhado.png",
+              },
+              {
+                public_id: "uzzina/citado-no-texto",
+                resource_type: "image",
+                format: "png",
+                bytes: 90_000,
+                width: 500,
+                height: 500,
+                created_at: "2025-01-01T10:00:00Z",
+                secure_url:
+                  "https://res.cloudinary.com/dvfpxjskm/image/upload/v1/uzzina/citado-no-texto.png",
+              },
+            ],
+          }),
+          { status: 200 },
+        );
+      }
+
+      if (method === "GET" && urlStr.includes("/resources/video/upload")) {
+        return new Response(
+          JSON.stringify({
+            resources: [
+              {
+                public_id: "uzzina/video-recente",
+                resource_type: "video",
+                format: "mp4",
+                bytes: 4_500_000,
+                width: 1080,
+                height: 1920,
+                created_at: recentCreatedAt,
+                secure_url:
+                  "https://res.cloudinary.com/dvfpxjskm/video/upload/v1/uzzina/video-recente.mp4",
+              },
+            ],
+          }),
+          { status: 200 },
+        );
+      }
+
+      if (method === "GET") {
+        return new Response(JSON.stringify({ resources: [] }), { status: 200 });
+      }
+
+      if (method === "DELETE" && urlStr.includes("/resources/image/upload")) {
+        deletedUrls.push(urlStr);
+        return new Response(
+          JSON.stringify({
+            deleted: {
+              "clinicadengo/2025/4/post-em-uso": "deleted",
+            },
+          }),
+          { status: 200 },
+        );
+      }
+
+      if (method === "DELETE" && urlStr.includes("/resources/video/upload")) {
+        deletedUrls.push(urlStr);
+        return new Response(
+          JSON.stringify({
+            deleted: {
+              "uzzina/video-recente": "deleted",
+            },
+          }),
+          { status: 200 },
+        );
+      }
+
+      return new Response(JSON.stringify({}), { status: 200 });
+    }) as typeof fetch;
+
+    try {
+      const auditRes = createMockReqRes({
+        method: "GET",
+        headers: { authorization: "Bearer admin-token" },
+      });
+      await cloudinaryAuditHandler(auditRes.req, auditRes.res);
+      expect(auditRes.getStatus()).toBe(200);
+
+      const auditBody = auditRes.getBody() as {
+        inUseAssets: Array<{
+          publicId: string;
+          canUnlinkFromActions?: boolean;
+          references?: Array<{ source: string; label: string }>;
+        }>;
+      };
+
+      const byId = new Map(
+        auditBody.inUseAssets.map((item) => [item.publicId, item]),
+      );
+      expect(
+        byId.get("clinicadengo/2025/4/post-em-uso")?.canUnlinkFromActions,
+      ).toBe(true);
+      expect(byId.get("uzzina/video-recente")?.canUnlinkFromActions).toBe(true);
+      expect(
+        byId.get("clinicadengo/logo-compartilhado")?.canUnlinkFromActions,
+      ).toBe(false);
+      expect(byId.get("uzzina/citado-no-texto")?.canUnlinkFromActions).toBe(
+        false,
+      );
+
+      const deleteRes = createMockReqRes({
+        method: "POST",
+        headers: { authorization: "Bearer admin-token" },
+        body: {
+          allowReferencedInActions: true,
+          items: [
+            {
+              publicId: "clinicadengo/2025/4/post-em-uso",
+              resourceType: "image",
+              assetKey: "dvfpxjskm/image/clinicadengo/2025/4/post-em-uso",
+            },
+            {
+              publicId: "uzzina/video-recente",
+              resourceType: "video",
+              assetKey: "dvfpxjskm/video/uzzina/video-recente",
+            },
+            {
+              publicId: "clinicadengo/logo-compartilhado",
+              resourceType: "image",
+              assetKey: "dvfpxjskm/image/clinicadengo/logo-compartilhado",
+            },
+            {
+              publicId: "uzzina/citado-no-texto",
+              resourceType: "image",
+              assetKey: "dvfpxjskm/image/uzzina/citado-no-texto",
+            },
+          ],
+        },
+      });
+      await cloudinaryAuditHandler(deleteRes.req, deleteRes.res);
+      expect(deleteRes.getStatus()).toBe(200);
+
+      const deleteBody = deleteRes.getBody() as {
+        deletedCount: number;
+        freedBytes: number;
+        unlinkedActionsCount: number;
+        skipped: Array<{
+          publicId: string;
+          resourceType: string;
+          assetKey: string;
+          reason: string;
+        }>;
+        failed: Array<{ publicId: string }>;
+      };
+
+      expect(deleteBody.deletedCount).toBe(2);
+      expect(deleteBody.freedBytes).toBe(4_720_000);
+      expect(deleteBody.unlinkedActionsCount).toBe(2);
+      expect(deleteBody.failed).toEqual([]);
+      expect(deleteBody.skipped).toEqual([
+        {
+          publicId: "clinicadengo/logo-compartilhado",
+          resourceType: "image",
+          assetKey: "dvfpxjskm/image/clinicadengo/logo-compartilhado",
+          reason: "protected_reference",
+        },
+        {
+          publicId: "uzzina/citado-no-texto",
+          resourceType: "image",
+          assetKey: "dvfpxjskm/image/uzzina/citado-no-texto",
+          reason: "protected_reference",
+        },
+      ]);
+
+      expect(deletedUrls.length).toBe(2);
+      expect(db.actions[0].work_files).toEqual([
+        "https://res.cloudinary.com/dvfpxjskm/image/upload/v1/clinicadengo/2025/4/manter.jpg",
+      ]);
+      expect(db.actions[0].content_files).toEqual([
+        "https://res.cloudinary.com/dvfpxjskm/image/upload/v1/clinicadengo/logo-compartilhado.png",
+      ]);
+      expect(db.actions[1].work_files).toEqual([]);
     } finally {
       globalThis.fetch = originalFetch;
     }

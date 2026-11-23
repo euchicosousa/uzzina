@@ -275,7 +275,7 @@ mock.module("@supabase/supabase-js", () => ({
   }),
 }));
 
-const { default: partnerDeleteHandler } = await import("../api/partner-delete");
+const { default: partnerDeleteHandler } = await import("../api/admin-cleanup");
 
 function createMockReqRes(options: {
   method?: string;
@@ -286,7 +286,7 @@ function createMockReqRes(options: {
   const req = {
     method: options.method || "GET",
     headers: options.headers || {},
-    query: options.query || {},
+    query: { scope: "partner-delete", ...(options.query || {}) },
     body: options.body || {},
   } as unknown as VercelRequest;
 

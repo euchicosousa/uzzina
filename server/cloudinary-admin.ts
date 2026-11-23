@@ -1,5 +1,6 @@
 import type {
   CloudinaryAssetOrigin,
+  CloudinaryAssetReference,
   CloudinaryAuditAsset,
   CloudinaryAuditResponse,
   CloudinaryResourceType,
@@ -227,10 +228,28 @@ export async function listCloudinaryResources(
   return { resources, pagesScanned, truncated };
 }
 
+const MAX_ASSET_REFERENCES_PER_ITEM = 20;
+
+export function isUnlinkableActionReferenceSource(
+  source: CloudinaryAssetReference["source"],
+): boolean {
+  return source === "action_work_files" || source === "action_content_files";
+}
+
+export function canAssetUnlinkFromActions(
+  references: readonly CloudinaryAssetReference[],
+): boolean {
+  return (
+    references.length > 0 &&
+    references.every((ref) => isUnlinkableActionReferenceSource(ref.source))
+  );
+}
+
 export function buildCloudinaryAuditReport({
   cloudName,
   resources,
   referencedKeys,
+  referencesByKey,
   knownPartnerSlugs,
   pagesScanned,
   truncated,
@@ -241,6 +260,7 @@ export function buildCloudinaryAuditReport({
   cloudName: string;
   resources: readonly CloudinaryRawResource[];
   referencedKeys: ReadonlySet<string>;
+  referencesByKey?: ReadonlyMap<string, readonly CloudinaryAssetReference[]>;
   knownPartnerSlugs: ReadonlySet<string>;
   pagesScanned: number;
   truncated: boolean;
@@ -249,6 +269,7 @@ export function buildCloudinaryAuditReport({
   recentGraceHours?: number;
 }): CloudinaryAuditResponse {
   const seenKeys = new Set<string>();
+  const inUseAssets: CloudinaryAuditAsset[] = [];
   const orphanCandidates: CloudinaryAuditAsset[] = [];
   const protectedRecent: CloudinaryAuditAsset[] = [];
   const protectedUnknown: CloudinaryAuditAsset[] = [];
@@ -275,12 +296,6 @@ export function buildCloudinaryAuditReport({
     totalCatalogCount += 1;
     totalCatalogBytes += resource.bytes;
 
-    if (referencedKeys.has(assetKey)) {
-      inUseCount += 1;
-      inUseBytes += resource.bytes;
-      continue;
-    }
-
     const origin = classifyOrigin(
       resource.public_id,
       resource.asset_folder,
@@ -294,52 +309,7 @@ export function buildCloudinaryAuditReport({
       resource.secure_url,
     );
 
-    const createdMs = Date.parse(resource.created_at);
-    const isRecent =
-      Number.isNaN(createdMs) || nowMs - createdMs < recentThresholdMs;
-
-    if (origin === "unknown_external") {
-      protectedUnknownBytes += resource.bytes;
-      protectedUnknown.push({
-        assetKey,
-        publicId: resource.public_id,
-        resourceType: resource.resource_type,
-        format: resource.format,
-        bytes: resource.bytes,
-        width: resource.width,
-        height: resource.height,
-        createdAt: resource.created_at,
-        secureUrl: resource.secure_url,
-        previewUrl,
-        folder,
-        origin,
-        status: "protected_unknown_origin",
-      });
-      continue;
-    }
-
-    if (isRecent) {
-      protectedRecentBytes += resource.bytes;
-      protectedRecent.push({
-        assetKey,
-        publicId: resource.public_id,
-        resourceType: resource.resource_type,
-        format: resource.format,
-        bytes: resource.bytes,
-        width: resource.width,
-        height: resource.height,
-        createdAt: resource.created_at,
-        secureUrl: resource.secure_url,
-        previewUrl,
-        folder,
-        origin,
-        status: "protected_recent",
-      });
-      continue;
-    }
-
-    recoverableBytes += resource.bytes;
-    orphanCandidates.push({
+    const baseAsset = {
       assetKey,
       publicId: resource.public_id,
       resourceType: resource.resource_type,
@@ -352,6 +322,46 @@ export function buildCloudinaryAuditReport({
       previewUrl,
       folder,
       origin,
+    };
+
+    if (referencedKeys.has(assetKey)) {
+      inUseCount += 1;
+      inUseBytes += resource.bytes;
+      const rawReferences = referencesByKey?.get(assetKey) ?? [];
+      inUseAssets.push({
+        ...baseAsset,
+        status: "in_use",
+        references: rawReferences.slice(0, MAX_ASSET_REFERENCES_PER_ITEM),
+        canUnlinkFromActions: canAssetUnlinkFromActions(rawReferences),
+      });
+      continue;
+    }
+
+    const createdMs = Date.parse(resource.created_at);
+    const isRecent =
+      Number.isNaN(createdMs) || nowMs - createdMs < recentThresholdMs;
+
+    if (origin === "unknown_external") {
+      protectedUnknownBytes += resource.bytes;
+      protectedUnknown.push({
+        ...baseAsset,
+        status: "protected_unknown_origin",
+      });
+      continue;
+    }
+
+    if (isRecent) {
+      protectedRecentBytes += resource.bytes;
+      protectedRecent.push({
+        ...baseAsset,
+        status: "protected_recent",
+      });
+      continue;
+    }
+
+    recoverableBytes += resource.bytes;
+    orphanCandidates.push({
+      ...baseAsset,
       status: "orphan_candidate",
     });
   }
@@ -359,6 +369,7 @@ export function buildCloudinaryAuditReport({
   const bySizeDesc = (a: CloudinaryAuditAsset, b: CloudinaryAuditAsset) =>
     b.bytes - a.bytes || b.createdAt.localeCompare(a.createdAt);
 
+  inUseAssets.sort(bySizeDesc);
   orphanCandidates.sort(bySizeDesc);
   protectedRecent.sort(bySizeDesc);
   protectedUnknown.sort(bySizeDesc);
@@ -386,6 +397,7 @@ export function buildCloudinaryAuditReport({
       protectedUnknownCount: protectedUnknown.length,
       protectedUnknownBytes,
     },
+    inUseAssets,
     orphanCandidates,
     protectedRecent,
     protectedUnknown,

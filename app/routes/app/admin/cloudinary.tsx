@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   AlertTriangleIcon,
@@ -37,6 +37,7 @@ import { ULoader } from "~/components/uzzina/ULoader";
 import { useAppContext } from "~/contexts/AppContext";
 import {
   type CloudinaryAssetOrigin,
+  type CloudinaryAssetReferenceSource,
   type CloudinaryAuditAsset,
   type CloudinaryAuditResponse,
   type CloudinaryDeleteResponse,
@@ -44,6 +45,7 @@ import {
   type CloudinaryResourceType,
   MAX_CLOUDINARY_DELETE_BATCH,
 } from "~/lib/cloudinary-audit-contract";
+import { QUERY_KEYS } from "~/lib/query-keys";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import {
   CloudinaryAuditApiError,
@@ -63,8 +65,9 @@ function AdminCloudinaryPageWrapper() {
   );
 }
 
-type AuditTabKey = "orphans" | "recent" | "unknown";
+type AuditTabKey = "orphans" | "in_use" | "recent" | "unknown";
 type TypeFilter = "all" | CloudinaryResourceType;
+type SortOrder = "size_desc" | "size_asc" | "date_desc" | "date_asc";
 
 const PAGE_LIMIT = 100;
 
@@ -176,9 +179,115 @@ function SummaryCard({
 
 function skipReasonLabel(reason: CloudinaryDeleteSkipReason): string {
   if (reason === "now_referenced") return "passou a ter vínculo no banco";
+  if (reason === "protected_reference") {
+    return "uso fora de arquivos de ação (logotipo, avatar ou texto)";
+  }
   if (reason === "recent_upload") return "enviado há menos de 24h";
   if (reason === "unknown_origin") return "origem desconhecida";
   return "não encontrado no catálogo";
+}
+
+function referenceSourceLabel(source: CloudinaryAssetReferenceSource): string {
+  if (source === "action_work_files") return "Arquivos de trabalho";
+  if (source === "action_content_files") return "Mídias do Instagram";
+  if (source === "action_text") return "Texto/legenda da ação";
+  if (source === "partner_image") return "Logotipo do parceiro";
+  if (source === "person_image") return "Avatar da equipe";
+  if (source === "client_image") return "Avatar de cliente";
+  if (source === "comment") return "Comentário";
+  if (source === "social_plan") return "Planejamento";
+  return "Lead";
+}
+
+function sortAssets(
+  items: CloudinaryAuditAsset[],
+  sortOrder: SortOrder,
+): CloudinaryAuditAsset[] {
+  return [...items].sort((a, b) => {
+    if (sortOrder === "size_desc") {
+      return b.bytes - a.bytes || b.createdAt.localeCompare(a.createdAt);
+    }
+    if (sortOrder === "size_asc") {
+      return a.bytes - b.bytes || b.createdAt.localeCompare(a.createdAt);
+    }
+    const timeA = Date.parse(a.createdAt) || 0;
+    const timeB = Date.parse(b.createdAt) || 0;
+    if (sortOrder === "date_desc") {
+      return timeB - timeA || b.bytes - a.bytes;
+    }
+    return timeA - timeB || b.bytes - a.bytes;
+  });
+}
+
+function SelectionActionBar({
+  selectableCount,
+  selectedCount,
+  selectedBytes,
+  affectedActionsCount = 0,
+  isDeleting,
+  actionLabel,
+  onSelectVisibleBatch,
+  onClearSelection,
+  onRequestDelete,
+}: {
+  selectableCount: number;
+  selectedCount: number;
+  selectedBytes: number;
+  affectedActionsCount?: number;
+  isDeleting: boolean;
+  actionLabel: string;
+  onSelectVisibleBatch: () => void;
+  onClearSelection: () => void;
+  onRequestDelete: () => void;
+}) {
+  if (selectableCount === 0 && selectedCount === 0) return null;
+
+  return (
+    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card p-3.5 squircle">
+      <div className="flex flex-wrap items-center gap-2">
+        <PrismButton
+          isDisabled={
+            selectableCount === 0 ||
+            selectedCount >= MAX_CLOUDINARY_DELETE_BATCH
+          }
+          onPress={onSelectVisibleBatch}
+          size="sm"
+          type="button"
+          variant="outline"
+        >
+          Selecionar até {MAX_CLOUDINARY_DELETE_BATCH} visíveis
+        </PrismButton>
+        <PrismButton
+          isDisabled={selectedCount === 0}
+          onPress={onClearSelection}
+          size="sm"
+          type="button"
+          variant="ghost"
+        >
+          Limpar seleção
+        </PrismButton>
+        <span className="text-xs text-secondary-foreground">
+          <strong className="text-foreground">{selectedCount}</strong>{" "}
+          selecionado(s) · {formatBytes(selectedBytes)} estimados
+          {affectedActionsCount > 0 &&
+            ` · ${affectedActionsCount} ação(ões) afetada(s)`}
+          {selectedCount >= MAX_CLOUDINARY_DELETE_BATCH &&
+            ` (limite de ${MAX_CLOUDINARY_DELETE_BATCH} por lote)`}
+        </span>
+      </div>
+
+      <PrismButton
+        isDisabled={selectedCount === 0 || isDeleting}
+        onPress={onRequestDelete}
+        size="sm"
+        type="button"
+        variant="error"
+      >
+        {actionLabel}
+        <Trash2Icon />
+      </PrismButton>
+    </div>
+  );
 }
 
 function AssetList({
@@ -197,6 +306,7 @@ function AssetList({
   selection?: {
     selectedKeys: ReadonlySet<string>;
     maxReached: boolean;
+    isSelectable?: (asset: CloudinaryAuditAsset) => boolean;
     onToggle: (assetKey: string, selected: boolean) => void;
   };
 }) {
@@ -218,6 +328,11 @@ function AssetList({
               const isSelected = Boolean(
                 selection?.selectedKeys.has(asset.assetKey),
               );
+              const canSelect = selection
+                ? (selection.isSelectable?.(asset) ?? true)
+                : false;
+              const references = asset.references ?? [];
+
               return (
                 <li
                   className="flex flex-wrap items-center gap-4 rounded-2xl border border-border bg-card p-3.5 text-sm squircle"
@@ -226,7 +341,9 @@ function AssetList({
                   {selection && (
                     <PrismCheckbox
                       aria-label={`Selecionar ${asset.publicId}`}
-                      isDisabled={!isSelected && selection.maxReached}
+                      isDisabled={
+                        !canSelect || (!isSelected && selection.maxReached)
+                      }
                       isSelected={isSelected}
                       onChange={(checked) =>
                         selection.onToggle(asset.assetKey, checked)
@@ -251,6 +368,12 @@ function AssetList({
                         {resourceTypeLabel(asset.resourceType)}
                         {asset.format ? ` · ${asset.format.toUpperCase()}` : ""}
                       </PrismBadge>
+                      {asset.status === "in_use" &&
+                        !asset.canUnlinkFromActions && (
+                          <PrismBadge variant="warning">
+                            Protegido (uso fora de arquivos de ação)
+                          </PrismBadge>
+                        )}
                     </div>
                     <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-secondary-foreground">
                       <span>Pasta: {asset.folder}</span>
@@ -264,6 +387,34 @@ function AssetList({
                         Enviado em: {formatDateTimePtBr(asset.createdAt)}
                       </span>
                     </div>
+
+                    {references.length > 0 && (
+                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                        {references.slice(0, 4).map((ref) => {
+                          const isActionFile =
+                            ref.source === "action_work_files" ||
+                            ref.source === "action_content_files";
+                          const partnerSuffix =
+                            ref.partners && ref.partners.length > 0
+                              ? ` (${ref.partners.join(", ")})`
+                              : "";
+                          return (
+                            <PrismBadge
+                              key={`${ref.source}:${ref.entityId}`}
+                              variant={isActionFile ? "info" : "warning"}
+                            >
+                              {referenceSourceLabel(ref.source)}: {ref.label}
+                              {partnerSuffix}
+                            </PrismBadge>
+                          );
+                        })}
+                        {references.length > 4 && (
+                          <PrismBadge variant="default">
+                            +{references.length - 4} vínculo(s)
+                          </PrismBadge>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {asset.secureUrl && (
@@ -300,10 +451,12 @@ function AssetList({
 
 function AdminCloudinaryPage() {
   const { person } = useAppContext();
+  const queryClient = useQueryClient();
   const supabase = createSupabaseBrowserClient();
 
   const [activeTab, setActiveTab] = useState<AuditTabKey>("orphans");
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("size_desc");
   const [search, setSearch] = useState("");
   const [visibleLimit, setVisibleLimit] = useState(PAGE_LIMIT);
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(
@@ -326,9 +479,12 @@ function AdminCloudinaryPage() {
 
   useEffect(() => {
     if (!data) return;
-    const validKeys = new Set(
-      data.orphanCandidates.map((item) => item.assetKey),
-    );
+    const validKeys = new Set<string>([
+      ...data.orphanCandidates.map((item) => item.assetKey),
+      ...(data.inUseAssets ?? [])
+        .filter((item) => item.canUnlinkFromActions === true)
+        .map((item) => item.assetKey),
+    ]);
     setSelectedKeys((prev) => {
       if (prev.size === 0) return prev;
       const next = new Set<string>();
@@ -340,20 +496,36 @@ function AdminCloudinaryPage() {
   }, [data]);
 
   const deleteMutation = useMutation({
-    mutationFn: async (items: CloudinaryAuditAsset[]) =>
+    mutationFn: async ({
+      items,
+      allowReferencedInActions,
+    }: {
+      items: CloudinaryAuditAsset[];
+      allowReferencedInActions: boolean;
+    }) =>
       deleteCloudinaryAssets(supabase, {
         items: items.map((item) => ({
           publicId: item.publicId,
           resourceType: item.resourceType,
           assetKey: item.assetKey,
         })),
+        ...(allowReferencedInActions ? { allowReferencedInActions: true } : {}),
       }),
     onSuccess: (result) => {
       setIsDeleteOpen(false);
       setDeleteError(null);
       setSelectedKeys(new Set());
       setLastDeleteResult(result);
-      if (result.deletedCount > 0) {
+      if (result.unlinkedActionsCount > 0) {
+        void queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.actions.all(),
+        });
+      }
+      if (result.deletedCount > 0 && result.unlinkedActionsCount > 0) {
+        toast.success(
+          `${result.deletedCount} arquivo(s) excluído(s) (${formatBytes(result.freedBytes)} liberados) e ${result.unlinkedActionsCount} ação(ões) atualizada(s).`,
+        );
+      } else if (result.deletedCount > 0) {
         toast.success(
           `${result.deletedCount} arquivo(s) excluído(s) (${formatBytes(result.freedBytes)} liberados).`,
         );
@@ -371,46 +543,83 @@ function AdminCloudinaryPage() {
     },
   });
 
-  const filterItems = useMemo(() => {
+  const filterAndSortItems = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return (items: CloudinaryAuditAsset[]) =>
-      items.filter((item) => {
+    return (items: CloudinaryAuditAsset[]) => {
+      const filtered = items.filter((item) => {
         if (typeFilter !== "all" && item.resourceType !== typeFilter) {
           return false;
         }
         if (!query) return true;
-        return (
+        if (
           item.publicId.toLowerCase().includes(query) ||
           item.folder.toLowerCase().includes(query) ||
           item.format.toLowerCase().includes(query)
+        ) {
+          return true;
+        }
+        return (item.references ?? []).some(
+          (ref) =>
+            ref.label.toLowerCase().includes(query) ||
+            (ref.partners ?? []).some((partner) =>
+              partner.toLowerCase().includes(query),
+            ),
         );
       });
-  }, [search, typeFilter]);
+      return sortAssets(filtered, sortOrder);
+    };
+  }, [search, typeFilter, sortOrder]);
 
   const filteredOrphans = useMemo(
-    () => (data ? filterItems(data.orphanCandidates) : []),
-    [data, filterItems],
+    () => (data ? filterAndSortItems(data.orphanCandidates) : []),
+    [data, filterAndSortItems],
+  );
+  const filteredInUse = useMemo(
+    () => (data ? filterAndSortItems(data.inUseAssets ?? []) : []),
+    [data, filterAndSortItems],
   );
   const filteredRecent = useMemo(
-    () => (data ? filterItems(data.protectedRecent) : []),
-    [data, filterItems],
+    () => (data ? filterAndSortItems(data.protectedRecent) : []),
+    [data, filterAndSortItems],
   );
   const filteredUnknown = useMemo(
-    () => (data ? filterItems(data.protectedUnknown) : []),
-    [data, filterItems],
+    () => (data ? filterAndSortItems(data.protectedUnknown) : []),
+    [data, filterAndSortItems],
   );
 
   const selectedAssets = useMemo(() => {
     if (!data || selectedKeys.size === 0) return [];
-    return data.orphanCandidates.filter((item) =>
-      selectedKeys.has(item.assetKey),
-    );
-  }, [data, selectedKeys]);
+    const pool =
+      activeTab === "in_use"
+        ? (data.inUseAssets ?? []).filter(
+            (item) => item.canUnlinkFromActions === true,
+          )
+        : activeTab === "orphans"
+          ? data.orphanCandidates
+          : [];
+    return pool.filter((item) => selectedKeys.has(item.assetKey));
+  }, [activeTab, data, selectedKeys]);
 
   const selectedBytes = useMemo(
     () => selectedAssets.reduce((sum, item) => sum + item.bytes, 0),
     [selectedAssets],
   );
+
+  const affectedActionsCount = useMemo(() => {
+    if (activeTab !== "in_use" || selectedAssets.length === 0) return 0;
+    const actionIds = new Set<string>();
+    for (const asset of selectedAssets) {
+      for (const ref of asset.references ?? []) {
+        if (
+          ref.source === "action_work_files" ||
+          ref.source === "action_content_files"
+        ) {
+          actionIds.add(ref.entityId);
+        }
+      }
+    }
+    return actionIds.size;
+  }, [activeTab, selectedAssets]);
 
   const toggleAsset = (assetKey: string, checked: boolean) => {
     setSelectedKeys((prev) => {
@@ -426,7 +635,12 @@ function AdminCloudinaryPage() {
   };
 
   const selectVisibleBatch = () => {
-    const visibleItems = filteredOrphans.slice(0, visibleLimit);
+    const visibleItems =
+      activeTab === "in_use"
+        ? filteredInUse
+            .slice(0, visibleLimit)
+            .filter((item) => item.canUnlinkFromActions === true)
+        : filteredOrphans.slice(0, visibleLimit);
     setSelectedKeys((prev) => {
       const next = new Set(prev);
       for (const item of visibleItems) {
@@ -436,6 +650,12 @@ function AdminCloudinaryPage() {
       return next;
     });
   };
+
+  const selectableInUseCount = useMemo(
+    () =>
+      filteredInUse.filter((item) => item.canUnlinkFromActions === true).length,
+    [filteredInUse],
+  );
 
   const apiError = error instanceof CloudinaryAuditApiError ? error : null;
   const missingCredentials = apiError?.code === "CLOUDINARY_NOT_CONFIGURED";
@@ -452,8 +672,8 @@ function AdminCloudinaryPage() {
           </div>
           <p className="text-sm text-secondary-foreground">
             Compara o catálogo completo do Cloudinary com todas as referências
-            salvas na UZZINA. Apenas candidatos sem vínculo e com mais de 24h
-            podem ser selecionados para exclusão.
+            salvas na UZZINA. Exclua arquivos sem vínculo (&gt; 24h) ou remova
+            mídias em uso ligadas a ações limpando os anexos automaticamente.
           </p>
         </div>
 
@@ -590,7 +810,11 @@ function AdminCloudinaryPage() {
               <PrismAlertTitle>
                 Resultado da limpeza ({lastDeleteResult.deletedCount}{" "}
                 excluído(s) · {formatBytes(lastDeleteResult.freedBytes)}{" "}
-                liberados)
+                liberados
+                {lastDeleteResult.unlinkedActionsCount > 0
+                  ? ` · ${lastDeleteResult.unlinkedActionsCount} ação(ões) atualizada(s)`
+                  : ""}
+                )
               </PrismAlertTitle>
               <PrismAlertDescription>
                 {lastDeleteResult.skipped.length > 0 && (
@@ -620,8 +844,9 @@ function AdminCloudinaryPage() {
                 {lastDeleteResult.skipped.length === 0 &&
                   lastDeleteResult.failed.length === 0 && (
                     <span>
-                      Todos os arquivos selecionados foram removidos do
-                      Cloudinary.
+                      {lastDeleteResult.unlinkedActionsCount > 0
+                        ? `Arquivos removidos do Cloudinary e links limpos em ${lastDeleteResult.unlinkedActionsCount} ação(ões).`
+                        : "Todos os arquivos selecionados foram removidos do Cloudinary."}
                     </span>
                   )}
               </PrismAlertDescription>
@@ -639,37 +864,66 @@ function AdminCloudinaryPage() {
             </PrismAlert>
           )}
 
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="min-w-60 flex-1 sm:max-w-sm">
-              <PrismInput
-                aria-label="Filtrar arquivos por pasta ou identificador"
-                onChange={(event) => {
-                  setSearch(event.target.value);
-                  setVisibleLimit(PAGE_LIMIT);
-                }}
-                placeholder="Buscar por pasta, nome ou formato..."
-                value={search}
-              />
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="min-w-60 flex-1 sm:max-w-sm">
+                <PrismInput
+                  aria-label="Filtrar arquivos por pasta, nome ou ação vinculada"
+                  onChange={(event) => {
+                    setSearch(event.target.value);
+                    setVisibleLimit(PAGE_LIMIT);
+                  }}
+                  placeholder="Buscar por pasta, nome, formato ou ação..."
+                  value={search}
+                />
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                {(
+                  [
+                    { id: "all", label: "Todos" },
+                    { id: "image", label: "Imagens" },
+                    { id: "video", label: "Vídeos" },
+                    { id: "raw", label: "Outros" },
+                  ] as const
+                ).map((option) => (
+                  <PrismButton
+                    key={option.id}
+                    onPress={() => {
+                      setTypeFilter(option.id);
+                      setVisibleLimit(PAGE_LIMIT);
+                    }}
+                    size="sm"
+                    type="button"
+                    variant={typeFilter === option.id ? "default" : "outline"}
+                  >
+                    {option.label}
+                  </PrismButton>
+                ))}
+              </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-medium text-secondary-foreground">
+                Ordenar por:
+              </span>
               {(
                 [
-                  { id: "all", label: "Todos" },
-                  { id: "image", label: "Imagens" },
-                  { id: "video", label: "Vídeos" },
-                  { id: "raw", label: "Outros" },
+                  { id: "size_desc", label: "Maior tamanho" },
+                  { id: "size_asc", label: "Menor tamanho" },
+                  { id: "date_desc", label: "Mais recentes" },
+                  { id: "date_asc", label: "Mais antigos" },
                 ] as const
               ).map((option) => (
                 <PrismButton
                   key={option.id}
                   onPress={() => {
-                    setTypeFilter(option.id);
+                    setSortOrder(option.id);
                     setVisibleLimit(PAGE_LIMIT);
                   }}
                   size="sm"
                   type="button"
-                  variant={typeFilter === option.id ? "default" : "outline"}
+                  variant={sortOrder === option.id ? "default" : "outline"}
                 >
                   {option.label}
                 </PrismButton>
@@ -682,6 +936,7 @@ function AdminCloudinaryPage() {
           <PrismTabs
             onSelectionChange={(key) => {
               setActiveTab(String(key) as AuditTabKey);
+              setSelectedKeys(new Set());
               setVisibleLimit(PAGE_LIMIT);
             }}
             selectedKey={activeTab}
@@ -689,6 +944,9 @@ function AdminCloudinaryPage() {
             <PrismTabList aria-label="Categorias da auditoria do Cloudinary">
               <PrismTab id="orphans">
                 Candidatos sem vínculo ({filteredOrphans.length})
+              </PrismTab>
+              <PrismTab id="in_use">
+                Em uso na UZZINA ({filteredInUse.length})
               </PrismTab>
               <PrismTab id="recent">
                 Recentes &lt; {data.coverage.recentGraceHours}h (
@@ -700,56 +958,19 @@ function AdminCloudinaryPage() {
             </PrismTabList>
 
             <PrismTabPanel id="orphans">
-              {filteredOrphans.length > 0 && (
-                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card p-3.5 squircle">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <PrismButton
-                      isDisabled={
-                        selectedAssets.length >= MAX_CLOUDINARY_DELETE_BATCH
-                      }
-                      onPress={selectVisibleBatch}
-                      size="sm"
-                      type="button"
-                      variant="outline"
-                    >
-                      Selecionar até {MAX_CLOUDINARY_DELETE_BATCH} visíveis
-                    </PrismButton>
-                    <PrismButton
-                      isDisabled={selectedAssets.length === 0}
-                      onPress={() => setSelectedKeys(new Set())}
-                      size="sm"
-                      type="button"
-                      variant="ghost"
-                    >
-                      Limpar seleção
-                    </PrismButton>
-                    <span className="text-xs text-secondary-foreground">
-                      <strong className="text-foreground">
-                        {selectedAssets.length}
-                      </strong>{" "}
-                      selecionado(s) · {formatBytes(selectedBytes)} estimados
-                      {selectedAssets.length >= MAX_CLOUDINARY_DELETE_BATCH &&
-                        ` (limite de ${MAX_CLOUDINARY_DELETE_BATCH} por lote)`}
-                    </span>
-                  </div>
-
-                  <PrismButton
-                    isDisabled={
-                      selectedAssets.length === 0 || deleteMutation.isPending
-                    }
-                    onPress={() => {
-                      setDeleteError(null);
-                      setIsDeleteOpen(true);
-                    }}
-                    size="sm"
-                    type="button"
-                    variant="error"
-                  >
-                    Excluir selecionados
-                    <Trash2Icon />
-                  </PrismButton>
-                </div>
-              )}
+              <SelectionActionBar
+                actionLabel="Excluir selecionados"
+                isDeleting={deleteMutation.isPending}
+                onClearSelection={() => setSelectedKeys(new Set())}
+                onRequestDelete={() => {
+                  setDeleteError(null);
+                  setIsDeleteOpen(true);
+                }}
+                onSelectVisibleBatch={selectVisibleBatch}
+                selectableCount={filteredOrphans.length}
+                selectedBytes={selectedBytes}
+                selectedCount={selectedAssets.length}
+              />
 
               <AssetList
                 emptyMessage="Nenhum candidato sem vínculo encontrado com os filtros atuais."
@@ -757,6 +978,38 @@ function AdminCloudinaryPage() {
                 notice="Arquivos em pastas da UZZINA ou de parceiros conhecidos que não têm nenhuma referência no banco e foram enviados há mais de 24 horas."
                 onShowMore={() => setVisibleLimit((prev) => prev + PAGE_LIMIT)}
                 selection={{
+                  maxReached:
+                    selectedAssets.length >= MAX_CLOUDINARY_DELETE_BATCH,
+                  onToggle: toggleAsset,
+                  selectedKeys,
+                }}
+                visibleLimit={visibleLimit}
+              />
+            </PrismTabPanel>
+
+            <PrismTabPanel id="in_use">
+              <SelectionActionBar
+                actionLabel="Excluir e limpar ações"
+                affectedActionsCount={affectedActionsCount}
+                isDeleting={deleteMutation.isPending}
+                onClearSelection={() => setSelectedKeys(new Set())}
+                onRequestDelete={() => {
+                  setDeleteError(null);
+                  setIsDeleteOpen(true);
+                }}
+                onSelectVisibleBatch={selectVisibleBatch}
+                selectableCount={selectableInUseCount}
+                selectedBytes={selectedBytes}
+                selectedCount={selectedAssets.length}
+              />
+
+              <AssetList
+                emptyMessage="Nenhum arquivo em uso encontrado com os filtros atuais."
+                items={filteredInUse}
+                notice="Arquivos referenciados na UZZINA. Arquivos ligados apenas a anexos ou mídias do Instagram em ações podem ser selecionados para exclusão e limpeza automática dos links. Logotipos, avatares e citações em texto permanecem protegidos."
+                onShowMore={() => setVisibleLimit((prev) => prev + PAGE_LIMIT)}
+                selection={{
+                  isSelectable: (asset) => asset.canUnlinkFromActions === true,
                   maxReached:
                     selectedAssets.length >= MAX_CLOUDINARY_DELETE_BATCH,
                   onToggle: toggleAsset,
@@ -790,13 +1043,17 @@ function AdminCloudinaryPage() {
       )}
 
       <CloudinaryDeleteConfirmDialog
+        affectedActionsCount={affectedActionsCount}
         errorMessage={deleteError}
         formattedTotalBytes={formatBytes(selectedBytes)}
         isDeleting={deleteMutation.isPending}
         isOpen={isDeleteOpen}
         onConfirm={() => {
           setDeleteError(null);
-          deleteMutation.mutate(selectedAssets);
+          deleteMutation.mutate({
+            items: selectedAssets,
+            allowReferencedInActions: activeTab === "in_use",
+          });
         }}
         onOpenChange={(open) => {
           if (!deleteMutation.isPending) {
