@@ -2,15 +2,16 @@
 
 **Status:** proposto
 
-**Bloqueado por:** 02
+**Bloqueado por:** 05. Esta é a etapa final de organização dos dados, depois do fluxo básico de publicação e agendamento.
 
 ## Resultado esperado
 
-Na página do parceiro, escolher um período, importar publicações e métricas disponíveis e consultar ranking e exportação.
+Em uma página própria **Relatórios → Instagram**, separada da configuração do perfil, escolher um período, importar publicações e métricas disponíveis, organizar o histórico e consultar ranking e exportação. Esta tela não é requisito para começar a publicar.
 
 ## Critérios de aceite
 
 - [ ] Percorrer páginas, incluir posts externos à UZZINA e apresentar cobertura e importações parciais.
+- [ ] Tirar a exibição detalhada dos resultados da tela de configuração/conexão do parceiro e apresentá-los na página própria **Relatórios → Instagram**.
 - [ ] Guardar medições e datas no banco, distinguir dados indisponíveis, contagens acumuladas e métricas do período.
 - [ ] Exibir filtros, ranking, última atualização e CSV a partir do histórico salvo.
 - [ ] Medir crescimento real de banco e consumo de chamadas, inclusive Stories e sincronizações.

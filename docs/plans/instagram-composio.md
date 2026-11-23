@@ -2,6 +2,8 @@
 
 Proposta de 22/11/2026. A UZZINA usaria a Composio para conectar perfis, publicar e buscar dados no Instagram. O Supabase guardaria a programação e os dados coletados. A equipe poderia consultar e exportar relatórios a partir do que já está no banco, sem repetir a importação a cada consulta.
 
+**Ordem de execução:** depois da conexão, a prioridade é publicar agora e programar Stories (seções 2 e tickets 03–05). A conexão e a leitura básica dos dados são suficientes para começar essa frente. A página própria para consultar e analisar publicações/insights, com histórico salvo, fica na fase final de dados e relatórios (seções 3–4, ticket 06); os resultados de leitura não devem ocupar a tela de configuração do perfil. A análise de comentários vem depois dessa página (ticket 07). A importação de referências públicas para Arquivos (ticket 08) é independente.
+
 ## 1. Conectar o perfil do parceiro
 
 Propor **Conectar Instagram** no cadastro do parceiro. Uma pessoa autorizada pela clínica concede acesso na Meta. Ao voltar, o cadastro mostra o **@perfil conectado**, o estado da conexão e as opções de reconectar ou desconectar. O servidor vincula a conexão ao parceiro e confere o destino de cada publicação. Em ações com vários parceiros, a equipe confirma explicitamente o destino de cada envio.
@@ -12,7 +14,9 @@ O piloto começa pelo OAuth gerenciado da Composio com um perfil **Empresa** de 
 
 A [aba Instagram da ação](../../app/components/features/action-drawer/InstagramTab.tsx) já mostra a prévia e o gerenciador de arquivos na mesma coluna. A primeira proposta é colocar **Publicar agora** e **Programar** abaixo da prévia, perto dos arquivos. Conferir a composição em gaveta estreita antes de fechar a posição. Se a aba ficar apertada, experimentar um diálogo **Publicação no Instagram** aberto a partir da ação.
 
-Antes de confirmar, a equipe vê o @ de destino, os arquivos finais e sua ordem, a legenda quando aplicável e o horário no fuso do parceiro. A programação guarda essa versão dos materiais. A autorização para conectar o perfil e a eventual aprovação editorial da peça são decisões separadas. Definir com a agência quais parceiros exigem aprovação antes do envio e quem pode publicar.
+**Publicar agora** é a próxima etapa de implementação (Ticket 03) e deve permitir enviar, após confirmação, imagem/carrossel no feed, vídeo no feed, Reel ou sequência de Stories. A equipe confere perfil, formato, ordem e legenda antes de cada envio. A operação é imediata e não cria agendamento. A programação futura é uma etapa posterior, nos Tickets 04 e 05.
+
+Antes de publicar agora, a equipe vê o @ de destino, os arquivos finais e sua ordem e a legenda quando aplicável. Para uma publicação programada, também confere o horário no fuso do parceiro; o agendamento guarda essa versão dos materiais. A autorização para conectar o perfil e a eventual aprovação editorial da peça são decisões separadas. Definir com a agência quais parceiros exigem aprovação antes do envio e quem pode publicar.
 
 ### Selecionar Stories para cada dia
 
@@ -31,16 +35,18 @@ Para a oferta da hamburgueria, a equipe pode selecionar uma vez o material e o h
 
 A proposta é mostrar as datas e o horário antes da confirmação e criar uma ocorrência independente para cada data. Assim a equipe pode cancelar ou mudar uma segunda específica sem alterar as outras. O primeiro fluxo a validar é a seleção de Stories para uma data. As duas opções de várias datas ficam previstas como evolução desse mesmo fluxo.
 
-**Publicar agora** usa a mesma fila com execução imediata. **Programar** grava a data futura no Supabase. Um Supabase Cron aciona o servidor para buscar itens no horário e chamar a Composio. A UZZINA guarda o resultado e o identificador do Instagram, exibe o link quando disponível e permite cancelar ou reprogramar itens ainda pendentes. Se a resposta do Instagram se perder, o servidor verifica o resultado antes de tentar publicar outra vez. [Supabase Cron](https://supabase.com/docs/guides/cron) · [Publicação na API da Meta](https://developers.facebook.com/documentation/instagram-platform/content-publishing) · [Publicação pela Composio](https://docs.composio.dev/kb/guide/toolkits-instagram)
+**Programar** grava a data futura no Supabase. Um Supabase Cron aciona o servidor para buscar itens no horário e chamar a Composio. A UZZINA guarda o resultado e o identificador do Instagram, exibe o link quando disponível e permite cancelar ou reprogramar itens ainda pendentes. Se a resposta do Instagram se perder, o servidor verifica o resultado antes de tentar publicar outra vez. [Supabase Cron](https://supabase.com/docs/guides/cron) · [Publicação na API da Meta](https://developers.facebook.com/documentation/instagram-platform/content-publishing) · [Publicação pela Composio](https://docs.composio.dev/kb/guide/toolkits-instagram)
 
 ## 3. Guardar os dados do Instagram na UZZINA
 
-| O que coletar | Como usar no relatório |
-| --- | --- |
-| Inventário de mídias disponíveis, inclusive posts feitos fora da UZZINA | Data, formato, legenda, link e identificador do Instagram. Filtrar, contar e abrir as publicações de um período. |
-| Insights por mídia | Ordenar posts ou Reels por alcance, visualizações, compartilhamentos ou salvamentos, conforme as métricas disponíveis para cada formato. |
-| Insights do perfil | Acompanhar alcance e interações da conta no período e outras métricas conforme a permissão. Para alcance único do perfil, usar o dado do período devolvido pela Meta, pois somar alcances individuais pode contar a mesma pessoa várias vezes. |
-| Insights de Stories | Coletar perto da publicação, enquanto os dados estiverem acessíveis, ou aproveitar o evento de expiração se o fluxo autorizado o oferecer. Assim a UZZINA pode incluir Stories nos relatórios futuros. |
+Esta é uma fase posterior à primeira publicação. A busca técnica disponível na configuração do parceiro serve para confirmar a integração; não é a interface final de consulta. Os resultados detalhados devem sair da tela de configuração e ganhar uma página própria de Instagram, onde possam ser organizados, guardados e consultados depois.
+
+| O que coletar                                                           | Como usar no relatório                                                                                                                                                                                                                         |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Inventário de mídias disponíveis, inclusive posts feitos fora da UZZINA | Data, formato, legenda, link e identificador do Instagram. Filtrar, contar e abrir as publicações de um período.                                                                                                                               |
+| Insights por mídia                                                      | Ordenar posts ou Reels por alcance, visualizações, compartilhamentos ou salvamentos, conforme as métricas disponíveis para cada formato.                                                                                                       |
+| Insights do perfil                                                      | Acompanhar alcance e interações da conta no período e outras métricas conforme a permissão. Para alcance único do perfil, usar o dado do período devolvido pela Meta, pois somar alcances individuais pode contar a mesma pessoa várias vezes. |
+| Insights de Stories                                                     | Coletar perto da publicação, enquanto os dados estiverem acessíveis, ou aproveitar o evento de expiração se o fluxo autorizado o oferecer. Assim a UZZINA pode incluir Stories nos relatórios futuros.                                         |
 
 Após conectar o perfil, oferecer **Importar publicações**. A equipe escolhe as datas inicial e final. Um comando na tela percorre as páginas de resultados e guarda as mídias disponíveis cuja data de publicação cai no intervalo. Mostrar quantas foram salvas, o intervalo coberto e se a coleta terminou ou ficou parcial. Depois, sincronizar periodicamente, atualizar por identificador sem duplicar publicações e registrar cada métrica com data da coleta, período e origem. Definir a frequência por formato após medir o piloto. Uma atualização manual solicitaria a sincronização do que estiver defasado.
 
@@ -56,7 +62,7 @@ No piloto, comprovar leitura do texto e das respostas pela conexão gerenciada e
 
 ## 4. Relatórios no parceiro
 
-Propor **Relatórios → Instagram** na página do parceiro. A equipe escolhe perfil, período e formato. A tela começa com publicações do período, métricas disponíveis e ranking por uma métrica escolhida. Exemplos de consulta:
+Na fase final de dados, criar uma página própria **Relatórios → Instagram** na área interna do parceiro, separada da configuração e conexão do perfil. A equipe escolhe perfil, período e formato. A página começa com publicações do período, métricas disponíveis e ranking por uma métrica escolhida. Exemplos de consulta:
 
 - **Quais foram os cinco posts com mais salvamentos em outubro?**
 - **Quais Reels de 2026 tiveram mais visualizações nos dados disponíveis?**

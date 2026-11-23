@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { CalendarDate } from "@internationalized/date";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
-import { LoaderCircleIcon, UnplugIcon } from "lucide-react";
+import { UnplugIcon } from "lucide-react";
 import { toast } from "sonner";
 import {
   PrismButton,
@@ -35,6 +35,7 @@ import {
 } from "~/models/partner-instagram";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "types/database";
+import { ULoader } from "~/components/uzzina/ULoader";
 
 interface PartnerInstagramConnectionProps {
   partnerId: string | null;
@@ -58,11 +59,10 @@ type PeriodSelection = {
 };
 
 const PERIOD_PRESETS: Array<{ id: PeriodPreset; label: string }> = [
-  { id: "all", label: "Todo período" },
-  { id: "month", label: "Este mês" },
-  { id: "3months", label: "3 meses" },
-  { id: "6months", label: "6 meses" },
-  { id: "12months", label: "12 meses" },
+  { id: "all", label: "Tudo" },
+  { id: "3months", label: "3m" },
+  { id: "6months", label: "6m" },
+  { id: "12months", label: "12m" },
 ];
 
 function readCallbackQuery(): CallbackQuery | null {
@@ -148,7 +148,7 @@ function getPeriodSelection(preset: PeriodPreset): PeriodSelection {
 }
 
 function getDefaultSearchPeriod(): PeriodSelection {
-  return getPeriodSelection("3months");
+  return getPeriodSelection("month");
 }
 
 function getUnixRange(range: { start: Date; end: Date } | null) {
@@ -210,19 +210,16 @@ function PeriodSearchPopover({
   return (
     <PrismPopoverTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
       <PrismButton
-        className="w-full justify-between"
+        className="relative w-full"
         isDisabled={isDisabled}
         size="sm"
         type="button"
         variant="outline"
       >
         {label}
-        {isPending && <LoaderCircleIcon className="size-4 animate-spin" />}
+        {isPending && <ULoader className="absolute right-3" />}
       </PrismButton>
       <PrismPopover className="w-auto gap-0 p-0" placement="bottom start">
-        <p className="px-3 pt-3 text-base font-medium">
-          Período das {label.toLowerCase()}
-        </p>
         <div className="p-2">
           <PrismRangeCalendar
             aria-label={`Período para buscar ${label.toLowerCase()}`}
@@ -247,7 +244,7 @@ function PeriodSearchPopover({
             value={toCalendarRange(selection.range)}
           />
         </div>
-        <div className="grid grid-cols-2 gap-2 border-t border-border p-3">
+        <div className="grid grid-cols-4 gap-1 border-t border-border p-2">
           {PERIOD_PRESETS.map((preset) => (
             <PrismButton
               key={preset.id}
@@ -256,7 +253,7 @@ function PeriodSearchPopover({
                 onSelectPreset(preset.id);
                 setIsOpen(false);
               }}
-              size="sm"
+              size="xs"
               type="button"
               variant={selection.preset === preset.id ? "secondary" : "outline"}
             >
@@ -306,8 +303,6 @@ export function PartnerInstagramConnection({
     useState<PartnerInstagramMediaPage | null>(null);
   const [insightsResult, setInsightsResult] =
     useState<PartnerInstagramInsightsResult | null>(null);
-  const [mediaError, setMediaError] = useState<string | null>(null);
-  const [insightsError, setInsightsError] = useState<string | null>(null);
   const [mediaPeriod, setMediaPeriod] = useState<string | null>(null);
   const [insightsPeriod, setInsightsPeriod] = useState<string | null>(null);
   const connectionKey = useMemo(
@@ -362,10 +357,9 @@ export function PartnerInstagramConnection({
             }
           : page,
       );
-      setMediaError(null);
     },
     onError: (error) =>
-      setMediaError(
+      toast.error(
         error instanceof Error
           ? error.message
           : "Não foi possível buscar as publicações.",
@@ -377,10 +371,9 @@ export function PartnerInstagramConnection({
       fetchPartnerInstagramInsights(supabase, { partnerSlug, ...input }),
     onSuccess: (result) => {
       setInsightsResult(result);
-      setInsightsError(null);
     },
     onError: (error) =>
-      setInsightsError(
+      toast.error(
         error instanceof Error
           ? error.message
           : "Não foi possível buscar os insights.",
@@ -391,7 +384,6 @@ export function PartnerInstagramConnection({
     const range = getUnixRange(selection.range);
     if (!after) {
       setMediaResult(null);
-      setMediaError(null);
       setMediaPeriod(formatSearchPeriod(selection));
     }
     mediaMutation.mutate({ ...range, ...(after ? { after } : {}) });
@@ -399,7 +391,6 @@ export function PartnerInstagramConnection({
 
   const runInsightsSearch = (selection = insightsSelection) => {
     setInsightsResult(null);
-    setInsightsError(null);
     setInsightsPeriod(formatSearchPeriod(selection));
     insightsMutation.mutate(getUnixRange(selection.range));
   };
@@ -611,7 +602,7 @@ export function PartnerInstagramConnection({
                     variant="outline"
                   >
                     {connectMutation.isPending && (
-                      <LoaderCircleIcon className="size-4 animate-spin" />
+                      <ULoader className="size-4" />
                     )}
                     Reconectar
                   </PrismButton>
@@ -628,7 +619,7 @@ export function PartnerInstagramConnection({
                         variant="outline"
                       >
                         {disconnectMutation.isPending ? (
-                          <LoaderCircleIcon className="size-4 animate-spin" />
+                          <ULoader className="size-4" />
                         ) : (
                           <UnplugIcon />
                         )}
@@ -711,11 +702,6 @@ export function PartnerInstagramConnection({
         )}
       </div>
 
-      {mediaError && (
-        <p className="text-base text-error" role="alert">
-          {mediaError}
-        </p>
-      )}
       {mediaResult && (
         <section aria-label="Publicações encontradas" className="grid gap-3">
           <div className="grid gap-1">
@@ -784,18 +770,11 @@ export function PartnerInstagramConnection({
               type="button"
               variant="outline"
             >
-              {mediaMutation.isPending && (
-                <LoaderCircleIcon className="size-4 animate-spin" />
-              )}
+              {mediaMutation.isPending && <ULoader className="size-4" />}
               Carregar mais publicações
             </PrismButton>
           )}
         </section>
-      )}
-      {insightsError && (
-        <p className="text-base text-error" role="alert">
-          {insightsError}
-        </p>
       )}
       {insightsResult && (
         <section aria-label="Insights do Instagram" className="grid gap-3">
@@ -871,9 +850,7 @@ export function PartnerInstagramConnection({
           type="button"
           variant="outline"
         >
-          {connectMutation.isPending && (
-            <LoaderCircleIcon className="size-4 animate-spin" />
-          )}
+          {connectMutation.isPending && <ULoader className="size-4" />}
           Conectar Instagram
         </PrismButton>
       )}

@@ -38,14 +38,22 @@ export function FileUploadQueue({
             >
               <div className="min-w-0 flex-1">
                 <p className="truncate">{entry.name}</p>
+
                 {entry.status === "uploading" ? (
                   <div className="mt-1 flex items-center gap-2">
-                    <progress
+                    <div
                       aria-label={`Enviando ${entry.name}`}
-                      className="h-2 min-w-0 flex-1 accent-primary"
-                      max={100}
-                      value={entry.progress}
-                    />
+                      aria-valuemax={100}
+                      aria-valuemin={0}
+                      aria-valuenow={entry.progress}
+                      className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-input"
+                      role="progressbar"
+                    >
+                      <div
+                        className="h-full rounded-full bg-success transition-[width]"
+                        style={{ width: `${entry.progress}%` }}
+                      />
+                    </div>
                     <span className="text-xs text-secondary-foreground">
                       {entry.progress}%
                     </span>

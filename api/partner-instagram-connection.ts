@@ -4,8 +4,8 @@ import { z } from "zod";
 import {
   makePartnerComposioUserId,
   parseInstagramAccountObservation,
-  parsePartnerInstagramInsights,
-  parsePartnerInstagramMediaPage,
+  parseComposioInstagramInsights,
+  parseComposioInstagramMediaPage,
   type PartnerInstagramConnection,
 } from "../app/lib/partner-instagram-contract.js";
 import { extractBearerToken } from "../server/auth.js";
@@ -276,7 +276,7 @@ async function handleReadMedia(
         : {}),
       ...(parsed.data.after ? { after: parsed.data.after } : {}),
     });
-    const page = parsePartnerInstagramMediaPage(result);
+    const page = parseComposioInstagramMediaPage(result);
     if (!page) {
       res
         .status(502)
@@ -329,7 +329,7 @@ async function handleReadInsights(
         ? { since: parsed.data.since, until: parsed.data.until }
         : {}),
     });
-    const insights = parsePartnerInstagramInsights(result);
+    const insights = parseComposioInstagramInsights(result);
     if (!insights) {
       res
         .status(502)

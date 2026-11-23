@@ -354,9 +354,6 @@ export function InstagramPublishPreparation({
       <PrismDialog isOpen={open} onOpenChange={setOpen} size="lg">
         <PrismDialogHeader>
           <PrismDialogTitle>Instagram</PrismDialogTitle>
-          <PrismDialogDescription className="text-base">
-            Confira o perfil conectado e o conteúdo da ação.
-          </PrismDialogDescription>
         </PrismDialogHeader>
         <PrismTabs
           className="min-h-0"
@@ -367,7 +364,9 @@ export function InstagramPublishPreparation({
           }}
         >
           <PrismDialogBody className="flex flex-col gap-4">
-            {loading && <p className="text-base">Consultando perfil…</p>}
+            {loading && (
+              <p className="text-secondary-foreground">Consultando perfil…</p>
+            )}
             {connectedPartners.length > 1 ? (
               <p className="text-base text-error">
                 Esta ação está vinculada a mais de um Instagram conectado. Para

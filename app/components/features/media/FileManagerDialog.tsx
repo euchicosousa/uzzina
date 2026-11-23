@@ -31,6 +31,7 @@ import { cn } from "cnfast";
 import {
   PrismBadge,
   PrismButton,
+  PrismCheckbox,
   PrismDialog,
   PrismDialogDescription,
   PrismDialogHeader,
@@ -139,7 +140,7 @@ function SortableThumbnail({
         "group relative aspect-square overflow-hidden rounded-xl border bg-card squircle",
         maxWidth && "w-full justify-self-center",
         selected &&
-          "after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:border-2 after:border-primary",
+          "after:pointer-events-none after:absolute after:inset-0 after:rounded-[calc(var(--radius-xl)-2px)] after:border-2 after:border-primary after:squircle",
         previewPanelId && "ring-2 ring-info ring-offset-2 ring-offset-popover",
         !onPreview && selecting && !locked && "cursor-pointer",
       )}
@@ -209,13 +210,14 @@ function SortableThumbnail({
         </span>
       )}
 
-      <Checkbox
+      <PrismCheckbox
         data-thumb-control
         aria-label={`Selecionar ${fileName}`}
         className={cn(
           "absolute top-1 right-1 z-10 flex size-6 cursor-pointer items-center justify-center rounded-lg image-icon transition-opacity outline-none data-[disabled]:cursor-not-allowed",
           showSelectControl,
         )}
+        boxClassName="bg-transparent border-2 border-white"
         isDisabled={locked}
         isSelected={selected}
         onChange={onToggle}
@@ -225,7 +227,7 @@ function SortableThumbnail({
         ) : (
           <SquareIcon className="size-5" />
         )}
-      </Checkbox>
+      </PrismCheckbox>
 
       {/* Preview */}
       {onPreview ? (

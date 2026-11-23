@@ -104,8 +104,10 @@ async function waitReady(
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== "GET" && req.method !== "POST")
+  if (req.method !== "GET" && req.method !== "POST") {
+    res.setHeader("Allow", "GET, POST");
     return res.status(405).json({ error: "Método não permitido." });
+  }
   const config = getServiceConfig();
   const token = extractBearerToken(req);
   if (!config || !token)
