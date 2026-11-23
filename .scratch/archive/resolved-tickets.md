@@ -4,6 +4,11 @@ Consolidado em 04/11/2026; recebeu encerramentos posteriores, inclusive HOJE-06 
 
 Os documentos completos abaixo substituem os antigos arquivos individuais. Nenhum conteúdo de ticket foi descartado. Os índices anteriores também foram preservados no final.
 
+## Encerramentos de 23/11/2026
+
+<a id="today-views-issues-07-timeline-fit-exclude-finished-toggle"></a>
+- [HOJE-07 · Grupo de botões de foco na Linha do tempo (em aberto vs. todas)](../today-views/issues/07-timeline-fit-exclude-finished-toggle.md) — aprovado e encerrado pelo proprietário em 23/11 após conferência local. Botão único de ajuste substituído por `PrismButtonGroup` (`size="sm"`, `attached={false}`) com **Focar ações em aberto** (`FocusIcon`, excluindo `phase === "finished"`, mantendo `done` e com fallback automático para todas quando todas estiverem concluídas) e **Focar todas as ações** (`ScanIcon`). Prettier, Biome, `tsc --noEmit`, `vite build` e 26 testes em `tests/timeline.test.ts` passaram. Commit local em `main`, sem push/deploy.
+
 ## Encerramentos de 22/11/2026
 
 - [KEYBOARD-FOCUS-04 · Foco visual uniforme](../keyboard-focus/issues/04-visual-focus-states-gallery.md) — encerrado a pedido do proprietário. Contorno primário de 3 px com offset zero no commit `b5d25a25`. Publicação não confirmada.

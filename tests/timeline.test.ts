@@ -12,6 +12,7 @@ import {
   getActionDurationMinutes,
   getActionStartMinutes,
   getTimelineAutoScrollSpeed,
+  getTimelineFitActions,
   getTimelineMinuteMarks,
   getTimelinePeopleRows,
   isTimelineLabelOverlappingNow,
@@ -311,5 +312,34 @@ describe("getTimelineAutoScrollSpeed", () => {
     expect(getTimelineAutoScrollSpeed(150, 100, 200)).toBe(0);
     expect(getTimelineAutoScrollSpeed(110, 100, 200)).toBeLessThan(0);
     expect(getTimelineAutoScrollSpeed(190, 100, 200)).toBeGreaterThan(0);
+  });
+});
+
+describe("getTimelineFitActions", () => {
+  it("excludes finished actions while keeping done and open phases when focusing open work", () => {
+    const items = [
+      { action: makeAction({ id: "early-finished", phase: "finished" }) },
+      { action: makeAction({ id: "mid-done", phase: "done" }) },
+      { action: makeAction({ id: "late-do", phase: "do" }) },
+    ];
+
+    expect(
+      getTimelineFitActions(items, false).map(({ action }) => action.id),
+    ).toEqual(["mid-done", "late-do"]);
+    expect(
+      getTimelineFitActions(items, true).map(({ action }) => action.id),
+    ).toEqual(["early-finished", "mid-done", "late-do"]);
+  });
+
+  it("falls back to all actions when every visible action is already finished", () => {
+    const onlyFinished = [
+      { action: makeAction({ id: "f1", phase: "finished" }) },
+      { action: makeAction({ id: "f2", phase: "finished" }) },
+    ];
+
+    expect(
+      getTimelineFitActions(onlyFinished, false).map(({ action }) => action.id),
+    ).toEqual(["f1", "f2"]);
+    expect(getTimelineFitActions([], false)).toEqual([]);
   });
 });

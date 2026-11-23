@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { PHASES } from "~/lib/CONSTANTS";
 import type { Action, Person } from "~/types";
 import { parseU } from "~/utils/date";
 
@@ -296,4 +297,21 @@ export function getTimelineAutoScrollSpeed(
   }
 
   return 0;
+}
+
+/**
+ * Selects timeline items considered by "Fit camera". When `includeFinished` is
+ * false, excludes actions in `finished` phase (keeping `done` among open work)
+ * and falls back to all items if every visible action is already `finished`.
+ */
+export function getTimelineFitActions<
+  T extends { action: Pick<Action, "phase"> },
+>(items: readonly T[], includeFinished: boolean): T[] {
+  if (includeFinished || items.length === 0) {
+    return [...items];
+  }
+  const openItems = items.filter(
+    (item) => item.action.phase !== PHASES.finished.slug,
+  );
+  return openItems.length > 0 ? openItems : [...items];
 }

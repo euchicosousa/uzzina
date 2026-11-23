@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { isToday } from "date-fns";
-import { ScanIcon } from "lucide-react";
+import { FocusIcon, ScanIcon } from "lucide-react";
 import {
   useCallback,
   useEffect,
@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { ActionItem } from "~/components/features/ActionItem";
 import {
   PrismButton,
+  PrismButtonGroup,
   PrismSlider,
   PrismSliderOutput,
   PrismSliderTrack,
@@ -45,6 +46,7 @@ import {
   getActionDurationMinutes,
   getActionStartMinutes,
   getTimelineAutoScrollSpeed,
+  getTimelineFitActions,
   getTimelineMinuteMarks,
   getTimelinePeopleRows,
   isTimelineLabelOverlappingNow,
@@ -736,17 +738,25 @@ export function TimelineGrid({
 
   const visibleActions = peopleRows.flatMap(({ lanes }) => lanes.flat());
 
-  function getFitCamera(width: number): TimelineCamera | undefined {
-    if (width <= 0 || visibleActions.length === 0) return;
-    const start = Math.min(...visibleActions.map((action) => action.startMin));
+  function getFitCamera(
+    width: number,
+    includeFinished: boolean,
+  ): TimelineCamera | undefined {
+    const targetActions = getTimelineFitActions(
+      visibleActions,
+      includeFinished,
+    );
+    if (width <= 0 || targetActions.length === 0) return;
+    const start = Math.min(...targetActions.map((action) => action.startMin));
     const end = Math.min(
       TIMELINE_TOTAL_MINUTES,
       Math.max(
-        ...visibleActions.map(
+        ...targetActions.map(
           ({ startMin, durationMin }) => startMin + durationMin,
         ),
       ),
     );
+    if (end <= start) return;
     const margin = Math.min(24, Math.max(16, width * 0.04), width / 4);
     return {
       scale: clampTimelineScale((width - 2 * margin) / (end - start), width),
@@ -823,8 +833,8 @@ export function TimelineGrid({
     });
   }
 
-  function fitActions() {
-    const fit = getFitCamera(getViewportWidth());
+  function fitActions(includeFinished: boolean) {
+    const fit = getFitCamera(getViewportWidth(), includeFinished);
     if (fit) setCamera(fit);
   }
 
@@ -850,15 +860,34 @@ export function TimelineGrid({
             </PrismSliderOutput>
             <PrismSliderTrack />
           </PrismSlider>
-          <PrismButton
-            isDisabled={visibleActions.length === 0 || viewportWidth === 0}
-            onPress={fitActions}
-            size="icon-sm"
-            variant="secondary"
-            aria-label="Ajustar às ações"
+          <PrismButtonGroup
+            aria-label="Ajustar enquadramento da linha do tempo"
+            attached={false}
+            size="sm"
           >
-            <ScanIcon />
-          </PrismButton>
+            <PrismTooltip label="Focar ações em aberto">
+              <PrismButton
+                aria-label="Focar ações em aberto"
+                isDisabled={visibleActions.length === 0 || viewportWidth === 0}
+                onPress={() => fitActions(false)}
+                size="icon-sm"
+                variant="secondary"
+              >
+                <FocusIcon />
+              </PrismButton>
+            </PrismTooltip>
+            <PrismTooltip label="Focar todas as ações">
+              <PrismButton
+                aria-label="Focar todas as ações"
+                isDisabled={visibleActions.length === 0 || viewportWidth === 0}
+                onPress={() => fitActions(true)}
+                size="icon-sm"
+                variant="secondary"
+              >
+                <ScanIcon />
+              </PrismButton>
+            </PrismTooltip>
+          </PrismButtonGroup>
         </div>
         {person?.admin && (
           <UPeopleCombobox
