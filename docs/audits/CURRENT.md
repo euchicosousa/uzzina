@@ -2,6 +2,8 @@
 
 Atualizado em 23/11/2026. [Contratos](../../AGENTS.md) · [Operação](../../README.md) · [Ideias futuras](../../TODO.md).
 
+**Foco nos Commands, 23/11.** O campo de busca fica sem fundo extra e sem contorno. A opção atual voltou a usar o fundo que acompanha as setas, sem contorno. Estilo conferido contra o padrão anterior do Prism. Build e diff conferidos. Falta conferência visual.
+
 **Instagram — conexão e prévia do perfil (23/11).** O proprietário confirmou que o cartão com dados do perfil apareceu corretamente; a mensagem separada de sucesso foi removida. A migration de dados do perfil foi aplicada ao Supabase `uzzina`; typecheck passou. Código local, aguardando publicação.
 
 **EST-07 — funções da Vercel (23/11).** Ticket de investigação criado após o proprietário informar o limite do plano gratuito. Vai conferir a cota e a contagem publicada e propor unificações seguras; nenhuma fusão foi implementada.
