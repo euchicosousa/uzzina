@@ -614,6 +614,7 @@ html[data-dragging-item] * {
       [role="tab"],
       [role="spinbutton"]
     ),
+    [data-instagram-caption],
     [data-slot="button"][data-variant="default"],
     [data-slot="dropdown-menu-item"],
     [data-slot="dropdown-menu-sub-trigger"],

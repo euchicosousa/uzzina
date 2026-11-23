@@ -93,6 +93,7 @@ function CaptionTextarea({
     <textarea
       aria-label="Legenda do Instagram"
       className={className}
+      data-instagram-caption
       disabled={disabled}
       onBlur={() => {
         onBlur(typed);
@@ -414,7 +415,7 @@ export function InstagramTab({
               <CaptionTextarea
                 caption={RawAction.instagram_caption}
                 className={cn(
-                  "w-full resize-none p-4 outline-none disabled:opacity-50 @[47rem]/action:pl-0",
+                  "w-full resize-none border-0 p-4 outline-none focus-visible:bg-secondary disabled:opacity-50 @[47rem]/action:pl-0",
                   writingLayout ? "min-h-0 flex-1" : "h-full",
                 )}
                 disabled={isAIProcessing}

@@ -46,6 +46,10 @@ Leia antes de mexer na gaveta de ação (Essencial, Instagram, Observações), n
 
 - Notificações: `/app/notifications` e o sino compartilham `useNotifications(limit)`; a chave é `QUERY_KEYS.notifications(userId)` + limite (invalidar o prefixo alcança ambos). Página cheia oferece "Carregar anteriores"; ação inacessível mostra aviso na página. Clique no sino fecha o popover antes de carregar a ação; token por clique, geração e montagem descartam respostas antigas. Troca de página pelo cabeçalho (logo, "Ver todas", itens do menu do perfil, Sair) passa por `leaveOpenActions` (`app.tsx`, o mesmo usado pela busca): uma saída por vez, a última escolha vence e Sair prevalece; destino igual à página atual não fecha ações. Itens do menu do perfil navegam por `onAction`, sem href nativo (evita recarga completa). Voltar/Avançar dentro de `/app` mantêm as gavetas.
 
+## Edição de texto na aba Instagram
+
+- O campo **Legenda** é um `textarea`, separado do Tiptap de **Conteúdo**. Não desenha borda nem anel roxo; quando recebe foco de teclado, usa `bg-secondary` como indicação visual. O contorno global de foco não deve ser reativado nesse campo.
+
 ## Tópicos e cor da ação (TOP-01, 16/11/2026)
 
 - A gaveta não tem mais cor livre: o rodapé de Post, Carrossel, Reels e Stories (`isSocialMediaContent`) mostra o `UTopicCombobox`, com os tópicos de todos os parceiros da ação (agrupados por parceiro quando há mais de um) e "Sem tópico". Escolher um tópico grava só `topic_id`; `actions.color` não muda (a lógica do rascunho que define a cor pelo parceiro continua em `ActionFormDrawer`/rodapé e alimenta quem não tem tópico). Ação nova nasce sem tópico; duplicar copia o tópico.
