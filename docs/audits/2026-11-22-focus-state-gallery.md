@@ -1,7 +1,7 @@
 # Comparação visual dos estados de foco
 
 **Ticket:** KEYBOARD-FOCUS-04  
-**Status:** correção local concluída e registrada; build Vite e `git diff --check` passaram. Commit/push pendentes nesta retomada. O app publicado e sua conferência visual continuam pendentes.
+**Status:** correção e documentos commitados e enviados a `main` em `710672b`; build Vite e `git diff --check` passaram. O app publicado e sua conferência visual continuam pendentes.
 
 ## Reauditoria solicitada em 22/11/2026
 

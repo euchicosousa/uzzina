@@ -1,6 +1,6 @@
 # KEYBOARD-FOCUS-04 — Comparação visual dos estados de foco
 
-**Status (22/11/2026): correção local concluída; commit/push nesta retomada; app publicado ainda não conferido.** A captura mostra o item “Minha Conta” com contorno de teclado e fundo secondary ao mesmo tempo. O foco de teclado agora suprime o fundo hover no mesmo alvo, inclusive com o ponteiro parado sobre ele. O encerramento anterior fica registrado como histórico, não como aceite vigente.
+**Status (22/11/2026): correção commitada e enviada a `main` em `710672b`; app publicado ainda não conferido.** A captura mostra o item “Minha Conta” com contorno de teclado e fundo secondary ao mesmo tempo. O foco de teclado agora suprime o fundo hover no mesmo alvo, inclusive com o ponteiro parado sobre ele. O encerramento anterior fica registrado como histórico, não como aceite vigente.
 
 **Onde conferir.** Abra `docs/audits/focus-state-gallery.html` em um navegador desktop. No topo, selecione uma das dez paletas e o modo claro/escuro. Em cada card, compare **Atual** (esquerda) com **Proposta** (direita).
 
