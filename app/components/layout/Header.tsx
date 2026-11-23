@@ -625,25 +625,26 @@ export const HeaderMenu = ({
             return (
               <PrismMenuItem
                 key={paletteConfig.id}
-                aria-label={paletteConfig.label}
+                aria-label={
+                  isSelected
+                    ? `${paletteConfig.label}, selecionada`
+                    : paletteConfig.label
+                }
                 className="mx-auto size-7 min-w-0 rounded-2xl p-1 transition-opacity squircle"
                 onAction={() => changeColor(paletteConfig.id)}
                 shouldCloseOnSelect={false}
-                style={{
-                  backgroundColor: isSelected
-                    ? `oklch(${currentColors.primary.l} ${currentColors.primary.c} ${currentColors.primary.h})`
-                    : "",
-                }}
                 textValue={paletteConfig.label}
               >
                 <div
-                  className="size-5 rounded-[9px] squircle"
+                  className="grid size-5 place-items-center rounded-[9px] text-primary-foreground squircle"
                   style={{
-                    backgroundColor: isSelected
-                      ? `oklch(${currentColors.bg.l} ${currentColors.bg.c} ${currentColors.bg.h})`
-                      : `oklch(${currentColors.primary.l} ${currentColors.primary.c} ${currentColors.primary.h})`,
+                    backgroundColor: `oklch(${currentColors.primary.l} ${currentColors.primary.c} ${currentColors.primary.h})`,
                   }}
-                />
+                >
+                  {isSelected && (
+                    <CheckCircle2Icon className="size-4 opacity-100" />
+                  )}
+                </div>
               </PrismMenuItem>
             );
           })}

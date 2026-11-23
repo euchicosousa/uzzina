@@ -614,6 +614,8 @@ html[data-dragging-item] * {
       [role="tab"],
       [role="spinbutton"]
     ),
+    [data-slot="dropdown-menu-item"],
+    [data-slot="dropdown-menu-sub-trigger"],
     [data-slot="input-group-control"],
     [data-slot="checkbox"] input,
     [data-slot="radio"] input,

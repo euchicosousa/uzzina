@@ -91,11 +91,11 @@ const dropdownMenuItemVariants = cva(
   {
     variants: {
       selectionMode: {
-        none: "min-h-7 gap-2 rounded-xl px-3 py-1.5 text-sm squircle not-data-[focus-visible]:data-hovered:bg-secondary data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
+        none: "min-h-7 gap-2 rounded-xl px-3 py-1.5 text-sm squircle data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
         single:
-          "min-h-7 gap-2 rounded-xl py-1.5 pr-8 pl-3 text-sm squircle not-data-[focus-visible]:data-hovered:bg-secondary data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
+          "min-h-7 gap-2 rounded-xl py-1.5 pr-8 pl-3 text-sm squircle data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
         multiple:
-          "min-h-7 gap-2 rounded-xl py-1.5 pr-8 pl-3 text-sm squircle not-data-[focus-visible]:data-hovered:bg-secondary data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
+          "min-h-7 gap-2 rounded-xl py-1.5 pr-8 pl-3 text-sm squircle data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
       },
     },
   },
