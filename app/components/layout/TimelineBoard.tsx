@@ -959,7 +959,7 @@ export function TimelineGrid({
             </div>
           ) : (
             <div className="relative divide-y divide-border">
-              {peopleRows.map(({ person: rowPerson, lanes }) => {
+              {peopleRows.map(({ person: rowPerson, lanes }, personIndex) => {
                 const fullName =
                   `${rowPerson.name} ${rowPerson.surname}`.trim();
                 return (
@@ -1021,7 +1021,12 @@ export function TimelineGrid({
                       <div className="relative flex flex-col divide-y">
                         {lanes.map((laneItems, laneIndex) => (
                           <div
-                            className="relative grid min-h-9 w-full grid-cols-1 py-1"
+                            className={cn(
+                              "relative grid min-h-9 w-full grid-cols-1 py-1",
+                              personIndex === peopleRows.length - 1 &&
+                                laneIndex === lanes.length - 1 &&
+                                "pb-6",
+                            )}
                             // biome-ignore lint/suspicious/noArrayIndexKey: The lane is a numbered slot; its actions move between slots.
                             key={laneIndex}
                           >
