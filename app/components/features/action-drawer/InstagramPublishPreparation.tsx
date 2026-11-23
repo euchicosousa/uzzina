@@ -49,6 +49,7 @@ import { GripVerticalIcon, XIcon } from "lucide-react";
 
 type Format = PublishInput["format"];
 type PublishMode = "publish" | "schedule";
+const MIN_SCHEDULE_LEAD_MS = 2 * 60_000;
 
 function getAttemptStatus(status: string) {
   switch (status) {
@@ -300,7 +301,8 @@ export function InstagramPublishPreparation({
     );
   }, [blocked, busy, loading, open]);
   const scheduleHasInvalidDate = scheduleDates.some(
-    (date) => date !== null && date.getTime() <= Date.now(),
+    (date) =>
+      date !== null && date.getTime() < Date.now() + MIN_SCHEDULE_LEAD_MS,
   );
   const scheduledCount = scheduleDates.filter((date) => date !== null).length;
 
@@ -673,6 +675,7 @@ export function InstagramPublishPreparation({
                     <UActionDatePicker
                       ariaLabel={`Data e hora da publicação ${index + 1}`}
                       date={date ?? undefined}
+                      minimumLeadMinutes={2}
                       onSelect={(nextDate) =>
                         updateScheduleDate(index, nextDate)
                       }
@@ -745,7 +748,7 @@ export function InstagramPublishPreparation({
               {(scheduleHasInvalidDate || mediaError) && (
                 <p className="text-base text-error">
                   {scheduleHasInvalidDate
-                    ? "Escolha horários futuros."
+                    ? "Escolha horários com pelo menos 2 minutos de antecedência."
                     : mediaError}
                 </p>
               )}

@@ -18,6 +18,8 @@ import {
   parseInstagramAccountObservation,
 } from "../app/lib/partner-instagram-contract.js";
 
+const MIN_SCHEDULE_LEAD_MS = 2 * 60_000;
+
 const inputSchema = z
   .object({
     actionId: z.uuid(),
@@ -643,8 +645,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({
         error: "Formato ou arquivo incompatível com a publicação do Instagram.",
       });
-    if (schedule.scheduledAt.some((date) => Date.parse(date) <= Date.now()))
-      return res.status(400).json({ error: "Escolha horários futuros." });
+    if (
+      schedule.scheduledAt.some(
+        (date) => Date.parse(date) < Date.now() + MIN_SCHEDULE_LEAD_MS,
+      )
+    )
+      return res.status(400).json({
+        error: "Escolha horários com pelo menos 2 minutos de antecedência.",
+      });
     try {
       const providerConfig = getComposioConfiguration();
       const expectedUserId = makePartnerComposioUserId(partner.id);
@@ -678,6 +686,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         error: "A integração não está configurada.",
       });
     }
+    if (
+      schedule.scheduledAt.some(
+        (date) => Date.parse(date) < Date.now() + MIN_SCHEDULE_LEAD_MS,
+      )
+    )
+      return res.status(400).json({
+        error: "Escolha horários com pelo menos 2 minutos de antecedência.",
+      });
     const { data: created, error: createError } = await service.rpc(
       "create_instagram_schedule_batch",
       {

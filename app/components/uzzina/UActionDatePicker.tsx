@@ -19,6 +19,7 @@ export function UActionDatePicker({
   className,
   size = "sm",
   isLate,
+  minimumLeadMinutes = 0,
 }: {
   onSelect?: (date: Date) => void;
   date?: Date;
@@ -27,11 +28,19 @@ export function UActionDatePicker({
   className?: string;
   size?: "sm" | "default" | "lg";
   isLate?: boolean;
+  minimumLeadMinutes?: number;
 }) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(date);
+  const getInitialDate = () => {
+    if (minimumLeadMinutes <= 0) return new Date();
+    const timestamp = Date.now() + minimumLeadMinutes * 60_000;
+    return new Date(Math.ceil(timestamp / 60_000) * 60_000);
+  };
+  const timeValue =
+    selectedDate ?? (minimumLeadMinutes > 0 ? getInitialDate() : undefined);
   const handleCalendarSelect = (newDate: CalendarDate | null) => {
     if (newDate) {
-      const current = selectedDate ? new Date(selectedDate) : new Date();
+      const current = selectedDate ? new Date(selectedDate) : getInitialDate();
       current.setFullYear(newDate.year, newDate.month - 1, newDate.day);
       setSelectedDate(current);
     }
@@ -79,16 +88,18 @@ export function UActionDatePicker({
           className="flex items-center justify-between gap-2 pl-2"
           label="Defina a hora"
           onChange={(time) => {
-            if (selectedDate && time) {
-              const newDate = new Date(selectedDate);
+            if (time) {
+              const newDate = selectedDate
+                ? new Date(selectedDate)
+                : getInitialDate();
               newDate.setHours(time.hour, time.minute);
               setSelectedDate(newDate);
             }
           }}
           size="sm"
           value={
-            selectedDate
-              ? new Time(selectedDate.getHours(), selectedDate.getMinutes())
+            timeValue
+              ? new Time(timeValue.getHours(), timeValue.getMinutes())
               : undefined
           }
         />
