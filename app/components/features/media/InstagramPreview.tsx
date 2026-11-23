@@ -58,7 +58,7 @@ export function InstagramPreview({ files, compact }: InstagramPreviewProps) {
 
   if (!files || files.length === 0) {
     return (
-      <div className={`${frameClass} ${aspectClass}`}>
+      <div className={`${frameClass} ${aspectClass} bg-card`}>
         <div className="flex h-full flex-col items-center justify-center gap-2 opacity-30">
           <ImageIcon className="size-10" />
           <span className="text-xs">Nenhum conteúdo</span>

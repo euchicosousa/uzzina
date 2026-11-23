@@ -15,6 +15,7 @@ export function UActionDatePicker({
   onSelect,
   date,
   dateTimeDisplay = DATE_TIME_DISPLAY.DayDateMonthTime,
+  ariaLabel = "Data e hora da ação",
   className,
   size = "sm",
   isLate,
@@ -22,6 +23,7 @@ export function UActionDatePicker({
   onSelect?: (date: Date) => void;
   date?: Date;
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
+  ariaLabel?: string;
   className?: string;
   size?: "sm" | "default" | "lg";
   isLate?: boolean;
@@ -48,7 +50,7 @@ export function UActionDatePicker({
   return (
     <PrismPopoverTrigger onOpenChange={handleOpenChange}>
       <PrismButton
-        aria-label="Data e hora da ação"
+        aria-label={ariaLabel}
         className={cn(isLate && "text-error-foreground", className)}
         size={size}
         variant="link"

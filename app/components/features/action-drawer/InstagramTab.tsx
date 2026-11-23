@@ -32,6 +32,7 @@ import {
   useWritingAreaHeight,
 } from "./useWritingAreaHeight";
 import { UAIProgressBar } from "~/components/uzzina/UAIProgressBar";
+import { InstagramPublishPreparation } from "./InstagramPublishPreparation";
 interface InstagramTabProps {
   RawAction: Action;
   setRawAction: (action: Action | ((prev: Action) => Action)) => void;
@@ -160,24 +161,36 @@ export function InstagramTab({
     >
       <div
         className={cn(
-          "mx-auto flex shrink-0 flex-col p-6",
-          writingLayout && "w-full px-4 pt-4 pb-0",
+          "mx-auto flex shrink-0 flex-col justify-between p-6",
+          writingLayout && "h-full min-h-0 w-full px-4 pt-4 pb-0",
           instagramSubTab === "content"
             ? "@[47rem]/action:w-2/5"
             : "@[47rem]/action:w-1/2",
         )}
       >
-        {/* Compact panels show no empty preview: only Adicionar conteúdo. */}
-        {(!writingLayout || contentFiles.length > 0) && (
-          <InstagramPreview compact={writingLayout} files={contentFiles} />
-        )}
-        <ContentFilesManager
-          cloudName={cloudName}
-          files={contentFiles}
-          onChange={updateContentFiles}
-          onUploadActiveChange={onUploadActiveChange}
-          uploadPreset={uploadPreset}
-        />
+        <div>
+          {/* Compact panels show no empty preview: only Adicionar conteúdo. */}
+          {(!writingLayout || contentFiles.length > 0) && (
+            <InstagramPreview compact={writingLayout} files={contentFiles} />
+          )}
+          <ContentFilesManager
+            cloudName={cloudName}
+            files={contentFiles}
+            onChange={updateContentFiles}
+            onUploadActiveChange={onUploadActiveChange}
+            uploadPreset={uploadPreset}
+          />
+        </div>
+        <section className="flex flex-col gap-2 pt-4">
+          <p className="font-medium">Publicação</p>
+          <InstagramPublishPreparation
+            files={contentFiles}
+            actionId={RawAction.id}
+            caption={RawAction.instagram_caption}
+            actionCategory={RawAction.category}
+            partnerSlugs={RawAction.partners}
+          />
+        </section>
       </div>
 
       <PrismTabs
