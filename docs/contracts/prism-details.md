@@ -47,7 +47,7 @@ Regra do proprietário (DS05, decisão final de 11/11/2026): a posição do íco
 
 ## Anel de foco e exceções
 
-O foco visível usa um contorno sólido de 3 px na cor primária e offset zero. A regra em `app/tailwind.css` cobre o foco nativo e o alvo visual delegado pelo React Aria, como itens de listas, caixas de seleção, calendários e controles deslizantes. Grupos de entrada e editores compostos mostram o mesmo contorno no componente que representa o campo. Fundos e sublinhados exclusivos do foco foram removidos. Hover, seleção e estados semânticos continuam com seus indicadores próprios. A coluna de campos no comparador de conflito mantém seu Tab stop. Ícones mantêm as regras de opacidade em repouso e seleção.
+O foco visível usa um contorno sólido de 3 px na cor primária e offset zero. A regra em `app/tailwind.css` cobre o foco nativo e o alvo visual delegado pelo React Aria, como itens de listas, caixas de seleção, calendários e controles deslizantes. Grupos de entrada e editores compostos mostram o mesmo contorno no componente que representa o campo. Fundos e sublinhados exclusivos do foco foram removidos. Quando `:focus-visible` ou `data-focus-visible` está ativo, regras de hover não acrescentam fundo ao mesmo alvo; isso também vale se o ponteiro permanecer sobre o item durante a navegação pelo teclado. O hover volta a mostrar seu fundo quando o foco visível de teclado sai. Seleção, estado aberto e cores semânticas permanecem como estados próprios. A coluna de campos no comparador de conflito mantém seu Tab stop. Ícones mantêm as regras de opacidade em repouso e seleção.
 
 ## Acessibilidade de controles de ícone e RichTextEditor
 

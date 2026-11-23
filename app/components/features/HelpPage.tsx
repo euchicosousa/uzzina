@@ -334,9 +334,9 @@ export function HelpPage() {
               href={`#${section.id}`}
               aria-current={active === section.id ? "location" : undefined}
               className={cn(
-                "rounded-xl px-2 py-1.5 text-sm outline-none squircle hover:bg-secondary",
+                "rounded-xl px-2 py-1.5 text-sm outline-none squircle not-focus-visible:hover:bg-secondary",
                 active === section.id
-                  ? "bg-secondary font-semibold hover:bg-secondary-hover"
+                  ? "bg-secondary font-semibold not-focus-visible:hover:bg-secondary-hover"
                   : "text-secondary-foreground",
               )}
               onClick={(event) => {

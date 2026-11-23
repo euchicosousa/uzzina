@@ -483,8 +483,9 @@ export function Header({
                     <PrismButton
                       key={notif.id}
                       className={cn(
-                        "flex w-full flex-col items-start gap-1 px-4 py-2 text-left font-normal transition hover:bg-secondary",
-                        !notif.read_at && "bg-card hover:bg-secondary-hover",
+                        "flex w-full flex-col items-start gap-1 px-4 py-2 text-left font-normal transition not-data-[focus-visible]:hover:bg-secondary",
+                        !notif.read_at &&
+                          "bg-card not-data-[focus-visible]:hover:bg-secondary-hover",
                       )}
                       onPress={() => handleNotificationClick(notif)}
                       variant="unstyled"

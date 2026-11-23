@@ -1,7 +1,7 @@
 # Comparação visual dos estados de foco
 
 **Ticket:** KEYBOARD-FOCUS-04  
-**Status:** distinção documentada e galeria revisada; documentação publicada no commit `b28efb4` em `main`/`origin/main`. A regra no app está no commit `b5d25a25`, também em `main`/`origin/main`. Deploy/aceite visual do app continuam sem confirmação.
+**Status:** correção local concluída e registrada; build Vite e `git diff --check` passaram. Commit/push pendentes nesta retomada. O app publicado e sua conferência visual continuam pendentes.
 
 ## Reauditoria solicitada em 22/11/2026
 
@@ -14,17 +14,18 @@ O que o código atual mostra:
 - A `PrismTab` conserva `hover:bg-secondary` e o estado selecionado (linha/borda ou painel), mas o commit removeu explicitamente `data-[focus-visible]:bg-secondary` e o fundo especial da aba selecionada focada. Tab por teclado agora deve mostrar o ring, sem acrescentar o fundo de hover.
 - No menu do Header, o item “Sair” perdeu o fundo vermelho ligado a `focus`; o texto de erro permanece. Os itens usam o hover genérico do menu. Notificações do Header também mantêm hover e perderam o fundo exclusivo de `focus-visible`.
 - Segmentos de hora tiveram removido o fundo primário de foco e estão cobertos pela regra global `[data-focus-visible]`.
+- A captura enviada pelo proprietário mostra “Minha Conta” com ring roxo e fundo secondary. Isso ocorre quando `data-focus-visible` e `data-hovered` coexistem: a regra global desenha o ring, enquanto a regra de hover ainda pinta o fundo. A correção local faz o foco visível de teclado prevalecer para os fundos de hover nos menus/listas, abas, botões e exemplos de navegação; seleção, estado aberto e superfícies semânticas continuam próprios.
 
-Conclusão do estudo: o código atual não aplica ring só por hover/seleção; o ring é ligado a `:focus-visible`/`data-focus-visible`. A divergência principal estava na **classificação e demonstração**: ticket e HTML haviam juntado estados diferentes sob “foco”. A galeria foi revisada para mostrar repouso, foco por teclado, hover de ponteiro e seleção quando aplicável, com exemplos do menu do Header e da PrismTab. Nenhuma correção adicional no app foi necessária nesta reauditoria.
+Conclusão do estudo: o ring continua ligado a `:focus-visible`/`data-focus-visible`, mas hover podia manter o fundo no mesmo elemento focado. A galeria documenta os estados separados; a correção local suspende o fundo de hover enquanto o foco visível de teclado estiver ativo, inclusive se o ponteiro ficar sobre o elemento. Seleção e estado aberto continuam independentes.
 
 | Estado | Indicador vigente | Exemplo |
 |---|---|---|
 | Foco visível por teclado (`:focus-visible`/`data-focus-visible`) | Contorno primário de 3 px, offset zero | Menu do Header, itens de lista, PrismTab |
-| Hover de ponteiro (`data-hovered`/`:hover`) | Fundo `secondary`; sem contorno | Itens de menu e PrismTab |
+| Hover de ponteiro (`data-hovered`/`:hover`) | Fundo `secondary`; sem contorno | Itens de menu e PrismTab, quando não têm foco visível de teclado |
 | Selecionado/checado | Indicador próprio do componente; sem contorno por seleção | Aba selecionada, item marcado |
 | Aberto | Indicador próprio do componente; sem contorno por estar aberto | Gatilho de submenu |
 
-Verificação desta reauditoria: leitura estática do CSS global, do diff do commit `b5d25a25` e dos componentes Header, DropdownMenu, Tabs, TimeField, Select, Combobox e Command; `git diff --check` passou para a atualização da galeria. Não houve teste de navegador; as réplicas HTML não executam React Aria e não certificam o comportamento do app publicado.
+Verificação desta reauditoria: leitura estática do CSS global e dos componentes Header, DropdownMenu, Tabs, Button, TimeField, Select, Combobox e Command; build Vite concluído e `git diff --check` passou. Não houve teste de navegador; as réplicas HTML não executam React Aria e não certificam o comportamento do app publicado.
 
 ## Implementação do app (histórico)
 

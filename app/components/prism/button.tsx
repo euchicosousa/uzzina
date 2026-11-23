@@ -22,32 +22,34 @@ const buttonSizeClasses = {
 // Single source of truth for variant looks (also used by Toggle).
 const buttonVariantClasses = {
   default:
-    "bg-primary border-primary text-primary-foreground hover:border-primary-hover hover:bg-primary-hover",
+    "bg-primary border-primary text-primary-foreground not-data-[focus-visible]:hover:border-primary-hover not-data-[focus-visible]:hover:bg-primary-hover",
   outline:
-    "bg-transparent hover:bg-secondary aria-expanded:bg-secondary aria-expanded:hover:bg-secondary-hover",
+    "bg-transparent not-data-[focus-visible]:hover:bg-secondary aria-expanded:bg-secondary aria-expanded:not-data-[focus-visible]:hover:bg-secondary-hover",
   secondary:
-    "bg-secondary text-foreground border-secondary hover:border-secondary-hover hover:bg-secondary-hover aria-expanded:bg-secondary aria-expanded:text-foreground",
+    "bg-secondary text-foreground border-secondary not-data-[focus-visible]:hover:border-secondary-hover not-data-[focus-visible]:hover:bg-secondary-hover aria-expanded:bg-secondary aria-expanded:text-foreground",
   ghost:
-    "bg-clip-border hover:bg-secondary border-transparent aria-expanded:bg-secondary aria-expanded:hover:bg-secondary-hover",
+    "bg-clip-border not-data-[focus-visible]:hover:bg-secondary border-transparent aria-expanded:bg-secondary aria-expanded:not-data-[focus-visible]:hover:bg-secondary-hover",
   "ghost-error":
-    "bg-transparent border-transparent hover:bg-error-background hover:text-error-foreground hover:border-error dark:hover:bg-error-background",
+    "bg-transparent border-transparent not-data-[focus-visible]:hover:bg-error-background not-data-[focus-visible]:hover:text-error-foreground not-data-[focus-visible]:hover:border-error dark:not-data-[focus-visible]:hover:bg-error-background",
   error:
     "bg-error-background text-error-foreground hover:bg-error-background border-error dark:bg-error-background dark:hover:bg-error-background",
   warning:
     "bg-warning-background text-warning-foreground border-warning-background hover:bg-warning-background",
   success:
-    "bg-success-strong border-success-strong text-success-strong-foreground hover:bg-success-strong-hover",
-  link: "text-foreground underline-offset-4 hover:underline border-transparent",
+    "bg-success-strong border-success-strong text-success-strong-foreground not-data-[focus-visible]:hover:bg-success-strong-hover",
+  link: "text-foreground underline-offset-4 not-data-[focus-visible]:hover:underline border-transparent",
   unstyled: "",
 } as const;
 // Selected layer for toggles built on these variants (React Aria sets
 // data-selected). A selected secondary looks like the default (primary)
 // button, hover included.
 const buttonSelectedClasses = {
-  ghost: "data-selected:bg-secondary data-selected:hover:bg-secondary-hover",
-  outline: "data-selected:bg-secondary data-selected:hover:bg-secondary-hover",
+  ghost:
+    "data-selected:bg-secondary data-selected:not-data-[focus-visible]:hover:bg-secondary-hover",
+  outline:
+    "data-selected:bg-secondary data-selected:not-data-[focus-visible]:hover:bg-secondary-hover",
   secondary:
-    "data-selected:border-primary data-selected:bg-primary data-selected:text-primary-foreground data-selected:hover:border-primary-hover data-selected:hover:bg-primary-hover",
+    "data-selected:border-primary data-selected:bg-primary data-selected:text-primary-foreground data-selected:not-data-[focus-visible]:hover:border-primary-hover data-selected:not-data-[focus-visible]:hover:bg-primary-hover",
 } as const;
 const styledButtonVariants = cva(
   "group/button inline-flex shrink-0 items-center justify-center rounded-2xl border bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-error aria-invalid:ring-error-background [&_svg]:pointer-events-none [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5",

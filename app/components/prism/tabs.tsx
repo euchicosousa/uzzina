@@ -26,7 +26,7 @@ export type TabsVariant = "underline" | "drawer";
 const TabsVariantContext = createContext<TabsVariant>("underline");
 
 export const tabVariants = cva(
-  "relative flex min-w-0 flex-auto cursor-pointer items-center justify-center gap-1.5 px-4 text-center font-medium outline-none transition-colors data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 truncate h-full hover:bg-secondary",
+  "relative flex min-w-0 flex-auto cursor-pointer items-center justify-center gap-1.5 px-4 text-center font-medium outline-none transition-colors data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 truncate h-full not-data-[focus-visible]:hover:bg-secondary",
   {
     variants: {
       variant: {
