@@ -1,6 +1,6 @@
 # Programar publicações do Instagram em várias datas
 
-**Status:** migração de banco aplicada em produção; interface local no diálogo compartilhado; API e execução automática pendentes. Em 23/11/2026, escopo confirmado para todos os formatos publicáveis, não apenas Stories.
+**Status:** migração de banco, API e agendador de Stories em produção, com execução registrada em 23/11/2026. A validação de todas as ocorrências em várias datas e a extensão a todos os formatos continuam em aberto. [Estado e evidências](../../../docs/audits/CURRENT.md)
 
 **Bloqueado por:** 04
 
@@ -16,16 +16,16 @@ Para o mesmo conteúdo (imagem/carrossel no feed, vídeo no feed, Reel ou sequê
 - [ ] Validar horário, fuso e limites do período.
 - [ ] O botão Programar abre o mesmo diálogo de publicação, já na aba Programar; não há tela inline independente.
 - [ ] A aba Programar permite adicionar até dez pares de data/hora (surge outra linha vazia após preencher a anterior). O perfil conectado vem dos parceiros da ação e o formato da categoria; a pessoa não escolhe esses itens.
-- [ ] Salvar e executar horários só será habilitado quando API, worker/agendador e cancelamento/edição individual estiverem implementados e validados.
-- [ ] A interface da lista fica na seção Publicação; a página geral de calendário e o envio automático são entregas posteriores.
+- [ ] Conferir salvamento, execução, cancelamento e edição de ocorrências individuais em várias datas.
+- [ ] Conferir a lista de ocorrências de várias datas na seção Publicação. A tela Publicações e a execução automática de Stories têm evidência própria na [ficha de programação](04-programar-stories.md).
 
 ## Migração aplicada
 
-As tabelas de lote e ocorrências foram criadas em produção pela migration `20261123153317_instagram_scheduled_publications.sql`, registrada como `20261123153317`. A verificação de catálogo confirmou RLS habilitada, leitura pelo `service_role` e sem privilégio SELECT para `anon`/`authenticated`. Isso não implementa ainda o salvamento das datas nem a execução automática.
+As tabelas de lote e ocorrências foram criadas em produção pela migration `20261123153317_instagram_scheduled_publications.sql`, registrada como `20261123153317`. A verificação de catálogo confirmou RLS habilitada, leitura pelo `service_role` e sem privilégio SELECT para `anon`/`authenticated`. A migration prepara o armazenamento. O salvamento e a execução de Stories foram publicados na etapa de programação.
 
 ## Lista de itens programados
 
-A solicitação de mostrar um item demonstrativo “Programado para hoje às 17h” com link aguarda destino. A busca no app encontrou o feed/calendário do parceiro e o feed do `/dash`, que exibem ações de conteúdo, mas não uma página que liste ocorrências da tabela de agendamentos. Não se criou um link fictício para uma tela genérica.
+A solicitação de mostrar um item demonstrativo “Programado para hoje às 17h” ficou sem destino na rodada inicial. A tela Publicações agora lista os eventos registrados pela UZZINA por dia. Na triagem, conferir se essa tela atende ao link demonstrativo e à navegação esperada.
 
 ## Referências
 

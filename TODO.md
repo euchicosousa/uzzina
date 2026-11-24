@@ -1,10 +1,10 @@
 # UZZINA — próximos trabalhos e ideias
 
+Para assumir trabalho, comece pelo [índice da fila em .scratch](.scratch/README.md). Este TODO reúne ideias, verificações de uso e referências de rodadas anteriores. [Retrato de 01/11, após a publicação de estratégias](docs/audits/2026-11-01-open-tickets.md).
+
 ## Verificação de uso
 
-[Lista vigente de tickets abertos](docs/audits/2026-11-01-open-tickets.md), reconciliada após publicação permanente de estratégias em01/11.
-
-Deploy de todas as entregas informado pelo proprietário em31/10; publicação deixa de ser pendência dessas entregas. Os aceites específicos continuam nos registros de CURRENT.
+Deploy de todas as entregas informado pelo proprietário em31/10; publicação deixa de ser pendência dessas entregas. Os aceites específicos daquela rodada estão no [histórico](docs/audits/2026-11-24-current-history.md).
 
 - [x] [Acesso ao portal local](.scratch/archive/resolved-tickets.md#dash-local-auth-issues-01-canonical-local-origin): aprovado pelo proprietário em01/11 após remoção da regra de endereço, commit `a714b2d`. Login também aprovado pelo proprietário em01/11; implementação `08a0006` (push feito, ainda não publicada em produção).
 
@@ -16,7 +16,7 @@ Deploy de todas as entregas informado pelo proprietário em31/10; publicação d
 
 - [x] [Estratégias07/09 permanentes](docs/audits/2026-11-01-strategy-permanent-rollout.md): código commitado/publicado Ready em01/11, SQL/segredo/agendamento assinados e heartbeat verificados; sem flags de ativação. Uso real (V1) aceito pelo proprietário em01/11.
 
-- [x] Mídia, rodapé16, identidade na IA e foco de Hoje aprovados pelo proprietário em01/11. Título inline no celular aceito pelo proprietário em01/11 (V8). [Fila remanescente](docs/audits/2026-11-01-open-tickets.md): Instagram paisagem/aviso de espaço e estudos posteriores de arraste/carrossel.
+- [x] Mídia, rodapé16, identidade na IA e foco de Hoje aprovados pelo proprietário em01/11. Título inline no celular aceito pelo proprietário em01/11 (V8). [Pendências registradas em 01/11](docs/audits/2026-11-01-open-tickets.md#remaining): Instagram paisagem/aviso de espaço e estudos posteriores de arraste/carrossel.
 
 
 - [ ] [Correções do retorno mobile](.scratch/safari-mobile/README.md#correction-tickets-registered--2026-10-30):12/17 commitados em `ceafc6f`,13/18 em `4540ef6`;14/19 aceitos e commitados em `53508d2`. Header global e15 (abas compartilhadas) implementados/verificados e commitados em `566cbbe`; Header,12 e15 aprovados pelo proprietário em31/10; deploy informado pelo proprietário.16 rodapé implementado/verificado e commitado em `6019a80`, aprovado em01/11; Instagram retrato aprovado, paisagem permanece para avaliação de aviso de espaço. Aceites anteriores preservados.
@@ -25,7 +25,7 @@ Deploy de todas as entregas informado pelo proprietário em31/10; publicação d
 
 - [x] [Controles de mídia sempre visíveis](.scratch/archive/resolved-tickets.md#media-controls-issues-01-always-visible-media-controls): implementado/verificado localmente em31/10: remoção/alça/posição sempre visíveis, foco após exclusão e Escape do arraste. Deploy informado; aprovado pelo proprietário em01/11; widget Cloudinary preservado. Lentidão do arraste e gesto do carrossel registrados para estudo posterior.
 
-- [x] [Correções de teclado K03/K04/K05](docs/audits/2026-10-29-keyboard-focus-inventory.md): K03 `a4eac79`,K04/K05 `3b4d2a4`, publicados Ready em01/11. Auditoria original concluída; demais aceites específicos constam da lista vigente.
+- [x] [Correções de teclado K03/K04/K05](docs/audits/2026-10-29-keyboard-focus-inventory.md): K03 `a4eac79`,K04/K05 `3b4d2a4`, publicados Ready em01/11. Auditoria original concluída; os demais aceites daquela rodada constam no [retrato de 01/11](docs/audits/2026-11-01-open-tickets.md).
 
 - [x] [Visualização do uso de IA](.scratch/ai-usage/issues/01-ai-usage-visibility.md): medidor mensal em Minha Conta aceito; consulte o registro para limites de medição e confirmação do fluxo em produção. [Especificação existente](docs/plans/2026-10-07-consumo-ia-por-agencia.md).
 

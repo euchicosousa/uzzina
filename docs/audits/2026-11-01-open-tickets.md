@@ -1,5 +1,7 @@
 # Open items — 01/11/2026
 
+Historical snapshot. Start from the [current ticket index](../../.scratch/README.md) to find work to pick up.
+
 ## Closed by owner acceptance
 
 Portal/access and login;16 action footer; media controls (remove/reorder/persist); partner identity in AI; Today keyboard focus. Also accepted 01/11: portal header and team/portal login on narrow phones (C1/C2, commit `b1ff935`); permanent strategies 09 real generation (V1); inline title on phone (V8). Earlier acceptances remain valid. Today design concerns belong to the other agent. No further validation requested for these closed items.

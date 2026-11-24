@@ -44,6 +44,13 @@ Implementada em `/api/strategy-operations`: a requisição de Gerar ou Recriar a
 
 - `ai_usage` registra usuário/dia UTC/tentativas; AI_DAILY_LIMIT padrão100, intervalo1–10000. Isso é limite técnico, distinto da proposta futura de medição por agência/modelo/token.
 
+## Diagnóstico de falhas de geração
+
+- **Confirme a versão que atendeu à chamada.** Cruze o horário e o ID do deploy no log da Vercel com o commit publicado. Confira também se o domínio público aponta para esse deploy. Um status Ready de uma versão anterior pode aparecer enquanto o novo deploy está em andamento. Compare produção e localhost com o mesmo comando, modelo e conteúdo.
+- **Identifique a etapa da falha.** A franquia da UZZINA retorna HTTP 429. Um HTTP 502 com `AI_CAPTION_TRUNCATED` indica que a geração da legenda terminou por limite de saída. Se o modelo terminou normalmente e a API ainda retornou 502, confira se a resposta é JSON válido e se o campo `caption` contém texto. Uma exceção do provedor também pode resultar em 502, então consulte o tipo do erro no servidor.
+- **Cruze a resposta com o consumo.** Correlacione o horário, o comando, o modelo, os tokens de saída e o motivo de término. Consumo exatamente igual ao teto é um indício de truncamento. O motivo de término `length` confirma essa condição. Use esses metadados para o diagnóstico e preserve a privacidade do prompt e da legenda.
+- **Defina um tamanho-alvo para a tarefa.** No incidente de 23/11, o Claude Haiku atingiu 2.048 tokens e voltou a atingir o teto depois do aumento para 4.096. A validação rejeitou a saída vazia produzida após o descarte da resposta incompleta. O proprietário confirmou a geração em produção após a orientação de até 1.200 caracteres. O teto de tokens limita o trabalho do modelo. O tamanho-alvo orienta a extensão do texto entregue.
+
 ## Compatibilidade local de IA
 
 - Compatibilidade local só ocorre com NODE_ENV development, `UZZINA_LOCAL_AI_COMPAT=true` e sem VERCEL. O adaptador ativa a flag apenas no modo development; usa chave pública/Bearer e membro ativo, sem `consume_ai_usage`.
