@@ -24,6 +24,7 @@ import { Route as AppProfileRouteImport } from './routes/app/profile'
 import { Route as AppPlanejamentoRouteImport } from './routes/app/planejamento'
 import { Route as AppNotificationsRouteImport } from './routes/app/notifications'
 import { Route as AppLeadsRouteImport } from './routes/app/leads'
+import { Route as AppInstagramRouteImport } from './routes/app/instagram'
 import { Route as AppHelpRouteImport } from './routes/app/help'
 import { Route as DashActionIdRouteImport } from './routes/dash/action/$id'
 import { Route as AppPartnerSlugRouteImport } from './routes/app/partner/$slug'
@@ -113,6 +114,11 @@ const AppLeadsRoute = AppLeadsRouteImport.update({
   path: '/leads',
   getParentRoute: () => AppRoute,
 } as any)
+const AppInstagramRoute = AppInstagramRouteImport.update({
+  id: '/instagram',
+  path: '/instagram',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppHelpRoute = AppHelpRouteImport.update({
   id: '/help',
   path: '/help',
@@ -189,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/ui': typeof UiRoute
   '/app/help': typeof AppHelpRoute
+  '/app/instagram': typeof AppInstagramRoute
   '/app/leads': typeof AppLeadsRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/planejamento': typeof AppPlanejamentoRoute
@@ -217,6 +224,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/ui': typeof UiRoute
   '/app/help': typeof AppHelpRoute
+  '/app/instagram': typeof AppInstagramRoute
   '/app/leads': typeof AppLeadsRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/planejamento': typeof AppPlanejamentoRoute
@@ -248,6 +256,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/ui': typeof UiRoute
   '/app/help': typeof AppHelpRoute
+  '/app/instagram': typeof AppInstagramRoute
   '/app/leads': typeof AppLeadsRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/planejamento': typeof AppPlanejamentoRoute
@@ -280,6 +289,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/ui'
     | '/app/help'
+    | '/app/instagram'
     | '/app/leads'
     | '/app/notifications'
     | '/app/planejamento'
@@ -308,6 +318,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/ui'
     | '/app/help'
+    | '/app/instagram'
     | '/app/leads'
     | '/app/notifications'
     | '/app/planejamento'
@@ -338,6 +349,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/ui'
     | '/app/help'
+    | '/app/instagram'
     | '/app/leads'
     | '/app/notifications'
     | '/app/planejamento'
@@ -477,6 +489,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppLeadsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/instagram': {
+      id: '/app/instagram'
+      path: '/instagram'
+      fullPath: '/app/instagram'
+      preLoaderRoute: typeof AppInstagramRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/help': {
       id: '/app/help'
       path: '/help'
@@ -573,6 +592,7 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppHelpRoute: typeof AppHelpRoute
+  AppInstagramRoute: typeof AppInstagramRoute
   AppLeadsRoute: typeof AppLeadsRoute
   AppNotificationsRoute: typeof AppNotificationsRoute
   AppPlanejamentoRoute: typeof AppPlanejamentoRoute
@@ -594,6 +614,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppHelpRoute: AppHelpRoute,
+  AppInstagramRoute: AppInstagramRoute,
   AppLeadsRoute: AppLeadsRoute,
   AppNotificationsRoute: AppNotificationsRoute,
   AppPlanejamentoRoute: AppPlanejamentoRoute,

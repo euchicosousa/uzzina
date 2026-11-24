@@ -41,6 +41,22 @@ export type PublishState = {
   attempts: PublishAttempt[];
   schedules: PublishSchedule[];
 };
+export type InstagramCalendarEvent = {
+  id: string;
+  actionId: string;
+  actionTitle: string;
+  partnerId: string;
+  partnerName: string;
+  profileUsername: string;
+  format: string;
+  status: string;
+  occurredAt: string;
+  permalinks: string[];
+};
+export type InstagramPublishCalendar = {
+  events: InstagramCalendarEvent[];
+  connectedPartnerIds: string[];
+};
 export type PublishInput = {
   actionId: string;
   partnerSlug: string;
@@ -158,6 +174,52 @@ export async function instagramPublishRequest(
   const parsed = schema.safeParse(body);
   if (!parsed.success)
     throw new Error("Resposta inválida ao consultar as publicações.");
+  return parsed.data;
+}
+
+export async function instagramPublishCalendarRequest(
+  from: string,
+  to: string,
+): Promise<InstagramPublishCalendar> {
+  const { data } = await createSupabaseBrowserClient().auth.getSession();
+  const token = data.session?.access_token;
+  if (!token) throw new Error("Sua sessão expirou.");
+  const search = new URLSearchParams({ view: "calendar", from, to });
+  const response = await fetch(`/api/instagram-publish?${search}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: "no-store",
+  });
+  const body: unknown = await response.json().catch(() => null);
+  if (!response.ok) {
+    const message =
+      typeof body === "object" &&
+      body !== null &&
+      "error" in body &&
+      typeof body.error === "string"
+        ? body.error
+        : "Não foi possível carregar o calendário do Instagram.";
+    throw new Error(message);
+  }
+  const schema = z.object({
+    connectedPartnerIds: z.array(z.string()),
+    events: z.array(
+      z.object({
+        id: z.string(),
+        actionId: z.string(),
+        actionTitle: z.string(),
+        partnerId: z.string(),
+        partnerName: z.string(),
+        profileUsername: z.string(),
+        format: z.string(),
+        status: z.string(),
+        occurredAt: z.string(),
+        permalinks: z.array(z.url()),
+      }),
+    ),
+  });
+  const parsed = schema.safeParse(body);
+  if (!parsed.success)
+    throw new Error("A resposta do calendário do Instagram é inválida.");
   return parsed.data;
 }
 

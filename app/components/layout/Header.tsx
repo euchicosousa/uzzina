@@ -660,6 +660,13 @@ export const HeaderMenu = ({
             <UsersIcon className="size-4" />
             Leads
           </PrismMenuItem>
+          <PrismMenuItem
+            onAction={() => onNavigate("/app/instagram")}
+            textValue="Publicações do Instagram"
+          >
+            <CalendarRangeIcon className="size-4" />
+            Publicações do Instagram
+          </PrismMenuItem>
 
           <PrismMenuItem
             onAction={() => onNavigate("/app/profile")}

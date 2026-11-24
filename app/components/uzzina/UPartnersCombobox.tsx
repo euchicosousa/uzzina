@@ -31,6 +31,7 @@ export interface UPartnersComboboxProps {
   disabled?: boolean;
   allowAll?: boolean;
   selectionMode?: "single" | "multiple";
+  availablePartners?: Partner[];
 }
 
 export function UPartnersCombobox({
@@ -43,9 +44,11 @@ export function UPartnersCombobox({
   disabled = false,
   allowAll = false,
   selectionMode = "multiple",
+  availablePartners,
 }: UPartnersComboboxProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { partners } = useAppContext();
+  const { partners: contextPartners } = useAppContext();
+  const partners = availablePartners ?? contextPartners;
   const currentPartners = selectedPartners
     .map((slug) => partners.find((partner) => partner.slug === slug))
     .filter((partner): partner is Partner => partner !== undefined);

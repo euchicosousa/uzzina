@@ -68,6 +68,15 @@ const cancelScheduleSchema = z
     scheduleId: z.uuid(),
   })
   .strict();
+const calendarQuerySchema = z
+  .object({
+    from: z.iso.datetime({ offset: true }),
+    to: z.iso.datetime({ offset: true }),
+  })
+  .refine((range) => {
+    const duration = Date.parse(range.to) - Date.parse(range.from);
+    return duration > 0 && duration <= 45 * 24 * 60 * 60_000;
+  });
 type Connection = {
   connected_account_id: string;
   composio_user_id: string;
@@ -480,6 +489,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     req.method === "POST" &&
     isRecord(req.body) &&
     req.body.operation === "cancelSchedule";
+  const isCalendarRequest =
+    req.method === "GET" && req.query.view === "calendar";
   const parsed =
     req.method === "POST" && !isScheduleRequest
       ? inputSchema.safeParse(req.body)
@@ -505,12 +516,195 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         : typeof req.query.actionId === "string"
           ? req.query.actionId
           : "";
-  if (!z.uuid().safeParse(actionId).success)
+  if (!isCalendarRequest && !z.uuid().safeParse(actionId).success)
     return res.status(400).json({ error: "Ação inválida." });
   const viewer = createClient(config.url, config.serviceRoleKey, {
     global: { headers: { Authorization: `Bearer ${token}` } },
     auth: { persistSession: false },
   });
+  if (isCalendarRequest) {
+    res.setHeader("Cache-Control", "private, no-store");
+    const parsedRange = calendarQuerySchema.safeParse({
+      from: req.query.from,
+      to: req.query.to,
+    });
+    if (!parsedRange.success)
+      return res.status(400).json({ error: "Período inválido." });
+    const { from, to } = parsedRange.data;
+    const { data: visibleActions, error: visibleActionsError } = await viewer
+      .from("actions")
+      .select("id, title, partners")
+      .eq("archived", false);
+    if (visibleActionsError || !visibleActions)
+      return res
+        .status(503)
+        .json({ error: "Não foi possível consultar suas ações." });
+    const actionById = new Map(
+      visibleActions.map((action) => [action.id, action]),
+    );
+    const partnerSlugs = [
+      ...new Set(visibleActions.flatMap((action) => action.partners)),
+    ];
+    if (partnerSlugs.length === 0)
+      return res.status(200).json({ events: [], connectedPartnerIds: [] });
+    const { data: visiblePartners, error: visiblePartnersError } = await viewer
+      .from("partners")
+      .select("id, slug, title")
+      .in("slug", partnerSlugs);
+    if (visiblePartnersError || !visiblePartners)
+      return res
+        .status(503)
+        .json({ error: "Não foi possível consultar seus parceiros." });
+    const partnerById = new Map(
+      visiblePartners.map((partner) => [partner.id, partner]),
+    );
+    const partnerIds = visiblePartners.map((partner) => partner.id);
+    if (partnerIds.length === 0)
+      return res.status(200).json({ events: [], connectedPartnerIds: [] });
+    const { data: instagramConnections, error: instagramConnectionsError } =
+      await service
+        .from("partner_instagram_connections")
+        .select("partner_id")
+        .in("partner_id", partnerIds)
+        .eq("status", "active")
+        .eq("is_current", true);
+    if (instagramConnectionsError || !instagramConnections)
+      return res.status(503).json({
+        error: "Não foi possível consultar os perfis conectados.",
+      });
+    const connectedPartnerIds = [
+      ...new Set(
+        instagramConnections.map((connection) => connection.partner_id),
+      ),
+    ];
+
+    const attemptRows: Array<{
+      id: string;
+      action_id: string;
+      partner_id: string;
+      profile_username: string;
+      format: string;
+      status: string;
+      created_at: string;
+      results: Array<{ id: string; permalink: string | null }>;
+    }> = [];
+    for (let offset = 0; ; offset += 1000) {
+      const { data, error } = await service
+        .from("instagram_publish_attempts")
+        .select(
+          "id, action_id, partner_id, profile_username, format, status, created_at, results",
+        )
+        .in("partner_id", partnerIds)
+        .eq("status", "published")
+        .gte("created_at", from)
+        .lt("created_at", to)
+        .order("created_at", { ascending: true })
+        .order("id", { ascending: true })
+        .range(offset, offset + 999);
+      if (error || !data)
+        return res.status(503).json({
+          error: "Não foi possível consultar as publicações.",
+        });
+      attemptRows.push(...data);
+      if (data.length < 1000) break;
+    }
+    const scheduleRows: Array<{
+      id: string;
+      attempt_id: string | null;
+      scheduled_at: string;
+      status: string;
+      results: Array<{ id: string; permalink: string | null }>;
+      instagram_schedule_batches: Array<{
+        action_id: string;
+        partner_id: string;
+        profile_username: string;
+        format: string;
+      }>;
+    }> = [];
+    for (let offset = 0; ; offset += 1000) {
+      const { data, error } = await service
+        .from("instagram_scheduled_publications")
+        .select(
+          "id, attempt_id, scheduled_at, status, results, instagram_schedule_batches!inner(action_id, partner_id, profile_username, format)",
+        )
+        .in("instagram_schedule_batches.partner_id", partnerIds)
+        .in("status", [
+          "scheduled",
+          "processing",
+          "published",
+          "failed",
+          "partial",
+          "uncertain",
+        ])
+        .gte("scheduled_at", from)
+        .lt("scheduled_at", to)
+        .order("scheduled_at", { ascending: true })
+        .order("id", { ascending: true })
+        .range(offset, offset + 999);
+      if (error || !data)
+        return res.status(503).json({
+          error: "Não foi possível consultar os agendamentos.",
+        });
+      scheduleRows.push(...data);
+      if (data.length < 1000) break;
+    }
+    const scheduledAttemptIds = new Set(
+      scheduleRows.flatMap((row) => (row.attempt_id ? [row.attempt_id] : [])),
+    );
+    const events = [
+      ...attemptRows
+        .filter(
+          (attempt) =>
+            actionById.has(attempt.action_id) &&
+            !scheduledAttemptIds.has(attempt.id),
+        )
+        .map((attempt) => {
+          const action = actionById.get(attempt.action_id);
+          const partner = partnerById.get(attempt.partner_id);
+          return {
+            id: `publish:${attempt.id}`,
+            actionId: attempt.action_id,
+            actionTitle: action?.title ?? "Ação",
+            partnerId: attempt.partner_id,
+            partnerName: partner?.title ?? attempt.profile_username,
+            profileUsername: attempt.profile_username,
+            format: attempt.format,
+            status: attempt.status,
+            occurredAt: attempt.created_at,
+            permalinks: attempt.results.flatMap((result) =>
+              result.permalink ? [result.permalink] : [],
+            ),
+          };
+        }),
+      ...scheduleRows.flatMap((schedule) => {
+        const batch = schedule.instagram_schedule_batches[0];
+        if (!batch) return [];
+        const action = actionById.get(batch.action_id);
+        if (!action) return [];
+        const partner = partnerById.get(batch.partner_id);
+        return [
+          {
+            id: `schedule:${schedule.id}`,
+            actionId: batch.action_id,
+            actionTitle: action.title,
+            partnerId: batch.partner_id,
+            partnerName: partner?.title ?? batch.profile_username,
+            profileUsername: batch.profile_username,
+            format: batch.format,
+            status: schedule.status,
+            occurredAt: schedule.scheduled_at,
+            permalinks: schedule.results.flatMap((result) =>
+              result.permalink ? [result.permalink] : [],
+            ),
+          },
+        ];
+      }),
+    ].sort(
+      (left, right) =>
+        Date.parse(left.occurredAt) - Date.parse(right.occurredAt),
+    );
+    return res.status(200).json({ events, connectedPartnerIds });
+  }
   const { data: action, error: actionError } = await viewer
     .from("actions")
     .select("id, partners, content_files, category, archived")
