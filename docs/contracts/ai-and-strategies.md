@@ -38,7 +38,7 @@ Implementada em `/api/strategy-operations`: a requisição de Gerar ou Recriar a
 
 ## Quota e uso
 
-- Gerar legenda usa um limite de 4.096 tokens de saída por tentativa. A reserva mensal e a chamada ao provedor usam o mesmo valor do catálogo.
+- Gerar legenda usa um limite de 4.096 tokens de saída por tentativa. A reserva mensal e a chamada ao provedor usam o mesmo valor do catálogo. O prompt pede uma legenda concisa de até 1.200 caracteres. A API registra modelo e motivo de término e devolve um erro específico quando a resposta é interrompida pelo limite.
 
 - Staging/Vercel/produção usam reserva persistente via `consume_ai_usage` antes da geração. Falha da RPC retorna503/AI_QUOTA_UNAVAILABLE; limite esgotado retorna429. Sem contador em memória ou fallback por erro.
 

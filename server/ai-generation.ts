@@ -10,6 +10,7 @@ import {
 export type AIGeneration = {
   text: string;
   usage: unknown;
+  finishReason?: Awaited<ReturnType<typeof generateText>>["finishReason"];
   id?: string;
   model?: string;
   service_tier?: string;
@@ -95,7 +96,7 @@ export async function generateAI(
     const rawText = result.finishReason === "length" ? "" : result.text;
     const text = options.json ? unfence(rawText) : rawText;
     if (typeof body !== "object" || body === null)
-      return { text, usage: undefined };
+      return { text, usage: undefined, finishReason: result.finishReason };
     const usage = field(body, "usage");
     const id = field(body, "id");
     const model = field(body, "model");
@@ -103,6 +104,7 @@ export async function generateAI(
     return {
       text,
       usage: anthropicUsage(usage),
+      finishReason: result.finishReason,
       id: typeof id === "string" ? id : undefined,
       model: typeof model === "string" ? model : undefined,
       // Anthropic's "standard" is the base-rate tier the catalog prices.
@@ -141,10 +143,11 @@ export async function generateAI(
   const body = result.finalStep.response.body;
   const text = result.finishReason === "length" ? "" : result.text;
   if (typeof body !== "object" || body === null)
-    return { text, usage: undefined };
+    return { text, usage: undefined, finishReason: result.finishReason };
   return {
     text,
     usage: "usage" in body ? body.usage : undefined,
+    finishReason: result.finishReason,
     id: "id" in body && typeof body.id === "string" ? body.id : undefined,
     model:
       "model" in body && typeof body.model === "string"

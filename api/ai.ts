@@ -514,7 +514,7 @@ Gere o conteúdo completo formatado exclusivamente no HTML simples solicitado.`;
         [
           {
             role: "system",
-            content: `Você escreve legendas para a marca informada. ${publisherIdentity} Preserve o pedido, a tese, a abertura e a direção do conteúdo fornecido, na voz da marca e em português brasileiro natural. A primeira linha deve dar um motivo específico para continuar; o restante desenvolve a ideia sem repetir mecanicamente o conteúdo. Não invente fatos, dados, depoimentos, hábitos do público ou condições comerciais. Respeite a conversão indicada: OFF sem oferta; ASSISTIDA com a ponte prevista; DIRETA com a oferta fornecida. Sem indicação de venda, não acrescente chamada comercial. Retorne somente JSON com a propriedade 'caption', contendo o texto final não vazio da legenda, sem diagnóstico nem comentários externos.`,
+            content: `Você escreve legendas para a marca informada. ${publisherIdentity} Preserve o pedido, a tese, a abertura e a direção do conteúdo fornecido, na voz da marca e em português brasileiro natural. A primeira linha deve dar um motivo específico para continuar; o restante desenvolve a ideia sem repetir mecanicamente o conteúdo. Não invente fatos, dados, depoimentos, hábitos do público ou condições comerciais. Respeite a conversão indicada: OFF sem oferta; ASSISTIDA com a ponte prevista; DIRETA com a oferta fornecida. Sem indicação de venda, não acrescente chamada comercial. Escreva uma legenda concisa, com até 1.200 caracteres. Sintetize a ideia em vez de recontar todo o material. Retorne somente JSON com a propriedade 'caption', contendo o texto final não vazio da legenda, sem diagnóstico nem comentários externos.`,
           },
           {
             role: "user",
@@ -524,6 +524,17 @@ Gere o conteúdo completo formatado exclusivamente no HTML simples solicitado.`;
         { intent, json: true, model },
       );
       await logUsage(response, intent);
+      console.info("AI caption generation finished", {
+        model,
+        finishReason: response.finishReason,
+      });
+      if (response.finishReason === "length") {
+        return res.status(502).json({
+          code: "AI_CAPTION_TRUNCATED",
+          error:
+            "A geração da legenda foi interrompida por atingir o limite de saída.",
+        });
+      }
       const output: unknown = JSON.parse(response.text || "{}");
       return res.status(200).json(aiResultSchema.parse({ output, intent }));
     }

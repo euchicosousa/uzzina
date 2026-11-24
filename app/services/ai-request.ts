@@ -16,6 +16,8 @@ export class AIRequestError extends Error {
     code?: string,
   ) {
     const serviceMessages: Record<string, string> = {
+      AI_CAPTION_TRUNCATED:
+        "A IA atingiu o limite antes de terminar a legenda. Tente novamente ou encurte o direcionamento. Seu texto foi mantido.",
       AI_CONFIGURATION_MISSING:
         "A IA não está configurada neste ambiente. Peça ao administrador para conferir a configuração; seu texto foi mantido.",
       AI_ACTION_UNAVAILABLE: "Ação não encontrada ou sem acesso.",
