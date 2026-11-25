@@ -18,6 +18,7 @@ import { CSS } from "@dnd-kit/utilities";
 import {
   GripVerticalIcon,
   ImageIcon,
+  PlayIcon,
   PlusIcon,
   ScanSearchIcon,
   SlidersHorizontalIcon,
@@ -26,7 +27,6 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import { useEffect, useId, useRef, useState, type DragEvent } from "react";
-import { Checkbox } from "react-aria-components";
 import { cn } from "cnfast";
 import {
   PrismBadge,
@@ -41,9 +41,19 @@ import {
   PrismToggleGroupItem,
 } from "~/components/prism";
 import { useIsDesktop } from "~/hooks/useIsDesktop";
+import { MAX_INSTAGRAM_FILES } from "~/lib/instagram-reference";
 import { CloudinaryUpload } from "./CloudinaryUpload";
-import { FilePreviewPanel, getFilePreviewDetails } from "./FilePreviewPanel";
+import {
+  FilePreviewPanel,
+  getCloudinaryVideoPosterUrl,
+  getFilePreviewDetails,
+} from "./FilePreviewPanel";
 import { FileUploadQueue } from "./FileUploadQueue";
+import {
+  InstagramReferencePopover,
+  type ReferenceTarget,
+} from "./InstagramReferencePopover";
+import { useInstagramReference } from "./useInstagramReference";
 import {
   compareUploadedFiles,
   useDirectFileUploads,
@@ -79,6 +89,7 @@ function SortableThumbnail({
   locked,
   status,
   onToggle,
+  onToggleAll,
   onPreview,
   previewPanelId,
   maxWidth,
@@ -94,6 +105,7 @@ function SortableThumbnail({
   locked: boolean;
   status?: FileReadFileState["state"];
   onToggle: () => void;
+  onToggleAll?: () => void;
   onPreview?: (trigger: HTMLButtonElement) => void;
   previewPanelId?: string;
   maxWidth?: number;
@@ -107,11 +119,27 @@ function SortableThumbnail({
     maxWidth,
   };
 
+  const [failedPosterUrl, setFailedPosterUrl] = useState<string | null>(null);
   const { name: fileName, extension, type } = getFilePreviewDetails(url);
+  const posterUrl = type === "video" ? getCloudinaryVideoPosterUrl(url) : null;
+  const showPoster = Boolean(posterUrl && failedPosterUrl !== url);
 
   const preview =
     type === "image" ? (
       <img src={url} alt="" className="h-full w-full object-cover" />
+    ) : showPoster && posterUrl ? (
+      <>
+        <img
+          src={posterUrl}
+          alt=""
+          className="h-full w-full object-cover"
+          onError={() => setFailedPosterUrl(url)}
+        />
+        <PlayIcon
+          aria-hidden="true"
+          className="pointer-events-none absolute top-1/2 left-1/2 size-6 -translate-1/2 image-icon text-white"
+        />
+      </>
     ) : (
       <div className="flex h-full items-center justify-center text-[10px] font-bold uppercase opacity-60">
         {(extension ?? "FILE").slice(0, 4)}
@@ -121,6 +149,7 @@ function SortableThumbnail({
   // Touch: holding the thumbnail turns selection on. Dragging stays on the handle.
   const pressTimer = useRef<number | undefined>(undefined);
   const longPressed = useRef(false);
+  const shiftSelectRef = useRef(false);
   const cancelPress = () => window.clearTimeout(pressTimer.current);
 
   // Controls appear on hover/focus; once something is selected they all stay.
@@ -141,7 +170,8 @@ function SortableThumbnail({
         maxWidth && "w-full justify-self-center",
         selected &&
           "after:pointer-events-none after:absolute after:inset-0 after:rounded-[calc(var(--radius-xl)-2px)] after:border-2 after:border-primary after:squircle",
-        previewPanelId && "ring-2 ring-info ring-offset-2 ring-offset-popover",
+        previewPanelId &&
+          "ring-2 ring-primary ring-offset-2 ring-offset-popover",
         !onPreview && selecting && !locked && "cursor-pointer",
       )}
       onClick={(event) => {
@@ -214,13 +244,25 @@ function SortableThumbnail({
         data-thumb-control
         aria-label={`Selecionar ${fileName}`}
         className={cn(
-          "absolute top-1 right-1 z-10 flex size-6 cursor-pointer items-center justify-center rounded-lg image-icon transition-opacity outline-none data-[disabled]:cursor-not-allowed",
+          "absolute top-1 right-1 z-10 flex size-6 cursor-pointer items-center justify-center rounded-lg transition-opacity outline-none data-disabled:cursor-not-allowed",
           showSelectControl,
         )}
         boxClassName="bg-transparent border-2 border-white"
         isDisabled={locked}
         isSelected={selected}
-        onChange={onToggle}
+        onChange={() => {
+          const shouldToggleAll = shiftSelectRef.current;
+          shiftSelectRef.current = false;
+          if (shouldToggleAll && onToggleAll) onToggleAll();
+          else onToggle();
+        }}
+        onClickCapture={(event) => {
+          if (event.shiftKey) shiftSelectRef.current = true;
+        }}
+        onPointerDown={(event) => {
+          shiftSelectRef.current =
+            event.pointerType !== "touch" && event.shiftKey;
+        }}
       >
         {selected ? (
           <SquareCheckIcon className="size-5" />
@@ -262,7 +304,6 @@ function SortableThumbnail({
   );
 }
 
-const MAX_CONTENT_FILES = 20;
 const THUMBNAIL_SIZES = [
   { id: "small", label: <ImageIcon className="size-3" />, maxWidth: 80 },
   { id: "medium", label: <ImageIcon className="size-4" />, maxWidth: 112 },
@@ -289,6 +330,7 @@ interface FileManagerDialogProps {
   workFiles?: boolean;
   directUpload?: boolean;
   uploadTransport?: FileUploadTransport;
+  instagramReference?: ReferenceTarget;
   onUploadActiveChange?: (active: boolean) => void;
   resetVersion?: number;
   /**
@@ -319,11 +361,12 @@ export function FileManagerDialog({
   workFiles = false,
   directUpload = false,
   uploadTransport,
+  instagramReference,
   onUploadActiveChange,
   resetVersion,
   ai,
 }: FileManagerDialogProps) {
-  const maxFiles = workFiles ? 100 : MAX_CONTENT_FILES;
+  const maxFiles = workFiles ? 100 : MAX_INSTAGRAM_FILES;
   const lastResetVersion = useRef(resetVersion);
   const reading = useFileReading(workFiles ? ai?.actionId : undefined);
   const resetReading = reading.reset;
@@ -346,6 +389,9 @@ export function FileManagerDialog({
     (typeof THUMBNAIL_SIZES)[number]
   >(DEFAULT_THUMBNAIL_SIZE);
   const isDesktop = useIsDesktop(PREVIEW_MIN_WIDTH);
+  const isCoarsePointer =
+    typeof window !== "undefined" &&
+    Boolean(window.matchMedia?.("(pointer: coarse)").matches);
   const canPreview = directUpload && isDesktop;
   const [previewId, setPreviewId] = useState<string | null>(null);
   const panelId = useId();
@@ -418,6 +464,37 @@ export function FileManagerDialog({
   const inputRef = useRef<HTMLInputElement>(null);
   const inputId = useId();
   const [dragging, setDragging] = useState(false);
+  const [referencePopoverOpen, setReferencePopoverOpen] = useState(false);
+  useEffect(() => {
+    if (!open) setReferencePopoverOpen(false);
+  }, [open]);
+  const manualUploadActive = useRef(false);
+  const reference = useInstagramReference({
+    cloudName,
+    getFiles: () => itemsRef.current.map((item) => item.url),
+    getAvailableSlots: () => maxFiles - itemsRef.current.length,
+    isManualUploadActive: () => manualUploadActive.current,
+    onActiveChange: (active) =>
+      onUploadActiveChange?.(active || manualUploadActive.current),
+    onImported: (url, before, after) => {
+      addReferenceFile(url, before, after);
+    },
+  });
+  const referenceRows = reference.entries.flatMap((entry) => {
+    if (entry.state === "completed" || entry.state === "dismissed") return [];
+    const kind = entry.kind === "image" ? "Imagem" : "Vídeo";
+    return [
+      {
+        id: entry.position,
+        name: `Instagram · ${entry.position + 1}. ${kind}`,
+        status: entry.state,
+        progress: null,
+        error: entry.error,
+        canRetry: !reference.active && !manualUploadActive.current,
+        canRemove: entry.state !== "uploading",
+      },
+    ];
+  });
   const uploads = useDirectFileUploads({
     cloudName,
     uploadPreset,
@@ -429,7 +506,10 @@ export function FileManagerDialog({
       commit([...itemsRef.current, { id: `file-${nextId.current++}`, url }]);
     },
     onBatchUploaded: workFiles ? undefined : addInstagramBatch,
-    onActiveChange: onUploadActiveChange,
+    onActiveChange: (active) => {
+      manualUploadActive.current = active;
+      onUploadActiveChange?.(active || reference.isActive());
+    },
   });
 
   const sensors = useSensors(
@@ -443,6 +523,28 @@ export function FileManagerDialog({
     itemsRef.current = next;
     setItems(next);
     onChange(next.map((item) => item.url));
+  }
+
+  function addReferenceFile(
+    url: string,
+    before: readonly string[],
+    after: readonly string[],
+  ) {
+    const current = itemsRef.current;
+    if (current.some((item) => item.url === url)) return;
+    const next = [...current];
+    const successor = after
+      .map((anchor) => next.findIndex((item) => item.url === anchor))
+      .find((index) => index >= 0);
+    const predecessor = [...before]
+      .reverse()
+      .map((anchor) => next.findIndex((item) => item.url === anchor))
+      .find((index) => index >= 0);
+    const position =
+      successor ?? (predecessor === undefined ? next.length : predecessor + 1);
+    next.splice(position, 0, { id: `file-${nextId.current++}`, url });
+    setUndo(null);
+    commit(next);
   }
 
   function addInstagramBatch(batch: UploadedBatchFile[]) {
@@ -534,6 +636,7 @@ export function FileManagerDialog({
   function toggleAll() {
     if (locked) return;
     resetReading();
+    setUndo(null);
     setInsertNotice(null);
     setSelected(
       selected.size === items.length
@@ -606,12 +709,20 @@ export function FileManagerDialog({
       size="2xl"
       isOpen={open}
       onOpenChange={onOpenChange}
-      isKeyboardDismissDisabled={dragging || Boolean(previewItem)}
+      isKeyboardDismissDisabled={
+        dragging || Boolean(previewItem) || referencePopoverOpen
+      }
     >
       <div
         className={cn(directUpload && "flex min-h-0 flex-col")}
         onKeyDownCapture={(event) => {
-          if (event.key !== "Escape" || !previewItem || dragging) return;
+          if (
+            event.key !== "Escape" ||
+            !previewItem ||
+            dragging ||
+            referencePopoverOpen
+          )
+            return;
           event.preventDefault();
           event.stopPropagation();
           closePreview();
@@ -641,13 +752,14 @@ export function FileManagerDialog({
         >
           <div
             className={cn(
+              "px-4 pb-4",
               directUpload &&
                 "min-h-0 min-w-0 overflow-y-auto overscroll-contain",
             )}
             data-file-manager-list
           >
             {/* Contagem, seleção e desfazer */}
-            <div className="flex min-h-8 items-center justify-between gap-2 px-5 pt-3 text-xs text-secondary-foreground">
+            <div className="flex min-h-8 items-center justify-between gap-2 px-5 text-xs text-secondary-foreground">
               <span aria-live="polite">
                 {selecting ? (
                   plural(selected.size, "selecionado", "selecionados")
@@ -722,18 +834,23 @@ export function FileManagerDialog({
                 type="file"
                 onChange={(event) => {
                   const input = event.currentTarget;
-                  if (input.files?.length) uploads.enqueue(input.files);
+                  if (input.files?.length && !reference.isActive())
+                    uploads.enqueue(input.files);
                   input.value = "";
                 }}
               />
             )}
             <div
-              className={cn(dropActive && "bg-card")}
+              className={cn(
+                "rounded-2xl border bg-card squircle hover:bg-secondary",
+                dropActive && "bg-secondary",
+              )}
               onDragOver={(event) => {
                 if (!isExternalDrop(event)) return;
                 event.preventDefault();
-                event.dataTransfer.dropEffect = locked ? "none" : "copy";
-                if (!locked) setDropActive(true);
+                const blocked = locked || reference.isActive();
+                event.dataTransfer.dropEffect = blocked ? "none" : "copy";
+                if (!blocked) setDropActive(true);
               }}
               onDragLeave={(event) => {
                 if (!isExternalDrop(event)) return;
@@ -748,7 +865,8 @@ export function FileManagerDialog({
                 if (!isExternalDrop(event)) return;
                 event.preventDefault();
                 setDropActive(false);
-                if (!locked) uploads.enqueue(event.dataTransfer.files);
+                if (!locked && !reference.isActive())
+                  uploads.enqueue(event.dataTransfer.files);
               }}
             >
               {items.length === 0 ? (
@@ -800,6 +918,11 @@ export function FileManagerDialog({
                             directUpload ? thumbnailSize.maxWidth : undefined
                           }
                           onToggle={() => toggleItem(item.id)}
+                          onToggleAll={
+                            isDesktop && !isCoarsePointer
+                              ? toggleAll
+                              : undefined
+                          }
                           onPreview={
                             canPreview
                               ? (trigger) => {
@@ -838,11 +961,23 @@ export function FileManagerDialog({
                   status: entry.status,
                   progress: entry.progress,
                   error: entry.error,
-                  canRetry: uploads.canRetry(entry.file),
+                  canRetry: !reference.active && uploads.canRetry(entry.file),
                 }))}
                 notice={uploads.notice}
-                onRetry={uploads.retry}
+                onRetry={(id) => {
+                  if (!reference.isActive()) uploads.retry(id);
+                }}
                 onRemove={uploads.remove}
+              />
+            )}
+
+            {instagramReference && (
+              <FileUploadQueue
+                label="Importação do Instagram"
+                entries={referenceRows}
+                notice={reference.notice}
+                onRetry={(position) => void reference.retry(position)}
+                onRemove={reference.dismiss}
               />
             )}
 
@@ -940,7 +1075,7 @@ export function FileManagerDialog({
             <div ref={addRef} className="flex items-center gap-2">
               {directUpload ? (
                 <PrismButton
-                  isDisabled={items.length >= maxFiles}
+                  isDisabled={items.length >= maxFiles || reference.active}
                   onPress={() => inputRef.current?.click()}
                   size="sm"
                   variant="secondary"
@@ -960,6 +1095,15 @@ export function FileManagerDialog({
                   Adicionar
                   <PlusIcon />
                 </CloudinaryUpload>
+              )}
+
+              {instagramReference && directUpload && (
+                <InstagramReferencePopover
+                  target={instagramReference}
+                  busy={reference.active || manualUploadActive.current}
+                  start={reference.start}
+                  onOpenChange={setReferencePopoverOpen}
+                />
               )}
 
               {items.length > 0 && (
@@ -1000,7 +1144,9 @@ export function FileManagerDialog({
               size="sm"
               onClick={() => onOpenChange(false)}
             >
-              {directUpload && uploads.entries.some((entry) => !entry.error)
+              {directUpload &&
+              (reference.active ||
+                uploads.entries.some((entry) => !entry.error))
                 ? "Fechar janela"
                 : "Concluir"}
             </PrismButton>

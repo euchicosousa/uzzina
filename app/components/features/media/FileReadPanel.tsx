@@ -386,7 +386,7 @@ export function FileReadResults({
 
   return (
     <div
-      className="flex flex-col gap-4 border-t px-5 py-3"
+      className="flex flex-col gap-4 px-5 py-3"
       aria-live="polite"
       data-slot="file-read-results"
     >

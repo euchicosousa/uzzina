@@ -1280,6 +1280,10 @@ export function ActionFormDrawer({
                     detailsExpanded={detailsExpanded}
                     onDetailsExpandedChange={setDetailsExpanded}
                     currentPartners={currentPartners}
+                    instagramReference={{
+                      actionId: RawAction.id,
+                      partners: currentPartners,
+                    }}
                     descriptionVersion={descriptionVersion}
                     isAIProcessing={isAIProcessing}
                     strategyStatus={strategyStatus}

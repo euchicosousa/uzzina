@@ -1,5 +1,6 @@
 {
   "functions": {
+    "api/instagram-reference.ts": { "maxDuration": 180 },
     "api/instagram-publish.ts": { "maxDuration": 180 },
     "api/ai.ts": { "maxDuration": 180 },
     "api/planning-theme.ts": { "maxDuration": 180 },

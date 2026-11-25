@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { ExternalLinkIcon, XIcon } from "lucide-react";
-import { PrismButton } from "~/components/prism";
+import { DownloadIcon, ExternalLinkIcon, XIcon } from "lucide-react";
+import { buttonVariants, PrismBadge, PrismButton } from "~/components/prism";
+import { cn } from "~/lib/utils";
 import { fileNameFromUrl } from "./FileReadPanel";
 import { isImageUrl } from "./InstagramHelpers";
 
@@ -22,6 +23,82 @@ export function getFilePreviewDetails(url: string) {
   };
 }
 
+export function getCloudinaryVideoPosterUrl(url: string): string | null {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return null;
+  }
+  if (
+    parsed.protocol !== "https:" ||
+    parsed.hostname !== "res.cloudinary.com"
+  ) {
+    return null;
+  }
+  const marker = "/video/upload/";
+  const markerIndex = parsed.pathname.indexOf(marker);
+  if (markerIndex === -1) return null;
+  if (getFilePreviewDetails(url).type !== "video") return null;
+
+  const prefix = parsed.pathname.slice(0, markerIndex + marker.length);
+  const rest = parsed.pathname.slice(markerIndex + marker.length);
+  if (!rest) return null;
+
+  const jpgRest = /\.[a-z0-9]+$/i.test(rest)
+    ? rest.replace(/\.[a-z0-9]+$/i, ".jpg")
+    : `${rest}.jpg`;
+
+  const firstSegment = jpgRest.split("/")[0] ?? "";
+  const hasTransformation =
+    firstSegment.length > 0 &&
+    !/^v\d+$/.test(firstSegment) &&
+    (firstSegment.includes(",") || /^(?:c|f|h|q|so|w)_/.test(firstSegment));
+
+  const nextPath = hasTransformation
+    ? `${prefix}${jpgRest}`
+    : `${prefix}so_0,c_fill,w_320,h_320,q_auto,f_jpg/${jpgRest}`;
+
+  return `${parsed.origin}${nextPath}`;
+}
+
+export function getFileDownloadUrl(url: string): string {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return url;
+  }
+  if (
+    parsed.protocol !== "https:" ||
+    parsed.hostname !== "res.cloudinary.com"
+  ) {
+    return url;
+  }
+  const match = /\/(image|video|raw)\/upload\//.exec(parsed.pathname);
+  if (!match || match.index === undefined) return url;
+  const splitAt = match.index + match[0].length;
+  const prefix = parsed.pathname.slice(0, splitAt);
+  const rest = parsed.pathname.slice(splitAt);
+  if (!rest) return url;
+  const firstSegment = rest.split("/")[0] ?? "";
+  if (
+    firstSegment
+      .split(",")
+      .some(
+        (part) => part === "fl_attachment" || part.startsWith("fl_attachment:"),
+      )
+  ) {
+    return url;
+  }
+  const safeName = getFilePreviewDetails(url)
+    .name.replace(/\.[^.]+$/, "")
+    .replace(/[^A-Za-z0-9_-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  const attachment = safeName ? `fl_attachment:${safeName}` : "fl_attachment";
+  return `${parsed.origin}${prefix}${attachment}/${rest}${parsed.search}${parsed.hash}`;
+}
+
 export function FilePreviewPanel({
   id,
   url,
@@ -33,6 +110,23 @@ export function FilePreviewPanel({
 }) {
   const [failed, setFailed] = useState(false);
   const { name, extension, type } = getFilePreviewDetails(url);
+  const posterUrl = type === "video" ? getCloudinaryVideoPosterUrl(url) : null;
+  const downloadUrl = getFileDownloadUrl(url);
+  const downloadLink = (
+    <a
+      aria-label="Baixar arquivo"
+      className={cn(
+        buttonVariants({ size: "icon-xs", variant: "link" }),
+        "absolute top-2 right-2 z-10 bg-transparent image-icon hover:bg-transparent hover:no-underline",
+      )}
+      download={name}
+      href={downloadUrl}
+      rel="noopener noreferrer"
+      title="Baixar arquivo"
+    >
+      <DownloadIcon />
+    </a>
+  );
 
   return (
     <aside
@@ -40,12 +134,14 @@ export function FilePreviewPanel({
       aria-label="Prévia do arquivo"
       className="grid min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)] border-l"
     >
-      <div className="flex min-w-0 items-start justify-between gap-2 border-b px-4 py-3">
-        <div className="min-w-0">
-          <p className="text-sm font-medium break-words">{name}</p>
-          <p className="text-xs text-secondary-foreground">
-            {extension?.toUpperCase() ?? "Arquivo"}
+      <div className="flex min-w-0 items-center justify-between gap-2 border-b px-4 py-3">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <p className="min-w-0 truncate text-sm font-medium" title={name}>
+            {name}
           </p>
+          <PrismBadge className="shrink-0">
+            {extension?.toUpperCase() ?? "Arquivo"}
+          </PrismBadge>
         </div>
         <PrismButton
           aria-label="Fechar prévia"
@@ -74,22 +170,31 @@ export function FilePreviewPanel({
             </a>
           </div>
         ) : type === "video" ? (
-          <video
-            aria-label={name}
-            className="h-full w-full object-contain"
-            controls
-            onError={() => setFailed(true)}
-            playsInline
-            preload="metadata"
-            src={url}
-          />
+          <div className="relative h-full w-full">
+            {downloadLink}
+            <video
+              aria-label={name}
+              className="h-full w-full object-contain"
+              controls
+              onError={() => setFailed(true)}
+              playsInline
+              poster={posterUrl ?? undefined}
+              preload="metadata"
+              src={url}
+            />
+          </div>
         ) : (
-          <img
-            alt={name}
-            className="h-full w-full object-contain"
-            onError={() => setFailed(true)}
-            src={url}
-          />
+          <div className="flex h-full w-full items-center justify-center">
+            <div className="relative inline-flex max-h-full max-w-full">
+              {downloadLink}
+              <img
+                alt={name}
+                className="max-h-full max-w-full object-contain"
+                onError={() => setFailed(true)}
+                src={url}
+              />
+            </div>
+          </div>
         )}
       </div>
     </aside>
