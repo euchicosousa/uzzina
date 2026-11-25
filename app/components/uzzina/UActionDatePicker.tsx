@@ -6,9 +6,11 @@ import {
   PrismPopover,
   PrismPopoverTrigger,
   PrismTimeField,
+  type PrismButtonVariantProps,
 } from "~/components/prism";
 import { DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
 import { cn } from "cnfast";
+import { CalendarIcon } from "lucide-react";
 import { getFormattedDateTime } from "~/utils/date";
 
 export function UActionDatePicker({
@@ -20,16 +22,22 @@ export function UActionDatePicker({
   size = "sm",
   isLate,
   minimumLeadMinutes = 0,
+  variant = "link",
+  placeholder = "Escolha a data",
 }: {
   onSelect?: (date: Date) => void;
   date?: Date;
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
   ariaLabel?: string;
   className?: string;
-  size?: "sm" | "default" | "lg";
+  size?: PrismButtonVariantProps["size"];
   isLate?: boolean;
   minimumLeadMinutes?: number;
+  /** Prism button variant. Default: link. */
+  variant?: PrismButtonVariantProps["variant"];
+  placeholder?: string;
 }) {
+  const isButtonTrigger = variant !== "link";
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(date);
   const getInitialDate = () => {
     if (minimumLeadMinutes <= 0) return new Date();
@@ -60,11 +68,16 @@ export function UActionDatePicker({
     <PrismPopoverTrigger onOpenChange={handleOpenChange}>
       <PrismButton
         aria-label={ariaLabel}
-        className={cn(isLate && "text-error-foreground", className)}
+        className={cn(
+          isButtonTrigger && "justify-start font-normal",
+          isLate && "text-error-foreground",
+          className,
+        )}
         size={size}
-        variant="link"
+        variant={variant}
       >
-        {date ? getFormattedDateTime(date, dateTimeDisplay) : "Escolha a data"}
+        {isButtonTrigger && <CalendarIcon />}
+        {date ? getFormattedDateTime(date, dateTimeDisplay) : placeholder}
       </PrismButton>
 
       <PrismPopover className="w-auto p-2">

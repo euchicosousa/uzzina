@@ -12,6 +12,11 @@ import {
   type CalendarAttemptRow,
   type CalendarScheduleRow,
 } from "../app/lib/instagram-calendar-events.js";
+import {
+  DEFAULT_INSTAGRAM_FEED_TIME,
+  DEFAULT_INSTAGRAM_STORIES_TIME,
+  normalizePostTime,
+} from "../app/lib/partner-post-times.js";
 import { extractBearerToken } from "../server/auth.js";
 import { getServiceConfig } from "../server/supabase-admin.js";
 import { getComposioConfiguration } from "../server/composio-config.js";
@@ -724,7 +729,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     : [];
   const { data: partners, error: partnerError } = await viewer
     .from("partners")
-    .select("id, slug, title, archived")
+    .select(
+      "id, slug, title, archived, instagram_feed_time, instagram_stories_time",
+    )
     .in("slug", slugs)
     .eq("archived", false);
   if (partnerError || !partners)
@@ -780,6 +787,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     avatarUrl:
       connections?.find((c) => c.partner_id === partner.id)
         ?.profile_picture_url ?? null,
+    feedTime:
+      normalizePostTime(partner.instagram_feed_time) ??
+      DEFAULT_INSTAGRAM_FEED_TIME,
+    storiesTime:
+      normalizePostTime(partner.instagram_stories_time) ??
+      DEFAULT_INSTAGRAM_STORIES_TIME,
   }));
   if (req.method === "GET")
     return res.status(200).json({

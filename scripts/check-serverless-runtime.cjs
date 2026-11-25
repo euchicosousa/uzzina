@@ -71,6 +71,7 @@ const { FileFsRef } = require("@vercel/build-utils");
       "app/lib/partner-delete-contract.ts",
       "app/lib/partner-instagram-contract.ts",
       "app/lib/instagram-publish-media.ts",
+      "app/lib/partner-post-times.ts",
       "app/lib/instagram-calendar-events.ts",
       "app/lib/ai-contract.ts",
       "app/lib/ai-model-registry.ts",

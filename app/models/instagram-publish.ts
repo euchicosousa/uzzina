@@ -7,6 +7,8 @@ export type PublishPartner = {
   title: string;
   username: string | null;
   avatarUrl: string | null;
+  feedTime?: string;
+  storiesTime?: string;
 };
 export type PublishResult = { id: string; permalink: string | null };
 export type PublishAttempt = {
@@ -134,6 +136,8 @@ export async function instagramPublishRequest(
         title: z.string(),
         username: z.string().nullable(),
         avatarUrl: z.string().nullable(),
+        feedTime: z.string().optional(),
+        storiesTime: z.string().optional(),
       }),
     ),
     attempts: z.array(

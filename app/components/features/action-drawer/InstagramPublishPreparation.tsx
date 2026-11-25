@@ -30,6 +30,9 @@ import {
   PrismTabList,
   PrismTabPanel,
   PrismTabs,
+  PrismButtonGroup,
+  PrismAlert,
+  PrismAlertDescription,
 } from "~/components/prism";
 import { LinkButton } from "~/components/prism/button";
 import {
@@ -45,8 +48,18 @@ import {
   getInstagramPublishMediaKind,
   instagramPublishMediaError,
 } from "~/lib/instagram-publish-media";
+import {
+  getScheduleShortcuts,
+  pickPartnerPostTime,
+} from "~/lib/instagram-schedule-shortcuts";
 import { UActionDatePicker } from "~/components/uzzina/UActionDatePicker";
-import { CopyIcon, GripVerticalIcon, RotateCcwIcon, XIcon } from "lucide-react";
+import {
+  AlertTriangleIcon,
+  CopyIcon,
+  GripVerticalIcon,
+  RotateCcwIcon,
+  XIcon,
+} from "lucide-react";
 
 type Format = PublishInput["format"];
 type PublishMode = "publish" | "schedule";
@@ -302,6 +315,12 @@ export function InstagramPublishPreparation({
     (date) =>
       date !== null && date.getTime() < Date.now() + MIN_SCHEDULE_LEAD_MS,
   );
+  const firstEmptyIndex = scheduleDates.findIndex((date) => date === null);
+  const scheduleShortcuts = getScheduleShortcuts({
+    now: new Date(),
+    postTime: pickPartnerPostTime(format, partner ?? {}),
+    minimumLeadMs: MIN_SCHEDULE_LEAD_MS,
+  });
   const scheduledCount = scheduleDates.filter((date) => date !== null).length;
 
   function openDialog() {
@@ -729,41 +748,53 @@ export function InstagramPublishPreparation({
 
           <PrismTabPanel id="schedule">
             <PrismDialogBody className="flex flex-col gap-4 p-4">
-              <div className="flex flex-col gap-2">
-                {scheduleDates.map((date, index) => (
-                  <div
-                    className="flex items-center justify-between gap-2"
-                    key={index}
-                  >
-                    <span className="text-sm">{index + 1}.</span>
-                    <UActionDatePicker
-                      ariaLabel={`Data e hora da publicação ${index + 1}`}
-                      date={date ?? undefined}
-                      minimumLeadMinutes={2}
-                      onSelect={(nextDate) =>
-                        updateScheduleDate(index, nextDate)
-                      }
-                      size="sm"
-                    />
-                    {(date !== null || scheduleDates.length > 1) && (
+              {scheduleDates.map((date, index) => (
+                <PrismButtonGroup key={index} className="w-full">
+                  <UActionDatePicker
+                    ariaLabel={`Data e hora da publicação ${index + 1}`}
+                    date={date ?? undefined}
+                    className="w-full flex-1"
+                    minimumLeadMinutes={2}
+                    placeholder="Escolher data e hora"
+                    variant={date ? "secondary" : "outline"}
+                    onSelect={(nextDate) => updateScheduleDate(index, nextDate)}
+                    size="default"
+                  />
+                  {date !== null ? (
+                    <PrismButton
+                      aria-label={`Remover data ${index + 1}`}
+                      isRounded
+                      size="icon"
+                      variant="secondary"
+                      onPress={() => removeScheduleDate(index)}
+                    >
+                      <XIcon />
+                    </PrismButton>
+                  ) : (
+                    firstEmptyIndex !== -1 &&
+                    scheduleShortcuts.map((shortcut) => (
                       <PrismButton
-                        aria-label={`Remover data ${index + 1}`}
-                        isRounded
-                        size="icon-sm"
-                        variant="ghost"
-                        onPress={() => removeScheduleDate(index)}
+                        key={shortcut.id}
+                        variant="outline"
+                        onPress={() =>
+                          updateScheduleDate(firstEmptyIndex, shortcut.date)
+                        }
                       >
-                        <XIcon />
+                        {shortcut.label}
                       </PrismButton>
-                    )}
-                  </div>
-                ))}
-                {scheduledCount === 10 && (
-                  <p className="text-sm text-secondary-foreground">
+                    ))
+                  )}
+                </PrismButtonGroup>
+              ))}
+
+              {scheduledCount === 10 && (
+                <PrismAlert variant={"warning"}>
+                  <AlertTriangleIcon />
+                  <PrismAlertDescription>
                     Limite de 10 programações por vez.
-                  </p>
-                )}
-              </div>
+                  </PrismAlertDescription>
+                </PrismAlert>
+              )}
               <p className="text-xs text-secondary-foreground">
                 O mesmo conteúdo
                 {format === "stories" ? " " : ", com a legenda atual, "}será
@@ -832,12 +863,17 @@ export function InstagramPublishPreparation({
                     })}
                 </div>
               )}
-              {(scheduleHasInvalidDate || mediaError) && (
-                <p className="text-base text-error">
-                  {scheduleHasInvalidDate
-                    ? "Escolha horários com pelo menos 2 minutos de antecedência."
-                    : mediaError}
-                </p>
+              {scheduleHasInvalidDate ? (
+                <PrismAlert variant="warning">
+                  <AlertTriangleIcon />
+                  <PrismAlertDescription>
+                    Escolha horários com pelo menos 2 minutos de antecedência.
+                  </PrismAlertDescription>
+                </PrismAlert>
+              ) : (
+                mediaError && (
+                  <p className="text-base text-error">{mediaError}</p>
+                )
               )}
               <PrismButton
                 isDisabled={
