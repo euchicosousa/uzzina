@@ -4,7 +4,7 @@
 
 **Bloqueado por:** Nenhum. A conexão do perfil já está disponível; a página de consulta de dados ficará para uma etapa posterior.
 
-**Status:** implementação enviada para `main`; proprietário confirmou publicação real pela UZZINA em 23/11/2026. **Aceito pelo proprietário em 25/11/2026**, incluindo a publicação de feed pela programação.
+**Status: concluído (25/11/2026).** Aceito pelo proprietário: carrossel, Stories e post estático testados; Reel fica para depois, e o ticket reabre se houver erro. Histórico: implementação enviada para `main`; proprietário confirmou publicação real pela UZZINA em 23/11/2026. **Aceito pelo proprietário em 25/11/2026**, incluindo a publicação de feed pela programação.
 
 ## Etapas previstas
 
