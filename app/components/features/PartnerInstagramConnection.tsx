@@ -1,8 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
-import { CalendarDate } from "@internationalized/date";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale/pt-BR";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { UnplugIcon } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -16,19 +13,10 @@ import {
   PrismDialogHeader,
   PrismDialogTitle,
   PrismDialogTrigger,
-  PrismPopover,
-  PrismPopoverTrigger,
-  PrismRangeCalendar,
 } from "~/components/prism";
-import type {
-  PartnerInstagramConnection as PartnerInstagramConnectionData,
-  PartnerInstagramInsightsResult,
-  PartnerInstagramMediaPage,
-} from "~/lib/partner-instagram-contract";
+import type { PartnerInstagramConnection as PartnerInstagramConnectionData } from "~/lib/partner-instagram-contract";
 import {
   disconnectPartnerInstagram,
-  fetchPartnerInstagramInsights,
-  fetchPartnerInstagramMedia,
   finishPartnerInstagramConnection,
   getPartnerInstagramConnection,
   startPartnerInstagramConnection,
@@ -43,6 +31,8 @@ interface PartnerInstagramConnectionProps {
   supabase: SupabaseClient<Database>;
   isArchived?: boolean;
   isLoading?: boolean;
+  /** Rendered only while the partner has an active Instagram connection. */
+  connectedContent?: ReactNode;
 }
 
 type CallbackQuery = {
@@ -51,19 +41,6 @@ type CallbackQuery = {
   status: "success" | "failed";
   connectedAccountId: string | null;
 };
-
-type PeriodPreset = "all" | "month" | "3months" | "6months" | "12months";
-type PeriodSelection = {
-  preset: PeriodPreset | "custom";
-  range: { start: Date; end: Date } | null;
-};
-
-const PERIOD_PRESETS: Array<{ id: PeriodPreset; label: string }> = [
-  { id: "all", label: "Tudo" },
-  { id: "3months", label: "3m" },
-  { id: "6months", label: "6m" },
-  { id: "12months", label: "12m" },
-];
 
 function readCallbackQuery(): CallbackQuery | null {
   const query = new URLSearchParams(window.location.search);
@@ -116,178 +93,13 @@ function getProfileInitial(connection: PartnerInstagramConnectionData): string {
   ).toUpperCase();
 }
 
-function startOfMonthOffset(monthsAgo: number, end: Date): Date {
-  const targetMonth = new Date(
-    end.getFullYear(),
-    end.getMonth() - monthsAgo,
-    1,
-  );
-  const lastDay = new Date(
-    targetMonth.getFullYear(),
-    targetMonth.getMonth() + 1,
-    0,
-  ).getDate();
-  return new Date(
-    targetMonth.getFullYear(),
-    targetMonth.getMonth(),
-    Math.min(end.getDate(), lastDay),
-  );
-}
-
-function getPeriodSelection(preset: PeriodPreset): PeriodSelection {
-  if (preset === "all") return { preset, range: null };
-  const end = new Date();
-  let start: Date;
-  if (preset === "month") {
-    start = new Date(end.getFullYear(), end.getMonth(), 1);
-  } else {
-    const monthsAgo = Number.parseInt(preset, 10);
-    start = startOfMonthOffset(monthsAgo, end);
-  }
-  return { preset, range: { start, end } };
-}
-
-function getDefaultSearchPeriod(): PeriodSelection {
-  return getPeriodSelection("month");
-}
-
-function getUnixRange(range: { start: Date; end: Date } | null) {
-  if (!range) return {};
-  const since = new Date(range.start);
-  since.setHours(0, 0, 0, 0);
-  const until = new Date(range.end);
-  until.setHours(23, 59, 59, 999);
-  return {
-    since: Math.floor(since.getTime() / 1000),
-    until: Math.floor(until.getTime() / 1000),
-  };
-}
-
-function formatSearchPeriod(selection: PeriodSelection): string {
-  if (selection.preset === "all") return "Todo período disponível";
-  const range = selection.range;
-  if (!range) return "Período personalizado";
-  return `${format(range.start, "dd/MM/yyyy", { locale: ptBR })} – ${format(
-    range.end,
-    "dd/MM/yyyy",
-    { locale: ptBR },
-  )}`;
-}
-
-function toCalendarRange(range: { start: Date; end: Date } | null) {
-  if (!range) return null;
-  return {
-    start: new CalendarDate(
-      range.start.getFullYear(),
-      range.start.getMonth() + 1,
-      range.start.getDate(),
-    ),
-    end: new CalendarDate(
-      range.end.getFullYear(),
-      range.end.getMonth() + 1,
-      range.end.getDate(),
-    ),
-  };
-}
-
-function PeriodSearchPopover({
-  label,
-  selection,
-  isPending,
-  isDisabled,
-  onSelectPreset,
-  onSelectRange,
-}: {
-  label: string;
-  selection: PeriodSelection;
-  isPending: boolean;
-  isDisabled: boolean;
-  onSelectPreset: (preset: PeriodPreset) => void;
-  onSelectRange: (range: { start: Date; end: Date }) => void;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <PrismPopoverTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
-      <PrismButton
-        className="relative w-full"
-        isDisabled={isDisabled}
-        size="sm"
-        type="button"
-        variant="outline"
-      >
-        {label}
-        {isPending && <ULoader className="absolute right-3" />}
-      </PrismButton>
-      <PrismPopover className="w-auto gap-0 p-0" placement="bottom start">
-        <div className="p-2">
-          <PrismRangeCalendar
-            aria-label={`Período para buscar ${label.toLowerCase()}`}
-            cellSize="sm"
-            numberOfMonths={1}
-            onChange={(range) => {
-              if (!range?.start || !range.end) return;
-              onSelectRange({
-                start: new Date(
-                  range.start.year,
-                  range.start.month - 1,
-                  range.start.day,
-                ),
-                end: new Date(
-                  range.end.year,
-                  range.end.month - 1,
-                  range.end.day,
-                ),
-              });
-              setIsOpen(false);
-            }}
-            value={toCalendarRange(selection.range)}
-          />
-        </div>
-        <div className="grid grid-cols-4 gap-1 border-t border-border p-2">
-          {PERIOD_PRESETS.map((preset) => (
-            <PrismButton
-              key={preset.id}
-              isDisabled={isDisabled}
-              onPress={() => {
-                onSelectPreset(preset.id);
-                setIsOpen(false);
-              }}
-              size="xs"
-              type="button"
-              variant={selection.preset === preset.id ? "secondary" : "outline"}
-            >
-              {preset.label}
-            </PrismButton>
-          ))}
-        </div>
-      </PrismPopover>
-    </PrismPopoverTrigger>
-  );
-}
-
-function formatInstagramDate(value: string | null): string {
-  if (!value) return "Data não informada";
-  const date = new Date(value);
-  return Number.isFinite(date.getTime())
-    ? format(date, "dd/MM/yyyy HH:mm", { locale: ptBR })
-    : "Data não informada";
-}
-
-function mediaFormatLabel(media: PartnerInstagramMediaPage["media"][number]) {
-  if (media.mediaProductType === "REELS") return "Reel";
-  if (media.mediaType === "CAROUSEL_ALBUM") return "Carrossel";
-  if (media.mediaType === "VIDEO") return "Vídeo";
-  if (media.mediaType === "IMAGE") return "Imagem";
-  return media.mediaType ?? "Publicação";
-}
-
 export function PartnerInstagramConnection({
   partnerId,
   partnerSlug,
   supabase,
   isArchived = false,
   isLoading = false,
+  connectedContent,
 }: PartnerInstagramConnectionProps) {
   const queryClient = useQueryClient();
   const [callbackQuery, setCallbackQuery] = useState<CallbackQuery | null>(
@@ -295,16 +107,6 @@ export function PartnerInstagramConnection({
   );
   const [callbackMessage, setCallbackMessage] = useState<string | null>(null);
   const [callbackPending, setCallbackPending] = useState(false);
-  const [mediaSelection, setMediaSelection] = useState(getDefaultSearchPeriod);
-  const [insightsSelection, setInsightsSelection] = useState(
-    getDefaultSearchPeriod,
-  );
-  const [mediaResult, setMediaResult] =
-    useState<PartnerInstagramMediaPage | null>(null);
-  const [insightsResult, setInsightsResult] =
-    useState<PartnerInstagramInsightsResult | null>(null);
-  const [mediaPeriod, setMediaPeriod] = useState<string | null>(null);
-  const [insightsPeriod, setInsightsPeriod] = useState<string | null>(null);
   const connectionKey = useMemo(
     () => ["partner-instagram-connection", partnerId],
     [partnerId],
@@ -341,83 +143,6 @@ export function PartnerInstagramConnection({
           : "Não foi possível desconectar o Instagram.",
       ),
   });
-
-  const mediaMutation = useMutation({
-    mutationFn: (input: { since?: number; until?: number; after?: string }) =>
-      fetchPartnerInstagramMedia(supabase, {
-        partnerSlug,
-        ...input,
-      }),
-    onSuccess: (page, input) => {
-      setMediaResult((current) =>
-        input.after && current
-          ? {
-              media: [...current.media, ...page.media],
-              nextCursor: page.nextCursor,
-            }
-          : page,
-      );
-    },
-    onError: (error) =>
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Não foi possível buscar as publicações.",
-      ),
-  });
-
-  const insightsMutation = useMutation({
-    mutationFn: (input: { since?: number; until?: number }) =>
-      fetchPartnerInstagramInsights(supabase, { partnerSlug, ...input }),
-    onSuccess: (result) => {
-      setInsightsResult(result);
-    },
-    onError: (error) =>
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Não foi possível buscar os insights.",
-      ),
-  });
-
-  const runMediaSearch = (selection = mediaSelection, after?: string) => {
-    const range = getUnixRange(selection.range);
-    if (!after) {
-      setMediaResult(null);
-      setMediaPeriod(formatSearchPeriod(selection));
-    }
-    mediaMutation.mutate({ ...range, ...(after ? { after } : {}) });
-  };
-
-  const runInsightsSearch = (selection = insightsSelection) => {
-    setInsightsResult(null);
-    setInsightsPeriod(formatSearchPeriod(selection));
-    insightsMutation.mutate(getUnixRange(selection.range));
-  };
-
-  const selectMediaPreset = (preset: PeriodPreset) => {
-    const selection = getPeriodSelection(preset);
-    setMediaSelection(selection);
-    runMediaSearch(selection);
-  };
-
-  const selectMediaRange = (range: { start: Date; end: Date }) => {
-    const selection: PeriodSelection = { preset: "custom", range };
-    setMediaSelection(selection);
-    runMediaSearch(selection);
-  };
-
-  const selectInsightsPreset = (preset: PeriodPreset) => {
-    const selection = getPeriodSelection(preset);
-    setInsightsSelection(selection);
-    runInsightsSearch(selection);
-  };
-
-  const selectInsightsRange = (range: { start: Date; end: Date }) => {
-    const selection: PeriodSelection = { preset: "custom", range };
-    setInsightsSelection(selection);
-    runInsightsSearch(selection);
-  };
 
   useEffect(() => {
     const params = readCallbackQuery();
@@ -530,164 +255,126 @@ export function PartnerInstagramConnection({
                 {connectionStatusLabel(connection)}
               </p>
             )}
-            <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(15rem,1fr)]">
-              <section
-                aria-label="Prévia do perfil do Instagram"
-                className="grid gap-5 rounded-2xl bg-card p-5 squircle sm:grid-cols-[auto_minmax(0,1fr)] sm:items-start"
-              >
-                {connection.profilePictureUrl ? (
-                  <img
-                    alt={`Foto de perfil de ${connection.profileUsername}`}
-                    className="size-24 rounded-full object-cover sm:size-28"
-                    src={connection.profilePictureUrl}
-                  />
-                ) : (
-                  <div
-                    aria-hidden="true"
-                    className="grid size-24 place-items-center rounded-full bg-card text-3xl font-semibold text-secondary-foreground sm:size-28"
-                  >
-                    {getProfileInitial(connection)}
-                  </div>
-                )}
-                <div className="grid min-w-0 gap-3">
-                  <div className="grid gap-1">
-                    <p className="text-xl font-semibold break-all">
-                      {connection.profileUsername}
-                    </p>
-                    {connection.profileName && (
-                      <p className="text-base">{connection.profileName}</p>
-                    )}
-                  </div>
-                  {connection.mediaCount !== null && (
-                    <p className="text-base">
-                      <strong className="font-semibold">
-                        {connection.mediaCount.toLocaleString("pt-BR")}
-                      </strong>{" "}
-                      publicações
-                    </p>
-                  )}
-                  {connection.biography && (
-                    <p className="text-base whitespace-pre-line text-secondary-foreground">
-                      {connection.biography}
-                    </p>
-                  )}
-                  {connection.website && (
-                    <a
-                      className="w-fit text-base font-medium break-all text-primary underline underline-offset-4"
-                      href={getWebsiteHref(connection.website)}
-                      rel="noreferrer"
-                      target="_blank"
-                    >
-                      {connection.website}
-                    </a>
+            <section
+              aria-label="Prévia do perfil do Instagram"
+              className="grid gap-5 rounded-2xl border border-border bg-card p-5 squircle sm:grid-cols-[auto_minmax(0,1fr)] sm:items-start"
+            >
+              {connection.profilePictureUrl ? (
+                <img
+                  alt={`Foto de perfil de ${connection.profileUsername}`}
+                  className="size-24 rounded-full object-cover sm:size-28"
+                  src={connection.profilePictureUrl}
+                />
+              ) : (
+                <div
+                  aria-hidden="true"
+                  className="grid size-24 place-items-center rounded-full bg-card text-3xl font-semibold text-secondary-foreground sm:size-28"
+                >
+                  {getProfileInitial(connection)}
+                </div>
+              )}
+              <div className="grid min-w-0 gap-3">
+                <div className="grid gap-1">
+                  <p className="text-xl font-semibold break-all">
+                    {connection.profileUsername}
+                  </p>
+                  {connection.profileName && (
+                    <p className="text-base">{connection.profileName}</p>
                   )}
                 </div>
-              </section>
-              <aside className="grid content-start gap-4">
-                <PrismButtonGroup
-                  aria-label="Conexão do Instagram"
-                  className="w-full"
-                  size="sm"
-                >
-                  <PrismButton
-                    className="flex-1"
-                    isDisabled={
-                      connectionQuery.isError ||
-                      connectMutation.isPending ||
-                      callbackPending
-                    }
-                    onPress={() => connectMutation.mutate()}
-                    size="sm"
-                    type="button"
-                    variant="outline"
-                  >
-                    {connectMutation.isPending && (
-                      <ULoader className="size-4" />
-                    )}
-                    Reconectar
-                  </PrismButton>
-                  {(connection.status === "active" ||
-                    connection.status === "attention") && (
-                    <PrismDialogTrigger>
-                      <PrismButton
-                        aria-label="Desconectar Instagram"
-                        isDisabled={
-                          disconnectMutation.isPending || callbackPending
-                        }
-                        size="icon-sm"
-                        type="button"
-                        variant="outline"
-                      >
-                        {disconnectMutation.isPending ? (
-                          <ULoader className="size-4" />
-                        ) : (
-                          <UnplugIcon />
-                        )}
-                      </PrismButton>
-                      <PrismDialog>
-                        <PrismDialogHeader>
-                          <PrismDialogTitle>
-                            Desconectar o Instagram?
-                          </PrismDialogTitle>
-                          <PrismDialogDescription className="text-base">
-                            O Composio tentará revogar o acesso de{" "}
-                            {connection.profileUsername}. Se a revogação não for
-                            confirmada, o cadastro continuará conectado.
-                          </PrismDialogDescription>
-                        </PrismDialogHeader>
-                        <PrismDialogBody className="text-base">
-                          A UZZINA mantém as conexões separadas por parceiro e
-                          só altera a referência deste parceiro.
-                        </PrismDialogBody>
-                        <PrismDialogFooter>
-                          <PrismDialogClose>Cancelar</PrismDialogClose>
-                          <PrismDialogClose
-                            isDisabled={disconnectMutation.isPending}
-                            onPress={() => disconnectMutation.mutate()}
-                            variant="error"
-                          >
-                            Desconectar
-                          </PrismDialogClose>
-                        </PrismDialogFooter>
-                      </PrismDialog>
-                    </PrismDialogTrigger>
-                  )}
-                </PrismButtonGroup>
-                {connection.status === "active" && (
-                  <section
-                    aria-label="Buscar dados do Instagram"
-                    className="grid gap-2"
-                  >
-                    <h5>Buscar</h5>
-                    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
-                      <PeriodSearchPopover
-                        isDisabled={
-                          mediaMutation.isPending ||
-                          insightsMutation.isPending ||
-                          connectionQuery.isPending
-                        }
-                        isPending={mediaMutation.isPending}
-                        label="Publicações"
-                        onSelectPreset={selectMediaPreset}
-                        onSelectRange={selectMediaRange}
-                        selection={mediaSelection}
-                      />
-                      <PeriodSearchPopover
-                        isDisabled={
-                          mediaMutation.isPending ||
-                          insightsMutation.isPending ||
-                          connectionQuery.isPending
-                        }
-                        isPending={insightsMutation.isPending}
-                        label="Insights"
-                        onSelectPreset={selectInsightsPreset}
-                        onSelectRange={selectInsightsRange}
-                        selection={insightsSelection}
-                      />
-                    </div>
-                  </section>
+                {connection.mediaCount !== null && (
+                  <p className="text-base">
+                    <strong className="font-semibold">
+                      {connection.mediaCount.toLocaleString("pt-BR")}
+                    </strong>{" "}
+                    publicações
+                  </p>
                 )}
-              </aside>
+                {connection.biography && (
+                  <p className="text-base whitespace-pre-line text-secondary-foreground">
+                    {connection.biography}
+                  </p>
+                )}
+                {connection.website && (
+                  <a
+                    className="w-fit text-base font-medium break-all text-primary underline underline-offset-4"
+                    href={getWebsiteHref(connection.website)}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    {connection.website}
+                  </a>
+                )}
+              </div>
+            </section>
+            <div className="flex flex-wrap justify-between gap-4 py-2">
+              <PrismButtonGroup
+                aria-label="Conexão do Instagram"
+                className="w-fit"
+                size="sm"
+              >
+                <PrismButton
+                  isDisabled={
+                    connectionQuery.isError ||
+                    connectMutation.isPending ||
+                    callbackPending
+                  }
+                  onPress={() => connectMutation.mutate()}
+                  size="sm"
+                  type="button"
+                  variant="outline"
+                >
+                  {connectMutation.isPending && <ULoader className="size-4" />}
+                  Reconectar
+                </PrismButton>
+                {(connection.status === "active" ||
+                  connection.status === "attention") && (
+                  <PrismDialogTrigger>
+                    <PrismButton
+                      aria-label="Desconectar Instagram"
+                      isDisabled={
+                        disconnectMutation.isPending || callbackPending
+                      }
+                      size="icon-sm"
+                      type="button"
+                      variant="outline"
+                    >
+                      {disconnectMutation.isPending ? (
+                        <ULoader className="size-4" />
+                      ) : (
+                        <UnplugIcon />
+                      )}
+                    </PrismButton>
+                    <PrismDialog>
+                      <PrismDialogHeader>
+                        <PrismDialogTitle>
+                          Desconectar o Instagram?
+                        </PrismDialogTitle>
+                        <PrismDialogDescription className="text-base">
+                          O Composio tentará revogar o acesso de{" "}
+                          {connection.profileUsername}. Se a revogação não for
+                          confirmada, o cadastro continuará conectado.
+                        </PrismDialogDescription>
+                      </PrismDialogHeader>
+                      <PrismDialogBody className="text-base">
+                        A UZZINA mantém as conexões separadas por parceiro e só
+                        altera a referência deste parceiro.
+                      </PrismDialogBody>
+                      <PrismDialogFooter>
+                        <PrismDialogClose>Cancelar</PrismDialogClose>
+                        <PrismDialogClose
+                          isDisabled={disconnectMutation.isPending}
+                          onPress={() => disconnectMutation.mutate()}
+                          variant="error"
+                        >
+                          Desconectar
+                        </PrismDialogClose>
+                      </PrismDialogFooter>
+                    </PrismDialog>
+                  </PrismDialogTrigger>
+                )}
+              </PrismButtonGroup>
+              {connection.status === "active" && connectedContent}
             </div>
           </>
         ) : (
@@ -701,129 +388,6 @@ export function PartnerInstagramConnection({
           </p>
         )}
       </div>
-
-      {mediaResult && (
-        <section aria-label="Publicações encontradas" className="grid gap-3">
-          <div className="grid gap-1">
-            <h5>Publicações encontradas</h5>
-            <p className="text-base text-secondary-foreground">
-              {mediaResult.media.length} publicação(ões) listada(s) · Período:{" "}
-              {mediaPeriod}. A listagem inclui as mídias do feed disponíveis na
-              conta; Stories podem não aparecer nesta consulta. A busca usa uma
-              página por vez; carregue as próximas para percorrer o período
-              completo.
-            </p>
-          </div>
-          {mediaResult.media.length === 0 ? (
-            <p className="text-base text-secondary-foreground">
-              Nenhuma publicação foi retornada neste período.
-            </p>
-          ) : (
-            <ul className="grid gap-3">
-              {mediaResult.media.map((media) => (
-                <li
-                  className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-border pb-3"
-                  key={media.id}
-                >
-                  <div className="grid min-w-0 gap-1">
-                    <p className="text-base font-medium">
-                      {media.caption || mediaFormatLabel(media)}
-                    </p>
-                    <p className="text-sm text-secondary-foreground">
-                      {mediaFormatLabel(media)} ·{" "}
-                      {formatInstagramDate(media.timestamp)}
-                    </p>
-                    <p className="text-sm text-secondary-foreground">
-                      {media.likeCount === null
-                        ? "Curtidas indisponíveis"
-                        : `${media.likeCount.toLocaleString("pt-BR")} curtidas`}
-                      {media.commentsCount !== null &&
-                        ` · ${media.commentsCount.toLocaleString("pt-BR")} comentários`}
-                      {media.viewCount !== null &&
-                        ` · ${media.viewCount.toLocaleString("pt-BR")} visualizações`}
-                    </p>
-                  </div>
-                  {media.permalink && (
-                    <a
-                      className="text-base font-medium text-primary underline underline-offset-4"
-                      href={media.permalink}
-                      rel="noreferrer"
-                      target="_blank"
-                    >
-                      Abrir publicação
-                    </a>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-          {mediaResult.nextCursor && (
-            <PrismButton
-              className="w-fit"
-              isDisabled={mediaMutation.isPending}
-              onPress={() =>
-                runMediaSearch(
-                  mediaSelection,
-                  mediaResult.nextCursor ?? undefined,
-                )
-              }
-              type="button"
-              variant="outline"
-            >
-              {mediaMutation.isPending && <ULoader className="size-4" />}
-              Carregar mais publicações
-            </PrismButton>
-          )}
-        </section>
-      )}
-      {insightsResult && (
-        <section aria-label="Insights do Instagram" className="grid gap-3">
-          <div className="grid gap-1">
-            <h5>Insights do perfil</h5>
-            <p className="text-base text-secondary-foreground">
-              Período: {insightsPeriod}. Métricas diárias retornadas pelo
-              Instagram no período selecionado. A consulta é somente leitura e
-              não grava estes dados.
-            </p>
-          </div>
-          {insightsResult.insights.length === 0 ? (
-            <p className="text-base text-secondary-foreground">
-              Nenhum insight foi retornado. Métricas ausentes não significam
-              valor zero.
-            </p>
-          ) : (
-            <ul className="grid gap-2">
-              {insightsResult.insights.map((insight) => (
-                <li
-                  className="grid gap-1 border-b border-border pb-2"
-                  key={insight.name}
-                >
-                  <p className="text-base font-medium">{insight.title}</p>
-                  {insight.values.length === 0 ? (
-                    <p className="text-base text-secondary-foreground">
-                      Sem valores retornados para esta métrica.
-                    </p>
-                  ) : (
-                    <ul className="grid gap-1 sm:grid-cols-2 lg:grid-cols-3">
-                      {insight.values.map((item) => (
-                        <li
-                          className="text-sm text-secondary-foreground"
-                          key={`${item.endTime ?? insight.name}:${item.value}`}
-                        >
-                          {item.endTime
-                            ? `${formatInstagramDate(item.endTime).slice(0, 10)} · `
-                            : ""}
-                          {item.value.toLocaleString("pt-BR")}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      )}
 
       {callbackMessage && callbackQuery && !callbackPending && (
         <PrismButton

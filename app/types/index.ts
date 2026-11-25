@@ -15,8 +15,16 @@ export type Action = Tables<"actions"> & {
 export type Person = Tables<"people">;
 export type Client = Tables<"clients">;
 type PartnerRow = Tables<"partners">;
-export type Partner = Omit<PartnerRow, "planning_instructions"> &
-  Partial<Pick<PartnerRow, "planning_instructions">>;
+export type Partner = Omit<
+  PartnerRow,
+  "planning_instructions" | "instagram_feed_time" | "instagram_stories_time"
+> &
+  Partial<
+    Pick<
+      PartnerRow,
+      "planning_instructions" | "instagram_feed_time" | "instagram_stories_time"
+    >
+  >;
 export type PartnerTopic = Tables<"partner_topics">;
 export type Celebration = Tables<"celebrations">;
 export type Notification = Tables<"notifications">;

@@ -10,9 +10,16 @@ import {
   PrinterIcon,
   Trash2Icon,
 } from "lucide-react";
+import { parseTime } from "@internationalized/date";
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { AdminGuard } from "~/components/features/AdminGuard";
+import {
+  DEFAULT_INSTAGRAM_FEED_TIME,
+  DEFAULT_INSTAGRAM_STORIES_TIME,
+  formatPostTime,
+  normalizePostTime,
+} from "~/lib/partner-post-times";
 import { PartnerInstagramConnection } from "~/components/features/PartnerInstagramConnection";
 import { PartnerTopicsEditor } from "~/components/features/PartnerTopicsEditor";
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
@@ -23,6 +30,7 @@ import {
   PrismLabel,
   PrismSkeleton,
   PrismTextarea,
+  PrismTimeField,
   PrismToggleGroup,
   PrismToggleGroupItem,
   buttonVariants,
@@ -181,6 +189,8 @@ function AdminPartnerEditPage() {
     short: "",
     slug: "",
     instagram_caption_tail: "",
+    instagram_feed_time: DEFAULT_INSTAGRAM_FEED_TIME,
+    instagram_stories_time: DEFAULT_INSTAGRAM_STORIES_TIME,
     sow: "marketing" as "marketing" | "socialmedia" | "demand",
     archived: false,
   });
@@ -220,6 +230,12 @@ function AdminPartnerEditPage() {
         short: partner.short || "",
         slug: partner.slug || "",
         instagram_caption_tail: partner.instagram_caption_tail || "",
+        instagram_feed_time:
+          normalizePostTime(partner.instagram_feed_time) ??
+          DEFAULT_INSTAGRAM_FEED_TIME,
+        instagram_stories_time:
+          normalizePostTime(partner.instagram_stories_time) ??
+          DEFAULT_INSTAGRAM_STORIES_TIME,
         sow: initialSow,
         archived: initialArchived,
       };
@@ -302,6 +318,8 @@ function AdminPartnerEditPage() {
       voice: voiceValue || null,
       image: imageUrl || null,
       instagram_caption_tail: stateRef.current.instagram_caption_tail || null,
+      instagram_feed_time: stateRef.current.instagram_feed_time,
+      instagram_stories_time: stateRef.current.instagram_stories_time,
       sow: stateRef.current.sow,
 
       ...patch,
@@ -331,6 +349,10 @@ function AdminPartnerEditPage() {
       });
     }
   };
+  const pendingTimes = useRef<{
+    instagram_feed_time?: string;
+    instagram_stories_time?: string;
+  }>({});
   const handleBlurField = <K extends keyof typeof stateRef.current>(
     fieldName: K,
     value: (typeof stateRef.current)[K],
@@ -646,6 +668,46 @@ function AdminPartnerEditPage() {
             partnerId={partner?.id ?? null}
             partnerSlug={partner?.slug ?? slug}
             supabase={supabase}
+            connectedContent={
+              isNew ? null : (
+                <div className="flex items-end gap-4">
+                  {(
+                    [
+                      ["instagram_feed_time", "Horário do feed"],
+                      ["instagram_stories_time", "Horário dos Stories"],
+                    ] as const
+                  ).map(([field, label]) => (
+                    <div className="grid gap-2" key={field}>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-sm font-medium">{label}</span>
+                        {savingFields.has(field) && <ULoader />}
+                      </div>
+                      <PrismTimeField
+                        aria-label={label}
+                        defaultValue={parseTime(
+                          stateRef.current[field] ??
+                            (field === "instagram_feed_time"
+                              ? DEFAULT_INSTAGRAM_FEED_TIME
+                              : DEFAULT_INSTAGRAM_STORIES_TIME),
+                        )}
+                        hourCycle={24}
+                        onBlur={() => {
+                          const time = pendingTimes.current[field];
+                          if (time) handleBlurField(field, time);
+                        }}
+                        onChange={(value) => {
+                          if (value)
+                            pendingTimes.current[field] = formatPostTime(
+                              value.hour,
+                              value.minute,
+                            );
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )
+            }
           />
 
           <div className="grid gap-4">

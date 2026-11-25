@@ -244,68 +244,6 @@ export function parseComposioInstagramInsights(
   return { insights };
 }
 
-export function parsePartnerInstagramMediaPage(
-  value: unknown,
-): PartnerInstagramMediaPage | null {
-  if (!isRecord(value) || !Array.isArray(value.media)) return null;
-  const media: PartnerInstagramMediaItem[] = [];
-  for (const entry of value.media) {
-    if (!isRecord(entry) || typeof entry.id !== "string") continue;
-    media.push({
-      id: entry.id,
-      caption: optionalString(entry.caption, 2200),
-      mediaType: optionalString(entry.mediaType, 32),
-      mediaProductType: optionalString(entry.mediaProductType, 32),
-      permalink: optionalHttpsUrl(entry.permalink, 2048),
-      timestamp: optionalIsoDate(entry.timestamp),
-      thumbnailUrl: optionalHttpsUrl(entry.thumbnailUrl, 4096),
-      likeCount: optionalCount(entry.likeCount),
-      commentsCount: optionalCount(entry.commentsCount),
-      viewCount: optionalCount(entry.viewCount),
-    });
-  }
-  const cursor = value.nextCursor;
-  return {
-    media,
-    nextCursor:
-      typeof cursor === "string" && cursor.length <= 2048 ? cursor : null,
-  };
-}
-
-export function parsePartnerInstagramInsights(
-  value: unknown,
-): PartnerInstagramInsightsResult | null {
-  if (!isRecord(value) || !Array.isArray(value.insights)) return null;
-  const insights: PartnerInstagramInsight[] = [];
-  for (const entry of value.insights) {
-    if (
-      !isRecord(entry) ||
-      typeof entry.name !== "string" ||
-      typeof entry.period !== "string"
-    ) {
-      continue;
-    }
-    const values = Array.isArray(entry.values)
-      ? entry.values.flatMap((item) => {
-          if (!isRecord(item) || typeof item.value !== "number") return [];
-          return [
-            { value: item.value, endTime: optionalIsoDate(item.endTime) },
-          ];
-        })
-      : [];
-    insights.push({
-      name: entry.name,
-      title:
-        typeof entry.title === "string" && entry.title.length <= 120
-          ? entry.title
-          : entry.name,
-      period: entry.period,
-      values,
-    });
-  }
-  return { insights };
-}
-
 function isHttpsUrl(value: string): boolean {
   try {
     return new URL(value).protocol === "https:";

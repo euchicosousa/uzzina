@@ -628,6 +628,8 @@ export type Database = {
           id: string;
           image: string | null;
           instagram_caption_tail: string | null;
+          instagram_feed_time: string;
+          instagram_stories_time: string;
           planning_instructions: string | null;
           short: string;
           slug: string;
@@ -644,6 +646,8 @@ export type Database = {
           id?: string;
           image?: string | null;
           instagram_caption_tail?: string | null;
+          instagram_feed_time?: string;
+          instagram_stories_time?: string;
           planning_instructions?: string | null;
           short: string;
           slug: string;
@@ -660,6 +664,8 @@ export type Database = {
           id?: string;
           image?: string | null;
           instagram_caption_tail?: string | null;
+          instagram_feed_time?: string;
+          instagram_stories_time?: string;
           planning_instructions?: string | null;
           short?: string;
           slug?: string;

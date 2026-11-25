@@ -4,7 +4,7 @@
 
 **Bloqueado por:** Nenhum. É independente da conexão OAuth do parceiro e dos tickets 02–07 do Instagram; depende apenas do gerenciador de arquivos e do upload Cloudinary existentes.
 
-**Status (25/11/2026):** Implementado localmente, revisado e aprovado pelo Revisor (25/11/2026). Aguardando testes reais pelo proprietário.
+**Status (25/11/2026):** Implementado, revisado e aprovado pelo Revisor, e publicado na `main` (`baae1423`). **Decisão do proprietário (25/11/2026): esta função será excluída** (botão **Importar do Instagram**, `/api/instagram-reference` e arquivos associados), porque o gerenciador de arquivos já tem outros dois botões para buscar dados. O ticket fica registrado como descontinuado; a remoção do código ainda não foi feita e a validação real do último critério não será executada.
 
 ## Interação no modal
 

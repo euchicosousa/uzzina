@@ -38,6 +38,7 @@ import {
   instagramPublishRequest,
   InstagramPublishError,
   type PublishInput,
+  type PublishSchedule,
   type PublishState,
 } from "~/models/instagram-publish";
 import {
@@ -45,7 +46,7 @@ import {
   instagramPublishMediaError,
 } from "~/lib/instagram-publish-media";
 import { UActionDatePicker } from "~/components/uzzina/UActionDatePicker";
-import { GripVerticalIcon, XIcon } from "lucide-react";
+import { CopyIcon, GripVerticalIcon, RotateCcwIcon, XIcon } from "lucide-react";
 
 type Format = PublishInput["format"];
 type PublishMode = "publish" | "schedule";
@@ -208,6 +209,9 @@ export function InstagramPublishPreparation({
   const [cancellingScheduleId, setCancellingScheduleId] = useState<
     string | null
   >(null);
+  const [retryingScheduleId, setRetryingScheduleId] = useState<string | null>(
+    null,
+  );
   const [uncertain, setUncertain] = useState(false);
   const [scheduleDates, setScheduleDates] = useState<(Date | null)[]>([null]);
   const sendLock = useRef(false);
@@ -413,6 +417,71 @@ export function InstagramPublishPreparation({
     } finally {
       scheduleLock.current = false;
       setScheduleBusy(false);
+    }
+  }
+
+  async function retrySchedule(scheduleId: string) {
+    if (
+      !actionId ||
+      !partner?.username ||
+      !format ||
+      mediaError ||
+      selected.length === 0 ||
+      scheduleBusy ||
+      scheduleLock.current
+    )
+      return;
+    scheduleLock.current = true;
+    setScheduleBusy(true);
+    setRetryingScheduleId(scheduleId);
+    try {
+      await instagramScheduleRequest({
+        operation: "schedule",
+        actionId,
+        partnerSlug: partner.slug,
+        profileUsername: partner.username,
+        format,
+        files: selected.map((index) => files[index]),
+        caption: format === "stories" ? "" : (caption ?? ""),
+        scheduledAt: [new Date(Date.now() + 3 * 60_000).toISOString()],
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      });
+      toast.success("Nova programação salva para daqui a alguns minutos.");
+      await refresh(true);
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível tentar novamente.",
+      );
+    } finally {
+      scheduleLock.current = false;
+      setScheduleBusy(false);
+      setRetryingScheduleId(null);
+    }
+  }
+
+  async function copySchedule(item: PublishSchedule) {
+    const when = new Date(item.scheduled_at).toLocaleString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    const lines = [
+      `Formato: ${item.instagram_schedule_batches.format}`,
+      `Perfil: @${usernameWithoutAt(item.instagram_schedule_batches.profile_username)}`,
+      `Data: ${when}`,
+      `Status: ${getScheduleStatus(item.status).label}`,
+    ];
+    if (item.instagram_schedule_batches.format !== "stories" && caption)
+      lines.push("", caption);
+    try {
+      await navigator.clipboard.writeText(lines.join("\n"));
+      toast.success("Programação copiada.");
+    } catch {
+      toast.error("Não foi possível copiar para a área de transferência.");
     }
   }
 
@@ -734,9 +803,30 @@ export function InstagramPublishPreparation({
                               },
                             )}
                           </time>
-                          <PrismBadge variant={status.variant}>
-                            {status.label}
-                          </PrismBadge>
+                          <div className="ml-auto flex items-center gap-1">
+                            {item.status === "failed" && (
+                              <PrismButton
+                                aria-label="Tentar novamente com os mesmos dados"
+                                isDisabled={scheduleBusy || !!mediaError}
+                                size="icon-sm"
+                                variant="ghost"
+                                onPress={() => void retrySchedule(item.id)}
+                              >
+                                <RotateCcwIcon />
+                              </PrismButton>
+                            )}
+                            <PrismButton
+                              aria-label="Copiar programação"
+                              size="icon-sm"
+                              variant="ghost"
+                              onPress={() => void copySchedule(item)}
+                            >
+                              <CopyIcon />
+                            </PrismButton>
+                            <PrismBadge variant={status.variant}>
+                              {status.label}
+                            </PrismBadge>
+                          </div>
                         </div>
                       );
                     })}
