@@ -1,6 +1,6 @@
 # Encontrar e excluir arquivos sem uso no Cloudinary
 
-**Status:** proposto
+**Status: implementado e publicado (25/11/2026), ainda não testado pelo proprietário** (`app/routes/app/admin/cloudinary.tsx`, `api/admin-cleanup.ts`). Reabre se houver erro. Histórico: proposto.
 
 **Bloqueado por:** Nenhum
 

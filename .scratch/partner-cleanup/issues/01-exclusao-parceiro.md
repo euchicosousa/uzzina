@@ -1,6 +1,6 @@
 # Excluir definitivamente um parceiro arquivado
 
-**Status:** proposto
+**Status: concluído (25/11/2026).** Implementado e publicado (`api/admin-cleanup.ts`, página `app/routes/app/admin/partner/$slug_.delete.tsx`); o proprietário já excluiu um parceiro arquivado pela tela. Histórico: proposto.
 
 **Bloqueado por:** Nenhum
 

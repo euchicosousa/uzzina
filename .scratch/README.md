@@ -4,23 +4,24 @@ Comece aqui para encontrar o próximo passo, a autorização e a ficha correspon
 
 ## Pendências do piloto de Instagram
 
-| Entrega | Situação e próxima ação | Responsável |
-| --- | --- | --- |
-| Programar Stories na gaveta da ação | Agendador ativo com execução registrada. Triar validação da margem, outros formatos e cenários abertos na [ficha](instagram-composio/issues/04-programar-stories.md). Novos envios de teste em produção dependem de autorização. | Planta |
-| Consultar o calendário na tela Publicações | Publicado, com aceite visual pendente. Preparar a [conferência de leitura](../docs/audits/CURRENT.md) para o aceite do proprietário. [Critério na ficha](instagram-composio/issues/04-programar-stories.md#critérios-de-aceite) | Prova prepara, proprietário dá o aceite |
+Em 25/11/2026 o proprietário aceitou e encerrou os tickets 02 a 05 (conexão, publicar agora, programar e várias datas); os testes que ele deixou para depois reabrem o ticket se falharem. Os tickets 06 (relatórios) e 07 (comentários) foram excluídos em 25/11, porque a busca de dados do Instagram saiu. Pendências ativas:
+
+| Entrega                                                                                                                                                                             | Situação e próxima ação                                                                           | Responsável         |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------- |
+| Reel pela UZZINA ([03](instagram-composio/issues/03-publicar-agora.md))                                                                                                             | Publicar e programar um Reel e conferir a mídia. Carrossel, Stories e post estático já testados.  | Proprietário        |
+| Testes adiados ([02](instagram-composio/issues/02-conectar-perfil.md), [04](instagram-composio/issues/04-programar-stories.md), [05](instagram-composio/issues/05-varias-datas.md)) | Reconexão e desconexão; duplicar ação sem copiar programações; várias datas na mesma programação. | Proprietário        |
+| Importar arquivos por link ([08](instagram-composio/issues/08-importar-referencia-instagram.md))                                                                                    | Em produção. Falta validar com posts públicos reais: imagem, Reel e carrossel.                    | Proprietário        |
+| Importar relatórios ([06](instagram-composio/issues/06-importar-relatorios.md))                                                                                                     | Proposto, sem prioridade.                                                                         | Proprietário decide |
 
 ## Propostas para revisão do proprietário
 
 - [Formulários administrativos no padrão de Parceiros](admin-forms/issues/01-align-admin-forms.md) — adequar Novo e Editar em Usuários e Clientes e mapear outras páginas administrativas que se beneficiariam do padrão.
-- [Exclusão definitiva de parceiro arquivado](partner-cleanup/issues/01-exclusao-parceiro.md) — gestão de parceiros, com prévia das ações e definição para registros compartilhados.
-- [Limpeza de arquivos sem uso no Cloudinary](cloudinary-cleanup/issues/01-arquivos-sem-vinculo.md) — inventário, revisão e exclusão selecionada.
-- [Integração Instagram pela Composio](instagram-composio/issues/01-piloto-conexao.md) — sete etapas, do piloto de permissões aos relatórios e análise de comentários. O plano visual continua em [HTML](../docs/plans/instagram-composio.html).
 - [Limite e unificação de funções da Vercel](vercel-functions/issues/01-investigar-limite-e-unificacoes.md) — confirmar o limite do plano, contar as funções atuais e recomendar possíveis unificações sem implementação neste estudo.
 - [EST-06 — Cron de geração de estratégias](action-strategy/issues/06-investigate-strategy-worker-cron.md) — investigar por que o processamento persistente de estratégias da gaveta de ação precisa de um cron e se o recurso continua desejado.
 
 ## Referências fora da fila de execução
 
-- [Planejamento original](social-planning/README.md): nove tickets antigos com registros divergentes; a recuperação T01–T11 é a fila vigente. Mantidos para referência, sem declarar os antigos pendentes como resolvidos.
+- [Planejamento original](social-planning/README.md): nove tickets antigos com registros divergentes; a recuperação T01–T12 foi aceita e arquivada pelo proprietário em 21/11/2026; não há pendência nela. Mantidos para referência, sem declarar os antigos pendentes como resolvidos.
 - [Consistência visual](visual-consistency/README.md): onze tickets de série suspensa pelo proprietário. Não executar nem considerar concluídos somente por seus campos completed.
 
 Novos tickets entram na série correspondente. Ao encerrar, manter somente pendências na lista ativa e consolidar finalidade, aceite, commit e limites no histórico.

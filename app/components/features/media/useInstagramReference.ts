@@ -17,7 +17,7 @@ type Entry = {
   error?: string;
 };
 type Batch = { context: ReferenceContext; ticket: string; entries: Entry[] };
-const noSpace = "Não há espaço para todos os arquivos desta referência.";
+const noSpace = "Não há espaço para todos os arquivos deste link.";
 
 function message(error: unknown) {
   if (error instanceof Error && error.name !== "ZodError") return error.message;

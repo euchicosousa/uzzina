@@ -2776,11 +2776,11 @@ describe("phone-width action panel", () => {
     await user.click(manager);
     const getDialog = () => screen.getByRole("dialog", { name: "Arquivos" });
     const importButton = within(getDialog()).getByRole("button", {
-      name: "Importar do Instagram",
+      name: "Importar arquivos por link",
     });
     await user.click(importButton);
     const popover = await screen.findByRole("dialog", {
-      name: "Importar do Instagram",
+      name: "Importar arquivos por link",
     });
     const getSubmit = () =>
       within(popover).getByRole("button", { name: "Importar" });
@@ -2822,7 +2822,7 @@ describe("phone-width action panel", () => {
 
     await user.click(importButton);
     const reopenedPopover = await screen.findByRole("dialog", {
-      name: "Importar do Instagram",
+      name: "Importar arquivos por link",
     });
     const valid = within(reopenedPopover).getByRole("textbox", {
       name: "Link do Instagram",
@@ -2922,11 +2922,11 @@ describe("phone-width action panel", () => {
     await user.click(manager);
     const getDialog = () => screen.getByRole("dialog", { name: "Arquivos" });
     const importButton = within(getDialog()).getByRole("button", {
-      name: "Importar do Instagram",
+      name: "Importar arquivos por link",
     });
     await user.click(importButton);
     const popover = await screen.findByRole("dialog", {
-      name: "Importar do Instagram",
+      name: "Importar arquivos por link",
     });
     expect(popover.querySelector('[data-slot="select"]')).toBeTruthy();
     expect(popover.querySelector('[data-slot="select-trigger"]')).toBeTruthy();
@@ -2949,7 +2949,7 @@ describe("phone-width action panel", () => {
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("option", { name: "Studio" })).toBeNull();
     expect(
-      screen.getByRole("dialog", { name: "Importar do Instagram" }),
+      screen.getByRole("dialog", { name: "Importar arquivos por link" }),
     ).toBeTruthy();
     expect(
       screen.getByRole("dialog", { name: "Arquivos", hidden: true }),

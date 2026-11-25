@@ -973,7 +973,7 @@ export function FileManagerDialog({
 
             {instagramReference && (
               <FileUploadQueue
-                label="Importação do Instagram"
+                label="Importar arquivos por link"
                 entries={referenceRows}
                 notice={reference.notice}
                 onRetry={(position) => void reference.retry(position)}

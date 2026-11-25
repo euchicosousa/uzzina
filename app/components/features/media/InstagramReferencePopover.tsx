@@ -66,16 +66,19 @@ export function InstagramReferencePopover({
   return (
     <PrismPopoverTrigger isOpen={open} onOpenChange={changeOpen}>
       <PrismButton
-        aria-label="Importar do Instagram"
+        aria-label="Importar arquivos por link"
         size="icon-sm"
         variant="secondary"
       >
         <LinkIcon />
       </PrismButton>
       <PrismPopover placement="top start">
-        <Dialog aria-label="Importar do Instagram" className="outline-none">
+        <Dialog
+          aria-label="Importar arquivos por link"
+          className="outline-none"
+        >
           {!target.actionId || !target.partners.length ? (
-            <p>Salve a ação com um parceiro para importar uma referência.</p>
+            <p>Salve a ação com um parceiro para importar arquivos por link.</p>
           ) : (
             <form
               noValidate
