@@ -17,7 +17,6 @@ Em 25/11/2026 o proprietário aceitou e encerrou os tickets 02 a 05 (conexão, p
 
 - [Formulários administrativos no padrão de Parceiros](admin-forms/issues/01-align-admin-forms.md) — adequar Novo e Editar em Usuários e Clientes e mapear outras páginas administrativas que se beneficiariam do padrão.
 - [Limite e unificação de funções da Vercel](vercel-functions/issues/01-investigar-limite-e-unificacoes.md) — confirmar o limite do plano, contar as funções atuais e recomendar possíveis unificações sem implementação neste estudo.
-- [EST-06 — Cron de geração de estratégias](action-strategy/issues/06-investigate-strategy-worker-cron.md) — investigar por que o processamento persistente de estratégias da gaveta de ação precisa de um cron e se o recurso continua desejado.
 
 ## Referências fora da fila de execução
 

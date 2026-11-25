@@ -1977,9 +1977,12 @@ export function ThemeColorInspector({
 
   const tabLabel = (tab: InspectorTab) => (
     <>
-      {TAB_TITLES[tab]}
+      <span className="min-w-0 truncate">{TAB_TITLES[tab]}</span>
       {searching && found[tab] > 0 && (
-        <PrismBadge aria-label={`${found[tab]} encontrados`}>
+        <PrismBadge
+          aria-label={`${found[tab]} encontrados`}
+          className="shrink-0"
+        >
           {found[tab]}
         </PrismBadge>
       )}
@@ -2039,16 +2042,16 @@ export function ThemeColorInspector({
       <PrismTabs className="min-h-0 flex-1" defaultSelectedKey="tema">
         {/* The tab list stays outside the scroll and spans the whole panel. */}
         <PrismTabList aria-label="Partes do tema">
-          <PrismTab className={cn("truncate", tabClass)} id="tema">
+          <PrismTab className={tabClass} id="tema">
             {tabLabel("tema")}
           </PrismTab>
-          <PrismTab className={cn("truncate", tabClass)} id="estados">
+          <PrismTab className={tabClass} id="estados">
             {tabLabel("estados")}
           </PrismTab>
-          <PrismTab className={cn("truncate", tabClass)} id="fases">
+          <PrismTab className={tabClass} id="fases">
             {tabLabel("fases")}
           </PrismTab>
-          <PrismTab className={cn("truncate", tabClass)} id="formulas">
+          <PrismTab className={tabClass} id="formulas">
             {tabLabel("formulas")}
           </PrismTab>
         </PrismTabList>

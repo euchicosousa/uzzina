@@ -4,7 +4,7 @@
 
 **Bloqueado por:** Nenhum (pode começar imediatamente).
 
-**Status:** implementação autorizada; migration aplicada em produção; código enviado para publicação nesta rodada. A conferência real e visual, drenagem da fila antiga e pausa do cron continuam pendentes.
+**Status: concluído (25/11/2026).** Código e migration em produção; a fila antiga está zerada (30 operações concluídas, nenhuma pendente) e o cron `uzzina-strategy-worker` foi **pausado** em 25/11/2026 (`cron.alter_job(..., active := false)`, confirmado `active=false`). Reversível: `SELECT cron.alter_job(jobid, active := true) FROM cron.job WHERE jobname = 'uzzina-strategy-worker';`. Falta apenas o teste real de Gerar/Recriar estratégias pelo proprietário; se falhar, reative o cron. O endpoint antigo e o cron seguem preservados (sem remoção).
 
 - [x] Localizar e explicar o cron: frequência, serviço, worker chamado e operação que ele processa.
 - [x] Verificar como **Gerar estratégias** registra e acompanha a operação, e confirmar se há outro caminho no código que executa a fila.

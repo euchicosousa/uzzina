@@ -44,7 +44,7 @@ function render(defaultSearch: string): string {
 /** Badge counts per tab, in tab order (null: no badge). */
 function badges(html: string): Array<number | null> {
   return ["Tema", "Estados", "Fases e categorias", "Fórmulas"].map((title) => {
-    const start = html.indexOf(`${title}<span`);
+    const start = html.indexOf(`>${title}</span><span`);
     if (start === -1) return null;
     const match = html.slice(start).match(/data-slot="badge"[^>]*>(\d+)</);
     return match ? Number(match[1]) : null;
