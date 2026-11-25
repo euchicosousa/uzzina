@@ -3,6 +3,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 import {
+  expectedInstagramPublishFormat,
   getInstagramPublishMediaKind,
   instagramPublishMediaError,
 } from "../app/lib/instagram-publish-media.js";
@@ -37,8 +38,9 @@ const scheduleSchema = z
     actionId: z.uuid(),
     partnerSlug: z.string().min(1).max(200),
     profileUsername: z.string().min(1).max(31),
-    format: z.literal("stories"),
+    format: z.enum(["feed", "video", "reel", "stories"]),
     files: z.array(z.url()).min(1).max(20),
+    caption: z.string().max(2200),
     scheduledAt: z
       .array(z.iso.datetime({ offset: true }))
       .min(1)
@@ -157,6 +159,69 @@ async function waitReady(
   throw new Error("CONTAINER_PROCESSING_TIMEOUT");
 }
 
+/**
+ * Builds the Instagram containers of one publication and hands each one that
+ * must be published to onContainer. Shared by the immediate and scheduled paths.
+ */
+async function sendPublication(opts: {
+  apiKey: string;
+  connection: Connection;
+  format: "feed" | "video" | "reel" | "stories";
+  files: string[];
+  caption: string;
+  deadline: number;
+  onContainer: (container: string) => Promise<void>;
+}): Promise<void> {
+  const { apiKey, connection, format, files, caption, deadline } = opts;
+  if (format === "stories") {
+    for (const file of files) {
+      if (Date.now() > deadline) throw new Error("PROCESSING_DEADLINE");
+      const key =
+        getInstagramPublishMediaKind(file) === "video"
+          ? "video_url"
+          : "image_url";
+      await opts.onContainer(
+        await createContainer(apiKey, connection, {
+          media_type: "STORIES",
+          [key]: file,
+        }),
+      );
+    }
+  } else if (format === "feed" && files.length > 1) {
+    const children: string[] = [];
+    for (const file of files) {
+      if (Date.now() > deadline) throw new Error("PROCESSING_DEADLINE");
+      const isVideo = getInstagramPublishMediaKind(file) === "video";
+      const child = await createContainer(apiKey, connection, {
+        ...(isVideo
+          ? { video_url: file, media_type: "VIDEO" }
+          : { image_url: file }),
+        is_carousel_item: true,
+      });
+      await waitReady(apiKey, connection, child, deadline);
+      children.push(child);
+    }
+    await opts.onContainer(
+      await createContainer(apiKey, connection, {
+        media_type: "CAROUSEL",
+        children: children.join(","),
+        caption,
+      }),
+    );
+  } else {
+    const file = files[0];
+    const body =
+      format === "feed"
+        ? { image_url: file, caption }
+        : {
+            media_type: format === "reel" ? "REELS" : "VIDEO",
+            video_url: file,
+            caption,
+          };
+    await opts.onContainer(await createContainer(apiKey, connection, body));
+  }
+}
+
 const claimedScheduleSchema = z.object({
   publication_id: z.uuid(),
   claim_token: z.uuid(),
@@ -192,7 +257,7 @@ function hasSchedulerSecret(req: VercelRequest): boolean {
   );
 }
 
-async function runScheduledStories(
+async function runScheduledPublications(
   service: ReturnType<typeof createServiceClient>,
 ): Promise<{ claimed: number; completed: number }> {
   const apiKey = getComposioConfiguration().apiKey;
@@ -214,8 +279,12 @@ async function runScheduledStories(
     let publishSent = false;
     const deadline = Date.now() + 150_000;
     try {
-      if (schedule.format !== "stories" || schedule.files.length === 0)
+      const format = z
+        .enum(["feed", "video", "reel", "stories"])
+        .safeParse(schedule.format);
+      if (!format.success || schedule.files.length === 0)
         throw new Error("SCHEDULE_FORMAT_INVALID");
+      const caption = format.data === "stories" ? "" : schedule.caption;
       const { data: action, error: actionError } = await service
         .from("actions")
         .select("id, category, archived, partners, content_files")
@@ -240,7 +309,8 @@ async function runScheduledStories(
         connectionError ||
         !action ||
         action.archived ||
-        action.category !== "stories" ||
+        expectedInstagramPublishFormat(action.category, schedule.files) !==
+          format.data ||
         !partner ||
         partner.archived ||
         !Array.isArray(action.partners) ||
@@ -260,7 +330,7 @@ async function runScheduledStories(
         if (index < 0) throw new Error("SCHEDULE_FILES_CHANGED");
         remaining.splice(index, 1);
       }
-      if (instagramPublishMediaError("stories", schedule.files))
+      if (instagramPublishMediaError(format.data, schedule.files))
         throw new Error("SCHEDULE_MEDIA_INVALID");
       const providerConfig = getComposioConfiguration();
       const expectedUserId = makePartnerComposioUserId(schedule.partner_id);
@@ -294,9 +364,9 @@ async function runScheduledStories(
             partner_id: schedule.partner_id,
             started_by: schedule.created_by,
             profile_username: schedule.profile_username,
-            format: "stories",
+            format: format.data,
             files: schedule.files,
-            caption: "",
+            caption,
           })
           .select("id")
           .single();
@@ -322,16 +392,8 @@ async function runScheduledStories(
           .eq("id", attemptId);
         if (saveError) throw new Error("SCHEDULE_ATTEMPT_SAVE_FAILED");
       };
-      const publishStory = async (file: string) => {
+      const publishContainer = async (container: string) => {
         if (Date.now() > deadline) throw new Error("SCHEDULE_DEADLINE");
-        const key =
-          getInstagramPublishMediaKind(file) === "video"
-            ? "video_url"
-            : "image_url";
-        const container = await createContainer(apiKey, connection, {
-          media_type: "STORIES",
-          [key]: file,
-        });
         currentContainerId = container;
         await saveAttempt("pending", null);
         await waitReady(apiKey, connection, container, deadline);
@@ -385,7 +447,15 @@ async function runScheduledStories(
           // The published media ID is already persisted.
         }
       };
-      for (const file of schedule.files) await publishStory(file);
+      await sendPublication({
+        apiKey,
+        connection,
+        format: format.data,
+        files: schedule.files,
+        caption,
+        deadline,
+        onContainer: publishContainer,
+      });
       phase = "finished";
       status = "published";
       detail = null;
@@ -399,7 +469,7 @@ async function runScheduledStories(
       detail = publishSent
         ? "Confira o Instagram antes de tentar novamente."
         : results.length
-          ? "A sequência foi interrompida. Confira os Stories publicados."
+          ? "A sequência foi interrompida. Confira os itens publicados."
           : error instanceof Error &&
               error.message === "SCHEDULE_PROFILE_UNAVAILABLE"
             ? "O perfil do Instagram não está disponível. Reconecte e revise a programação."
@@ -454,11 +524,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(401).json({ error: "Executor não autorizado." });
     const service = createServiceClient(config.url, config.serviceRoleKey);
     try {
-      return res.status(200).json(await runScheduledStories(service));
+      return res.status(200).json(await runScheduledPublications(service));
     } catch {
       return res
         .status(503)
-        .json({ error: "Não foi possível processar a fila de Stories." });
+        .json({ error: "Não foi possível processar a fila de programações." });
     }
   }
   const token = extractBearerToken(req);
@@ -807,10 +877,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
   if (parsedSchedule?.success) {
     const schedule = parsedSchedule.data;
-    if (action.category !== "stories")
-      return res.status(400).json({
-        error: "A programação de Stories exige uma ação da categoria Stories.",
-      });
+    if (
+      schedule.format !==
+      expectedInstagramPublishFormat(action.category, schedule.files)
+    )
+      return res
+        .status(400)
+        .json({ error: "Formato incompatível com a ação." });
     const partner = partners.find((item) => item.slug === schedule.partnerSlug);
     const connection = connections?.find(
       (item) => item.partner_id === partner?.id,
@@ -835,7 +908,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
       remaining.splice(index, 1);
     }
-    if (instagramPublishMediaError("stories", schedule.files))
+    if (instagramPublishMediaError(schedule.format, schedule.files))
       return res.status(400).json({
         error: "Formato ou arquivo incompatível com a publicação do Instagram.",
       });
@@ -896,9 +969,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         p_created_by: auth.user.id,
         p_connected_account_id: connection.connected_account_id,
         p_profile_username: connection.profile_username,
-        p_format: "stories",
+        p_format: schedule.format,
         p_files: schedule.files,
-        p_caption: "",
+        p_caption: schedule.format === "stories" ? "" : schedule.caption,
         p_timezone: schedule.timezone,
         p_scheduled_at: schedule.scheduledAt,
       },
@@ -927,20 +1000,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const actualFiles: string[] = Array.isArray(action.content_files)
     ? action.content_files
     : [];
-  const expectedFormat: string | null =
-    action.category === "post"
-      ? input.files.length > 1
-        ? null
-        : getInstagramPublishMediaKind(input.files[0]) === "video"
-          ? "video"
-          : "feed"
-      : action.category === "carousel"
-        ? "feed"
-        : action.category === "reels"
-          ? "reel"
-          : action.category === "stories"
-            ? "stories"
-            : null;
+  const expectedFormat = expectedInstagramPublishFormat(
+    action.category,
+    input.files,
+  );
   if (input.format !== expectedFormat)
     return res.status(400).json({ error: "Formato incompatível com a ação." });
   const remaining = [...actualFiles];
@@ -1087,52 +1150,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
   }
   try {
-    if (input.format === "stories") {
-      for (const file of input.files) {
-        if (Date.now() > deadline) throw new Error("PROCESSING_DEADLINE");
-        const key =
-          getInstagramPublishMediaKind(file) === "video"
-            ? "video_url"
-            : "image_url";
-        await publish(
-          await createContainer(apiKey, connection, {
-            media_type: "STORIES",
-            [key]: file,
-          }),
-        );
-      }
-    } else if (input.format === "feed" && input.files.length > 1) {
-      const children: string[] = [];
-      for (const file of input.files) {
-        if (Date.now() > deadline) throw new Error("PROCESSING_DEADLINE");
-        const isVideo = getInstagramPublishMediaKind(file) === "video";
-        const child = await createContainer(apiKey, connection, {
-          ...(isVideo
-            ? { video_url: file, media_type: "VIDEO" }
-            : { image_url: file }),
-          is_carousel_item: true,
-        });
-        await waitReady(apiKey, verifiedConnection, child, deadline);
-        children.push(child);
-      }
-      const container = await createContainer(apiKey, connection, {
-        media_type: "CAROUSEL",
-        children: children.join(","),
-        caption: input.caption,
-      });
-      await publish(container);
-    } else {
-      const file = input.files[0];
-      const body =
-        input.format === "feed"
-          ? { image_url: file, caption: input.caption }
-          : {
-              media_type: input.format === "reel" ? "REELS" : "VIDEO",
-              video_url: file,
-              caption: input.caption,
-            };
-      await publish(await createContainer(apiKey, connection, body));
-    }
+    await sendPublication({
+      apiKey,
+      connection,
+      format: input.format,
+      files: input.files,
+      caption: input.caption,
+      deadline,
+      onContainer: publish,
+    });
     phase = "finished";
     await save("published");
     return res

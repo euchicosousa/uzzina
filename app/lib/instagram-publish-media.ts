@@ -29,3 +29,20 @@ export function instagramPublishMediaError(
     return "Escolha um único vídeo para este formato.";
   return null;
 }
+
+/** Instagram format an action category publishes as, or null when unsupported. */
+export function expectedInstagramPublishFormat(
+  category: unknown,
+  files: string[],
+): InstagramPublishFormat | null {
+  if (category === "post")
+    return files.length !== 1
+      ? null
+      : getInstagramPublishMediaKind(files[0]) === "video"
+        ? "video"
+        : "feed";
+  if (category === "carousel") return "feed";
+  if (category === "reels") return "reel";
+  if (category === "stories") return "stories";
+  return null;
+}

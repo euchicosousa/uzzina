@@ -371,13 +371,12 @@ export function InstagramPublishPreparation({
     }
   }
 
-  async function scheduleStories() {
+  async function schedulePublication() {
     const dates = scheduleDates
       .filter((date): date is Date => date !== null)
       .map((date) => date.toISOString());
     if (
       !actionId ||
-      actionCategory !== "stories" ||
       !partner?.username ||
       !format ||
       mediaError ||
@@ -395,14 +394,16 @@ export function InstagramPublishPreparation({
         actionId,
         partnerSlug: partner.slug,
         profileUsername: partner.username,
-        format: "stories",
+        format,
         files: selected.map((index) => files[index]),
+        caption: format === "stories" ? "" : (caption ?? ""),
         scheduledAt: dates,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       });
       toast.success("Programação salva.");
       await refresh(true);
       setScheduleDates([null]);
+      setOpen(false);
     } catch (error) {
       toast.error(
         error instanceof Error
@@ -695,8 +696,10 @@ export function InstagramPublishPreparation({
                 )}
               </div>
               <p className="text-xs text-secondary-foreground">
-                O mesmo conteúdo será programado para cada data e hora. Fuso
-                horário: {Intl.DateTimeFormat().resolvedOptions().timeZone}.
+                O mesmo conteúdo
+                {format === "stories" ? " " : ", com a legenda atual, "}será
+                programado para cada data e hora. Fuso horário:{" "}
+                {Intl.DateTimeFormat().resolvedOptions().timeZone}.
               </p>
               {(state?.schedules.filter(
                 (item) =>
@@ -704,7 +707,7 @@ export function InstagramPublishPreparation({
               ).length ?? 0) > 0 && (
                 <div className="flex flex-col gap-2">
                   <p className="text-base font-medium">
-                    Stories programados desta ação
+                    Publicações programadas desta ação
                   </p>
                   {state?.schedules
                     .filter(
@@ -750,14 +753,13 @@ export function InstagramPublishPreparation({
                 isDisabled={
                   scheduleBusy ||
                   !partner?.username ||
-                  actionCategory !== "stories" ||
                   !format ||
                   selected.length === 0 ||
                   !!mediaError ||
                   scheduledCount === 0 ||
                   scheduleHasInvalidDate
                 }
-                onPress={() => void scheduleStories()}
+                onPress={() => void schedulePublication()}
               >
                 {scheduleBusy ? "Salvando…" : "Salvar programação"}
               </PrismButton>

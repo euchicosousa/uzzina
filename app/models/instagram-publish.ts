@@ -71,8 +71,9 @@ export type ScheduleInput = {
   actionId: string;
   partnerSlug: string;
   profileUsername: string;
-  format: "stories";
+  format: "feed" | "video" | "reel" | "stories";
   files: string[];
+  caption: string;
   scheduledAt: string[];
   timezone: string;
 };
