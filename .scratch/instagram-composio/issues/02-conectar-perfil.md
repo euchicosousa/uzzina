@@ -23,7 +23,7 @@ Na gestão do parceiro, uma pessoa autorizada conecta um perfil e a equipe vê o
 - [x] Validar conexão, @ e status com autorização por parceiro em um fluxo OAuth real no site publicado (confirmado pelo proprietário em 23/11).
 - [x] Manter credenciais no Composio e referências/estado no servidor/banco, com identidade estável isolada por parceiro.
 - [ ] Conferir cancelamento, falha, reconexão e revogação com perfil de teste; confirmar o efeito de revogar uma conexão quando o mesmo @ está ligado a outro registro.
-- [ ] Executar no deploy as buscas de publicações e insights, validar paginação/métricas e verificar o período com um perfil de teste.
+- [x] ~~Buscas de publicações e insights~~ — removidas da tela do parceiro por decisão do proprietário em 25/11/2026 (o backend ficou sem uso, a remover).
 
 ## Referências
 

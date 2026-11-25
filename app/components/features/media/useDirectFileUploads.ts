@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
-import {
-  MAX_IMAGE_BYTES as MAX_FILE_BYTES,
-  MAX_VIDEO_BYTES,
-} from "~/lib/instagram-reference";
+const MAX_FILE_BYTES = 10_000_000;
+const MAX_VIDEO_BYTES = 50_000_000;
 const IMAGE_EXTENSIONS =
   /\.(avif|bmp|gif|heic|heif|ico|jpe?g|png|svg|tiff?|webp)$/i;
 const VIDEO_EXTENSIONS = /\.(3gp|avi|m4v|mkv|mov|mp4|mpeg|mpg|ogv|webm|wmv)$/i;

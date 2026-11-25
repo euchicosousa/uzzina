@@ -1,6 +1,6 @@
 # Programar uma publicação do Instagram para uma data
 
-**Status:** salvamento/listagem/cancelamento e executor de Stories em produção (`aa63f990`, deploy READY); RPCs aplicadas (`20261123190136`); segredo na Vercel e no Vault; Cron ativo a cada minuto. Três Stories foram publicados automaticamente via worker. Correção da RPC aplicada como `20261123195548`. A revisão `05b7e5a4`, com o calendário Publicações, tem registro de deploy bem-sucedido em 23/11 e inclui a margem de dois minutos no cliente e na API. A margem e o calendário ainda aguardam conferência de uso. [Estado e evidências](../../../docs/audits/CURRENT.md)
+**Status:** salvamento/listagem/cancelamento e executor de Stories em produção (`aa63f990`, deploy READY); RPCs aplicadas (`20261123190136`); segredo na Vercel e no Vault; Cron ativo a cada minuto. Três Stories foram publicados automaticamente via worker. Correção da RPC aplicada como `20261123195548`. A revisão `05b7e5a4`, com o calendário Publicações, tem registro de deploy bem-sucedido em 23/11 e inclui a margem de dois minutos no cliente e na API. Programação aceita pelo proprietário em 25/11/2026. O calendário `/app/instagram` ainda aguarda correção: não mostrou os itens do dia em 25/11. [Estado e evidências](../../../docs/audits/CURRENT.md)
 
 **Dependência:** [publicação imediata](03-publicar-agora.md), já usada em produção. A cobertura individual dos formatos segue em aberto.
 

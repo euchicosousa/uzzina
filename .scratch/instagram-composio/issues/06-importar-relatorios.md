@@ -1,6 +1,6 @@
 # Importar posts e consultar relatórios do Instagram
 
-**Status:** proposto
+**Status:** proposto. Atualizado em 25/11/2026: o proprietário removeu da tela do parceiro a busca de Publicações e Insights, então não há mais exibição de resultados lá para migrar; o critério correspondente foi retirado.
 
 **Bloqueado por:** 05. Esta é a etapa final de organização dos dados, depois do fluxo básico de publicação e agendamento.
 
@@ -11,7 +11,6 @@ Em uma página própria **Relatórios → Instagram**, separada da configuraçã
 ## Critérios de aceite
 
 - [ ] Percorrer páginas, incluir posts externos à UZZINA e apresentar cobertura e importações parciais.
-- [ ] Tirar a exibição detalhada dos resultados da tela de configuração/conexão do parceiro e apresentá-los na página própria **Relatórios → Instagram**.
 - [ ] Guardar medições e datas no banco, distinguir dados indisponíveis, contagens acumuladas e métricas do período.
 - [ ] Exibir filtros, ranking, última atualização e CSV a partir do histórico salvo.
 - [ ] Medir crescimento real de banco e consumo de chamadas, inclusive Stories e sincronizações.

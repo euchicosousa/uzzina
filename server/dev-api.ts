@@ -10,7 +10,6 @@ const HANDLERS: Record<string, string> = {
   "/api/dash": "./api/dash.ts",
   "/api/client-accounts": "./api/client-accounts.ts",
   "/api/admin-cleanup": "./api/admin-cleanup.ts",
-  "/api/instagram-reference": "./api/instagram-reference.ts",
   "/api/instagram-publish": "./api/instagram-publish.ts",
   "/api/partner-instagram-connection": "./api/partner-instagram-connection.ts",
   "/api/create-user": "./api/create-user.ts",

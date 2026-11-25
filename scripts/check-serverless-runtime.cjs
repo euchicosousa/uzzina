@@ -65,14 +65,13 @@ const { FileFsRef } = require("@vercel/build-utils");
       "api/admin-cleanup.ts",
       "api/partner-instagram-connection.ts",
       "api/instagram-publish.ts",
-      "api/instagram-reference.ts",
       "app/lib/action-color.ts",
       "app/lib/cloudinary-audit-contract.ts",
       "app/lib/cloudinary-references.ts",
       "app/lib/partner-delete-contract.ts",
       "app/lib/partner-instagram-contract.ts",
       "app/lib/instagram-publish-media.ts",
-      "app/lib/instagram-reference.ts",
+      "app/lib/instagram-calendar-events.ts",
       "app/lib/ai-contract.ts",
       "app/lib/ai-model-registry.ts",
       "app/lib/strategy-operation-contract.ts",
@@ -91,8 +90,6 @@ const { FileFsRef } = require("@vercel/build-utils");
       "server/strategy-operations.ts",
       "server/composio-config.ts",
       "server/composio-instagram.ts",
-      "server/instagram-reference-source.ts",
-      "server/instagram-reference-transfer.ts",
       "server/dash-action-handler.ts",
       "server/dash-auth-handler.ts",
       "server/dash-data-handler.ts",
@@ -156,7 +153,7 @@ const { FileFsRef } = require("@vercel/build-utils");
           if (expected === 405) assert.ok(response.headers.Allow);
         };
         await request('OPTIONS', 405);
-        ${["api/ai.ts", "api/planning-theme.ts", "api/instagram-publish.ts", "api/instagram-reference.ts"].includes(entrypoint) ? "await request('POST', 401);" : ""}
+        ${["api/ai.ts", "api/planning-theme.ts", "api/instagram-publish.ts"].includes(entrypoint) ? "await request('POST', 401);" : ""}
         ${
           entrypoint === "api/ai.ts" && staging.SUPABASE_URL
             ? `

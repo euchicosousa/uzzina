@@ -5,22 +5,19 @@ export type FileUploadQueueRow = {
   id: number;
   name: string;
   status: "queued" | "uploading" | "failed";
-  progress: number | null;
+  progress: number;
   error?: string;
   canRetry: boolean;
-  canRemove?: boolean;
 };
 
 export function FileUploadQueue({
   entries,
-  label = "Envio de arquivos",
   notice,
   onRetry,
   onRemove,
 }: {
   entries: readonly FileUploadQueueRow[];
   notice?: string;
-  label?: string;
   onRetry: (id: number) => void;
   onRemove: (id: number) => void;
 }) {
@@ -31,7 +28,7 @@ export function FileUploadQueue({
       </p>
       {entries.length > 0 && (
         <ul
-          aria-label={label}
+          aria-label="Envio de arquivos"
           className="max-h-60 overflow-y-auto px-5 py-2 text-sm"
         >
           {entries.map((entry) => (
@@ -42,20 +39,13 @@ export function FileUploadQueue({
               <div className="min-w-0 flex-1">
                 <p className="truncate">{entry.name}</p>
 
-                {entry.status === "uploading" && entry.progress === null ? (
-                  <p
-                    className="text-xs text-secondary-foreground"
-                    role="status"
-                  >
-                    Importando…
-                  </p>
-                ) : entry.status === "uploading" ? (
+                {entry.status === "uploading" ? (
                   <div className="mt-1 flex items-center gap-2">
                     <div
                       aria-label={`Enviando ${entry.name}`}
                       aria-valuemax={100}
                       aria-valuemin={0}
-                      aria-valuenow={entry.progress ?? undefined}
+                      aria-valuenow={entry.progress}
                       className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-input"
                       role="progressbar"
                     >
@@ -90,16 +80,14 @@ export function FileUploadQueue({
                   Tentar novamente
                 </PrismButton>
               )}
-              {entry.canRemove !== false && (
-                <PrismButton
-                  aria-label={`${entry.error ? "Remover" : "Cancelar envio de"} ${entry.name}`}
-                  size="xs"
-                  variant="ghost"
-                  onPress={() => onRemove(entry.id)}
-                >
-                  {entry.error ? "Remover" : "Cancelar envio"}
-                </PrismButton>
-              )}
+              <PrismButton
+                aria-label={`${entry.error ? "Remover" : "Cancelar envio de"} ${entry.name}`}
+                size="xs"
+                variant="ghost"
+                onPress={() => onRemove(entry.id)}
+              >
+                {entry.error ? "Remover" : "Cancelar envio"}
+              </PrismButton>
             </li>
           ))}
         </ul>

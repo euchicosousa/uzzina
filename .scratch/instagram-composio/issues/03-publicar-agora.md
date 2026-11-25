@@ -4,7 +4,7 @@
 
 **Bloqueado por:** Nenhum. A conexão do perfil já está disponível; a página de consulta de dados ficará para uma etapa posterior.
 
-**Status:** implementação enviada para `main`; proprietário confirmou publicação real pela UZZINA em 23/11/2026. A matriz individual de imagem/carrossel, vídeo, Reel e Stories pela UZZINA ainda precisa ser conferida antes de marcar todos os formatos como validados.
+**Status:** implementação enviada para `main`; proprietário confirmou publicação real pela UZZINA em 23/11/2026. **Aceito pelo proprietário em 25/11/2026**, incluindo a publicação de feed pela programação.
 
 ## Etapas previstas
 
