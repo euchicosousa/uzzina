@@ -41,6 +41,7 @@ import {
   PrismToggleGroupItem,
 } from "~/components/prism";
 import { useIsDesktop } from "~/hooks/useIsDesktop";
+import { MAX_INSTAGRAM_FILES } from "~/lib/instagram-reference";
 import { CloudinaryUpload } from "./CloudinaryUpload";
 import {
   FilePreviewPanel,
@@ -48,6 +49,11 @@ import {
   getFilePreviewDetails,
 } from "./FilePreviewPanel";
 import { FileUploadQueue } from "./FileUploadQueue";
+import {
+  InstagramReferencePopover,
+  type ReferenceTarget,
+} from "./InstagramReferencePopover";
+import { useInstagramReference } from "./useInstagramReference";
 import {
   compareUploadedFiles,
   useDirectFileUploads,
@@ -63,7 +69,6 @@ import {
 } from "./FileReadPanel";
 import { detectPostType } from "./InstagramHelpers";
 
-const MAX_CONTENT_FILES = 20;
 const LONG_PRESS_MS = 500;
 const PREVIEW_MIN_WIDTH = 960;
 const READ_STATUS: Record<FileReadFileState["state"], string> = {
@@ -325,6 +330,7 @@ interface FileManagerDialogProps {
   workFiles?: boolean;
   directUpload?: boolean;
   uploadTransport?: FileUploadTransport;
+  instagramReference?: ReferenceTarget;
   onUploadActiveChange?: (active: boolean) => void;
   resetVersion?: number;
   /**
@@ -355,11 +361,12 @@ export function FileManagerDialog({
   workFiles = false,
   directUpload = false,
   uploadTransport,
+  instagramReference,
   onUploadActiveChange,
   resetVersion,
   ai,
 }: FileManagerDialogProps) {
-  const maxFiles = workFiles ? 100 : MAX_CONTENT_FILES;
+  const maxFiles = workFiles ? 100 : MAX_INSTAGRAM_FILES;
   const lastResetVersion = useRef(resetVersion);
   const reading = useFileReading(workFiles ? ai?.actionId : undefined);
   const resetReading = reading.reset;
@@ -457,6 +464,37 @@ export function FileManagerDialog({
   const inputRef = useRef<HTMLInputElement>(null);
   const inputId = useId();
   const [dragging, setDragging] = useState(false);
+  const [referencePopoverOpen, setReferencePopoverOpen] = useState(false);
+  useEffect(() => {
+    if (!open) setReferencePopoverOpen(false);
+  }, [open]);
+  const manualUploadActive = useRef(false);
+  const reference = useInstagramReference({
+    cloudName,
+    getFiles: () => itemsRef.current.map((item) => item.url),
+    getAvailableSlots: () => maxFiles - itemsRef.current.length,
+    isManualUploadActive: () => manualUploadActive.current,
+    onActiveChange: (active) =>
+      onUploadActiveChange?.(active || manualUploadActive.current),
+    onImported: (url, before, after) => {
+      addReferenceFile(url, before, after);
+    },
+  });
+  const referenceRows = reference.entries.flatMap((entry) => {
+    if (entry.state === "completed" || entry.state === "dismissed") return [];
+    const kind = entry.kind === "image" ? "Imagem" : "Vídeo";
+    return [
+      {
+        id: entry.position,
+        name: `Instagram · ${entry.position + 1}. ${kind}`,
+        status: entry.state,
+        progress: null,
+        error: entry.error,
+        canRetry: !reference.active && !manualUploadActive.current,
+        canRemove: entry.state !== "uploading",
+      },
+    ];
+  });
   const uploads = useDirectFileUploads({
     cloudName,
     uploadPreset,
@@ -468,7 +506,10 @@ export function FileManagerDialog({
       commit([...itemsRef.current, { id: `file-${nextId.current++}`, url }]);
     },
     onBatchUploaded: workFiles ? undefined : addInstagramBatch,
-    onActiveChange: onUploadActiveChange,
+    onActiveChange: (active) => {
+      manualUploadActive.current = active;
+      onUploadActiveChange?.(active || reference.isActive());
+    },
   });
 
   const sensors = useSensors(
@@ -482,6 +523,28 @@ export function FileManagerDialog({
     itemsRef.current = next;
     setItems(next);
     onChange(next.map((item) => item.url));
+  }
+
+  function addReferenceFile(
+    url: string,
+    before: readonly string[],
+    after: readonly string[],
+  ) {
+    const current = itemsRef.current;
+    if (current.some((item) => item.url === url)) return;
+    const next = [...current];
+    const successor = after
+      .map((anchor) => next.findIndex((item) => item.url === anchor))
+      .find((index) => index >= 0);
+    const predecessor = [...before]
+      .reverse()
+      .map((anchor) => next.findIndex((item) => item.url === anchor))
+      .find((index) => index >= 0);
+    const position =
+      successor ?? (predecessor === undefined ? next.length : predecessor + 1);
+    next.splice(position, 0, { id: `file-${nextId.current++}`, url });
+    setUndo(null);
+    commit(next);
   }
 
   function addInstagramBatch(batch: UploadedBatchFile[]) {
@@ -646,12 +709,20 @@ export function FileManagerDialog({
       size="2xl"
       isOpen={open}
       onOpenChange={onOpenChange}
-      isKeyboardDismissDisabled={dragging || Boolean(previewItem)}
+      isKeyboardDismissDisabled={
+        dragging || Boolean(previewItem) || referencePopoverOpen
+      }
     >
       <div
         className={cn(directUpload && "flex min-h-0 flex-col")}
         onKeyDownCapture={(event) => {
-          if (event.key !== "Escape" || !previewItem || dragging) return;
+          if (
+            event.key !== "Escape" ||
+            !previewItem ||
+            dragging ||
+            referencePopoverOpen
+          )
+            return;
           event.preventDefault();
           event.stopPropagation();
           closePreview();
@@ -763,7 +834,8 @@ export function FileManagerDialog({
                 type="file"
                 onChange={(event) => {
                   const input = event.currentTarget;
-                  if (input.files?.length) uploads.enqueue(input.files);
+                  if (input.files?.length && !reference.isActive())
+                    uploads.enqueue(input.files);
                   input.value = "";
                 }}
               />
@@ -776,8 +848,9 @@ export function FileManagerDialog({
               onDragOver={(event) => {
                 if (!isExternalDrop(event)) return;
                 event.preventDefault();
-                event.dataTransfer.dropEffect = locked ? "none" : "copy";
-                if (!locked) setDropActive(true);
+                const blocked = locked || reference.isActive();
+                event.dataTransfer.dropEffect = blocked ? "none" : "copy";
+                if (!blocked) setDropActive(true);
               }}
               onDragLeave={(event) => {
                 if (!isExternalDrop(event)) return;
@@ -792,7 +865,8 @@ export function FileManagerDialog({
                 if (!isExternalDrop(event)) return;
                 event.preventDefault();
                 setDropActive(false);
-                if (!locked) uploads.enqueue(event.dataTransfer.files);
+                if (!locked && !reference.isActive())
+                  uploads.enqueue(event.dataTransfer.files);
               }}
             >
               {items.length === 0 ? (
@@ -887,11 +961,23 @@ export function FileManagerDialog({
                   status: entry.status,
                   progress: entry.progress,
                   error: entry.error,
-                  canRetry: uploads.canRetry(entry.file),
+                  canRetry: !reference.active && uploads.canRetry(entry.file),
                 }))}
                 notice={uploads.notice}
-                onRetry={uploads.retry}
+                onRetry={(id) => {
+                  if (!reference.isActive()) uploads.retry(id);
+                }}
                 onRemove={uploads.remove}
+              />
+            )}
+
+            {instagramReference && (
+              <FileUploadQueue
+                label="Importação do Instagram"
+                entries={referenceRows}
+                notice={reference.notice}
+                onRetry={(position) => void reference.retry(position)}
+                onRemove={reference.dismiss}
               />
             )}
 
@@ -989,7 +1075,7 @@ export function FileManagerDialog({
             <div ref={addRef} className="flex items-center gap-2">
               {directUpload ? (
                 <PrismButton
-                  isDisabled={items.length >= maxFiles}
+                  isDisabled={items.length >= maxFiles || reference.active}
                   onPress={() => inputRef.current?.click()}
                   size="sm"
                   variant="secondary"
@@ -1009,6 +1095,15 @@ export function FileManagerDialog({
                   Adicionar
                   <PlusIcon />
                 </CloudinaryUpload>
+              )}
+
+              {instagramReference && directUpload && (
+                <InstagramReferencePopover
+                  target={instagramReference}
+                  busy={reference.active || manualUploadActive.current}
+                  start={reference.start}
+                  onOpenChange={setReferencePopoverOpen}
+                />
               )}
 
               {items.length > 0 && (
@@ -1049,7 +1144,9 @@ export function FileManagerDialog({
               size="sm"
               onClick={() => onOpenChange(false)}
             >
-              {directUpload && uploads.entries.some((entry) => !entry.error)
+              {directUpload &&
+              (reference.active ||
+                uploads.entries.some((entry) => !entry.error))
                 ? "Fechar janela"
                 : "Concluir"}
             </PrismButton>

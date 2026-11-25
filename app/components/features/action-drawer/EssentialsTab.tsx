@@ -45,6 +45,7 @@ import { UActionDatePicker } from "~/components/uzzina/UActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";
 import { FileManagerDialog } from "~/components/features/media/FileManagerDialog";
+import type { ReferenceTarget } from "~/components/features/media/InstagramReferencePopover";
 interface EssentialsTabProps {
   /** Height Essencial needs without scrolling (title + metadata + description minimum). */
   onNeededHeightChange?: (height: number) => void;
@@ -58,6 +59,7 @@ interface EssentialsTabProps {
   setWorkFiles: (files: string[]) => void;
   onUploadActiveChange?: (active: boolean) => void;
   currentPartners: Partner[];
+  instagramReference?: ReferenceTarget;
   cloudName: string;
   uploadPreset: string;
   isAIProcessing: boolean;
@@ -100,6 +102,7 @@ export function EssentialsTab({
   setWorkFiles,
   onUploadActiveChange,
   currentPartners,
+  instagramReference,
   cloudName,
   isAIProcessing,
   strategyStatus,
@@ -404,6 +407,7 @@ export function EssentialsTab({
       </div>
 
       <FileManagerDialog
+        instagramReference={instagramReference}
         ai={
           RawAction.id
             ? {

@@ -331,6 +331,7 @@ function mount(
   onClose = () => {},
   partnerFilters: string[] = [],
   showSearch = false,
+  contextPartners: Partner[] = [partner],
 ) {
   if (base.id) databaseActions.set(base.id, base);
   const client = new QueryClient({
@@ -362,7 +363,7 @@ function mount(
           <AppContext.Provider
             value={{
               person,
-              partners: [partner],
+              partners: contextPartners,
               cloudName: "test",
               uploadPreset: "test",
               setPrimaryAction: () => {},
@@ -2725,6 +2726,250 @@ describe("phone-width action panel", () => {
         Object.defineProperty(globalThis, "XMLHttpRequest", descriptor);
       else Reflect.deleteProperty(globalThis, "XMLHttpRequest");
     }
+  });
+
+  it("imports an ordered Instagram reference into Essential work_files and retries only the missing video", async () => {
+    const first = IMAGE.replace("post.jpg", "slide-9.jpg");
+    const middle = IMAGE.replace("/image/", "/video/").replace(
+      "post.jpg",
+      "slide-2.mp4",
+    );
+    const third = IMAGE.replace("post.jpg", "slide-1.jpg");
+    const final = [IMAGE, first, middle, third];
+    const transfers: { position: number; retry: boolean }[] = [];
+    const fallback = globalThis.fetch;
+    globalThis.fetch = (async (input, init) => {
+      if (String(input) !== "/api/instagram-reference")
+        return fallback(input, init);
+      const body = JSON.parse(String(init?.body));
+      expect(body.actionId).toBe(action.id);
+      expect(body.partnerSlug).toBe("agency");
+      if (body.operation === "prepare") {
+        expect(body.url).toBe("https://www.instagram.com/p/mixed/");
+        return Response.json({
+          ticket: "sealed-ticket",
+          items: ["image", "video", "image"].map((kind, position) => ({
+            kind,
+            position,
+            url: null,
+          })),
+        });
+      }
+      transfers.push({ position: body.position, retry: body.retry });
+      if (body.position === 1 && !body.retry)
+        return Response.json(
+          { error: "Falha simulada no vídeo." },
+          { status: 502 },
+        );
+      return Response.json({
+        position: body.position,
+        url: [first, middle, third][body.position],
+        ticket: "sealed-ticket",
+      });
+    }) as typeof fetch;
+
+    await openInstagram({ work_files: [IMAGE], content_files: [] });
+    const user = userEvent.setup();
+    fireEvent.click(screen.getByRole("tab", { name: "ESSENCIAL" }));
+    fireEvent.click(screen.getByRole("button", { name: "Detalhes da ação" }));
+    const manager = screen.getByRole("button", { name: /^Arquivos/ });
+    await user.click(manager);
+    const getDialog = () => screen.getByRole("dialog", { name: "Arquivos" });
+    const importButton = within(getDialog()).getByRole("button", {
+      name: "Importar do Instagram",
+    });
+    await user.click(importButton);
+    const popover = await screen.findByRole("dialog", {
+      name: "Importar do Instagram",
+    });
+    const getSubmit = () =>
+      within(popover).getByRole("button", { name: "Importar" });
+    const input = within(popover).getByRole("textbox", {
+      name: "Link do Instagram",
+    });
+    expect(getSubmit().hasAttribute("disabled")).toBe(true);
+    fireEvent.blur(input);
+    expect(within(popover).queryByRole("alert")).toBeNull();
+
+    await user.type(input, "teste");
+    expect(getSubmit().hasAttribute("disabled")).toBe(true);
+    await user.tab();
+    expect(input.getAttribute("aria-invalid")).toBe("true");
+    expect(within(popover).getByRole("alert").textContent).toBe(
+      "Cole um link público de post (/p/) ou Reel (/reel/) do Instagram.",
+    );
+
+    await user.clear(input);
+    await user.type(input, "https://example.test/bad");
+    expect(within(popover).queryByRole("alert")).toBeNull();
+    expect(getSubmit().hasAttribute("disabled")).toBe(true);
+    fireEvent.blur(input);
+    expect(within(popover).getByRole("alert").textContent).toBe(
+      "Cole um link público de post (/p/) ou Reel (/reel/) do Instagram.",
+    );
+
+    await user.type(input, "x");
+    expect(within(popover).queryByRole("alert")).toBeNull();
+    expect(getSubmit().hasAttribute("disabled")).toBe(true);
+
+    await user.keyboard("{Enter}");
+    expect(
+      await within(popover).findByText(/Cole um link público/),
+    ).toBeTruthy();
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(document.activeElement).toBe(importButton));
+    expect(writes).toEqual([]);
+
+    await user.click(importButton);
+    const reopenedPopover = await screen.findByRole("dialog", {
+      name: "Importar do Instagram",
+    });
+    const valid = within(reopenedPopover).getByRole("textbox", {
+      name: "Link do Instagram",
+    });
+    await user.clear(valid);
+    await user.paste("https://www.instagram.com/p/mixed/?igsh=ignored");
+    expect(
+      within(reopenedPopover)
+        .getByRole("button", { name: "Importar" })
+        .hasAttribute("disabled"),
+    ).toBe(false);
+    await user.keyboard("{Enter}");
+    await waitFor(() =>
+      expect(writes.at(-1)?.work_files).toEqual([IMAGE, first, third]),
+    );
+    await user.click(
+      within(getDialog()).getByRole("button", { name: "Concluir" }),
+    );
+    await user.click(manager);
+    await user.click(
+      within(getDialog()).getByRole("button", {
+        name: "Tentar novamente: Instagram · 2. Vídeo",
+      }),
+    );
+    await waitFor(() => expect(writes.at(-1)?.work_files).toEqual(final));
+    expect(transfers).toEqual([
+      { position: 0, retry: false },
+      { position: 1, retry: false },
+      { position: 2, retry: false },
+      { position: 1, retry: true },
+    ]);
+    expect(
+      writes.every((entry) => !Object.hasOwn(entry, "content_files")),
+    ).toBe(true);
+    expect(databaseActions.get(action.id)?.work_files).toEqual(final);
+    expect(databaseActions.get(action.id)?.content_files).toEqual([]);
+    const thumbnails = within(getDialog()).getAllByRole("button", {
+      name: /^Visualizar /,
+    });
+    expect(thumbnails.map((item) => item.getAttribute("aria-label"))).toEqual(
+      ["post.jpg", "slide-9.jpg", "slide-2.mp4", "slide-1.jpg"].map(
+        (name) => "Visualizar " + name,
+      ),
+    );
+    await user.click(
+      within(getDialog()).getByRole("button", { name: "Concluir" }),
+    );
+    expect(screen.getByRole("button", { name: "Arquivos (4)" })).toBeTruthy();
+  });
+
+  it("imports an Instagram reference on non-social actions using PrismSelect for multiple partners", async () => {
+    const importedUrl = IMAGE.replace("post.jpg", "ref-1.jpg");
+    const secondPartner: Partner = {
+      ...partner,
+      id: "partner-2",
+      slug: "studio",
+      title: "Studio",
+      short: "Studio",
+    };
+    const requestedPartners: string[] = [];
+    const fallback = globalThis.fetch;
+    globalThis.fetch = (async (input, init) => {
+      if (String(input) !== "/api/instagram-reference")
+        return fallback(input, init);
+      const body = JSON.parse(String(init?.body));
+      requestedPartners.push(body.partnerSlug);
+      if (body.operation === "prepare") {
+        return Response.json({
+          ticket: "sealed-ticket",
+          items: [{ kind: "image", position: 0, url: null }],
+        });
+      }
+      return Response.json({
+        position: 0,
+        url: importedUrl,
+        ticket: "sealed-ticket",
+      });
+    }) as typeof fetch;
+
+    mount(
+      draft({
+        category: "design",
+        partners: ["agency", "studio"],
+        work_files: [],
+        content_files: [],
+      }),
+      () => {},
+      [],
+      false,
+      [partner, secondPartner],
+    );
+    const user = userEvent.setup();
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Detalhes da ação" }),
+    );
+    const manager = await screen.findByRole("button", { name: "Arquivos" });
+    await user.click(manager);
+    const getDialog = () => screen.getByRole("dialog", { name: "Arquivos" });
+    const importButton = within(getDialog()).getByRole("button", {
+      name: "Importar do Instagram",
+    });
+    await user.click(importButton);
+    const popover = await screen.findByRole("dialog", {
+      name: "Importar do Instagram",
+    });
+    expect(popover.querySelector('[data-slot="select"]')).toBeTruthy();
+    expect(popover.querySelector('[data-slot="select-trigger"]')).toBeTruthy();
+
+    const input = within(popover).getByRole("textbox", {
+      name: "Link do Instagram",
+    });
+    await user.click(input);
+    await user.paste("https://www.instagram.com/p/photo/");
+    await user.keyboard("{Enter}");
+    expect(
+      await screen.findByText("Escolha o parceiro que receberá os arquivos."),
+    ).toBeTruthy();
+
+    const partnerSelect = within(popover).getByRole("button", {
+      name: /Parceiro de destino/,
+    });
+    await user.click(partnerSelect);
+    expect(await screen.findByRole("option", { name: "Studio" })).toBeTruthy();
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("option", { name: "Studio" })).toBeNull();
+    expect(
+      screen.getByRole("dialog", { name: "Importar do Instagram" }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("dialog", { name: "Arquivos", hidden: true }),
+    ).toBeTruthy();
+
+    await user.click(partnerSelect);
+    await user.click(await screen.findByRole("option", { name: "Studio" }));
+    await user.click(within(popover).getByRole("button", { name: "Importar" }));
+    await waitFor(() =>
+      expect(writes.at(-1)?.work_files).toEqual([importedUrl]),
+    );
+    expect(requestedPartners).toEqual(["studio", "studio"]);
+    expect(
+      writes.every((entry) => !Object.hasOwn(entry, "content_files")),
+    ).toBe(true);
+    expect(
+      within(getDialog()).getByRole("button", {
+        name: "Visualizar ref-1.jpg",
+      }),
+    ).toBeTruthy();
   });
 
   it("Essential keeps the full toolbar reachable on a phone-width panel", async () => {
