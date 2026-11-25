@@ -63,7 +63,7 @@ import {
 
 type Format = PublishInput["format"];
 type PublishMode = "publish" | "schedule";
-const MIN_SCHEDULE_LEAD_MS = 2 * 60_000;
+const MIN_SCHEDULE_LEAD_MS = 5 * 60_000;
 
 function getAttemptStatus(status: string) {
   switch (status) {
@@ -462,7 +462,9 @@ export function InstagramPublishPreparation({
         format,
         files: selected.map((index) => files[index]),
         caption: format === "stories" ? "" : (caption ?? ""),
-        scheduledAt: [new Date(Date.now() + 3 * 60_000).toISOString()],
+        scheduledAt: [
+          new Date(Date.now() + MIN_SCHEDULE_LEAD_MS).toISOString(),
+        ],
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       });
       toast.success("Nova programação salva para daqui a alguns minutos.");
@@ -754,7 +756,7 @@ export function InstagramPublishPreparation({
                     ariaLabel={`Data e hora da publicação ${index + 1}`}
                     date={date ?? undefined}
                     className="w-full flex-1"
-                    minimumLeadMinutes={2}
+                    minimumLeadMinutes={MIN_SCHEDULE_LEAD_MS / 60_000}
                     placeholder="Escolher data e hora"
                     variant={date ? "secondary" : "outline"}
                     onSelect={(nextDate) => updateScheduleDate(index, nextDate)}
@@ -867,7 +869,7 @@ export function InstagramPublishPreparation({
                 <PrismAlert variant="warning">
                   <AlertTriangleIcon />
                   <PrismAlertDescription>
-                    Escolha horários com pelo menos 2 minutos de antecedência.
+                    Escolha horários com pelo menos 5 minutos de antecedência.
                   </PrismAlertDescription>
                 </PrismAlert>
               ) : (

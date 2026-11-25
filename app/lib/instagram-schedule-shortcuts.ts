@@ -29,7 +29,7 @@ export function getScheduleShortcuts({
     Math.ceil((now.getTime() + minimumLeadMs) / 60_000) * 60_000,
   );
   const shortcuts: ScheduleShortcut[] = [
-    { id: "soon", label: "Daqui a 2 min", date: soon },
+    { id: "soon", label: "Daqui a 5 min", date: soon },
   ];
   const normalized = normalizePostTime(postTime);
   if (!normalized) return shortcuts;

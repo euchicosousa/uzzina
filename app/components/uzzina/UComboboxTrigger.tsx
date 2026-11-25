@@ -5,6 +5,7 @@ import {
 import { cn } from "cnfast";
 import { buttonVariants } from "../prism/button";
 import type { VariantProps } from "class-variance-authority";
+import { PrismButton } from "../prism";
 
 type ButtonStyleProps = VariantProps<typeof buttonVariants>;
 
@@ -74,21 +75,22 @@ export function UComboboxTrigger({
   ...props
 }: UComboboxTriggerProps) {
   return (
-    <ButtonPrimitive
+    <PrismButton
       className={cn(
         "cursor-pointer",
-        buttonVariants({ variant, size }),
         className,
         size === "icon-xs" ? "w-auto min-w-6 px-1" : "",
         size === "icon-sm" ? "w-auto min-w-8 px-2" : "",
         size === "icon" ? "w-auto min-w-10 px-2" : "",
         size === "icon-lg" ? "w-auto min-w-12 px-2" : "",
       )}
+      variant={variant}
+      size={size}
       isDisabled={disabled || isDisabled}
       type={type}
       {...props}
     >
       {children}
-    </ButtonPrimitive>
+    </PrismButton>
   );
 }

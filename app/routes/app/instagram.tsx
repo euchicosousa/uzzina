@@ -24,7 +24,7 @@ import {
 import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
-import { PrismBadge, PrismButton } from "~/components/prism";
+import { PrismBadge, PrismButton, PrismButtonGroup } from "~/components/prism";
 import { UPartnersCombobox } from "~/components/uzzina/UPartnersCombobox";
 import { useAppContext } from "~/contexts/AppContext";
 import { useFillScrollViewport } from "~/hooks/useFillScrollViewport";
@@ -177,7 +177,7 @@ function InstagramCalendarPage() {
             onSelect={setSelectedPartners}
             selectedPartners={selectedPartners}
             showText
-            size="sm"
+            size={"default"}
             variant="outline"
           />
         )}
@@ -185,29 +185,29 @@ function InstagramCalendarPage() {
         <section aria-label="Selecionar dia" className="flex flex-col gap-3">
           <div className="flex items-center justify-between gap-2">
             <h3 className="text-xl capitalize">
-              {format(month, "MMMM yyyy", { locale: ptBR })}
+              {format(month, "MMM\/yyyy", { locale: ptBR })}
             </h3>
-            <div className="flex items-center gap-1">
+            <PrismButtonGroup>
               <PrismButton
                 aria-label="Mês anterior"
                 onPress={() => changeMonth(subMonths(month, 1))}
                 size="icon-sm"
-                variant="ghost"
+                variant="secondary"
               >
                 <ArrowLeftIcon />
               </PrismButton>
-              <PrismButton onPress={selectToday} size="xs" variant="outline">
+              <PrismButton onPress={selectToday} size="sm" variant="secondary">
                 Hoje
               </PrismButton>
               <PrismButton
                 aria-label="Próximo mês"
                 onPress={() => changeMonth(addMonths(month, 1))}
                 size="icon-sm"
-                variant="ghost"
+                variant="secondary"
               >
                 <ArrowRightIcon />
               </PrismButton>
-            </div>
+            </PrismButtonGroup>
           </div>
 
           <div className="grid grid-cols-7 text-center text-xs text-secondary-foreground">
