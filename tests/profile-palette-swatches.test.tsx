@@ -99,11 +99,17 @@ it("each named palette option shows a decorative swatch from the shared palette 
   for (const palette of PALLETE) {
     const option = within(group).getByRole("radio", { name: palette.label });
     const swatch = option.querySelector("[data-palette-swatch]");
-    if (!(swatch instanceof HTMLElement)) {
+    const bgSwatch = option.querySelector("[data-palette-bg]");
+    if (
+      !(swatch instanceof HTMLElement) ||
+      !(bgSwatch instanceof HTMLElement)
+    ) {
       throw new Error(`missing swatch for ${palette.label}`);
     }
     const { l, c, h } = palette.light.primary;
+    const { l: bgL, c: bgC, h: bgH } = palette.light.bg;
     expect(swatch.style.backgroundColor).toBe(`oklch(${l} ${c} ${h})`);
+    expect(bgSwatch.style.backgroundColor).toBe(`oklch(${bgL} ${bgC} ${bgH})`);
     expect(swatch.getAttribute("aria-hidden")).toBe("true");
     expect(option.textContent).toBe(palette.label);
   }

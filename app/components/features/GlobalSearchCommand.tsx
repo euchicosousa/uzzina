@@ -41,6 +41,7 @@ import {
   RotateCcwIcon,
 } from "lucide-react";
 import { PALLETE } from "~/lib/palettes";
+import { UThemeSwatch } from "~/components/uzzina/UThemeSwatch";
 import {
   Theme,
   useAppThemeContext,
@@ -281,22 +282,18 @@ function GlobalSearchContent({
         return true;
       },
     })),
-    ...PALLETE.map((palette) => {
-      const { l, c, h } = (theme === Theme.DARK ? palette.dark : palette.light)
-        .primary;
-      return {
-        id: `palette-${palette.id}`,
-        label: `Usar paleta ${palette.label}`,
-        primaryColor: `oklch(${l} ${c} ${h})`,
-        selected: paletteId === palette.id,
-        run: () => {
-          if (onPaletteChange) {
-            onPaletteChange(palette.id);
-          }
-          return true;
-        },
-      };
-    }),
+    ...PALLETE.map((palette) => ({
+      id: `palette-${palette.id}`,
+      label: `Usar paleta ${palette.label}`,
+      palette,
+      selected: paletteId === palette.id,
+      run: () => {
+        if (onPaletteChange) {
+          onPaletteChange(palette.id);
+        }
+        return true;
+      },
+    })),
     {
       id: "home",
       label: "Ir para início",
@@ -684,11 +681,11 @@ function GlobalSearchContent({
                   void runCommand(command.id);
                 }}
               >
-                {"primaryColor" in command ? (
-                  <span
-                    aria-hidden="true"
-                    className="size-4 shrink-0 rounded-lg border squircle"
-                    style={{ backgroundColor: command.primaryColor }}
+                {"palette" in command ? (
+                  <UThemeSwatch
+                    mode={theme === Theme.DARK ? "dark" : "light"}
+                    palette={command.palette}
+                    size="sm"
                   />
                 ) : (
                   <command.Icon className="size-4" />

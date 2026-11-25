@@ -23,7 +23,6 @@ import {
   CalendarIcon,
   CalendarRangeIcon,
   CheckCircle2Icon,
-  CheckIcon,
   CloudIcon,
   HelpCircleIcon,
   LaptopIcon,
@@ -53,6 +52,7 @@ import {
 } from "~/hooks/useAppTheme";
 import { useNotifications } from "~/hooks/useNotifications";
 import { usePreferencePersistence } from "~/hooks/usePreferencePersistence";
+import { UThemeSwatch } from "~/components/uzzina/UThemeSwatch";
 import { SIZE } from "~/lib/CONSTANTS";
 import { PALLETE } from "~/lib/palettes";
 import { getQuerySessionGeneration } from "~/lib/query-client";
@@ -621,8 +621,6 @@ export const HeaderMenu = ({
           className="grid grid-cols-5 gap-1 px-2 py-1"
         >
           {PALLETE.map((paletteConfig) => {
-            const { light, dark } = paletteConfig;
-            const currentColors = theme === Theme.DARK ? dark : light;
             const isSelected = primaryColorId === paletteConfig.id;
             return (
               <PrismMenuItem
@@ -632,19 +630,17 @@ export const HeaderMenu = ({
                     ? `${paletteConfig.label}, selecionada`
                     : paletteConfig.label
                 }
-                className="mx-auto size-7 min-w-0 rounded-2xl p-1 transition-opacity squircle"
+                className="mx-auto h-7 w-auto min-w-0 rounded-2xl px-1.5 py-1 transition-opacity squircle"
                 onAction={() => changeColor(paletteConfig.id)}
                 shouldCloseOnSelect={false}
                 textValue={paletteConfig.label}
               >
-                <div
-                  className="grid size-5 place-items-center rounded-[9px] text-primary-foreground squircle"
-                  style={{
-                    backgroundColor: `oklch(${currentColors.primary.l} ${currentColors.primary.c} ${currentColors.primary.h})`,
-                  }}
-                >
-                  {isSelected && <CheckIcon className="size-4 opacity-100" />}
-                </div>
+                <UThemeSwatch
+                  mode={theme === Theme.DARK ? "dark" : "light"}
+                  palette={paletteConfig}
+                  selected={isSelected}
+                  size="sm"
+                />
               </PrismMenuItem>
             );
           })}

@@ -1192,6 +1192,14 @@ export function buildPalettesSource(
   if (start === -1 || sharedDoc === -1 || sharedStart === -1) {
     return palettesSource;
   }
+  const paletteEnd = palettesSource.indexOf("\n];", start);
+  if (paletteEnd === -1 || paletteEnd >= sharedDoc) {
+    return palettesSource;
+  }
+  const paletteHelpers = palettesSource.slice(
+    paletteEnd + "\n];".length,
+    sharedDoc,
+  );
   const sharedEndMarker = "\n};\n";
   const sharedEnd =
     palettesSource.indexOf(sharedEndMarker, sharedStart) +
@@ -1202,7 +1210,7 @@ export function buildPalettesSource(
   const palettes = PALLETE.map((p) =>
     p.id === draftPalette.id ? draftPalette : p,
   );
-  return `${head}export const PALLETE: PaletteConfig[] = ${toTsLiteral(palettes, 0)};\n\n${docBlock}export const SHARED_COLORS: SharedColors = ${toTsLiteral(draftShared, 0)};\n${tail}`;
+  return `${head}export const PALLETE: PaletteConfig[] = ${toTsLiteral(palettes, 0)};${paletteHelpers}${docBlock}export const SHARED_COLORS: SharedColors = ${toTsLiteral(draftShared, 0)};\n${tail}`;
 }
 
 export function loadDraftFromStorage(): StoredThemeDraft | null {
@@ -1233,4 +1241,30 @@ export function clearDraftFromStorage(): void {
   } catch {
     // Ignore storage errors.
   }
+}
+
+/** Lowercase, accent-free text, so "Primária" and "primaria" compare equal. */
+export function normalizeSearchText(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+/**
+ * True when every word of the query appears in the fields (title, hint,
+ * section, keywords). An empty query matches everything.
+ */
+export function matchesSearch(
+  query: string,
+  ...fields: Array<string | undefined>
+): boolean {
+  const words = normalizeSearchText(query).split(" ").filter(Boolean);
+  if (words.length === 0) return true;
+  const haystack = normalizeSearchText(
+    fields.filter((field) => field).join(" "),
+  );
+  return words.every((word) => haystack.includes(word));
 }

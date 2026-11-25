@@ -61,6 +61,7 @@ import {
   UzzinaAIModelSelectSection,
   UzzinaAIAllowanceMeterSection,
   UzzinaPreferenceSwitchSection,
+  UzzinaThemeSwatchSection,
   UzzinaTimelinePreviewSection,
   SelectSection,
   CalendarSection,
@@ -343,6 +344,12 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     label: "UPreferenceSwitch",
     section: "uzzina",
     keywords: ["preferencia", "switch", "alternar", "ativo", "inativo"],
+  },
+  {
+    id: "uzzina-theme-swatch",
+    label: "UThemeSwatch",
+    section: "uzzina",
+    keywords: ["tema", "paleta", "amostra", "swatch", "primary", "background"],
   },
   {
     id: "uzzina-timeline-preview",
@@ -1162,6 +1169,7 @@ function UIPage() {
               <UzzinaLoaderSection />
               <UzzinaPaletteEditorSection />
               <UzzinaPreferenceSwitchSection />
+              <UzzinaThemeSwatchSection />
               <UzzinaTimelinePreviewSection />
               <UzzinaViewOptionsSection />
             </div>

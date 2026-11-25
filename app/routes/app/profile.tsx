@@ -62,6 +62,7 @@ import {
   PrismToggleGroupItem,
 } from "~/components/prism";
 import { UAvatarUpload } from "~/components/uzzina/UAvatarUpload";
+import { UThemeSwatch } from "~/components/uzzina/UThemeSwatch";
 import { useAppContext } from "~/contexts/AppContext";
 import { PALLETE } from "~/lib/palettes";
 import {
@@ -163,24 +164,6 @@ function VividPhasePreview({
         ))}
       </div>
     </div>
-  );
-}
-
-function PaletteSwatch({
-  color,
-}: {
-  color: { l: number; c: number; h: number };
-}) {
-  return (
-    <span
-      aria-hidden="true"
-      className="size-4 shrink-0 rounded-lg squircle"
-      data-palette-swatch="color"
-      style={{
-        backgroundColor: `oklch(${color.l} ${color.c} ${color.h})`,
-        border: "1px solid var(--popover-border)",
-      }}
-    />
   );
 }
 
@@ -971,12 +954,10 @@ function ProfilePage() {
                   id={palette.id}
                   key={palette.id}
                 >
-                  <PaletteSwatch
-                    color={
-                      theme === Theme.DARK
-                        ? palette.dark.primary
-                        : palette.light.primary
-                    }
+                  <UThemeSwatch
+                    mode={theme === Theme.DARK ? "dark" : "light"}
+                    palette={palette}
+                    size="sm"
                   />
                   {palette.label}
                 </PrismToggleGroupItem>

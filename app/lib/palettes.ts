@@ -196,7 +196,11 @@ export const PALLETE: PaletteConfig[] = [
         c: 0,
         l: 0,
       },
-      primaryFgDelta: { l: 1, c: 0, h: 0 },
+      primaryFgDelta: {
+        l: 1,
+        c: 0,
+        h: 0,
+      },
       bg: {
         h: 200,
         c: 0.002,
@@ -224,7 +228,11 @@ export const PALLETE: PaletteConfig[] = [
         c: 0,
         l: 1,
       },
-      primaryFgDelta: { l: -1, c: 0, h: 0 },
+      primaryFgDelta: {
+        l: -1,
+        c: 0,
+        h: 0,
+      },
       bg: {
         h: 250,
         c: 0.01,
@@ -257,13 +265,17 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.02,
         l: 0.3,
       },
-      primaryFgDelta: { l: 0.7, c: -0.02, h: 120 },
+      primaryFgDelta: {
+        l: 0.7,
+        c: -0.02,
+        h: 120,
+      },
       bg: {
         h: 0,
         c: 0,
         l: 1,
       },
-      fgLDelta: -1.0,
+      fgLDelta: -1,
       popoverLDelta: 0.02,
       popoverBorderLDelta: -0.05,
       cardLDelta: -0.02,
@@ -285,7 +297,11 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.01,
         l: 0.99,
       },
-      primaryFgDelta: { l: -0.69, c: 0.01, h: 0 },
+      primaryFgDelta: {
+        l: -0.69,
+        c: 0.01,
+        h: 0,
+      },
       bg: {
         h: 240,
         c: 0.015,
@@ -317,7 +333,11 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.25,
         l: 0.62,
       },
-      primaryFgDelta: { l: 0.38, c: -0.25, h: -20 },
+      primaryFgDelta: {
+        l: 0.38,
+        c: -0.25,
+        h: -20,
+      },
       bg: {
         h: 0,
         c: 0,
@@ -345,7 +365,11 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.25,
         l: 0.68,
       },
-      primaryFgDelta: { l: 0.32, c: -0.25, h: -20 },
+      primaryFgDelta: {
+        l: 0.32,
+        c: -0.25,
+        h: -20,
+      },
       bg: {
         h: 285,
         c: 0.005,
@@ -377,7 +401,11 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.18,
         l: 0.65,
       },
-      primaryFgDelta: { l: 0.35, c: -0.18, h: -25 },
+      primaryFgDelta: {
+        l: 0.35,
+        c: -0.18,
+        h: -25,
+      },
       bg: {
         h: 130,
         c: 0.01,
@@ -405,7 +433,11 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.18,
         l: 0.65,
       },
-      primaryFgDelta: { l: 0.25, c: -0.16, h: 105 },
+      primaryFgDelta: {
+        l: 0.25,
+        c: -0.16,
+        h: 105,
+      },
       bg: {
         h: 190,
         c: 0.01,
@@ -437,7 +469,11 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.5,
         l: 0.8,
       },
-      primaryFgDelta: { l: -0.8, c: -0.5, h: -100 },
+      primaryFgDelta: {
+        l: -0.8,
+        c: -0.5,
+        h: -100,
+      },
       bg: {
         h: 0,
         c: 0,
@@ -465,7 +501,11 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.4,
         l: 0.8,
       },
-      primaryFgDelta: { l: -0.8, c: -0.4, h: -100 },
+      primaryFgDelta: {
+        l: -0.8,
+        c: -0.4,
+        h: -100,
+      },
       bg: {
         h: 285,
         c: 0.005,
@@ -497,7 +537,11 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.15,
         l: 0.94,
       },
-      primaryFgDelta: { l: -0.94, c: -0.15, h: -120 },
+      primaryFgDelta: {
+        l: -0.94,
+        c: -0.15,
+        h: -120,
+      },
       bg: {
         h: 240,
         c: 0.004,
@@ -525,7 +569,11 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.18,
         l: 0.9,
       },
-      primaryFgDelta: { l: -0.9, c: -0.18, h: -120 },
+      primaryFgDelta: {
+        l: -0.9,
+        c: -0.18,
+        h: -120,
+      },
       bg: {
         h: 250,
         c: 0.01,
@@ -557,7 +605,11 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.12,
         l: 0.7,
       },
-      primaryFgDelta: { l: 0.3, c: -0.12, h: 160 },
+      primaryFgDelta: {
+        l: 0.3,
+        c: -0.12,
+        h: 160,
+      },
       bg: {
         h: 260,
         c: 0.005,
@@ -585,7 +637,11 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.15,
         l: 0.6,
       },
-      primaryFgDelta: { l: 0.3, c: -0.13, h: 0 },
+      primaryFgDelta: {
+        l: 0.3,
+        c: -0.13,
+        h: 0,
+      },
       bg: {
         h: 290,
         c: 0.05,
@@ -618,13 +674,17 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.31,
         l: 0.45,
       },
-      primaryFgDelta: { l: 0.55, c: -0.31, h: 96 },
+      primaryFgDelta: {
+        l: 0.55,
+        c: -0.31,
+        h: 96,
+      },
       bg: {
         h: 0,
         c: 0,
         l: 1,
       },
-      fgLDelta: -1.0,
+      fgLDelta: -1,
       popoverLDelta: 0.02,
       popoverBorderLDelta: -0.05,
       cardLDelta: -0.02,
@@ -646,7 +706,11 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.31,
         l: 0.58,
       },
-      primaryFgDelta: { l: 0.42, c: -0.31, h: 96 },
+      primaryFgDelta: {
+        l: 0.42,
+        c: -0.31,
+        h: 96,
+      },
       bg: {
         h: 285,
         c: 0.005,
@@ -678,13 +742,17 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.28,
         l: 0.54,
       },
-      primaryFgDelta: { l: 0.46, c: -0.28, h: 70 },
+      primaryFgDelta: {
+        l: 0.46,
+        c: -0.28,
+        h: 70,
+      },
       bg: {
         h: 0,
         c: 0,
         l: 1,
       },
-      fgLDelta: -1.0,
+      fgLDelta: -1,
       popoverLDelta: 0.02,
       popoverBorderLDelta: -0.05,
       cardLDelta: -0.02,
@@ -706,7 +774,11 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.28,
         l: 0.68,
       },
-      primaryFgDelta: { l: 0.32, c: -0.28, h: 70 },
+      primaryFgDelta: {
+        l: 0.32,
+        c: -0.28,
+        h: 70,
+      },
       bg: {
         h: 285,
         c: 0.005,
@@ -738,7 +810,11 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.4,
         l: 0.9,
       },
-      primaryFgDelta: { l: -0.9, c: -0.4, h: 10 },
+      primaryFgDelta: {
+        l: -0.9,
+        c: -0.4,
+        h: 10,
+      },
       bg: {
         h: 320,
         c: 0.02,
@@ -766,7 +842,11 @@ export const PALLETE: PaletteConfig[] = [
         c: 0.4,
         l: 0.8,
       },
-      primaryFgDelta: { l: -0.8, c: -0.4, h: 10 },
+      primaryFgDelta: {
+        l: -0.8,
+        c: -0.4,
+        h: 10,
+      },
       bg: {
         h: 340,
         c: 0.1,
@@ -815,87 +895,248 @@ export const SHARED_COLORS: SharedColors = {
   states: {
     error: {
       color: {
-        light: { h: 16, c: 0.16, l: 0.65 },
-        dark: { h: 16, c: 0.14, l: 0.72 },
+        light: {
+          h: 16,
+          c: 0.16,
+          l: 0.65,
+        },
+        dark: {
+          h: 16,
+          c: 0.14,
+          l: 0.72,
+        },
       },
       text: {
-        light: { h: 16, c: 0.205, l: 0.52 },
-        dark: { h: 16, c: 0.16, l: 0.72 },
+        light: {
+          h: 16,
+          c: 0.205,
+          l: 0.52,
+        },
+        dark: {
+          h: 16,
+          c: 0.16,
+          l: 0.72,
+        },
       },
     },
     warning: {
       color: {
-        light: { h: 80, c: 0.12, l: 0.82 },
-        dark: { h: 80, c: 0.12, l: 0.84 },
+        light: {
+          h: 80,
+          c: 0.12,
+          l: 0.82,
+        },
+        dark: {
+          h: 80,
+          c: 0.12,
+          l: 0.84,
+        },
       },
       text: {
-        light: { h: 80, c: 0.1, l: 0.51 },
-        dark: { h: 80, c: 0.14, l: 0.84 },
+        light: {
+          h: 80,
+          c: 0.1,
+          l: 0.51,
+        },
+        dark: {
+          h: 80,
+          c: 0.14,
+          l: 0.84,
+        },
       },
     },
     success: {
       color: {
-        light: { h: 163, c: 0.11, l: 0.65 },
-        dark: { h: 163, c: 0.1, l: 0.75 },
+        light: {
+          h: 163,
+          c: 0.11,
+          l: 0.65,
+        },
+        dark: {
+          h: 163,
+          c: 0.1,
+          l: 0.75,
+        },
       },
       text: {
-        light: { h: 163, c: 0.1, l: 0.495 },
-        dark: { h: 163, c: 0.15, l: 0.75 },
+        light: {
+          h: 163,
+          c: 0.1,
+          l: 0.495,
+        },
+        dark: {
+          h: 163,
+          c: 0.15,
+          l: 0.75,
+        },
       },
     },
     info: {
       color: {
-        light: { h: 250, c: 0.12, l: 0.65 },
-        dark: { h: 250, c: 0.12, l: 0.75 },
+        light: {
+          h: 250,
+          c: 0.12,
+          l: 0.65,
+        },
+        dark: {
+          h: 250,
+          c: 0.12,
+          l: 0.75,
+        },
       },
       text: {
-        light: { h: 250, c: 0.14, l: 0.505 },
-        dark: { h: 250, c: 0.12, l: 0.75 },
+        light: {
+          h: 250,
+          c: 0.14,
+          l: 0.505,
+        },
+        dark: {
+          h: 250,
+          c: 0.12,
+          l: 0.75,
+        },
       },
     },
-    backgroundMix: { light: 10, dark: 30 },
-    successStrong: { l: 0.53, c: 0.105, hoverL: 0.4, hoverC: 0.09 },
+    backgroundMix: {
+      light: 10,
+      dark: 30,
+    },
+    successStrong: {
+      l: 0.53,
+      c: 0.105,
+      hoverL: 0.4,
+      hoverC: 0.09,
+    },
   },
   shadow: {
-    mix: { light: 30, dark: 20 },
-    l: { light: 0.15, dark: 0.15 },
-    alpha: { light: 10, dark: 70 },
+    mix: {
+      light: 15,
+      dark: 20,
+    },
+    l: {
+      light: 0.15,
+      dark: 0.15,
+    },
+    alpha: {
+      light: 10,
+      dark: 70,
+    },
   },
   lateShadow: {
-    light: { alpha: 25, alphaHover: 30 },
-    dark: { l: 0.45, c: 0.18, alpha: 50, alphaHover: 60 },
+    light: {
+      alpha: 25,
+      alphaHover: 30,
+    },
+    dark: {
+      l: 0.45,
+      c: 0.18,
+      alpha: 50,
+      alphaHover: 60,
+    },
   },
-  markerText: { lDelta: { light: -0.57, dark: -0.59 }, c: 0.03 },
+  markerText: {
+    lDelta: {
+      light: -0.57,
+      dark: -0.59,
+    },
+    c: 0.03,
+  },
   formulas: {
     support: {
-      lDelta: { light: -0.512, dark: 0.549 },
-      cDelta: { light: -0.001, dark: -0.007 },
+      lDelta: {
+        light: -0.512,
+        dark: 0.549,
+      },
+      cDelta: {
+        light: -0.001,
+        dark: -0.007,
+      },
     },
-    primaryHoverMix: { light: 20, dark: 20 },
-    ringHaloAlpha: { light: 30, dark: 30 },
-    successStrongHaloAlpha: { light: 30, dark: 30 },
-    skeletonAlpha: { light: 5, dark: 5 },
-    lateBgAlpha: { light: 70, dark: 70 },
+    primaryHoverMix: {
+      light: 20,
+      dark: 20,
+    },
+    ringHaloAlpha: {
+      light: 30,
+      dark: 30,
+    },
+    successStrongHaloAlpha: {
+      light: 30,
+      dark: 30,
+    },
+    skeletonAlpha: {
+      light: 5,
+      dark: 5,
+    },
+    lateBgAlpha: {
+      light: 70,
+      dark: 70,
+    },
     actionCard: {
-      ringAlpha: { light: 5, dark: 20 },
-      shadowAlpha: { light: 14, dark: 35 },
-      hoverShadowAlpha: { light: 18, dark: 50 },
+      ringAlpha: {
+        light: 5,
+        dark: 20,
+      },
+      shadowAlpha: {
+        light: 14,
+        dark: 35,
+      },
+      hoverShadowAlpha: {
+        light: 18,
+        dark: 50,
+      },
     },
-    topHighlightAlpha: { light: 100, dark: 10 },
+    topHighlightAlpha: {
+      light: 100,
+      dark: 10,
+    },
     categoryIcon: {
-      fillAlpha: { light: 10, dark: 25 },
-      strokeAlpha: { light: 70, dark: 70 },
-      chroma: { light: 0.7, dark: 0.7 },
+      fillAlpha: {
+        light: 10,
+        dark: 25,
+      },
+      strokeAlpha: {
+        light: 70,
+        dark: 70,
+      },
+      chroma: {
+        light: 0.7,
+        dark: 0.7,
+      },
     },
     phase: {
-      mix: { light: 15, dark: 40 },
-      mixHover: { light: 30, dark: 70 },
-      ringAlpha: { light: 30, dark: 55 },
-      textL: { light: 0.35, dark: 0.92 },
-      textC: { light: 0.07, dark: 0.06 },
-      shadowL: { light: 0.6, dark: 0.33 },
-      shadowC: { light: 0.15, dark: 0.1 },
-      shadowAlpha: { light: 25, dark: 20 },
+      mix: {
+        light: 15,
+        dark: 40,
+      },
+      mixHover: {
+        light: 30,
+        dark: 70,
+      },
+      ringAlpha: {
+        light: 30,
+        dark: 55,
+      },
+      textL: {
+        light: 0.35,
+        dark: 0.92,
+      },
+      textC: {
+        light: 0.07,
+        dark: 0.06,
+      },
+      shadowL: {
+        light: 0.6,
+        dark: 0.33,
+      },
+      shadowC: {
+        light: 0.15,
+        dark: 0.1,
+      },
+      shadowAlpha: {
+        light: 25,
+        dark: 20,
+      },
       diffuseL: 0.2,
       diffuseC: 0.15,
       diffuseAlpha: 63,
@@ -904,8 +1145,14 @@ export const SHARED_COLORS: SharedColors = {
       inkLightL: 0.98,
       inkLightC: 0.025,
       hoverDl: 0.1,
-      edgeDl: { light: 0.06, dark: 0.14 },
-      topLight: { light: 45, dark: 25 },
+      edgeDl: {
+        light: 0.06,
+        dark: 0.14,
+      },
+      topLight: {
+        light: 45,
+        dark: 25,
+      },
       dimL: 0.72,
       dimCFactor: 0.8,
       vividShadowL: 0.55,
@@ -919,27 +1166,103 @@ export const SHARED_COLORS: SharedColors = {
     },
   },
   phases: {
-    idea: { h: 84.43, c: 0.1644, l: 0.8369 },
-    do: { h: 47.6, c: 0.1867, l: 0.7049 },
-    doing: { h: 354.3, c: 0.212, l: 0.656 },
-    review: { h: 303.9, c: 0.233, l: 0.627 },
-    done: { h: 232.7, c: 0.139, l: 0.754 },
-    finished: { h: 151.7, c: 0.182, l: 0.8 },
+    idea: {
+      h: 84.43,
+      c: 0.1644,
+      l: 0.8369,
+    },
+    do: {
+      h: 47.6,
+      c: 0.1867,
+      l: 0.7049,
+    },
+    doing: {
+      h: 354.3,
+      c: 0.212,
+      l: 0.656,
+    },
+    review: {
+      h: 303.9,
+      c: 0.233,
+      l: 0.627,
+    },
+    done: {
+      h: 232.7,
+      c: 0.139,
+      l: 0.754,
+    },
+    finished: {
+      h: 151.7,
+      c: 0.182,
+      l: 0.8,
+    },
   },
   categories: {
-    ads: { h: 248.8, c: 0.184, l: 0.669 },
-    capture: { h: 168.29, c: 0.1793, l: 0.8883 },
-    carousel: { h: 7.1, c: 0.257, l: 0.641 },
-    design: { h: 2.47, c: 0.2603, l: 0.6453 },
-    dev: { h: 128.6, c: 0.241, l: 0.914 },
-    finance: { h: 147.4, c: 0.167, l: 0.699 },
-    meeting: { h: 266.4, c: 0.175, l: 0.509 },
-    post: { h: 34.5, c: 0.233, l: 0.656 },
-    print: { h: 338.7, c: 0.222, l: 0.595 },
-    reels: { h: 307, c: 0.299, l: 0.581 },
-    sm: { h: 27.9, c: 0.257, l: 0.629 },
-    stories: { h: 121.71, c: 0.1748, l: 0.7934 },
-    todo: { h: 254.1, c: 0.202, l: 0.632 },
+    ads: {
+      h: 248.8,
+      c: 0.184,
+      l: 0.669,
+    },
+    capture: {
+      h: 168.29,
+      c: 0.1793,
+      l: 0.8883,
+    },
+    carousel: {
+      h: 7.1,
+      c: 0.257,
+      l: 0.641,
+    },
+    design: {
+      h: 2.47,
+      c: 0.2603,
+      l: 0.6453,
+    },
+    dev: {
+      h: 128.6,
+      c: 0.241,
+      l: 0.914,
+    },
+    finance: {
+      h: 147.4,
+      c: 0.167,
+      l: 0.699,
+    },
+    meeting: {
+      h: 266.4,
+      c: 0.175,
+      l: 0.509,
+    },
+    post: {
+      h: 34.5,
+      c: 0.233,
+      l: 0.656,
+    },
+    print: {
+      h: 338.7,
+      c: 0.222,
+      l: 0.595,
+    },
+    reels: {
+      h: 307,
+      c: 0.299,
+      l: 0.581,
+    },
+    sm: {
+      h: 27.9,
+      c: 0.257,
+      l: 0.629,
+    },
+    stories: {
+      h: 121.71,
+      c: 0.1748,
+      l: 0.7934,
+    },
+    todo: {
+      h: 254.1,
+      c: 0.202,
+      l: 0.632,
+    },
   },
 };
 

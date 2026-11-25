@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
+  ChevronsUpDownIcon,
   Columns2Icon,
   CopyIcon,
   DownloadIcon,
@@ -42,6 +43,11 @@ import {
 } from "~/components/features/admin/themes/theme-editor-model";
 import {
   PrismButton,
+  PrismCommand,
+  PrismCommandEmpty,
+  PrismCommandInput,
+  PrismCommandItem,
+  PrismCommandList,
   PrismDialog,
   PrismDialogBody,
   PrismDialogDescription,
@@ -49,14 +55,14 @@ import {
   PrismDialogHeader,
   PrismDialogOverlay,
   PrismDialogTitle,
-  PrismSelect,
-  PrismSelectContent,
-  PrismSelectItem,
-  PrismSelectTrigger,
-  PrismSelectValue,
+  PrismPopover,
+  PrismPopoverTrigger,
   PrismToggleGroup,
   PrismToggleGroupItem,
 } from "~/components/prism";
+import { UComboboxTrigger } from "~/components/uzzina/UComboboxTrigger";
+import { UThemeSwatch } from "~/components/uzzina/UThemeSwatch";
+import { Theme, useAppThemeContext } from "~/hooks/useAppTheme";
 import {
   PALLETE,
   type CategorySlug,
@@ -78,10 +84,13 @@ function AdminThemesPageWrapper() {
 }
 
 function AdminThemesPage() {
-  const [paletteId, setPaletteId] = useState<string>(PALLETE[0].id);
+  const { primaryColorId, theme } = useAppThemeContext();
+  const initialPalette = getPaletteById(primaryColorId);
+  const [paletteId, setPaletteId] = useState<string>(initialPalette.id);
   const [draftPalette, setDraftPalette] = useState<PaletteConfig>(() =>
-    clonePaletteConfig(PALLETE[0]),
+    clonePaletteConfig(initialPalette),
   );
+  const [palettePickerOpen, setPalettePickerOpen] = useState(false);
   /** States, phases and categories: one block shared by every palette (DS36). */
   const [draftShared, setDraftShared] = useState<SharedColors>(() =>
     getOriginalShared(),
@@ -329,25 +338,59 @@ function AdminThemesPage() {
               Cores dos temas
             </h1>
 
-            <div className="w-44 shrink-0">
-              <PrismSelect
-                aria-label="Selecionar paleta"
-                onSelectionChange={(key) => {
-                  if (key !== null) handleSelectPalette(String(key));
-                }}
-                selectedKey={paletteId}
+            <div className="w-48 shrink-0">
+              <PrismPopoverTrigger
+                isOpen={palettePickerOpen}
+                onOpenChange={setPalettePickerOpen}
               >
-                <PrismSelectTrigger size="sm">
-                  <PrismSelectValue />
-                </PrismSelectTrigger>
-                <PrismSelectContent>
-                  {PALLETE.map((p) => (
-                    <PrismSelectItem key={p.id} id={p.id} textValue={p.label}>
-                      {p.label}
-                    </PrismSelectItem>
-                  ))}
-                </PrismSelectContent>
-              </PrismSelect>
+                <UComboboxTrigger
+                  aria-label="Selecionar paleta"
+                  className="w-full justify-between px-2.5"
+                  size="sm"
+                  variant="outline"
+                >
+                  <span className="flex min-w-0 items-center gap-2">
+                    <UThemeSwatch
+                      mode={theme === Theme.DARK ? "dark" : "light"}
+                      palette={draftPalette}
+                      size="md"
+                    />
+                    <span className="truncate">{draftPalette.label}</span>
+                  </span>
+                  <ChevronsUpDownIcon className="size-4 shrink-0 opacity-60" />
+                </UComboboxTrigger>
+                <PrismPopover className="overflow-hidden p-0">
+                  <PrismCommand>
+                    <PrismCommandInput placeholder="Procurar tema..." />
+                    <PrismCommandList
+                      renderEmptyState={() => (
+                        <PrismCommandEmpty>
+                          Nenhum tema encontrado.
+                        </PrismCommandEmpty>
+                      )}
+                    >
+                      {PALLETE.map((p) => (
+                        <PrismCommandItem
+                          key={p.id}
+                          data-selected={p.id === paletteId}
+                          onAction={() => {
+                            handleSelectPalette(p.id);
+                            setPalettePickerOpen(false);
+                          }}
+                          textValue={p.label}
+                        >
+                          <UThemeSwatch
+                            mode={theme === Theme.DARK ? "dark" : "light"}
+                            palette={p}
+                            size="md"
+                          />
+                          <span>{p.label}</span>
+                        </PrismCommandItem>
+                      ))}
+                    </PrismCommandList>
+                  </PrismCommand>
+                </PrismPopover>
+              </PrismPopoverTrigger>
             </div>
 
             <PrismToggleGroup
