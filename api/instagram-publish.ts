@@ -137,6 +137,45 @@ async function graph(
     throw new Error("PROVIDER_REJECTED");
   return result.data;
 }
+const preparationFailureMessages = new Map([
+  ["PROCESSING_DEADLINE", "O Instagram demorou para preparar a mídia."],
+  [
+    "CONTAINER_PROCESSING_TIMEOUT",
+    "O Instagram demorou para processar a mídia.",
+  ],
+  [
+    "CONTAINER_NOT_READY",
+    "O Instagram não conseguiu concluir o processamento da mídia.",
+  ],
+  [
+    "CONTAINER_RESPONSE_INVALID",
+    "O Instagram não confirmou a criação da mídia.",
+  ],
+  ["CONNECTION_CHANGED", "A conexão do Instagram mudou antes do envio."],
+  [
+    "PROVIDER_REQUEST_FAILED",
+    "O serviço de publicação do Instagram não respondeu com sucesso.",
+  ],
+  [
+    "PROVIDER_REJECTED",
+    "O serviço de publicação do Instagram rejeitou a solicitação.",
+  ],
+  [
+    "TimeoutError",
+    "O serviço de publicação do Instagram demorou para responder.",
+  ],
+]);
+
+function publishFailureCode(error: unknown) {
+  if (!(error instanceof Error)) return "UNCLASSIFIED";
+  if (preparationFailureMessages.has(error.message)) return error.message;
+  if (preparationFailureMessages.has(error.name)) return error.name;
+  if (error.message === "ATTEMPT_SAVE_FAILED") return "ATTEMPT_SAVE_FAILED";
+  if (error.message === "PUBLISH_RESPONSE_INVALID")
+    return "PUBLISH_RESPONSE_INVALID";
+  return "UNCLASSIFIED";
+}
+
 async function createContainer(
   apiKey: string,
   connection: Connection,
@@ -1028,6 +1067,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const results: Result[] = [];
   const deadline = Date.now() + 120_000;
   let phase = "preparing";
+  let step:
+    | "create_container"
+    | "record_container"
+    | "process_container"
+    | "check_connection"
+    | "publish_media"
+    | "record_result" = "create_container";
   let currentContainerId: string | null = null;
   let publishSent = false;
   async function save(status: string, detail: string | null = null) {
@@ -1045,9 +1091,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (error) throw new Error("ATTEMPT_SAVE_FAILED");
   }
   async function publish(container: string) {
+    step = "record_container";
     currentContainerId = container;
     await save("pending");
+    step = "process_container";
     await waitReady(apiKey, verifiedConnection, container, deadline);
+    step = "check_connection";
     const { data: currentConnection, error: currentError } = await service
       .from("partner_instagram_connections")
       .select("connected_account_id, profile_username, status")
@@ -1063,6 +1112,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       currentConnection.profile_username !== input.profileUsername
     )
       throw new Error("CONNECTION_CHANGED");
+    step = "publish_media";
     phase = "sending";
     await save("pending");
     publishSent = true;
@@ -1075,6 +1125,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     );
     if (typeof data.id !== "string" || !/^\d+$/.test(data.id))
       throw new Error("PUBLISH_RESPONSE_INVALID");
+    step = "record_result";
     const result: Result = { id: data.id, permalink: null };
     results.push(result);
     phase = "preparing";
@@ -1096,6 +1147,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     } catch {
       /* The published ID was already saved. */
     }
+    step = "create_container";
   }
   try {
     await sendPublication({
@@ -1108,24 +1160,33 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       onContainer: publish,
     });
     phase = "finished";
+    step = "record_result";
     await save("published");
     return res
       .status(200)
       .json({ id: attempt.id, status: "published", results });
-  } catch {
+  } catch (error) {
     const status = publishSent
       ? "uncertain"
       : results.length
         ? "partial"
         : "failed";
-    await save(
+    const code = publishFailureCode(error);
+    console.warn("Instagram publication attempt failed", {
+      attemptId,
+      format: input.format,
       status,
+      step,
+      code,
+    });
+    const detail =
       status === "uncertain"
         ? "Confira o Instagram antes de tentar novamente."
         : status === "partial"
           ? "A sequência foi interrompida. Confira os itens publicados."
-          : "Não foi possível preparar a publicação.",
-    ).catch(() => undefined);
+          : (preparationFailureMessages.get(code) ??
+            "Não foi possível preparar a publicação.");
+    await save(status, detail).catch(() => undefined);
     return res.status(502).json({
       id: attempt.id,
       status,
@@ -1133,9 +1194,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       error:
         status === "uncertain"
           ? "Resultado incerto. Confira o Instagram antes de tentar novamente."
-          : status === "partial"
-            ? "A sequência foi interrompida. Confira os itens publicados."
-            : "Não foi possível preparar a publicação.",
+          : detail,
     });
   }
 }

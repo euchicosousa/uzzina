@@ -1,3 +1,4 @@
+import { FileNameLabel, fileNameFromUrl } from "../media/FileNameLabel";
 import { useQuery } from "@tanstack/react-query";
 import { format, isValid } from "date-fns";
 import { useAppContext } from "~/contexts/AppContext";
@@ -142,13 +143,7 @@ export function formatConflictValue(
             : `Pessoa indisponível: ${item}`;
         }
         if (field === "content_files" || field === "work_files") {
-          try {
-            return decodeURIComponent(
-              new URL(item).pathname.split("/").pop() || item,
-            );
-          } catch {
-            return item;
-          }
+          return fileNameFromUrl(item);
         }
         return item;
       })
@@ -270,6 +265,19 @@ export function ConflictComparison({
                             __html: sanitizeHtml(value),
                           }}
                         />
+                      ) : (field === "content_files" ||
+                          field === "work_files") &&
+                        Array.isArray(value) &&
+                        value.length > 0 &&
+                        value.every(
+                          (item): item is string => typeof item === "string",
+                        ) ? (
+                        value.map((item, index) => (
+                          <FileNameLabel
+                            key={index}
+                            name={fileNameFromUrl(item)}
+                          />
+                        ))
                       ) : (
                         formatConflictValue(field, value, {
                           partners,

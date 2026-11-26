@@ -114,6 +114,8 @@ function parseRawResource(
   const item = entry as Record<string, unknown>;
   if (typeof item.public_id !== "string" || !item.public_id) return null;
 
+  if (item.placeholder === true) return null;
+
   const resourceType: CloudinaryResourceType =
     item.resource_type === "image" ||
     item.resource_type === "video" ||
@@ -178,7 +180,8 @@ export async function listCloudinaryResources(
       }
 
       const response = await fetchImpl(url.toString(), {
-        headers: { Authorization: authHeader },
+        headers: { Authorization: authHeader, "Cache-Control": "no-cache" },
+        cache: "no-store",
       });
       pagesScanned += 1;
 
@@ -406,6 +409,73 @@ export function buildCloudinaryAuditReport({
 
 const DELETE_CHUNK_SIZE = 50;
 
+async function verifyCloudinaryDeletion(
+  url: URL,
+  authorization: string,
+  ids: readonly string[],
+  fetchImpl: typeof fetch,
+): Promise<Set<string>> {
+  const options = {
+    cache: "no-store" as const,
+    signal: AbortSignal.timeout(10_000),
+    headers: { Authorization: authorization, "Cache-Control": "no-cache" },
+  };
+  const stillPresent = new Set<string>();
+  const batchIds = ids.filter((id) => !id.includes("+"));
+  if (batchIds.length) {
+    const lookup = new URL(url.origin + url.pathname);
+    lookup.searchParams.set("max_results", String(batchIds.length));
+    for (const id of batchIds) lookup.searchParams.append("public_ids[]", id);
+    const response = await fetchImpl(lookup.toString(), options);
+    if (!response.ok) throw new Error("CLOUDINARY_VERIFY_FAILED");
+    const payload: unknown = await response.json();
+    if (
+      !payload ||
+      typeof payload !== "object" ||
+      !("resources" in payload) ||
+      !Array.isArray(payload.resources) ||
+      ("next_cursor" in payload && payload.next_cursor)
+    )
+      throw new Error("CLOUDINARY_VERIFY_FAILED");
+    for (const resource of payload.resources) {
+      if (
+        !resource ||
+        typeof resource !== "object" ||
+        typeof resource.public_id !== "string" ||
+        !batchIds.includes(resource.public_id)
+      )
+        throw new Error("CLOUDINARY_VERIFY_FAILED");
+      if (resource.placeholder !== true) stillPresent.add(resource.public_id);
+    }
+  }
+  // Cloudinary's bulk lookup does not support public IDs with a plus sign.
+  const specialIds = ids.filter((id) => id.includes("+"));
+  for (let i = 0; i < specialIds.length; i += 5) {
+    await Promise.all(
+      specialIds.slice(i, i + 5).map(async (id) => {
+        const response = await fetchImpl(
+          url.origin + url.pathname + "/" + encodeURIComponent(id),
+          options,
+        );
+        if (response.status === 404) return;
+        if (!response.ok) throw new Error("CLOUDINARY_VERIFY_FAILED");
+        const resource: unknown = await response.json();
+        if (
+          !resource ||
+          typeof resource !== "object" ||
+          !("public_id" in resource) ||
+          resource.public_id !== id
+        )
+          throw new Error("CLOUDINARY_VERIFY_FAILED");
+        if (!("placeholder" in resource) || resource.placeholder !== true) {
+          stillPresent.add(id);
+        }
+      }),
+    );
+  }
+  return stillPresent;
+}
+
 export async function deleteCloudinaryResourcesByType(
   config: CloudinaryAdminConfig,
   resourceType: CloudinaryResourceType,
@@ -463,11 +533,34 @@ export async function deleteCloudinaryResourcesByType(
       deleted?: Record<string, string>;
     };
     const statusMap = payload.deleted ?? {};
+    const acknowledged = chunk.filter((id) => statusMap[id] === "deleted");
+    let stillPresent: Set<string> | null = null;
+    if (acknowledged.length > 0) {
+      try {
+        stillPresent = await verifyCloudinaryDeletion(
+          url,
+          authHeader,
+          acknowledged,
+          fetchImpl,
+        );
+      } catch {
+        // A delete acknowledgement alone does not establish catalog absence.
+      }
+    }
 
     for (const publicId of chunk) {
       const status = statusMap[publicId];
       if (status === "deleted") {
-        deletedIds.push(publicId);
+        if (stillPresent && !stillPresent.has(publicId)) {
+          deletedIds.push(publicId);
+        } else {
+          failed.push({
+            publicId,
+            message: stillPresent
+              ? "O Cloudinary informou a exclusão, mas o arquivo ainda aparece na consulta."
+              : "O Cloudinary informou a exclusão, mas não foi possível verificá-la.",
+          });
+        }
       } else if (status === "not_found") {
         notFoundIds.push(publicId);
       } else {

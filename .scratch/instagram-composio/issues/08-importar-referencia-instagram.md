@@ -4,7 +4,7 @@
 
 **Bloqueado por:** Nenhum. É independente da conexão OAuth do parceiro e dos tickets 02–07 do Instagram; depende apenas do gerenciador de arquivos e do upload Cloudinary existentes.
 
-**Status (25/11/2026):** Implementado, revisado e em produção. **Mantido por decisão do proprietário.** A remoção pedida em 25/11 era a da busca de Publicações e Insights na configuração do perfil (já removida), e não esta importação; uma remoção por engano foi desfeita no mesmo dia. Aberto: validar com posts públicos reais (imagem, Reel e carrossel).
+**Status (25/11/2026):** Implementado, revisado e em produção. **Mantido por decisão do proprietário.** A remoção pedida em 25/11 era a da busca de Publicações e Insights na configuração do perfil (já removida), e não esta importação; uma remoção por engano foi desfeita no mesmo dia. Em 26/11/2026, o proprietário aprovou a importação após testar imagem, vídeo de Reel e carrossel em produção.
 
 ## Interação no modal
 
@@ -22,7 +22,7 @@
 - [x] Preservar a ordem de fotos e vídeos do carrossel e inserir os arquivos em `work_files` sem substituir os itens já presentes (capacidade de 100 arquivos na ação e até 20 itens por link).
 - [x] Mostrar andamento e resultado por arquivo; falha parcial deve permitir identificar quais itens entraram e tentar novamente sem duplicar os que foram concluídos.
 - [x] Não publicar automaticamente o conteúdo importado; a equipe ainda revisa e usa os arquivos na ação como qualquer outro material.
-- [ ] Validar, com autorização de uso, um post público de imagem, um Reel e um carrossel; conferir arquivos e ordem no Cloudinary e na ação.
+- [x] Registrar o aceite do proprietário após testes reais de imagem, vídeo de Reel e carrossel na ação.
 
 ## Primeiro teste local
 

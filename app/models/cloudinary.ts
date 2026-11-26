@@ -33,6 +33,7 @@ export async function getCloudinaryAudit(
   const authHeader = await getAuthHeader(supabase);
 
   const response = await fetch("/api/admin?scope=cloudinary-audit", {
+    cache: "no-store",
     headers: {
       ...(authHeader ? { Authorization: authHeader } : {}),
     },

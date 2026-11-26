@@ -1,6 +1,6 @@
 # Programar publicações do Instagram em várias datas
 
-**Status: concluído (25/11/2026).** Aceito pelo proprietário (testes de várias datas ficam para depois; reabre se houver erro). Histórico: migração de banco, API e agendador de Stories em produção, com execução registrada em 23/11/2026. **Aceito pelo proprietário em 25/11/2026**: Post, Carrossel, Reel e Stories programáveis (migration `20261125130000` aplicada; commit `55ed1f0c`), com tentar novamente e copiar programação. Aberto: o calendário `/app/instagram` não mostrava itens do dia (correção em andamento). [Estado e evidências](../../../docs/audits/CURRENT.md)
+**Status: concluído (25/11/2026).** Aceito pelo proprietário (testes de várias datas ficam para depois; reabre se houver erro). Histórico: migração de banco, API e agendador de Stories em produção, com execução registrada em 23/11/2026. **Aceito pelo proprietário em 25/11/2026**: Post, Carrossel, Reel e Stories programáveis (migration `20261125130000` aplicada; commit `55ed1f0c`), com tentar novamente e copiar programação. O calendário `/app/instagram` foi aprovado em produção pelo proprietário em 26/11. O ensaio específico de várias datas segue adiado. [Estado e evidências](../../../docs/audits/CURRENT.md)
 
 **Bloqueado por:** 04
 

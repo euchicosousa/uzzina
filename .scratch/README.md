@@ -8,18 +8,12 @@ Em 25/11/2026 o proprietário aceitou e encerrou os tickets 02 a 05 (conexão, p
 
 | Entrega                                                                                                                                                                             | Situação e próxima ação                                                                           | Responsável         |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------- |
-| Reel pela UZZINA ([03](instagram-composio/issues/03-publicar-agora.md))                                                                                                             | Publicar e programar um Reel e conferir a mídia. Carrossel, Stories e post estático já testados.  | Proprietário        |
-| Testes adiados ([02](instagram-composio/issues/02-conectar-perfil.md), [04](instagram-composio/issues/04-programar-stories.md), [05](instagram-composio/issues/05-varias-datas.md)) | Reconexão e desconexão; duplicar ação sem copiar programações; várias datas na mesma programação. | Proprietário        |
-| Importar arquivos por link ([08](instagram-composio/issues/08-importar-referencia-instagram.md))                                                                                    | Em produção. Falta validar com posts públicos reais: imagem, Reel e carrossel.                    | Proprietário        |
-| Importar relatórios ([06](instagram-composio/issues/06-importar-relatorios.md))                                                                                                     | Proposto, sem prioridade.                                                                         | Proprietário decide |
+| [Publicar Reel pela UZZINA](instagram-composio/issues/03-publicar-agora.md) | Primeira tentativa falhou na preparação; a segunda publicou a mesma mídia. Agendamento de Reel ainda sem confirmação. | Codex investiga; proprietário valida |
+| Testes adiados do Instagram | Reconexão e desconexão; várias datas na mesma programação. Duplicação sem agendamentos e calendário já foram confirmados em 26/11. | Proprietário |
 
-## Propostas para revisão do proprietário
+## Investigação em produção
 
-- [Formulários administrativos no padrão de Parceiros](admin-forms/issues/01-align-admin-forms.md) — adequar Novo e Editar em Usuários e Clientes e mapear outras páginas administrativas que se beneficiariam do padrão.
-
-## Execução autorizada
-
-- [Funções da Vercel](vercel-functions/issues/01-investigar-limite-e-unificacoes.md) — o proprietário confirmou o plano Hobby e autorizou publicar a unificação de contas e limpeza administrativa em uma única função. O inventário tem nove funções depois dessa mudança.
+- [Contagem de arquivos sem vínculo após a exclusão](cloudinary-cleanup/issues/01-arquivos-sem-vinculo.md) — investigar em Administração → Cloudinary. A auditoria contava registros de backup como arquivos ativos. Após publicar a correção, conferir os números em uma nova leitura.
 
 ## Referências fora da fila de execução
 

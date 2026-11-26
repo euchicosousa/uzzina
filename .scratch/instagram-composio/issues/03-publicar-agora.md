@@ -4,7 +4,7 @@
 
 **Bloqueado por:** Nenhum. A conexão do perfil já está disponível; a página de consulta de dados ficará para uma etapa posterior.
 
-**Status: concluído (25/11/2026).** Aceito pelo proprietário: carrossel, Stories e post estático testados; Reel fica para depois, e o ticket reabre se houver erro. Histórico: implementação enviada para `main`; proprietário confirmou publicação real pela UZZINA em 23/11/2026. **Aceito pelo proprietário em 25/11/2026**, incluindo a publicação de feed pela programação.
+**Status: reaberto para investigar a primeira tentativa de Reel observada em produção em 26/11/2026.** Aceito pelo proprietário: carrossel, Stories e post estático testados; Reel fica para depois, e o ticket reabre se houver erro. Histórico: implementação enviada para `main`; proprietário confirmou publicação real pela UZZINA em 23/11/2026. **Aceito pelo proprietário em 25/11/2026**, incluindo a publicação de feed pela programação.
 
 ## Etapas previstas
 
@@ -54,3 +54,15 @@ A migration `20261123153257_instagram_publish_attempts.sql` foi aplicada ao proj
 Migration aplicada e RLS/grants conferidos em produção. Prettier, typecheck, build e `git diff --check` passaram após o ajuste de estados. Commits `72a58813` e `ca4b305d` enviados para `main` em 23/11; o push não confirma que o deploy ficou Ready. A autorização real de membro, matriz de formatos e aceite visual ainda precisam de validação.
 
 Fontes: [Composio — publicação de mídia](https://docs.composio.dev/kb/guide/toolkits-instagram), [proxy Composio](https://docs.composio.dev/reference/api-reference/tools/postToolsExecuteProxy) e [publicação Meta](https://developers.facebook.com/documentation/instagram-platform/content-publishing).
+
+## Reel em produção — 26/11/2026
+
+Às 13h20, a primeira tentativa já tinha registrado o contêiner, mas terminou
+em preparação após 41,3 segundos, sem ID publicado. Às 13h23, a mesma mídia
+foi publicada na tentativa seguinte, com um ID registrado. O erro específico
+do provedor não foi persistido naquele envio. A causa exata ficou indeterminada.
+
+Correção no checkout: a publicação imediata passa a registrar a etapa e um
+código permitido da falha no log, com mensagem específica no histórico quando
+o caso é conhecido. O limite de espera e a política de novas tentativas
+continuam os mesmos.

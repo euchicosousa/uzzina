@@ -1,6 +1,6 @@
 # Encontrar e excluir arquivos sem uso no Cloudinary
 
-**Status: implementado e publicado (25/11/2026), ainda não testado pelo proprietário** (`app/routes/app/admin/cloudinary.tsx`, `api/admin-cleanup.ts`). Reabre se houver erro. Histórico: proposto.
+**Status:** publicado. Reaberto em 26/11/2026. O proprietário executou a exclusão em Administração → Cloudinary, mas a contagem de candidatos sem vínculo permaneceu igual. A exclusão e a atualização do catálogo precisam ser reconciliadas.
 
 **Bloqueado por:** Nenhum
 
@@ -22,3 +22,18 @@ Criar um local administrativo para comparar os arquivos do Cloudinary com os arq
 - Codex — gpt-6.2-astra. Adequado para verificar os riscos e os contratos do fluxo.
 - Codex — gpt-6.2-sol. Alternativa para execução cuidadosa com menor custo.
 - Codex — gpt-6.1-terra. Alternativa para conferir a interação visual e os estados.
+
+## Contador após exclusão — 26/11/2026
+
+As capturas mostram 303 candidatos antes da exclusão, 301 após a confirmação
+de dois arquivos e 303 na releitura. A consulta somente de leitura ao ambiente
+do Cloudinary dos prints confirmou que os dois IDs continuam visíveis na API
+como `placeholder: true`, `backup: true` e zero bytes. O catálogo devolveu
+219 registros com o marcador de backup. A aplicação contava esses registros
+como arquivos ativos.
+
+A listagem passou a ignorar o marcador explícito do provedor ao montar as
+listas e totais. A confirmação do lote verifica os IDs respondidos como
+excluídos e aceita apenas os que desapareceram ou ficaram como registro de
+backup. Se a API ainda mostrar o arquivo ativo ou a verificação falhar, a
+tela informa a divergência. A correção preserva os backups.

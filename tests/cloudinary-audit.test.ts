@@ -1,3 +1,4 @@
+import { deleteCloudinaryResourcesByType } from "../server/cloudinary-admin";
 import { beforeEach, describe, expect, it, mock } from "bun:test";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { buildCloudinaryAuditReport } from "../server/cloudinary-admin";
@@ -266,6 +267,37 @@ describe("buildCloudinaryAuditReport", () => {
   });
 });
 
+it("counts assets missing or represented only by backups after the deletion acknowledgment", async () => {
+  const requested = [
+    "uzzina/work/sumiu",
+    "uzzina/work/continua",
+    "uzzina/work/backup",
+  ];
+  const provider = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    const ids = new URL(String(input)).searchParams.getAll("public_ids[]");
+    expect(ids).toEqual(requested);
+    if (init?.method === "DELETE") {
+      return Response.json({
+        deleted: Object.fromEntries(ids.map((id) => [id, "deleted"])),
+      });
+    }
+    return Response.json({
+      resources: [
+        { public_id: requested[1] },
+        { public_id: requested[2], placeholder: true },
+      ],
+    });
+  }) as typeof fetch;
+  const result = await deleteCloudinaryResourcesByType(
+    { cloudName: "cloud", apiKey: "fixture", apiSecret: "fixture" },
+    "image",
+    requested,
+    provider,
+  );
+  expect(result.deletedIds).toEqual([requested[0], requested[2]]);
+  expect(result.failed).toMatchObject([{ publicId: requested[1] }]);
+});
+
 describe("API /api/cloudinary-audit", () => {
   beforeEach(() => {
     process.env.SUPABASE_URL = "https://example.supabase.co";
@@ -401,6 +433,13 @@ describe("API /api/cloudinary-audit", () => {
           JSON.stringify({
             resources: [
               {
+                public_id: "uzzina/work/backup-deleted",
+                resource_type: "image",
+                placeholder: true,
+                bytes: 0,
+                created_at: "2025-01-01T10:00:00Z",
+              },
+              {
                 public_id: "uzzina/partners/logo-dengo",
                 resource_type: "image",
                 format: "png",
@@ -530,6 +569,13 @@ describe("API /api/cloudinary-audit", () => {
     ) => {
       const urlStr = String(input);
       const method = init?.method || "GET";
+
+      if (
+        method === "GET" &&
+        new URL(urlStr).searchParams.has("public_ids[]")
+      ) {
+        return Response.json({ resources: [] });
+      }
 
       if (method === "GET" && urlStr.includes("/resources/image/upload")) {
         return new Response(
@@ -792,6 +838,13 @@ describe("API /api/cloudinary-audit", () => {
     ) => {
       const urlStr = String(input);
       const method = init?.method || "GET";
+
+      if (
+        method === "GET" &&
+        new URL(urlStr).searchParams.has("public_ids[]")
+      ) {
+        return Response.json({ resources: [] });
+      }
 
       if (method === "GET" && urlStr.includes("/resources/image/upload")) {
         return new Response(

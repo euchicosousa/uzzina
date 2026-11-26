@@ -42,10 +42,16 @@ Leia antes de mexer na gaveta de ação (Essencial, Instagram, Observações), n
 
 - Na janela Arquivos da equipe, o rodapé oferece Pequena, Média e Grande quando há arquivos. Média é a opção inicial. Os ícones escolhem a largura máxima, e a grade adapta as colunas ao espaço disponível. O controle aceita uma única opção, fica disponível durante a seleção e altera só a grade. A escolha fica na janela enquanto o componente está montado. Os exemplos de Essencial e Instagram em `/ui` → Uzzina → Upload de arquivos exibem o mesmo controle.
 
+## Arquivos: nomes e prévias
+
+- Em espaços estreitos do app, os rótulos de arquivo usam `FileNameLabel`: uma linha, reticências quando necessário, extensão em selo, nome completo no atributo `title`. A coluna de texto pode encolher e os controles adjacentes mantêm sua largura. As exportações de texto mantêm o nome inteiro.
+- O envio de imagem ou vídeo pelo gerenciador mostra uma prévia local na fila assim que o arquivo é selecionado. A URL local é revogada ao sair da fila. A lista da ação recebe a mídia do Cloudinary ao fim do upload. Em Instagram → Publicar ou programar, a lista mostra imagens e um quadro de vídeos do Cloudinary, com o ícone como alternativa se o quadro falhar.
+
 ## Importar arquivos por link
 
 - Em Gaveta da ação → Essencial → Arquivos (`work_files`), disponível em todas as categorias de ação, o ícone **Importar arquivos por link** recebe links públicos `/p/` e `/reel/`. A ação precisa estar salva. Com vários parceiros, a pessoa escolhe o destino no seletor padrão Prism (`PrismSelect`). A adição manual por clique e arraste mantém o comportamento de ordenação e a pasta já usados por esse fluxo.
 - `POST /api/import-from-link` recebe a importação. O endereço anterior `/api/instagram-reference` encaminha para a nova rota. O Instagram é a origem aceita hoje. A função autoriza edição pela sessão e confere se o parceiro ativo e acessível está na ação. A preparação consulta ScrapeCreators via Composio Instant e devolve um bilhete cifrado, vinculado à pessoa, à ação e ao parceiro. As URLs de origem só são lidas pelo servidor. O envio usa origens CDN permitidas, verifica tipo e tamanho em fluxo e assina a cópia para `uzzina/work/<id do parceiro>/instagram` usando as credenciais de servidor do Cloudinary.
+- A transferência por link ocorre entre servidores. A fila mostra uma barra sem porcentagem no item ativo e conta os arquivos confirmados em lotes com mais de um item. Itens que falharam continuam disponíveis para revisão e nova tentativa.
 - A capacidade da ação é de 100 arquivos (`work_files`), com limite de até 20 itens por link do Instagram, até 10 MB por imagem e 50 MB por vídeo. A fila exibe o estado por item. O servidor usa a posição original e um identificador estável por mídia. Na retomada, verifica se o Cloudinary já gravou uma cópia que ficou sem resposta. A lista reaproveita a persistência de `work_files` conforme os arquivos chegam. Fechar Arquivos mantém a fila enquanto a ação está aberta. A integração real segue na [ficha Instagram 08](../../.scratch/instagram-composio/issues/08-importar-referencia-instagram.md).
 
 ## Notificações e saída com gavetas abertas

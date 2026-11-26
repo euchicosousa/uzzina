@@ -1,3 +1,5 @@
+import { FileNameLabel, fileNameFromUrl } from "../media/FileNameLabel";
+import { getCloudinaryVideoPosterUrl } from "../media/FilePreviewPanel";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { cn } from "cnfast";
@@ -57,6 +59,7 @@ import {
   AlertTriangleIcon,
   CopyIcon,
   GripVerticalIcon,
+  PlayIcon,
   RotateCcwIcon,
   XIcon,
 } from "lucide-react";
@@ -145,6 +148,10 @@ function SortablePublishFile({
     isDragging,
   } = useSortable({ id: fileIndex });
 
+  const isImage = getInstagramPublishMediaKind(url) === "image";
+  const poster = isImage ? url : getCloudinaryVideoPosterUrl(url);
+  const [failedPreview, setFailedPreview] = useState<string | null>(null);
+
   return (
     <div
       ref={setNodeRef}
@@ -168,23 +175,32 @@ function SortablePublishFile({
       >
         <GripVerticalIcon />
       </PrismButton>
-      {getInstagramPublishMediaKind(url) === "image" ? (
-        <img
-          src={url}
-          alt=""
-          className="size-12 shrink-0 rounded-xl object-cover squircle"
-        />
-      ) : (
-        <span
-          aria-hidden="true"
-          className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-secondary squircle"
-        >
-          ▶
-        </span>
-      )}
-      <span className="min-w-0 flex-1 truncate text-sm" title={url}>
-        {index + 1}. {url.split("/").pop()}
+      <span
+        aria-hidden="true"
+        className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-card squircle"
+      >
+        {poster && poster !== failedPreview && (
+          <img
+            src={poster}
+            alt=""
+            className="size-full object-cover"
+            onError={() => setFailedPreview(poster)}
+          />
+        )}
+        {!isImage && (
+          <PlayIcon
+            className={cn(
+              "absolute size-4",
+              poster && poster !== failedPreview && "image-icon text-white",
+            )}
+          />
+        )}
       </span>
+      <FileNameLabel
+        name={fileNameFromUrl(url)}
+        prefix={`${index + 1}. `}
+        className="flex-1 text-sm"
+      />
       <PrismButton
         size="sm"
         variant="ghost"
@@ -554,19 +570,24 @@ export function InstagramPublishPreparation({
         </PrismButton>
       )}
 
-      <PrismDialog isOpen={open} onOpenChange={setOpen} size="lg">
+      <PrismDialog
+        className="grid-cols-[minmax(0,1fr)]"
+        isOpen={open}
+        onOpenChange={setOpen}
+        size="lg"
+      >
         <PrismDialogHeader>
           <PrismDialogTitle>Instagram</PrismDialogTitle>
         </PrismDialogHeader>
         <PrismTabs
-          className="min-h-0"
+          className="min-h-0 min-w-0"
           selectedKey={mode}
           variant="drawer"
           onSelectionChange={(key) => {
             if (key === "publish" || key === "schedule") setMode(key);
           }}
         >
-          <PrismDialogBody className="flex flex-col gap-4">
+          <PrismDialogBody className="flex min-w-0 flex-col gap-4">
             {loading && (
               <p className="text-secondary-foreground">Consultando perfil…</p>
             )}

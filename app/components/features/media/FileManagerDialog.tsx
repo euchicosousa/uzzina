@@ -958,6 +958,7 @@ export function FileManagerDialog({
                 entries={uploads.entries.map((entry) => ({
                   id: entry.id,
                   name: entry.file.name,
+                  previewFile: entry.file,
                   status: entry.status,
                   progress: entry.progress,
                   error: entry.error,
@@ -975,6 +976,16 @@ export function FileManagerDialog({
               <FileUploadQueue
                 label="Importar arquivos por link"
                 entries={referenceRows}
+                batchProgress={
+                  reference.active && reference.entries.length > 1
+                    ? {
+                        completed: reference.entries.filter(
+                          (entry) => entry.state === "completed",
+                        ).length,
+                        total: reference.entries.length,
+                      }
+                    : undefined
+                }
                 notice={reference.notice}
                 onRetry={(position) => void reference.retry(position)}
                 onRemove={reference.dismiss}

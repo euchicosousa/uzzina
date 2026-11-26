@@ -16,6 +16,7 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { AdminGuard } from "~/components/features/AdminGuard";
 import { CloudinaryDeleteConfirmDialog } from "~/components/features/CloudinaryDeleteConfirmDialog";
+import { FileNameLabel } from "~/components/features/media/FileNameLabel";
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import {
   PrismAlert,
@@ -355,18 +356,16 @@ function AssetList({
 
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span
-                        className="truncate font-mono text-xs font-medium text-foreground"
-                        title={asset.publicId}
-                      >
-                        {asset.publicId}
-                      </span>
+                      <FileNameLabel
+                        className="max-w-full font-mono text-xs font-medium"
+                        extension={asset.format}
+                        name={asset.publicId}
+                      />
                       <PrismBadge variant={badge.variant}>
                         {badge.label}
                       </PrismBadge>
                       <PrismBadge variant="default">
                         {resourceTypeLabel(asset.resourceType)}
-                        {asset.format ? ` · ${asset.format.toUpperCase()}` : ""}
                       </PrismBadge>
                       {asset.status === "in_use" &&
                         !asset.canUnlinkFromActions && (
@@ -376,7 +375,9 @@ function AssetList({
                         )}
                     </div>
                     <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-secondary-foreground">
-                      <span>Pasta: {asset.folder}</span>
+                      <span className="wrap-anywhere">
+                        Pasta: {asset.folder}
+                      </span>
                       <span>Tamanho: {formatBytes(asset.bytes)}</span>
                       {asset.width && asset.height && (
                         <span>
@@ -449,6 +450,60 @@ function AssetList({
   );
 }
 
+function reconcileConfirmedDeletions(
+  report: CloudinaryAuditResponse,
+  deleted: ReadonlyMap<string, string>,
+): CloudinaryAuditResponse {
+  const summary = { ...report.summary };
+  function remaining(
+    assets: CloudinaryAuditAsset[],
+    count:
+      | "orphanCandidatesCount"
+      | "inUseCount"
+      | "protectedRecentCount"
+      | "protectedUnknownCount",
+    bytes:
+      | "recoverableBytes"
+      | "inUseBytes"
+      | "protectedRecentBytes"
+      | "protectedUnknownBytes",
+  ) {
+    return assets.filter((asset) => {
+      if (deleted.get(asset.assetKey) !== asset.createdAt) return true;
+      summary[count] -= 1;
+      summary[bytes] -= asset.bytes;
+      summary.totalCatalogCount -= 1;
+      summary.totalCatalogBytes -= asset.bytes;
+      return false;
+    });
+  }
+
+  return {
+    ...report,
+    summary,
+    orphanCandidates: remaining(
+      report.orphanCandidates,
+      "orphanCandidatesCount",
+      "recoverableBytes",
+    ),
+    inUseAssets: remaining(
+      report.inUseAssets ?? [],
+      "inUseCount",
+      "inUseBytes",
+    ),
+    protectedRecent: remaining(
+      report.protectedRecent,
+      "protectedRecentCount",
+      "protectedRecentBytes",
+    ),
+    protectedUnknown: remaining(
+      report.protectedUnknown,
+      "protectedUnknownCount",
+      "protectedUnknownBytes",
+    ),
+  };
+}
+
 function AdminCloudinaryPage() {
   const { person } = useAppContext();
   const queryClient = useQueryClient();
@@ -467,15 +522,44 @@ function AdminCloudinaryPage() {
   const [lastDeleteResult, setLastDeleteResult] =
     useState<CloudinaryDeleteResponse | null>(null);
 
-  const { data, isLoading, isFetching, isError, error, refetch } = useQuery<
-    CloudinaryAuditResponse,
-    Error
-  >({
+  const [confirmedDeletions, setConfirmedDeletions] = useState<{
+    userId: string;
+    reportAtDeletion: number;
+    items: ReadonlyMap<string, string>;
+  }>();
+  const {
+    data: report,
+    dataUpdatedAt,
+    isLoading,
+    isFetching,
+    isRefetchError,
+    error,
+    refetch,
+  } = useQuery<CloudinaryAuditResponse, Error>({
     queryKey: ["cloudinary-audit", person.user_id],
     queryFn: () => getCloudinaryAudit(supabase),
     retry: false,
     staleTime: 60_000,
   });
+
+  const currentDeletions =
+    confirmedDeletions?.userId === person.user_id ? confirmedDeletions : null;
+  const hasNewCatalog = currentDeletions
+    ? dataUpdatedAt > currentDeletions.reportAtDeletion
+    : false;
+  const reconciled = useMemo(
+    () =>
+      report && currentDeletions
+        ? reconcileConfirmedDeletions(report, currentDeletions.items)
+        : report,
+    [report, currentDeletions],
+  );
+  const data = hasNewCatalog ? report : reconciled;
+  const catalogDisagrees =
+    hasNewCatalog &&
+    report &&
+    reconciled &&
+    reconciled.summary.totalCatalogCount < report.summary.totalCatalogCount;
 
   useEffect(() => {
     if (!data) return;
@@ -511,7 +595,30 @@ function AdminCloudinaryPage() {
         })),
         ...(allowReferencedInActions ? { allowReferencedInActions: true } : {}),
       }),
-    onSuccess: (result) => {
+    onSuccess: (result, { items }) => {
+      if (result.deleted.length > 0) {
+        const sent = new Map(
+          items.map((asset) => [asset.assetKey, asset.createdAt]),
+        );
+        setConfirmedDeletions((previous) => {
+          const confirmed = new Map(
+            previous?.userId === person.user_id &&
+              previous.reportAtDeletion === dataUpdatedAt
+              ? previous.items
+              : undefined,
+          );
+          for (const asset of result.deleted) {
+            const createdAt = sent.get(asset.assetKey);
+            if (createdAt !== undefined)
+              confirmed.set(asset.assetKey, createdAt);
+          }
+          return {
+            userId: person.user_id,
+            reportAtDeletion: dataUpdatedAt,
+            items: confirmed,
+          };
+        });
+      }
       setIsDeleteOpen(false);
       setDeleteError(null);
       setSelectedKeys(new Set());
@@ -700,7 +807,7 @@ function AdminCloudinaryPage() {
             Consultando catálogo do Cloudinary e referências no banco...
           </p>
         </div>
-      ) : isError || !data ? (
+      ) : !data ? (
         <div className="flex flex-col gap-4">
           <PrismAlert variant={missingCredentials ? "warning" : "error"}>
             <AlertTriangleIcon />
@@ -725,6 +832,19 @@ function AdminCloudinaryPage() {
         </div>
       ) : (
         <>
+          {isRefetchError && (
+            <PrismAlert variant="warning">
+              <AlertTriangleIcon />
+              <PrismAlertTitle>
+                Não foi possível atualizar a análise
+              </PrismAlertTitle>
+              <PrismAlertDescription>
+                A tela mostra a última leitura com as exclusões confirmadas já
+                descontadas. Use Atualizar análise para conferir o catálogo
+                novamente.
+              </PrismAlertDescription>
+            </PrismAlert>
+          )}
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             <SummaryCard
               hint={`Total: ${formatBytes(data.summary.totalCatalogBytes)}`}
@@ -791,10 +911,25 @@ function AdminCloudinaryPage() {
             </span>
           </div>
 
+          {catalogDisagrees && (
+            <PrismAlert variant="warning">
+              <AlertTriangleIcon />
+              <PrismAlertTitle>
+                O catálogo ainda mostra arquivos da última limpeza
+              </PrismAlertTitle>
+              <PrismAlertDescription>
+                Os totais refletem a última leitura do catálogo do Cloudinary.
+              </PrismAlertDescription>
+            </PrismAlert>
+          )}
           {lastDeleteResult && (
             <PrismAlert
               variant={
-                lastDeleteResult.failed.length > 0 ? "warning" : "success"
+                lastDeleteResult.failed.length > 0 ||
+                catalogDisagrees ||
+                lastDeleteResult.deletedCount === 0
+                  ? "warning"
+                  : "success"
               }
             >
               <CheckCircle2Icon />
@@ -836,12 +971,17 @@ function AdminCloudinaryPage() {
                     {lastDeleteResult.failed.length} arquivo(s) falharam:{" "}
                     {lastDeleteResult.failed
                       .slice(0, 3)
-                      .map((item) => item.publicId)
-                      .join(", ")}
-                    .
+                      .map((item) => item.message)
+                      .filter(
+                        (message, index, messages) =>
+                          messages.indexOf(message) === index,
+                      )
+                      .join(" ")}
                   </span>
                 )}
-                {lastDeleteResult.skipped.length === 0 &&
+                {!catalogDisagrees &&
+                  lastDeleteResult.deletedCount > 0 &&
+                  lastDeleteResult.skipped.length === 0 &&
                   lastDeleteResult.failed.length === 0 && (
                     <span>
                       {lastDeleteResult.unlinkedActionsCount > 0

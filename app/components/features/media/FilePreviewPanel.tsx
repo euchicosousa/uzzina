@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { DownloadIcon, ExternalLinkIcon, XIcon } from "lucide-react";
-import { buttonVariants, PrismBadge, PrismButton } from "~/components/prism";
+import { buttonVariants, PrismButton } from "~/components/prism";
 import { cn } from "~/lib/utils";
-import { fileNameFromUrl } from "./FileReadPanel";
+import {
+  FileNameLabel,
+  fileNameFromUrl,
+  getFileExtension,
+} from "./FileNameLabel";
 import { isImageUrl } from "./InstagramHelpers";
 
 export function getFilePreviewDetails(url: string) {
-  const name = fileNameFromUrl(
-    url.startsWith("blob:") ? (url.split("#/")[1] ?? url) : url,
-  );
-  const extension = name.includes(".") ? name.split(".").pop() : undefined;
+  const name = fileNameFromUrl(url);
+  const extension = getFileExtension(name);
   const isPdf = extension?.toLowerCase() === "pdf";
   const isAudio = /\.(aac|flac|m4a|mp3|oga|ogg|opus|wav|wma)$/i.test(name);
   const canShowVideo =
@@ -109,7 +111,7 @@ export function FilePreviewPanel({
   onClose: () => void;
 }) {
   const [failed, setFailed] = useState(false);
-  const { name, extension, type } = getFilePreviewDetails(url);
+  const { name, type } = getFilePreviewDetails(url);
   const posterUrl = type === "video" ? getCloudinaryVideoPosterUrl(url) : null;
   const downloadUrl = getFileDownloadUrl(url);
   const downloadLink = (
@@ -135,14 +137,7 @@ export function FilePreviewPanel({
       className="grid min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)] border-l"
     >
       <div className="flex min-w-0 items-center justify-between gap-2 border-b px-4 py-3">
-        <div className="flex min-w-0 flex-1 items-center gap-2">
-          <p className="min-w-0 truncate text-sm font-medium" title={name}>
-            {name}
-          </p>
-          <PrismBadge className="shrink-0">
-            {extension?.toUpperCase() ?? "Arquivo"}
-          </PrismBadge>
-        </div>
+        <FileNameLabel name={name} className="flex-1 text-sm font-medium" />
         <PrismButton
           aria-label="Fechar prévia"
           className="shrink-0"

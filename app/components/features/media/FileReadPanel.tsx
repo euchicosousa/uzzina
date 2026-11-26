@@ -1,3 +1,4 @@
+import { FileNameLabel, fileNameFromUrl } from "./FileNameLabel";
 import { CheckIcon, CopyIcon, Loader2Icon } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import { PrismButton } from "~/components/prism";
@@ -35,15 +36,6 @@ const SUPPORTED =
 
 export function isReadableWorkFile(url: string): boolean {
   return SUPPORTED.test(url);
-}
-
-export function fileNameFromUrl(url: string): string {
-  const raw = url.split("?")[0].split("#")[0].split("/").pop() ?? url;
-  try {
-    return decodeURIComponent(raw);
-  } catch {
-    return raw;
-  }
 }
 
 function modelName(id: string): string {
@@ -424,8 +416,11 @@ export function FileReadResults({
               <div className="flex flex-col gap-2">
                 {transcription.files.map((file, index) => (
                   <div key={file.target.id} className="flex flex-col gap-1">
-                    <h4 className="text-xs font-semibold">
-                      Arquivo {index + 1} · {fileNameFromUrl(file.target.url)}
+                    <h4 className="min-w-0 text-xs font-semibold">
+                      <FileNameLabel
+                        name={fileNameFromUrl(file.target.url)}
+                        prefix={`Arquivo ${index + 1} · `}
+                      />
                     </h4>
                     {file.read.state === "done" ? (
                       <p className="text-sm whitespace-pre-wrap text-secondary-foreground">

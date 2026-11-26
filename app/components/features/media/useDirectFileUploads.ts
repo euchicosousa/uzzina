@@ -60,7 +60,7 @@ type UploadOptions = {
   uploadTransport?: FileUploadTransport;
 };
 
-function getMediaType(file: File) {
+export function getMediaType(file: File) {
   if (file.type.startsWith("video/")) return "video";
   if (file.type.startsWith("image/")) return "image";
   if (file.type && file.type !== "application/octet-stream") return "other";
