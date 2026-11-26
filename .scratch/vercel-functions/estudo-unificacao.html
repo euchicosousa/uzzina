@@ -281,12 +281,12 @@
           </p>
         </div>
         <div class="count">
-          8 / 12<small>funções · 4 vagas</small>
+          7 / 12<small>funções · 5 vagas</small>
         </div>
       </div>
 
       <section>
-        <h2>Inventário das 8 funções depois da fusão</h2>
+        <h2>Inventário das 7 funções depois da fusão</h2>
         <div class="table-wrap">
           <table>
             <thead>
@@ -374,25 +374,13 @@
                   próprio.
                 </td>
               </tr>
-              <tr>
-                <td><code>api/strategy-worker.ts</code></td>
-                <td>
-                  Executa trabalho de estratégia em segundo plano quando chamado
-                  pelo cron/fila legada.
-                </td>
-                <td>
-                  O cron foi pausado em 25/11 e a fila antiga foi drenada; o
-                  endpoint permaneceu no código para reversão. Conta como função
-                  mesmo pausado. A remoção definitiva é uma decisão separada.
-                </td>
-              </tr>
             </tbody>
           </table>
         </div>
       </section>
 
       <section>
-        <h2>IA, Planejamento e estratégias: três funções</h2>
+        <h2>IA, Planejamento e estratégias: duas funções</h2>
         <div class="result-grid">
           <article class="card">
             <span class="label">Função compartilhada</span>
@@ -408,14 +396,6 @@
             <p>
               Executa Gerar/Recriar na própria requisição, sem depender do
               worker periódico.
-            </p>
-          </article>
-          <article class="card caution">
-            <span class="label">Estratégias · pausado</span>
-            <h3><code>strategy-worker.ts</code></h3>
-            <p>
-              Endpoint antigo de fila. O cron foi pausado; o arquivo ficou para
-              reversão e ainda ocupa uma das 8 funções.
             </p>
           </article>
         </div>
@@ -453,9 +433,8 @@
           </article>
           <article class="card">
             <span class="label">Não recomendado agora</span>
-            <h3>Estratégia e Instagram</h3>
+            <h3>Operações do Instagram</h3>
             <p>
-              Worker HMAC não compartilha a fronteira da API de usuário.
               Conexão, importação e publicação do Instagram têm callbacks,
               permissões e efeitos externos diferentes.
             </p>
@@ -466,7 +445,7 @@
             <p>
               <code>instagram-publish</code> e <code>instagram-reference</code>
               podem usar um router e preservar escopos e URLs antigas. O ganho
-              seria uma função (8 → 7); ambas servem fluxos de membro, mas têm
+              seria uma função (7 → 6); ambas servem fluxos de membro, mas têm
               contratos de mídia e efeitos externos distintos.
             </p>
           </article>
@@ -482,11 +461,11 @@
           </article>
         </div>
         <p style="margin-top: 12px; color: var(--muted)">
-          Com 8 de 12 funções, não é preciso unir APIs do Instagram para caber
+          Com 7 de 12 funções, não é preciso unir APIs do Instagram para caber
           no Hobby. Juntar publicação e importação economizaria uma vaga, mas
-          não é necessário para o limite atual. A remoção de
-          <code>strategy-worker</code> requer decisão explícita porque o
-          endpoint foi mantido para reversão após pausar o cron.
+          não é necessário para o limite atual. O agendador antigo de
+          estratégias foi pausado em 25/11, com a fila vazia. A função
+          <code>strategy-worker</code> foi removida.
         </p>
       </section>
 

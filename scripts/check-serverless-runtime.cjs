@@ -58,7 +58,6 @@ const { FileFsRef } = require("@vercel/build-utils");
     const sources = [
       "api/ai.ts",
       "api/strategy-operations.ts",
-      "api/strategy-worker.ts",
       "api/dash.ts",
       "api/admin.ts",
       "api/partner-instagram-connection.ts",

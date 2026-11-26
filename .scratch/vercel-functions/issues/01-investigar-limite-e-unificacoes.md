@@ -151,3 +151,9 @@ geração da equipe e recebe, por rewrite, as chamadas a `/api/planning-theme`.
 O fluxo da equipe exige membro ativo. A geração de propostas exige
 administrador ativo e mantém quota, lotes e retomada. A duração configurada
 é de 180 segundos. Contagem após esta fusão: **8 funções**.
+
+## Remoção do worker antigo de estratégias — 26/11/2026
+
+O proprietário autorizou remover `/api/strategy-worker` e publicar. A fila
+antiga tinha sido drenada e o cron pausado em 25/11. Gerar e Recriar
+continuam em `/api/strategy-operations`. A remoção deixa **7 funções**.

@@ -13,7 +13,6 @@ const HANDLERS: Record<string, HandlerRoute> = {
     query: { scope: "planning-theme" },
   },
   "/api/strategy-operations": { path: "./api/strategy-operations.ts" },
-  "/api/strategy-worker": { path: "./api/strategy-worker.ts" },
   "/api/dash": { path: "./api/dash.ts" },
   "/api/admin": { path: "./api/admin.ts" },
   "/api/admin-accounts": {

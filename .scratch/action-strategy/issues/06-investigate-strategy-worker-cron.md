@@ -4,7 +4,7 @@
 
 **Bloqueado por:** Nenhum (pode começar imediatamente).
 
-**Status: concluído (25/11/2026).** Código e migration em produção; a fila antiga está zerada (30 operações concluídas, nenhuma pendente) e o cron `uzzina-strategy-worker` foi **pausado** em 25/11/2026 (`cron.alter_job(..., active := false)`, confirmado `active=false`). Reversível: `SELECT cron.alter_job(jobid, active := true) FROM cron.job WHERE jobname = 'uzzina-strategy-worker';`. Falta apenas o teste real de Gerar/Recriar estratégias pelo proprietário; se falhar, reative o cron. O endpoint antigo e o cron seguem preservados (sem remoção).
+**Status em 26/11/2026.** Na gaveta da ação → Essencial → Estratégias, Gerar e Recriar aguardam a geração e a gravação na própria requisição. Em 25/11, o cron `uzzina-strategy-worker` foi pausado no Supabase (`active=false`), com 30 operações concluídas e nenhuma pendente na fila antiga. Em 26/11, a função Vercel que o cron chamava foi retirada do código. O Supabase mantém o cron pausado e os registros históricos. A reativação do cron só faria sentido com o retorno a um deploy que ainda tenha a função antiga. O proprietário ainda precisa conferir Gerar e Recriar em uma ação de teste, com a aba aberta. [Estado da publicação](../../../docs/audits/CURRENT.md)
 
 - [x] Localizar e explicar o cron: frequência, serviço, worker chamado e operação que ele processa.
 - [x] Verificar como **Gerar estratégias** registra e acompanha a operação, e confirmar se há outro caminho no código que executa a fila.
@@ -40,7 +40,7 @@ Na gaveta de uma ação, em Essencial → Estratégias, **Gerar estratégias** e
 
 O código está pronto para publicação. A [migration](../../../supabase/migrations/20261122230000_direct_strategy_operations.sql) foi aplicada no Supabase de produção `uzzina` em 23/11/2026, registro remoto `20261123124102`; as três RPCs foram conferidas como `SECURITY INVOKER`, com `search_path` vazio e EXECUTE apenas para `service_role`. Typecheck, build, oito verificações serverless, Prettier dos arquivos alterados e Biome focado passaram. As RPCs novas conservam a autorização, versão, modelo, reservas e lease; resultado retido pode ser aplicado sem outra chamada de IA. Um pedido que ficou na fila sem começar expira após três minutos e libera a reserva; uma geração de resposta incerta fica marcada para conferência. A API antiga do executor e o agendador continuam disponíveis; cron segue ativo até a conferência e drenagem descritas abaixo.
 
-### Publicação e drenagem — estado em 23/11
+### Roteiro histórico de publicação e drenagem (23/11)
 
 1. Conferir o projeto e as funções vigentes no banco, aplicar somente a migração acima e verificar as três RPCs novas e seus grants: somente `service_role`, sem `anon`/`authenticated`. Manter o cron ativo e o app antigo funcionando. Não usar `db push` em lote.
 2. Publicar o código com duração de 180 segundos para a API e confirmar que a versão está **Ready**. Validar numa ação autorizada Gerar, Recriar, modelo escolhido, reabertura e estratégias anteriores. Simular interrupção de forma controlada e conferir estado e eventual uso antes de repetir. Não confundir respostas HTTP simuladas com validação do banco ou provedor real.

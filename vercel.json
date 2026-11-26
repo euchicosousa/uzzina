@@ -3,8 +3,7 @@
     "api/instagram-reference.ts": { "maxDuration": 180 },
     "api/instagram-publish.ts": { "maxDuration": 180 },
     "api/ai.ts": { "maxDuration": 180 },
-    "api/strategy-operations.ts": { "maxDuration": 180 },
-    "api/strategy-worker.ts": { "maxDuration": 180 }
+    "api/strategy-operations.ts": { "maxDuration": 180 }
   },
   "rewrites": [
     {

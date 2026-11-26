@@ -12,14 +12,9 @@ export class StrategyStoreError extends Error {
   }
 }
 type StrategyRPC =
-  | "strategy_ready"
   | "accept_direct_strategy_operation"
   | "claim_direct_strategy_operation"
   | "read_direct_strategy_operation"
-  | "accept_strategy_operation"
-  | "accept_strategy_operation_with_model"
-  | "read_strategy_operation"
-  | "claim_strategy_operation_with_model"
   | "store_strategy_result"
   | "finish_strategy_operation"
   | "fail_strategy_operation"
@@ -34,22 +29,19 @@ export async function strategyRPC(
   return data;
 }
 
-/** The legacy scheduler claims its queue; direct requests claim their own operation. */
 export async function runStrategyWorker(
   client: SupabaseClient,
   limit: number,
-  requestedOperationId?: string,
+  requestedOperationId: string,
 ) {
   const leaseId = randomUUID();
   const claimed: unknown = await strategyRPC(
     client,
-    requestedOperationId
-      ? "claim_direct_strategy_operation"
-      : "claim_strategy_operation_with_model",
+    "claim_direct_strategy_operation",
     {
       p_lease_id: leaseId,
       p_limit: limit,
-      ...(requestedOperationId ? { p_operation_id: requestedOperationId } : {}),
+      p_operation_id: requestedOperationId,
     },
   );
   if (claimed === null) return { processed: false };

@@ -109,15 +109,11 @@ A correção incremental de leitura de ações é `supabase/migrations/202610081
 
 Após uma publicação, o proprietário pode conferir login/home, ações/data, preferências, IA, administração, portal/revisão, upload e Leads. Em edição simultânea, alterar a mesma ação em duas sessões e verificar conflito/preservação do rascunho; atualizar para confirmar persistência. Fazer essas verificações com registros próprios de teste e relatar passos/erro/navegador, sem segredos. O resultado vigente fica em CURRENT.
 
-## Geração persistente de estratégias
+## Geração de estratégias da ação
 
-Estratégias usam permanentemente a fila privada no servidor. Não configurar `UZZINA_DURABLE_STRATEGIES` nem `VITE_DURABLE_STRATEGIES`: essas chaves foram removidas a pedido do proprietário. A aplicação salva/cria a ação canônica antes de aceitar a operação; depois da aceitação pode fechar a página. Readiness, autorização, versão, quota e confirmação de persistência continuam obrigatórias, sem fallback para geração de estratégias pelo navegador.
+Na gaveta da ação → Essencial → Estratégias, Gerar e Recriar aguardam a geração e o salvamento na requisição a `/api/strategy-operations`. Mantenha a aba aberta até a confirmação. Se fechar a aba ou perder a conexão, reabra a ação e confira o estado antes de tentar de novo. Um resultado já retido pode ser aplicado sem repetir a chamada ao modelo.
 
-A migration estrutural já foi aplicada em produção em01/11 (remota `20261101140254`); não reaplicá-la. [Manifest](supabase/rollouts/strategy-operations-manifest.json) e [registro operacional](docs/audits/2026-11-01-strategy-activation.md) distinguem SQL, configuração e publicação. O executor exige `STRATEGY_WORKER_SECRET` independente (mínimo32 caracteres), igual ao segredo Vault `uzzina_strategy_worker_secret`; não usar uma chave Supabase nem prefixar segredos com VITE_. O segredo foi configurado nesta ativação sem ser exibido/versionado.
-
-Produção Ready e agendamento30s foram verificados em01/11; o [registro permanente](docs/audits/2026-11-01-strategy-permanent-rollout.md) contém os IDs e limites da comprovação. Wakeups são assinados com HMAC-SHA256, timestamp/UUID e janela60s; o segredo bruto não é enviado na fila HTTP.
-
-O [scheduler separado](supabase/rollouts/strategy-operations-scheduler.sql) instala pg_cron/pg_net e um job inicialmente inativo. Depois de verificar o novo backend Ready e sua chamada autenticada, ativar somente esse job. Acorda a cada30s; timeout HTTP120s, uma geração por chamada, modelo90s sem retry, lease150s e Vercel180s. `UZZINA_STRATEGY_ACCEPTING=false` pausa opcionalmente novas aceitações mantendo worker/status/recuperação para drenar; não apagar resultados/tabelas nem desligar executor com operações aceitas pendentes.
+`UZZINA_STRATEGY_ACCEPTING=false` pausa novas gerações e mantém a leitura de estado e a recuperação de resultados. As RPCs da geração na requisição estão no Supabase de produção desde 23/11/2026. O cron legado foi pausado em 25/11/2026 depois que a fila drenou, e a rota que ele chamava saiu do código em 26/11/2026. O [manifest](supabase/rollouts/strategy-operations-manifest.json) e o [SQL do agendador](supabase/rollouts/strategy-operations-scheduler.sql) registram a implantação histórica. Consulte [CURRENT](docs/audits/CURRENT.md) para o estado da publicação atual.
 
 Teste SQL isolado com PostgreSQL17 e módulo `pg` fora do projeto: `PG_MODULE=/caminho/para/pg PG_SOCKET=/caminho/absoluto/socket PG_PORT=55434 node scripts/check-strategy-database.cjs`. O script só aceita socket local, cria/remove seu banco descartável e aplica a migration real com dados fictícios. Não redirecionar essas fixtures para produção.
 
