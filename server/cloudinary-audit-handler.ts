@@ -942,9 +942,7 @@ async function handlePostDelete(
       }
       const verified = await verifyCloudinaryBackupsBatch(
         cloudinaryConfig,
-        submitted.flatMap(({ resource }) =>
-          resource.asset_id ? [resource.asset_id] : [],
-        ),
+        submitted.map(({ resource }) => resource),
       ).catch(() => new Set<string>());
       for (const entry of submitted) {
         const { resource, assetKey } = entry;

@@ -1,6 +1,7 @@
 import {
   deleteCloudinaryResourcesByType,
   verifyCloudinaryBackupsBatch,
+  readCloudinarySelection,
 } from "../server/cloudinary-admin";
 import { beforeEach, describe, expect, it, mock } from "bun:test";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
@@ -306,42 +307,74 @@ it("counts assets missing or represented only by backups after the deletion ackn
   expect(result.failed).toMatchObject([{ publicId: requested[1] }]);
 });
 
-it("confirms a batch without reloading version histories and leaves ambiguous backups pending", async () => {
-  const requests: string[] = [];
+it("confirms a backup batch by public path and preserves existing or reused assets", async () => {
+  const ids = ["cleared", "ambiguous", "stillbacked", "restored", "reused"];
+  const rows = ids.map((id) => ({
+    asset_id: id,
+    public_id: "uzzina/" + id,
+    resource_type: "image" as const,
+    created_at: "",
+    secure_url: "",
+    bytes: 0,
+    height: null,
+    width: null,
+    format: "png",
+  }));
+  let calls = 0;
   const provider = (async (input: RequestInfo | URL) => {
+    calls += 1;
     const url = new URL(String(input));
-    requests.push(url.pathname);
-    if (url.pathname.endsWith("/by_asset_ids")) {
-      expect(url.searchParams.getAll("asset_ids[]")).toEqual([
-        "cleared",
-        "ambiguous",
-        "stillbacked",
-        "restored",
-      ]);
-      return Response.json({
-        resources: [
-          { asset_id: "ambiguous", placeholder: true },
-          { asset_id: "stillbacked", placeholder: true, backup: true },
-          { asset_id: "restored", backup: false },
-        ],
-      });
-    }
-    expect(url.searchParams.get("expression")).toBe(
-      "(status=active OR status=deleted) AND (asset_id=cleared OR asset_id=ambiguous)",
+    expect(url.searchParams.get("expression")).toContain(
+      'public_id="uzzina/cleared"',
     );
     return Response.json({
       resources: [
-        { asset_id: "ambiguous", status: "deleted", backup_bytes: 1024 },
+        { ...rows[1], status: "deleted" },
+        { ...rows[2], status: "deleted", backup_bytes: 1024 },
+        { ...rows[3], status: "active", backup_bytes: 0 },
+        {
+          ...rows[4],
+          asset_id: "replacement",
+          status: "active",
+          backup_bytes: 0,
+        },
       ],
     });
   }) as typeof fetch;
   const confirmed = await verifyCloudinaryBackupsBatch(
     { cloudName: "cloud", apiKey: "fixture", apiSecret: "fixture" },
-    ["cleared", "ambiguous", "stillbacked", "restored"],
+    rows,
     provider,
   );
   expect([...confirmed]).toEqual(["cleared"]);
-  expect(requests).toHaveLength(2);
+  expect(calls).toBe(1);
+});
+
+it("rechecks the existing subset if Cloudinary rejects a batch with a missing ID", async () => {
+  const asset = {
+    asset_id: "present",
+    public_id: "uzzina/test",
+    resource_type: "image",
+    type: "upload",
+  };
+  let calls = 0;
+  const provider = (async (input: RequestInfo | URL) => {
+    calls += 1;
+    const url = new URL(String(input));
+    if (url.searchParams.getAll("asset_ids[]").includes("absent"))
+      return Response.json(
+        { error: { message: "Illegal ids given" } },
+        { status: 400 },
+      );
+    return Response.json({ resources: [asset] });
+  }) as typeof fetch;
+  const result = await readCloudinarySelection(
+    { cloudName: "cloud", apiKey: "fixture", apiSecret: "fixture" },
+    ["absent", "present"],
+    provider,
+  );
+  expect(result.resources.map((item) => item.asset_id)).toEqual(["present"]);
+  expect(calls).toBe(3);
 });
 
 describe("API /api/cloudinary-audit", () => {
@@ -626,6 +659,7 @@ describe("API /api/cloudinary-audit", () => {
     const operations: string[] = [];
     let versionReads = 0;
     let batchReads = 0;
+    let searchReads = 0;
     let fullCatalogReads = 0;
     let backupCleared = false;
     globalThis.fetch = (async (
@@ -649,11 +683,11 @@ describe("API /api/cloudinary-audit", () => {
       }
       if (url.pathname.endsWith("/by_asset_ids")) {
         batchReads += 1;
-        return Response.json({
-          resources: backupCleared
-            ? [{ ...media, placeholder: true, backup: false }]
-            : [media, restored],
-        });
+        return Response.json({ resources: [media, restored] });
+      }
+      if (url.pathname.endsWith("/search")) {
+        searchReads += 1;
+        return Response.json({ resources: [], total_count: 0 });
       }
       if (url.pathname.endsWith("/resources/" + assetId)) {
         expect(url.searchParams.get("versions")).toBe("true");
@@ -707,7 +741,8 @@ describe("API /api/cloudinary-audit", () => {
       expect(confirmed.getStatus()).toBe(200);
       expect(operations).toEqual(["original", "backup"]);
       expect(versionReads).toBe(1);
-      expect(batchReads).toBe(2);
+      expect(batchReads).toBe(1);
+      expect(searchReads).toBe(1);
       expect(fullCatalogReads).toBe(legacyReads);
       expect(confirmed.getBody()).toMatchObject({
         deletedCount: 1,

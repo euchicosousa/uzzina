@@ -634,6 +634,7 @@ async function readExactResourceRows(
   url: URL,
   ids: readonly string[],
   fetchImpl: typeof fetch,
+  matches?: (row: Record<string, unknown>) => boolean,
 ) {
   const response = await fetchImpl(
     url.toString(),
@@ -645,12 +646,24 @@ async function readExactResourceRows(
       429,
       "CLOUDINARY_RATE_LIMITED",
     );
-  if (!response.ok)
+  if (!response.ok) {
+    const problem: unknown = await response.json().catch(() => null);
+    const missingIds =
+      url.pathname.endsWith("/by_asset_ids") &&
+      response.status === 400 &&
+      problem &&
+      typeof problem === "object" &&
+      "error" in problem &&
+      problem.error &&
+      typeof problem.error === "object" &&
+      "message" in problem.error &&
+      problem.error.message === "Illegal ids given";
     throw new CloudinaryAdminError(
       "Não foi possível conferir os arquivos do lote no Cloudinary.",
       502,
-      "CLOUDINARY_UPSTREAM_ERROR",
+      missingIds ? "CLOUDINARY_IDS_MISSING" : "CLOUDINARY_UPSTREAM_ERROR",
     );
+  }
   const payload: unknown = await response.json();
   if (
     !payload ||
@@ -667,7 +680,9 @@ async function readExactResourceRows(
       typeof entry !== "object" ||
       !("asset_id" in entry) ||
       typeof entry.asset_id !== "string" ||
-      !ids.includes(entry.asset_id) ||
+      !(matches
+        ? matches(entry as Record<string, unknown>)
+        : ids.includes(entry.asset_id)) ||
       rows.has(entry.asset_id)
     )
       throw new Error("A resposta do Cloudinary não corresponde ao lote.");
@@ -685,18 +700,31 @@ async function readResourcesByAssetIds(
 ) {
   const ids = [...new Set(assetIds)];
   const rows = new Map<string, Record<string, unknown>>();
-  for (let i = 0; i < ids.length; i += ASSET_LOOKUP_BATCH) {
-    const batch = ids.slice(i, i + ASSET_LOOKUP_BATCH);
+  async function read(batch: readonly string[]) {
     const url = new URL(`${cloudinaryResourcesUrl(config)}/by_asset_ids`);
     for (const id of batch) url.searchParams.append("asset_ids[]", id);
-    for (const [id, row] of await readExactResourceRows(
-      config,
-      url,
-      batch,
-      fetchImpl,
-    ))
-      rows.set(id, row);
+    try {
+      for (const [id, row] of await readExactResourceRows(
+        config,
+        url,
+        batch,
+        fetchImpl,
+      ))
+        rows.set(id, row);
+    } catch (error) {
+      if (
+        !(error instanceof CloudinaryAdminError) ||
+        error.code !== "CLOUDINARY_IDS_MISSING"
+      )
+        throw error;
+      if (batch.length === 1) return;
+      const middle = Math.floor(batch.length / 2);
+      await read(batch.slice(0, middle));
+      await read(batch.slice(middle));
+    }
   }
+  for (let i = 0; i < ids.length; i += ASSET_LOOKUP_BATCH)
+    await read(ids.slice(i, i + ASSET_LOOKUP_BATCH));
   return rows;
 }
 
@@ -726,50 +754,54 @@ export async function readCloudinarySelection(
 
 export async function verifyCloudinaryBackupsBatch(
   config: CloudinaryAdminConfig,
-  assetIds: readonly string[],
+  assets: readonly CloudinaryRawResource[],
   fetchImpl: typeof fetch = globalThis.fetch,
 ): Promise<Set<string>> {
-  if (assetIds.length === 0) return new Set();
-  const rows = await readResourcesByAssetIds(config, assetIds, fetchImpl);
-  const cleared = new Set<string>();
-  const unresolved: string[] = [];
-  for (const id of assetIds) {
-    const row = rows.get(id);
-    if (row && row.placeholder !== true) continue;
-    if (row?.backup === true && row.backup_bytes === 0) continue;
-    if (row?.backup === false || row?.backup_bytes === 0) cleared.add(id);
-    else if (
-      !row ||
-      (row.backup !== true && typeof row.backup_bytes !== "number")
-    )
-      unresolved.push(id);
-  }
-  if (unresolved.length === 0) return cleared;
-
-  // Search includes deleted assets and reports backup_bytes even when the
-  // lookup by ID omits that field. Treat a contradictory result as pending.
-  if (unresolved.some((id) => !/^[a-z0-9]+$/i.test(id)))
-    throw new Error("Identificador inválido na conferência de backups.");
+  if (assets.length === 0) return new Set();
+  // Fixed-folder Cloudinary environments cannot search by asset ID.
+  // Search exact public IDs and compare immutable IDs in the response.
+  const key = (publicId: string, type: string) => `${type}/${publicId}`;
+  const keys = new Set(
+    assets.map(({ public_id, resource_type }) => key(public_id, resource_type)),
+  );
+  const clauses = assets.map(
+    ({ public_id, resource_type }) =>
+      `(public_id=${JSON.stringify(public_id)} AND resource_type=${resource_type})`,
+  );
   const url = new URL(`${cloudinaryResourcesUrl(config)}/search`);
   url.searchParams.set(
     "expression",
-    `(status=active OR status=deleted) AND (${unresolved.map((id) => `asset_id=${id}`).join(" OR ")})`,
+    `(status=active OR status=deleted) AND type=upload AND (${clauses.join(" OR ")})`,
   );
-  url.searchParams.set("max_results", String(unresolved.length));
+  url.searchParams.set("max_results", "500");
   const indexed = await readExactResourceRows(
     config,
     url,
-    unresolved,
+    [],
     fetchImpl,
+    (row) =>
+      typeof row.public_id === "string" &&
+      typeof row.resource_type === "string" &&
+      keys.has(key(row.public_id, row.resource_type)),
   );
-  for (const id of unresolved) {
-    const row = indexed.get(id);
-    if (
-      row ? row.status === "deleted" && row.backup_bytes === 0 : !rows.has(id)
-    )
-      cleared.add(id);
-  }
-  return cleared;
+  const occupied = new Set(
+    [...indexed.values()].map((row) =>
+      key(String(row.public_id), String(row.resource_type)),
+    ),
+  );
+  return new Set(
+    assets.flatMap((asset) => {
+      if (!asset.asset_id) return [];
+      const row = indexed.get(asset.asset_id);
+      const cleared = row
+        ? row.public_id === asset.public_id &&
+          row.resource_type === asset.resource_type &&
+          row.status === "deleted" &&
+          row.backup_bytes === 0
+        : !occupied.has(key(asset.public_id, asset.resource_type));
+      return cleared ? [asset.asset_id] : [];
+    }),
+  );
 }
 
 // Submit backup removal for the exact asset. Positive removals are verified as a batch.

@@ -111,3 +111,10 @@ remoção de versões, confirma os backups por lote. Um resultado ambíguo
 aparece como pendente e só pode ser revisto após atualizar a análise.
 O painel mantém o último catálogo durante a rodada e desconta as exclusões
 confirmadas. `Atualizar análise` reconcilia o catálogo completo no encerramento.
+
+A prova de leitura na conta confirmou que a consulta direta por IDs pode
+rejeitar um grupo se um ID já desapareceu. A pré-checagem divide somente
+grupos rejeitados e ignora os IDs ausentes. O modo de pastas fixas usa
+caminho público nas buscas. A conferência final consulta todos os caminhos
+do lote juntos e valida os IDs retornados. A amostra real reconheceu um
+original ativo, um backup existente e um caminho ausente, sem exclusões.
