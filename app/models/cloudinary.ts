@@ -32,7 +32,7 @@ export async function getCloudinaryAudit(
 ): Promise<CloudinaryAuditResponse> {
   const authHeader = await getAuthHeader(supabase);
 
-  const response = await fetch("/api/admin-cleanup?scope=cloudinary-audit", {
+  const response = await fetch("/api/admin?scope=cloudinary-audit", {
     headers: {
       ...(authHeader ? { Authorization: authHeader } : {}),
     },
@@ -60,7 +60,7 @@ export async function deleteCloudinaryAssets(
 ): Promise<CloudinaryDeleteResponse> {
   const authHeader = await getAuthHeader(supabase);
 
-  const response = await fetch("/api/admin-cleanup?scope=cloudinary-audit", {
+  const response = await fetch("/api/admin?scope=cloudinary-audit", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

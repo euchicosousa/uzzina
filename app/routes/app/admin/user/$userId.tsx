@@ -74,7 +74,7 @@ function AdminUserPage() {
         if (!session) throw new Error("Você não está autenticado.");
 
         // 2. Chamar a API Serverless para criar o usuário Auth com segurança
-        const res = await fetch("/api/admin-accounts?scope=create-user", {
+        const res = await fetch("/api/admin?scope=create-user", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

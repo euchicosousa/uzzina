@@ -2,23 +2,41 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 type Handler = (req: VercelRequest, res: VercelResponse) => unknown;
-type HandlerRoute = { path: string; scope?: string };
+type HandlerRoute = {
+  path: string;
+  query?: Record<string, string>;
+};
 const HANDLERS: Record<string, HandlerRoute> = {
   "/api/ai": { path: "./api/ai.ts" },
   "/api/planning-theme": { path: "./api/planning-theme.ts" },
   "/api/strategy-operations": { path: "./api/strategy-operations.ts" },
   "/api/strategy-worker": { path: "./api/strategy-worker.ts" },
   "/api/dash": { path: "./api/dash.ts" },
-  "/api/admin-accounts": { path: "./api/admin-accounts.ts" },
+  "/api/admin": { path: "./api/admin.ts" },
+  "/api/admin-accounts": {
+    path: "./api/admin.ts",
+    query: { legacy: "accounts" },
+  },
   "/api/client-accounts": {
-    path: "./api/admin-accounts.ts",
-    scope: "clients",
+    path: "./api/admin.ts",
+    query: { legacy: "accounts", scope: "clients" },
   },
   "/api/create-user": {
-    path: "./api/admin-accounts.ts",
-    scope: "create-user",
+    path: "./api/admin.ts",
+    query: { legacy: "accounts", scope: "create-user" },
   },
-  "/api/admin-cleanup": { path: "./api/admin-cleanup.ts" },
+  "/api/admin-cleanup": {
+    path: "./api/admin.ts",
+    query: { legacy: "cleanup" },
+  },
+  "/api/partner-delete": {
+    path: "./api/admin.ts",
+    query: { legacy: "cleanup", scope: "partner-delete" },
+  },
+  "/api/cloudinary-audit": {
+    path: "./api/admin.ts",
+    query: { legacy: "cleanup", scope: "cloudinary-audit" },
+  },
   "/api/instagram-reference": { path: "./api/instagram-reference.ts" },
   "/api/instagram-publish": { path: "./api/instagram-publish.ts" },
   "/api/partner-instagram-connection": {
@@ -69,7 +87,7 @@ export function createDevApiMiddleware(
           ? value
           : [...(Array.isArray(previous) ? previous : [previous]), value];
     });
-    if (route.scope) query.scope = route.scope;
+    Object.assign(query, route.query);
     const response = {
       setHeader: (key: string, value: string | string[] | number) => {
         res.setHeader(key, value);

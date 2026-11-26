@@ -61,8 +61,7 @@ const { FileFsRef } = require("@vercel/build-utils");
       "api/strategy-operations.ts",
       "api/strategy-worker.ts",
       "api/dash.ts",
-      "api/admin-accounts.ts",
-      "api/admin-cleanup.ts",
+      "api/admin.ts",
       "api/partner-instagram-connection.ts",
       "api/instagram-publish.ts",
       "api/instagram-reference.ts",
@@ -158,10 +157,24 @@ const { FileFsRef } = require("@vercel/build-utils");
           assert.equal(response.code, expected);
           assert.equal(typeof response.body.error, 'string');
           if (expected === 405) assert.ok(response.headers.Allow);
+          return response;
         };
         await request('OPTIONS', 405);
         ${["api/ai.ts", "api/planning-theme.ts", "api/instagram-publish.ts", "api/instagram-reference.ts"].includes(entrypoint) ? "await request('POST', 401);" : ""}
-        ${entrypoint === "api/admin-accounts.ts" ? "await request('POST', 503, {scope: 'clients'}); await request('POST', 401, {scope: 'create-user'});" : ""}
+        ${
+          entrypoint === "api/admin.ts"
+            ? `
+          await request('POST', 503, {scope: 'clients'});
+          await request('POST', 401, {scope: 'create-user'});
+          await request('GET', 503, {scope: 'partner-delete'});
+          await request('GET', 503, {scope: 'cloudinary-audit'});
+          await request('GET', 400, {scope: 'partner-delete', legacy: 'accounts'});
+          await request('GET', 400, {scope: 'clients', legacy: 'cleanup'});
+          const invalidCleanupMethod = await request('PATCH', 405, {legacy: 'cleanup'});
+          assert.deepEqual(invalidCleanupMethod.headers.Allow, ['GET', 'POST']);
+        `
+            : ""
+        }
         ${
           entrypoint === "api/ai.ts" && staging.SUPABASE_URL
             ? `

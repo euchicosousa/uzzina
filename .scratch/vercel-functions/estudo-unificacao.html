@@ -9,16 +9,16 @@
       :root {
         color-scheme: light;
         --background: oklch(0.96 0.002 200);
-        --foreground: oklch(0.08 0 200);
+        --foreground: oklch(0 0 200);
         --card: oklch(0.94 0.002 200);
         --border: oklch(0.87 0.002 200);
         --secondary: oklch(0.9 0.002 200);
-        --muted: oklch(0.42 0.002 200);
+        --muted: oklch(0.448 0.001 200);
         --primary: oklch(0 0 0);
         --primary-foreground: oklch(1 0 0);
-        --info: oklch(0.53 0.13 245);
-        --success: oklch(0.48 0.12 150);
-        --warning: oklch(0.55 0.15 70);
+        --info: oklch(0.505 0.14 250);
+        --success: oklch(0.495 0.1 163);
+        --warning: oklch(0.51 0.1 80);
         --radius: 1rem;
         font-family:
           ui-sans-serif,
@@ -36,12 +36,12 @@
           --card: oklch(0.25 0.01 250);
           --border: oklch(0.35 0.01 250);
           --secondary: oklch(0.32 0.01 250);
-          --muted: oklch(0.76 0.01 250);
+          --muted: oklch(0.749 0.003 250);
           --primary: oklch(1 0 0);
-          --primary-foreground: oklch(0.2 0.01 250);
-          --info: oklch(0.76 0.12 245);
-          --success: oklch(0.78 0.11 150);
-          --warning: oklch(0.82 0.14 80);
+          --primary-foreground: oklch(0 0 0);
+          --info: oklch(0.75 0.12 250);
+          --success: oklch(0.75 0.15 163);
+          --warning: oklch(0.84 0.14 80);
         }
       }
       * {
@@ -262,13 +262,11 @@
         <p class="eyebrow">UZZINA · estudo para decisão · 26 nov 2026</p>
         <h1>Funções da Vercel</h1>
         <p class="intro">
-          O plano Hobby está confirmado e não há previsão de upgrade. A fusão
-          administrativa foi aplicada no checkout: criação de usuários da equipe
-          e gestão de contas de clientes agora compartilham uma função.
+          O plano Hobby está confirmado. Contas de clientes, criação de
+          usuários e limpeza administrativa compartilham uma função.
         </p>
         <div class="meta">
           <span class="pill">Plano informado: Hobby</span>
-          <span class="pill">Deploy: não publicado</span>
           <span class="pill">Sem previsão de upgrade</span>
         </div>
       </header>
@@ -277,50 +275,18 @@
         <div>
           <strong>Resultado da fusão administrativa</strong>
           <p>
-            <code>client-accounts</code> + <code>create-user</code> →
-            <code>admin-accounts</code>. Os caminhos antigos continuam
-            disponíveis por rewrites; o app chama a rota unificada diretamente.
-            A checagem de criação de usuário agora exige administrador ativo.
+            <code>admin-accounts</code> e <code>admin-cleanup</code> agora
+            são <code>admin</code>. Cada operação mantém sua autorização e
+            os caminhos anteriores são encaminhados para a nova função.
           </p>
         </div>
         <div class="count">
-          10 / 12<small>funções no checkout · 2 vagas</small>
+          9 / 12<small>funções · 3 vagas</small>
         </div>
       </div>
 
       <section>
-        <h2>Antes de decidir</h2>
-        <div class="result-grid">
-          <article class="card status">
-            <span class="label">No checkout</span>
-            <h3>10 funções</h3>
-            <p>
-              Após a fusão, há duas vagas até o teto de 12 documentado para
-              funções diretas no Hobby.
-            </p>
-          </article>
-          <article class="card caution">
-            <span class="label">Em produção</span>
-            <h3>Ainda 11 funções</h3>
-            <p>
-              A mudança será enviada para <code>main</code> nesta publicação. O
-              deployment atual só muda quando a Vercel concluir o build e marcar
-              a nova versão Ready.
-            </p>
-          </article>
-          <article class="card">
-            <span class="label">Recomendação</span>
-            <h3>Manter as outras separadas</h3>
-            <p>
-              As duas vagas atuais dão margem. Os demais agrupamentos misturam
-              permissões, tipos de chamada ou operações diferentes.
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <section>
-        <h2>Inventário das 10 funções depois da fusão</h2>
+        <h2>Inventário das 9 funções depois da fusão</h2>
         <div class="table-wrap">
           <table>
             <thead>
@@ -332,29 +298,14 @@
             </thead>
             <tbody>
               <tr>
-                <td><code>api/admin-accounts.ts</code></td>
+                <td><code>api/admin.ts</code></td>
                 <td>
-                  Cria contas de clientes, lista/consulta/atualiza/arquiva essas
-                  contas e cria credenciais de acesso para novos usuários da
-                  equipe.
+                  Lista, cria, edita e arquiva contas de clientes. Cria
+                  credenciais de usuários da equipe, exclui definitivamente
+                  parceiros já arquivados e audita ou limpa referências a
+                  arquivos no Cloudinary.
                 </td>
-                <td>
-                  Fusão desta entrega. Ambos os escopos exigem administrador
-                  ativo; as operações usam `scope=clients` e
-                  `scope=create-user`.
-                </td>
-              </tr>
-              <tr>
-                <td><code>api/admin-cleanup.ts</code></td>
-                <td>
-                  Encaminha exclusão definitiva de parceiro arquivado e
-                  auditoria/limpeza de referências do Cloudinary.
-                </td>
-                <td>
-                  Já reúne duas tarefas administrativas com autenticação de
-                  administrador. Mantida separada de contas por domínio e
-                  impacto destrutivo distintos.
-                </td>
+                <td>Cada operação exige administrador ativo e mantém suas validações.</td>
               </tr>
               <tr>
                 <td><code>api/ai.ts</code></td>
@@ -475,7 +426,7 @@
             <h3><code>strategy-worker.ts</code></h3>
             <p>
               Endpoint antigo de fila. O cron foi pausado; o arquivo ficou para
-              reversão e ainda ocupa uma das 10 funções.
+              reversão e ainda ocupa uma das 9 funções.
             </p>
           </article>
         </div>
@@ -494,21 +445,22 @@
             </p>
           </article>
           <article class="card status">
-            <span class="label">Feito localmente</span>
+            <span class="label">Unificado</span>
             <h3>Administração: 2 → 1</h3>
             <p>
-              Contas de clientes e criação de usuário usam
-              <code>api/admin-accounts.ts</code>. Economiza uma função e corrige
-              a verificação de administrador inativo.
+              Contas de clientes, criação de usuários, exclusão definitiva de
+              parceiros arquivados e limpeza do Cloudinary usam
+              <code>api/admin.ts</code>.
             </p>
           </article>
           <article class="card">
             <span class="label">Não recomendado agora</span>
             <h3>IA e Planejamento</h3>
             <p>
-              Um endpoint aceita membros ativos; o outro exige administrador e
-              mantém a retomada de geração de propostas. Misturá-los aumenta o
-              risco de autorização e observabilidade.
+              A geração geral aceita membros ativos. O Planejamento exige
+              administrador ativo e gera propostas em lotes, com retomada.
+              Uma função poderia encaminhar os dois fluxos, cada qual com sua
+              autorização e seu tratamento de geração.
             </p>
           </article>
           <article class="card">
@@ -526,7 +478,7 @@
             <p>
               <code>instagram-publish</code> e <code>instagram-reference</code>
               podem usar um router e preservar escopos e URLs antigas. O ganho
-              seria uma função (10 → 9); ambas servem fluxos de membro, mas têm
+              seria uma função (9 → 8); ambas servem fluxos de membro, mas têm
               contratos de mídia e efeitos externos distintos.
             </p>
           </article>
@@ -542,7 +494,7 @@
           </article>
         </div>
         <p style="margin-top: 12px; color: var(--muted)">
-          Com 10 de 12 funções, não é preciso unir APIs do Instagram para caber
+          Com 9 de 12 funções, não é preciso unir APIs do Instagram para caber
           no Hobby. Juntar publicação e importação economizaria uma vaga, mas
           não é necessário para o limite atual. A remoção de
           <code>strategy-worker</code> requer decisão explícita porque o
@@ -573,9 +525,8 @@
         </div>
       </section>
       <footer>
-        Levantamento do checkout local em 26/11/2026. Contagem e validações
-        locais não comprovam o deployment ativo. Nenhuma alteração foi
-        publicada.
+        Inventário atualizado em 26/11/2026. A ficha registra a decisão e
+        as validações da mudança administrativa.
       </footer>
     </main>
   </body>

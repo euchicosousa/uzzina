@@ -9,12 +9,20 @@
   },
   "rewrites": [
     {
+      "source": "/api/admin-accounts",
+      "destination": "/api/admin?legacy=accounts"
+    },
+    {
+      "source": "/api/admin-cleanup",
+      "destination": "/api/admin?legacy=cleanup"
+    },
+    {
       "source": "/api/partner-delete",
-      "destination": "/api/admin-cleanup?scope=partner-delete"
+      "destination": "/api/admin?legacy=cleanup&scope=partner-delete"
     },
     {
       "source": "/api/cloudinary-audit",
-      "destination": "/api/admin-cleanup?scope=cloudinary-audit"
+      "destination": "/api/admin?legacy=cleanup&scope=cloudinary-audit"
     },
     {
       "source": "/api/dash-auth",
@@ -30,11 +38,11 @@
     },
     {
       "source": "/api/client-accounts",
-      "destination": "/api/admin-accounts?scope=clients"
+      "destination": "/api/admin?legacy=accounts&scope=clients"
     },
     {
       "source": "/api/create-user",
-      "destination": "/api/admin-accounts?scope=create-user"
+      "destination": "/api/admin?legacy=accounts&scope=create-user"
     },
     {
       "source": "/((?!api/).*)",

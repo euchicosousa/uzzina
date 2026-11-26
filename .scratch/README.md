@@ -19,7 +19,7 @@ Em 25/11/2026 o proprietário aceitou e encerrou os tickets 02 a 05 (conexão, p
 
 ## Execução autorizada
 
-- [Funções da Vercel](vercel-functions/issues/01-investigar-limite-e-unificacoes.md) — o proprietário confirmou plano Hobby, sem previsão de upgrade, e autorizou reunir criação de usuário e gestão de contas de clientes em uma função. A mudança será publicada nesta entrega; deploy Ready e próximo passo das demais funções ficam pendentes de conferência.
+- [Funções da Vercel](vercel-functions/issues/01-investigar-limite-e-unificacoes.md) — o proprietário confirmou o plano Hobby e autorizou publicar a unificação de contas e limpeza administrativa em uma única função. O inventário tem nove funções depois dessa mudança.
 
 ## Referências fora da fila de execução
 

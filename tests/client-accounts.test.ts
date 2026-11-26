@@ -3,7 +3,7 @@ import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { hashLegacyPassword } from "../server/dash-session";
-import adminAccountsHandler from "../api/admin-accounts";
+import adminHandler from "../api/admin";
 import clientAccountsHandler from "../server/admin-client-accounts-handler";
 import dashAuthHandler from "../server/dash-auth-handler";
 
@@ -339,7 +339,7 @@ describe("Ticket 06: Administração de Contas de Clientes no Servidor", () => {
       headers: { authorization: "Bearer admin-token" },
       query: { scope: "clients" },
     });
-    await adminAccountsHandler(listRequest.req, listRequest.res);
+    await adminHandler(listRequest.req, listRequest.res);
     expect(listRequest.getStatus()).toBe(200);
     expect(listRequest.getBody().clients).toBeDefined();
 
@@ -353,7 +353,7 @@ describe("Ticket 06: Administração de Contas de Clientes no Servidor", () => {
         name: "New Person",
       },
     });
-    await adminAccountsHandler(inactiveRequest.req, inactiveRequest.res);
+    await adminHandler(inactiveRequest.req, inactiveRequest.res);
     expect(inactiveRequest.getStatus()).toBe(403);
     expect(createdStaffUsers).toBe(0);
 
@@ -367,7 +367,7 @@ describe("Ticket 06: Administração de Contas de Clientes no Servidor", () => {
         name: "New Person",
       },
     });
-    await adminAccountsHandler(createRequest.req, createRequest.res);
+    await adminHandler(createRequest.req, createRequest.res);
     expect(createRequest.getStatus()).toBe(200);
     expect(createRequest.getBody().user).toMatchObject({
       id: "created-user-1",

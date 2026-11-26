@@ -82,8 +82,7 @@ mock.module("@supabase/supabase-js", () => ({
   }),
 }));
 
-const { default: cloudinaryAuditHandler } =
-  await import("../api/admin-cleanup");
+const { default: cloudinaryAuditHandler } = await import("../api/admin");
 
 function createMockReqRes(options: {
   method?: string;
@@ -323,7 +322,7 @@ describe("API /api/cloudinary-audit", () => {
     db.leads = [];
   });
 
-  it("rejects missing or invalid scope on /api/admin-cleanup", async () => {
+  it("rejects missing or invalid scope on /api/admin", async () => {
     const missingScope = createMockReqRes({
       method: "GET",
       headers: { authorization: "Bearer admin-token" },

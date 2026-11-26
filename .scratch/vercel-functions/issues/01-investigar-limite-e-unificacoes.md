@@ -1,10 +1,10 @@
 # 01: Investigar o limite de funções da Vercel e possíveis unificações
 
-**Estado atualizado em 26/11/2026:** o proprietário confirmou que o plano é Hobby, sem previsão de upgrade, autorizou unificar a criação de usuários da equipe com a gestão de contas de clientes e pediu a publicação. A fusão está em `api/admin-accounts.ts`, reduzindo de 11 para 10 funções. O commit/push será acompanhado da confirmação do deploy Ready. O inventário atualizado e a análise das demais oportunidades estão no [HTML de resultado](../estudo-unificacao.html).
+**Estado atualizado em 26/11/2026:** o proprietário confirmou o plano Hobby e autorizou publicar uma função para toda a administração. A segunda fusão reúne `admin-accounts` e `admin-cleanup` em `admin`, reduzindo de 10 para 9 funções. O [HTML de resultado](../estudo-unificacao.html) mostra o que cada função faz.
 
-**Escopo atual:** confirmar o limite vigente do plano Hobby, contar as funções, mapear responsabilidades e recomendar unificações seguras. O proprietário autorizou a fusão `client-accounts` + `create-user` → `admin-accounts`. As demais funções ficam em estudo, sem fusão nesta entrega. Preservar as URLs usadas pelo app, autenticação, autorização, duração e respostas. Não publicar nem alterar o plano.
+**Escopo atual:** manter o inventário das funções no Hobby e reunir em `/api/admin` a gestão de contas de clientes, a criação de credenciais da equipe, a exclusão definitiva de parceiros arquivados e a auditoria e limpeza do Cloudinary. Preservar URLs anteriores e os contratos de cada operação.
 
-As seções 1–5 e a decisão de 23/11 abaixo documentam os estudos anteriores. Para estado vigente após a decisão de 26/11, use “Atualização da investigação” e “Decisão e entrega atual”.
+As seções 1–5 e a decisão de 23/11 abaixo documentam os estudos anteriores. Para estado vigente após a decisão de 26/11, use “Unificação administrativa completa”.
 
 **Bloqueado por:** Nenhum.
 
@@ -123,12 +123,23 @@ O proprietário confirmou plano Hobby, sem previsão de upgrade, e autorizou a O
 
 O proprietário aprovou executar a Opção 1, unificando o portal `/dash` em `api/dash.ts` com os caminhos antigos preservados por rewrites. Nesta rodada, o checkout foi preparado para commit e publicação: typecheck, build Vite e oito entrypoints em `bun run test:serverless` passaram; a contagem de handlers em `api/` é oito. A validação manual do portal no deploy fica pendente.
 
-## Decisão e entrega atual — 26/11/2026
+## Primeira unificação administrativa — 26/11/2026
 
 O proprietário confirmou plano Hobby, sem previsão de upgrade, e autorizou reunir a criação de usuários da equipe (`/api/create-user`) com a gestão de contas de clientes (`/api/client-accounts`). A rota unificada é `api/admin-accounts.ts`, com escopos `create-user` e `clients`; os caminhos antigos continuam encaminhados por rewrites, e o app usa o endpoint unificado diretamente. A contagem local cai de 11 para **10 funções (10/12)**, com duas vagas livres.
 
 O handler de criar usuário agora usa o cliente compartilhado de serviço e exige `people.visible = true` e `people.admin = true`. Antes ele só verificava `admin`, sem exigir membro ativo, e usava uma inicialização Supabase separada. Não houve mudança de schema nem de dados.
 
-O [HTML de resultado](../estudo-unificacao.html) lista as 10 funções, descreve o que cada uma faz e compara outras possibilidades de agrupamento. Nenhuma outra função foi fundida. O `strategy-worker` continua no código, embora o cron esteja pausado e a fila drenada: o ticket EST-06 registra que o endpoint foi mantido para reversão e que a remoção definitiva ficou separada. As APIs do Instagram podem ser roteadas em conjunto; o HTML recomenda avaliar só publicação + importação, mantendo a conexão OAuth separada. A mudança administrativa será commitada e enviada a `main` nesta publicação; o deploy Ready fica pendente.
+O [HTML de resultado](../estudo-unificacao.html) lista as 10 funções, descreve o que cada uma faz e compara outras possibilidades de agrupamento. Nenhuma outra função foi fundida. O `strategy-worker` continua no código, embora o cron esteja pausado e a fila drenada: o ticket EST-06 registra que o endpoint foi mantido para reversão e que a remoção definitiva ficou separada. As APIs do Instagram podem ser roteadas em conjunto; o HTML recomenda avaliar só publicação + importação, mantendo a conexão OAuth separada. A primeira fusão foi publicada no commit `fea5e9c6`, com deployment de produção Ready.
 
 **Evidência local:** `bun run typecheck`; `bun test tests/client-accounts.test.ts` (13 PASS); `bun run test:serverless` (10 entrypoints PASS, com build de Vercel e importação nativa do Node). Ainda falta conferir visualmente o HTML e, após autorização de publicação, verificar o deploy Ready no painel da Vercel. A configuração Fluid Compute da conta não foi consultada.
+
+## Unificação administrativa completa — 26/11/2026
+
+O proprietário autorizou reunir `/api/admin-accounts` e `/api/admin-cleanup` em
+`/api/admin` e publicar diretamente. A função encaminha contas de clientes,
+criação de usuário, exclusão definitiva de parceiros arquivados e auditoria e
+limpeza do Cloudinary para os handlers existentes. As seis URLs anteriores
+continuam disponíveis por rewrites e pelo adaptador local.
+
+A contagem passa de **10 para 9 funções**, com três vagas no limite de 12
+adotado no estudo. O [inventário](../estudo-unificacao.html) lista as nove.

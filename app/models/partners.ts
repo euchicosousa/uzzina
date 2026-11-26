@@ -221,7 +221,7 @@ export async function getPartnerDeletePreview(
 ): Promise<PartnerDeletePreview> {
   const authHeader = await getPartnerDeleteAuthHeader(supabase);
   const response = await fetch(
-    `/api/admin-cleanup?scope=partner-delete&slug=${encodeURIComponent(slug)}`,
+    `/api/admin?scope=partner-delete&slug=${encodeURIComponent(slug)}`,
     {
       headers: {
         ...(authHeader ? { Authorization: authHeader } : {}),
@@ -247,7 +247,7 @@ export async function deleteArchivedPartner(
   request: PartnerDeleteRequest,
 ): Promise<PartnerDeleteResult> {
   const authHeader = await getPartnerDeleteAuthHeader(supabase);
-  const response = await fetch("/api/admin-cleanup?scope=partner-delete", {
+  const response = await fetch("/api/admin?scope=partner-delete", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

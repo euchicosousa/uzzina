@@ -266,7 +266,7 @@ mock.module("@supabase/supabase-js", () => ({
   }),
 }));
 
-const { default: partnerDeleteHandler } = await import("../api/admin-cleanup");
+const { default: partnerDeleteHandler } = await import("../api/admin");
 
 function createMockReqRes(options: {
   method?: string;
