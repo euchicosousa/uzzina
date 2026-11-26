@@ -2,18 +2,28 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 type Handler = (req: VercelRequest, res: VercelResponse) => unknown;
-const HANDLERS: Record<string, string> = {
-  "/api/ai": "./api/ai.ts",
-  "/api/planning-theme": "./api/planning-theme.ts",
-  "/api/strategy-operations": "./api/strategy-operations.ts",
-  "/api/strategy-worker": "./api/strategy-worker.ts",
-  "/api/dash": "./api/dash.ts",
-  "/api/client-accounts": "./api/client-accounts.ts",
-  "/api/admin-cleanup": "./api/admin-cleanup.ts",
-  "/api/instagram-reference": "./api/instagram-reference.ts",
-  "/api/instagram-publish": "./api/instagram-publish.ts",
-  "/api/partner-instagram-connection": "./api/partner-instagram-connection.ts",
-  "/api/create-user": "./api/create-user.ts",
+type HandlerRoute = { path: string; scope?: string };
+const HANDLERS: Record<string, HandlerRoute> = {
+  "/api/ai": { path: "./api/ai.ts" },
+  "/api/planning-theme": { path: "./api/planning-theme.ts" },
+  "/api/strategy-operations": { path: "./api/strategy-operations.ts" },
+  "/api/strategy-worker": { path: "./api/strategy-worker.ts" },
+  "/api/dash": { path: "./api/dash.ts" },
+  "/api/admin-accounts": { path: "./api/admin-accounts.ts" },
+  "/api/client-accounts": {
+    path: "./api/admin-accounts.ts",
+    scope: "clients",
+  },
+  "/api/create-user": {
+    path: "./api/admin-accounts.ts",
+    scope: "create-user",
+  },
+  "/api/admin-cleanup": { path: "./api/admin-cleanup.ts" },
+  "/api/instagram-reference": { path: "./api/instagram-reference.ts" },
+  "/api/instagram-publish": { path: "./api/instagram-publish.ts" },
+  "/api/partner-instagram-connection": {
+    path: "./api/partner-instagram-connection.ts",
+  },
 };
 
 /** Local adapter for the same serverless handlers deployed to Vercel. */
@@ -26,8 +36,8 @@ export function createDevApiMiddleware(
     next: (error?: unknown) => void,
   ) => {
     const url = new URL(req.url || "/", "http://localhost");
-    const path = HANDLERS[url.pathname];
-    if (!path) return next();
+    const route = HANDLERS[url.pathname];
+    if (!route) return next();
     let body: unknown;
     if (req.method !== "GET" && req.method !== "HEAD") {
       try {
@@ -59,6 +69,7 @@ export function createDevApiMiddleware(
           ? value
           : [...(Array.isArray(previous) ? previous : [previous]), value];
     });
+    if (route.scope) query.scope = route.scope;
     const response = {
       setHeader: (key: string, value: string | string[] | number) => {
         res.setHeader(key, value);
@@ -75,7 +86,7 @@ export function createDevApiMiddleware(
       },
     };
     try {
-      const handler = await loadHandler(path);
+      const handler = await loadHandler(route.path);
       await handler(
         {
           method: req.method,

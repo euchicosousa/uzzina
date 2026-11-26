@@ -3,7 +3,8 @@ import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { hashLegacyPassword } from "../server/dash-session";
-import clientAccountsHandler from "../api/client-accounts";
+import adminAccountsHandler from "../api/admin-accounts";
+import clientAccountsHandler from "../server/admin-client-accounts-handler";
 import dashAuthHandler from "../server/dash-auth-handler";
 
 type Row = Record<string, unknown>;
@@ -15,6 +16,7 @@ const db: Record<string, Row[]> = {
 };
 
 let rpcShouldFail = false;
+let createdStaffUsers = 0;
 
 const authUsers: Record<string, { id: string; email: string }> = {
   "admin-token": { id: "user-admin", email: "admin@cnvt.com" },
@@ -30,6 +32,26 @@ mock.module("@supabase/supabase-js", () => ({
         if (!u)
           return { data: { user: null }, error: { message: "Invalid token" } };
         return { data: { user: u }, error: null };
+      },
+      admin: {
+        createUser: async (input: {
+          email: string;
+          password: string;
+          email_confirm: boolean;
+          user_metadata: { name: string };
+        }) => {
+          createdStaffUsers += 1;
+          return {
+            data: {
+              user: {
+                id: `created-user-${createdStaffUsers}`,
+                email: input.email,
+                user_metadata: input.user_metadata,
+              },
+            },
+            error: null,
+          };
+        },
       },
     },
     rpc: async (fn: string, params: Record<string, unknown>) => {
@@ -231,6 +253,7 @@ describe("Ticket 06: Administração de Contas de Clientes no Servidor", () => {
     process.env.SUPABASE_SERVICE_ROLE_KEY = "mock-key";
     process.env.APP_ORIGIN = "https://example.com";
     rpcShouldFail = false;
+    createdStaffUsers = 0;
 
     db.people = [
       {
@@ -308,6 +331,49 @@ describe("Ticket 06: Administração de Contas de Clientes no Servidor", () => {
         revoked_at: null,
       },
     ];
+  });
+
+  it("dispatches unified account routes and restricts staff creation to active admins", async () => {
+    const listRequest = createMockReqRes({
+      method: "GET",
+      headers: { authorization: "Bearer admin-token" },
+      query: { scope: "clients" },
+    });
+    await adminAccountsHandler(listRequest.req, listRequest.res);
+    expect(listRequest.getStatus()).toBe(200);
+    expect(listRequest.getBody().clients).toBeDefined();
+
+    const inactiveRequest = createMockReqRes({
+      method: "POST",
+      headers: { authorization: "Bearer inactive-token" },
+      query: { scope: "create-user" },
+      body: {
+        email: "new-person@cnvt.com",
+        password: "temporary-password",
+        name: "New Person",
+      },
+    });
+    await adminAccountsHandler(inactiveRequest.req, inactiveRequest.res);
+    expect(inactiveRequest.getStatus()).toBe(403);
+    expect(createdStaffUsers).toBe(0);
+
+    const createRequest = createMockReqRes({
+      method: "POST",
+      headers: { authorization: "Bearer admin-token" },
+      query: { scope: "create-user" },
+      body: {
+        email: "new-person@cnvt.com",
+        password: "temporary-password",
+        name: "New Person",
+      },
+    });
+    await adminAccountsHandler(createRequest.req, createRequest.res);
+    expect(createRequest.getStatus()).toBe(200);
+    expect(createRequest.getBody().user).toMatchObject({
+      id: "created-user-1",
+      email: "new-person@cnvt.com",
+    });
+    expect(createdStaffUsers).toBe(1);
   });
 
   // 1. Autorização de Acesso ao Endpoint Privilegiado

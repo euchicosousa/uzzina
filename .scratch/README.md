@@ -16,7 +16,10 @@ Em 25/11/2026 o proprietário aceitou e encerrou os tickets 02 a 05 (conexão, p
 ## Propostas para revisão do proprietário
 
 - [Formulários administrativos no padrão de Parceiros](admin-forms/issues/01-align-admin-forms.md) — adequar Novo e Editar em Usuários e Clientes e mapear outras páginas administrativas que se beneficiariam do padrão.
-- [Limite e unificação de funções da Vercel](vercel-functions/issues/01-investigar-limite-e-unificacoes.md) — confirmar o limite do plano, contar as funções atuais e recomendar possíveis unificações sem implementação neste estudo.
+
+## Execução autorizada
+
+- [Funções da Vercel](vercel-functions/issues/01-investigar-limite-e-unificacoes.md) — o proprietário confirmou plano Hobby, sem previsão de upgrade, e autorizou reunir criação de usuário e gestão de contas de clientes em uma função. A mudança será publicada nesta entrega; deploy Ready e próximo passo das demais funções ficam pendentes de conferência.
 
 ## Referências fora da fila de execução
 

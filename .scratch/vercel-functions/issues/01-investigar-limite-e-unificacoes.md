@@ -1,10 +1,14 @@
 # 01: Investigar o limite de funções da Vercel e possíveis unificações
 
-**O que investigar:** confirmar o limite vigente do plano da Vercel e quantas funções o projeto envia hoje. Mapear as rotas e responsabilidades e recomendar quais podem compartilhar uma função sem mudar o comportamento visível nem enfraquecer autenticação, autorização, limites de execução ou tratamento de erros. A integração do Instagram acrescenta uma rota ao conjunto atual; verificar se isso ultrapassa o limite observado pelo proprietário. Entregar um relatório com contagem comprovada, opções, riscos, estimativa e roteiro de validação. Este ticket é somente de investigação: não unir arquivos, alterar rotas/configuração, modificar código, publicar ou mudar o plano.
+**Estado atualizado em 26/11/2026:** o proprietário confirmou que o plano é Hobby, sem previsão de upgrade, autorizou unificar a criação de usuários da equipe com a gestão de contas de clientes e pediu a publicação. A fusão está em `api/admin-accounts.ts`, reduzindo de 11 para 10 funções. O commit/push será acompanhado da confirmação do deploy Ready. O inventário atualizado e a análise das demais oportunidades estão no [HTML de resultado](../estudo-unificacao.html).
 
-**Bloqueado por:** Nenhum (estudo concluído; implementação aguarda aprovação do proprietário).
+**Escopo atual:** confirmar o limite vigente do plano Hobby, contar as funções, mapear responsabilidades e recomendar unificações seguras. O proprietário autorizou a fusão `client-accounts` + `create-user` → `admin-accounts`. As demais funções ficam em estudo, sem fusão nesta entrega. Preservar as URLs usadas pelo app, autenticação, autorização, duração e respostas. Não publicar nem alterar o plano.
 
-**Status:** done (aguardando decisão do proprietário)
+As seções 1–5 e a decisão de 23/11 abaixo documentam os estudos anteriores. Para estado vigente após a decisão de 26/11, use “Atualização da investigação” e “Decisão e entrega atual”.
+
+**Bloqueado por:** Nenhum.
+
+**Status:** fusão administrativa pronta e verificada localmente; commit/push e confirmação do deploy Ready em andamento.
 
 - [x] Confirmar em fonte oficial o limite aplicável ao plano e em qual etapa a Vercel o aplica.
 - [x] Comparar a contagem local de handlers com a última implantação e explicar diferenças por ambiente/roteamento.
@@ -103,10 +107,28 @@
 
 ## Modelos sugeridos
 
-- Codex — gpt-6.2-sol. Adequado para inventariar handlers e comparar candidatos de baixo risco.
-- Codex — gpt-6.2-astra. Alternativa para avaliar interações de autenticação, duração e segurança entre APIs.
-- Codex — gpt-6.1-terra. Alternativa para conferir o comportamento das rotas e explicar opções de forma clara.
+- Codex — GPT-6.2 Sol, para fundir os dois endpoints administrativos e preservar os contratos e URLs existentes.
+- Codex — GPT-6.2 Astra, para revisar a fronteira de autorização e os riscos de uma função compartilhada.
+- Codex — GPT-6.1 Terra, para inventariar as demais funções e apresentar opções em linguagem direta.
+
+## Atualização da investigação — 26/11/2026
+
+O limite precisa ser lido com a condição de empacotamento documentada atualmente pela Vercel: para Hobby, Vite/React SPA com handlers soltos em `api/` conta um arquivo por função, até 12 por deployment. A Vercel agrupa funções automaticamente em alguns frameworks; em outros frameworks e em funções diretas, cada arquivo mapeia a uma função. Fontes oficiais: [limites gerais](https://vercel.com/docs/limits), [runtimes e contagem de funções](https://vercel.com/docs/functions/runtimes) e [duração máxima com Fluid Compute](https://vercel.com/docs/functions/limitations#max-duration).
+
+Snapshot anterior à nova decisão: em `26/11` o checkout tinha 11 funções e a fusão `/dash` já estava em `main`. Os dados atuais, após a fusão administrativa, aparecem na seção seguinte.
+
+O proprietário confirmou plano Hobby, sem previsão de upgrade, e autorizou a Opção 2 em 26/11. A implementação local está registrada abaixo; não foi publicada.
 
 ## Decisão do proprietário e entrega — 23/11/2026
 
 O proprietário aprovou executar a Opção 1, unificando o portal `/dash` em `api/dash.ts` com os caminhos antigos preservados por rewrites. Nesta rodada, o checkout foi preparado para commit e publicação: typecheck, build Vite e oito entrypoints em `bun run test:serverless` passaram; a contagem de handlers em `api/` é oito. A validação manual do portal no deploy fica pendente.
+
+## Decisão e entrega atual — 26/11/2026
+
+O proprietário confirmou plano Hobby, sem previsão de upgrade, e autorizou reunir a criação de usuários da equipe (`/api/create-user`) com a gestão de contas de clientes (`/api/client-accounts`). A rota unificada é `api/admin-accounts.ts`, com escopos `create-user` e `clients`; os caminhos antigos continuam encaminhados por rewrites, e o app usa o endpoint unificado diretamente. A contagem local cai de 11 para **10 funções (10/12)**, com duas vagas livres.
+
+O handler de criar usuário agora usa o cliente compartilhado de serviço e exige `people.visible = true` e `people.admin = true`. Antes ele só verificava `admin`, sem exigir membro ativo, e usava uma inicialização Supabase separada. Não houve mudança de schema nem de dados.
+
+O [HTML de resultado](../estudo-unificacao.html) lista as 10 funções, descreve o que cada uma faz e compara outras possibilidades de agrupamento. Nenhuma outra função foi fundida. O `strategy-worker` continua no código, embora o cron esteja pausado e a fila drenada: o ticket EST-06 registra que o endpoint foi mantido para reversão e que a remoção definitiva ficou separada. As APIs do Instagram podem ser roteadas em conjunto; o HTML recomenda avaliar só publicação + importação, mantendo a conexão OAuth separada. A mudança administrativa será commitada e enviada a `main` nesta publicação; o deploy Ready fica pendente.
+
+**Evidência local:** `bun run typecheck`; `bun test tests/client-accounts.test.ts` (13 PASS); `bun run test:serverless` (10 entrypoints PASS, com build de Vercel e importação nativa do Node). Ainda falta conferir visualmente o HTML e, após autorização de publicação, verificar o deploy Ready no painel da Vercel. A configuração Fluid Compute da conta não foi consultada.

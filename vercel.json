@@ -29,6 +29,14 @@
       "destination": "/api/dash?scope=action"
     },
     {
+      "source": "/api/client-accounts",
+      "destination": "/api/admin-accounts?scope=clients"
+    },
+    {
+      "source": "/api/create-user",
+      "destination": "/api/admin-accounts?scope=create-user"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }

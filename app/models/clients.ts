@@ -17,7 +17,7 @@ export async function getAllClients(
   supabase: SupabaseClient,
 ): Promise<Client[]> {
   const authHeader = await getAuthHeader(supabase);
-  const res = await fetch("/api/client-accounts", {
+  const res = await fetch("/api/admin-accounts?scope=clients", {
     headers: {
       ...(authHeader ? { Authorization: authHeader } : {}),
     },
@@ -38,11 +38,14 @@ export async function getClientById(
   id: string,
 ): Promise<Client> {
   const authHeader = await getAuthHeader(supabase);
-  const res = await fetch(`/api/client-accounts?id=${encodeURIComponent(id)}`, {
-    headers: {
-      ...(authHeader ? { Authorization: authHeader } : {}),
+  const res = await fetch(
+    `/api/admin-accounts?scope=clients&id=${encodeURIComponent(id)}`,
+    {
+      headers: {
+        ...(authHeader ? { Authorization: authHeader } : {}),
+      },
     },
-  });
+  );
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
@@ -72,7 +75,7 @@ export async function createClient(
   clientData: CreateClientInput,
 ): Promise<Client> {
   const authHeader = await getAuthHeader(supabase);
-  const res = await fetch("/api/client-accounts", {
+  const res = await fetch("/api/admin-accounts?scope=clients", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -97,7 +100,7 @@ export async function updateClient(
   clientData: UpdateClientInput,
 ): Promise<Client> {
   const authHeader = await getAuthHeader(supabase);
-  const res = await fetch("/api/client-accounts", {
+  const res = await fetch("/api/admin-accounts?scope=clients", {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -121,7 +124,7 @@ export async function archiveClient(
   id: string,
 ): Promise<void> {
   const authHeader = await getAuthHeader(supabase);
-  const res = await fetch("/api/client-accounts", {
+  const res = await fetch("/api/admin-accounts?scope=clients", {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",

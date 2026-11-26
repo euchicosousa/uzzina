@@ -1,11 +1,8 @@
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import {
-  createServiceClient,
-  getServiceConfig,
-} from "../server/supabase-admin.js";
-import { extractBearerToken } from "../server/auth.js";
+import { createServiceClient, getServiceConfig } from "./supabase-admin.js";
+import { extractBearerToken } from "./auth.js";
 
 const BCRYPT_COST = 12;
 const MIN_PASSWORD_BYTES = 8;

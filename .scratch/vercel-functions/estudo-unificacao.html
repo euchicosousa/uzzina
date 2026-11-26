@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Funções da Vercel · UZZINA</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --background: oklch(0.96 0.002 200);
+        --foreground: oklch(0.08 0 200);
+        --card: oklch(0.94 0.002 200);
+        --border: oklch(0.87 0.002 200);
+        --secondary: oklch(0.9 0.002 200);
+        --muted: oklch(0.42 0.002 200);
+        --primary: oklch(0 0 0);
+        --primary-foreground: oklch(1 0 0);
+        --info: oklch(0.53 0.13 245);
+        --success: oklch(0.48 0.12 150);
+        --warning: oklch(0.55 0.15 70);
+        --radius: 1rem;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          color-scheme: dark;
+          --background: oklch(0.2 0.01 250);
+          --foreground: oklch(1 0 0);
+          --card: oklch(0.25 0.01 250);
+          --border: oklch(0.35 0.01 250);
+          --secondary: oklch(0.32 0.01 250);
+          --muted: oklch(0.76 0.01 250);
+          --primary: oklch(1 0 0);
+          --primary-foreground: oklch(0.2 0.01 250);
+          --info: oklch(0.76 0.12 245);
+          --success: oklch(0.78 0.11 150);
+          --warning: oklch(0.82 0.14 80);
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--foreground);
+        line-height: 1.5;
+      }
+      main {
+        width: min(100% - 32px, 1080px);
+        margin: 0 auto;
+        padding: 38px 0 56px;
+      }
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        letter-spacing: 0;
+      }
+      h1 {
+        font-size: clamp(2rem, 6vw, 3.2rem);
+        line-height: 1.05;
+      }
+      h2 {
+        margin-bottom: 12px;
+        font-size: 1.3rem;
+      }
+      h3 {
+        font-size: 1rem;
+      }
+      p {
+        margin: 0;
+      }
+      .eyebrow {
+        margin-bottom: 8px;
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .intro {
+        max-width: 760px;
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 18px;
+      }
+      .pill {
+        padding: 5px 10px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        font-size: 0.78rem;
+      }
+      .hero {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 18px;
+        align-items: center;
+        margin: 26px 0;
+        padding: 20px;
+        border-radius: var(--radius);
+        background: var(--primary);
+        color: var(--primary-foreground);
+      }
+      .hero strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 1.15rem;
+      }
+      .hero p {
+        max-width: 720px;
+        opacity: 0.84;
+      }
+      .count {
+        font-size: 2.8rem;
+        font-weight: 750;
+        line-height: 1;
+        text-align: right;
+        white-space: nowrap;
+      }
+      .count small {
+        display: block;
+        margin-top: 7px;
+        font-size: 0.7rem;
+        font-weight: 500;
+      }
+      section {
+        margin-top: 26px;
+      }
+      .result-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .card {
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--card);
+      }
+      .card p {
+        margin-top: 7px;
+        color: var(--muted);
+      }
+      .label {
+        display: inline-block;
+        margin-bottom: 8px;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: var(--secondary);
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+      .status {
+        border-left: 3px solid var(--success);
+      }
+      .caution {
+        border-left: 3px solid var(--warning);
+      }
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--card);
+        text-align: left;
+      }
+      th,
+      td {
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      th {
+        background: var(--secondary);
+        font-size: 0.82rem;
+      }
+      td {
+        font-size: 0.9rem;
+      }
+      td:first-child {
+        min-width: 210px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      td:nth-child(2) {
+        min-width: 340px;
+      }
+      td:last-child {
+        min-width: 250px;
+        color: var(--muted);
+      }
+      tr:last-child td {
+        border-bottom: 0;
+      }
+      code {
+        padding: 1px 4px;
+        border-radius: 4px;
+        background: var(--secondary);
+        font-size: 0.88em;
+      }
+      .decision {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .decision .card {
+        height: 100%;
+      }
+      .sources {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 12px;
+      }
+      a {
+        color: var(--info);
+        text-underline-offset: 3px;
+      }
+      footer {
+        margin-top: 24px;
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+      @media (max-width: 720px) {
+        main {
+          padding-top: 26px;
+        }
+        .hero {
+          grid-template-columns: 1fr;
+        }
+        .count {
+          text-align: left;
+        }
+        .result-grid,
+        .decision {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="eyebrow">UZZINA · estudo para decisão · 26 nov 2026</p>
+        <h1>Funções da Vercel</h1>
+        <p class="intro">
+          O plano Hobby está confirmado e não há previsão de upgrade. A fusão
+          administrativa foi aplicada no checkout: criação de usuários da equipe
+          e gestão de contas de clientes agora compartilham uma função.
+        </p>
+        <div class="meta">
+          <span class="pill">Plano informado: Hobby</span>
+          <span class="pill">Deploy: não publicado</span>
+          <span class="pill">Sem previsão de upgrade</span>
+        </div>
+      </header>
+
+      <div class="hero">
+        <div>
+          <strong>Resultado da fusão administrativa</strong>
+          <p>
+            <code>client-accounts</code> + <code>create-user</code> →
+            <code>admin-accounts</code>. Os caminhos antigos continuam
+            disponíveis por rewrites; o app chama a rota unificada diretamente.
+            A checagem de criação de usuário agora exige administrador ativo.
+          </p>
+        </div>
+        <div class="count">
+          10 / 12<small>funções no checkout · 2 vagas</small>
+        </div>
+      </div>
+
+      <section>
+        <h2>Antes de decidir</h2>
+        <div class="result-grid">
+          <article class="card status">
+            <span class="label">No checkout</span>
+            <h3>10 funções</h3>
+            <p>
+              Após a fusão, há duas vagas até o teto de 12 documentado para
+              funções diretas no Hobby.
+            </p>
+          </article>
+          <article class="card caution">
+            <span class="label">Em produção</span>
+            <h3>Ainda 11 funções</h3>
+            <p>
+              A mudança será enviada para <code>main</code> nesta publicação. O
+              deployment atual só muda quando a Vercel concluir o build e marcar
+              a nova versão Ready.
+            </p>
+          </article>
+          <article class="card">
+            <span class="label">Recomendação</span>
+            <h3>Manter as outras separadas</h3>
+            <p>
+              As duas vagas atuais dão margem. Os demais agrupamentos misturam
+              permissões, tipos de chamada ou operações diferentes.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <h2>Inventário das 10 funções depois da fusão</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Função</th>
+                <th>O que faz</th>
+                <th>Por que fica assim</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>api/admin-accounts.ts</code></td>
+                <td>
+                  Cria contas de clientes, lista/consulta/atualiza/arquiva essas
+                  contas e cria credenciais de acesso para novos usuários da
+                  equipe.
+                </td>
+                <td>
+                  Fusão desta entrega. Ambos os escopos exigem administrador
+                  ativo; as operações usam `scope=clients` e
+                  `scope=create-user`.
+                </td>
+              </tr>
+              <tr>
+                <td><code>api/admin-cleanup.ts</code></td>
+                <td>
+                  Encaminha exclusão definitiva de parceiro arquivado e
+                  auditoria/limpeza de referências do Cloudinary.
+                </td>
+                <td>
+                  Já reúne duas tarefas administrativas com autenticação de
+                  administrador. Mantida separada de contas por domínio e
+                  impacto destrutivo distintos.
+                </td>
+              </tr>
+              <tr>
+                <td><code>api/ai.ts</code></td>
+                <td>
+                  Gera conteúdo de IA para a equipe, incluindo texto e leitura
+                  de arquivos anexados conforme a intenção.
+                </td>
+                <td>
+                  Autorização para membro ativo e uso de quota/serviços de IA;
+                  não misturar com geração administrativa do Planejamento.
+                </td>
+              </tr>
+              <tr>
+                <td><code>api/dash.ts</code></td>
+                <td>
+                  Atende o portal de clientes: login, validação de sessão,
+                  leitura de dados e operações em ações.
+                </td>
+                <td>
+                  Já unificou três rotas. Usa cookie HttpOnly do portal,
+                  separado da sessão da equipe.
+                </td>
+              </tr>
+              <tr>
+                <td><code>api/instagram-publish.ts</code></td>
+                <td>
+                  Publica conteúdo agora, programa Stories e executa o worker
+                  que processa publicações vencidas.
+                </td>
+                <td>
+                  Tem publicação com efeitos externos e execução por agendador;
+                  resultado incerto não pode ser repetido automaticamente.
+                </td>
+              </tr>
+              <tr>
+                <td><code>api/instagram-reference.ts</code></td>
+                <td>
+                  Importa imagem, Reel ou carrossel público do Instagram para os
+                  arquivos da ação no Cloudinary.
+                </td>
+                <td>
+                  Transferência de mídia em fluxo, autorizada pela sessão do
+                  membro; fluxo e tratamento de erros diferem da publicação.
+                </td>
+              </tr>
+              <tr>
+                <td><code>api/partner-instagram-connection.ts</code></td>
+                <td>
+                  Conecta, consulta, desconecta e valida o perfil do Instagram
+                  ligado a um parceiro.
+                </td>
+                <td>
+                  Usa OAuth/Composio, callback por tentativa e autorização de
+                  administrador ativo; manter a fronteira própria.
+                </td>
+              </tr>
+              <tr>
+                <td><code>api/planning-theme.ts</code></td>
+                <td>
+                  Gera propostas de Planejamento por tema ou por período,
+                  reservando quota e retomando solicitações.
+                </td>
+                <td>
+                  Somente administrador ativo. Tem duração longa e estado de
+                  geração; audiência e fluxo diferem de <code>ai.ts</code>.
+                </td>
+              </tr>
+              <tr>
+                <td><code>api/strategy-operations.ts</code></td>
+                <td>
+                  Cria e consulta operações de estratégia solicitadas pela
+                  equipe.
+                </td>
+                <td>
+                  Usa sessão Bearer de membro e contrato de geração/estado
+                  próprio.
+                </td>
+              </tr>
+              <tr>
+                <td><code>api/strategy-worker.ts</code></td>
+                <td>
+                  Executa trabalho de estratégia em segundo plano quando chamado
+                  pelo cron/fila legada.
+                </td>
+                <td>
+                  O cron foi pausado em 25/11 e a fila antiga foi drenada; o
+                  endpoint permaneceu no código para reversão. Conta como função
+                  mesmo pausado. A remoção definitiva é uma decisão separada.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>IA e Planejamento: quatro funções no código</h2>
+        <div class="result-grid">
+          <article class="card">
+            <span class="label">Duas APIs principais</span>
+            <h3><code>ai.ts</code> e <code>planning-theme.ts</code></h3>
+            <p>
+              Geração de IA geral para a equipe e geração de propostas para
+              Planejamento. São dois arquivos distintos por público, autorização
+              e fluxo de quota.
+            </p>
+          </article>
+          <article class="card">
+            <span class="label">Estratégias</span>
+            <h3><code>strategy-operations.ts</code></h3>
+            <p>
+              Executa Gerar/Recriar na própria requisição, sem depender do
+              worker periódico.
+            </p>
+          </article>
+          <article class="card caution">
+            <span class="label">Estratégias · pausado</span>
+            <h3><code>strategy-worker.ts</code></h3>
+            <p>
+              Endpoint antigo de fila. O cron foi pausado; o arquivo ficou para
+              reversão e ainda ocupa uma das 10 funções.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <h2>Oportunidades avaliadas</h2>
+        <div class="decision">
+          <article class="card status">
+            <span class="label">Já unificado</span>
+            <h3>Portal /dash: 3 → 1</h3>
+            <p>
+              Login, dados e ações usam <code>api/dash.ts</code>. Essa fusão já
+              está em main; seus caminhos antigos continuam redirecionados
+              internamente.
+            </p>
+          </article>
+          <article class="card status">
+            <span class="label">Feito localmente</span>
+            <h3>Administração: 2 → 1</h3>
+            <p>
+              Contas de clientes e criação de usuário usam
+              <code>api/admin-accounts.ts</code>. Economiza uma função e corrige
+              a verificação de administrador inativo.
+            </p>
+          </article>
+          <article class="card">
+            <span class="label">Não recomendado agora</span>
+            <h3>IA e Planejamento</h3>
+            <p>
+              Um endpoint aceita membros ativos; o outro exige administrador e
+              mantém a retomada de geração de propostas. Misturá-los aumenta o
+              risco de autorização e observabilidade.
+            </p>
+          </article>
+          <article class="card">
+            <span class="label">Não recomendado agora</span>
+            <h3>Estratégia e Instagram</h3>
+            <p>
+              Worker HMAC não compartilha a fronteira da API de usuário.
+              Conexão, importação e publicação do Instagram têm callbacks,
+              permissões e efeitos externos diferentes.
+            </p>
+          </article>
+          <article class="card">
+            <span class="label">Possível · economiza 1</span>
+            <h3>Publicação + importação</h3>
+            <p>
+              <code>instagram-publish</code> e <code>instagram-reference</code>
+              podem usar um router e preservar escopos e URLs antigas. O ganho
+              seria uma função (10 → 9); ambas servem fluxos de membro, mas têm
+              contratos de mídia e efeitos externos distintos.
+            </p>
+          </article>
+          <article class="card caution">
+            <span class="label">Manter separado</span>
+            <h3>Conexão OAuth do Instagram</h3>
+            <p>
+              <code>partner-instagram-connection</code> pode ser roteada junto
+              tecnicamente, mas é a fronteira de administrador ativo e callback
+              OAuth. Mantê-la dedicada deixa a autorização e a conexão mais
+              fáceis de auditar.
+            </p>
+          </article>
+        </div>
+        <p style="margin-top: 12px; color: var(--muted)">
+          Com 10 de 12 funções, não é preciso unir APIs do Instagram para caber
+          no Hobby. Juntar publicação e importação economizaria uma vaga, mas
+          não é necessário para o limite atual. A remoção de
+          <code>strategy-worker</code> requer decisão explícita porque o
+          endpoint foi mantido para reversão após pausar o cron.
+        </p>
+      </section>
+
+      <section>
+        <h2>Fontes e limites do levantamento</h2>
+        <p>
+          A documentação oficial trata o limite Hobby como dependente do
+          framework; para projetos que usam funções diretamente, cada arquivo de
+          API vira uma função e o limite é 12 por deployment. A Vercel também
+          documenta 300 segundos de duração máxima Hobby com Fluid Compute; a
+          ativação desse recurso neste projeto não foi verificada no painel.
+        </p>
+        <div class="sources">
+          <a href="https://vercel.com/docs/limits">Limites gerais da Vercel</a>
+          <a href="https://vercel.com/docs/functions/runtimes"
+            >Runtimes e contagem de funções</a
+          >
+          <a href="https://vercel.com/docs/functions/limitations#max-duration"
+            >Duração máxima</a
+          >
+          <a href="./issues/01-investigar-limite-e-unificacoes.md"
+            >Relatório completo do ticket</a
+          >
+        </div>
+      </section>
+      <footer>
+        Levantamento do checkout local em 26/11/2026. Contagem e validações
+        locais não comprovam o deployment ativo. Nenhuma alteração foi
+        publicada.
+      </footer>
+    </main>
+  </body>
+</html>

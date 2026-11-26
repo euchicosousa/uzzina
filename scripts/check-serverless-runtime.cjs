@@ -61,7 +61,7 @@ const { FileFsRef } = require("@vercel/build-utils");
       "api/strategy-operations.ts",
       "api/strategy-worker.ts",
       "api/dash.ts",
-      "api/client-accounts.ts",
+      "api/admin-accounts.ts",
       "api/admin-cleanup.ts",
       "api/partner-instagram-connection.ts",
       "api/instagram-publish.ts",
@@ -98,6 +98,8 @@ const { FileFsRef } = require("@vercel/build-utils");
       "server/dash-action-handler.ts",
       "server/dash-auth-handler.ts",
       "server/dash-data-handler.ts",
+      "server/admin-client-accounts-handler.ts",
+      "server/admin-create-user-handler.ts",
       "server/dash-session.ts",
       "server/auth.ts",
       "server/cloudinary-admin.ts",
@@ -149,16 +151,17 @@ const { FileFsRef } = require("@vercel/build-utils");
         const {default: handler} = await import(pathToFileURL(process.argv[1]).href);
         const originalFetch = globalThis.fetch;
         globalThis.fetch = () => {throw new Error('Unexpected external request');};
-        const request = async (method, expected) => {
+        const request = async (method, expected, query = {}) => {
           const response = {headers: {}, setHeader(key, value) {this.headers[key] = value; return this;},
             status(code) {this.code = code; return this;}, json(body) {this.body = body; return this;}};
-          await handler({method, headers: {}, query: {}, body: {}}, response);
+          await handler({method, headers: {}, query, body: {}}, response);
           assert.equal(response.code, expected);
           assert.equal(typeof response.body.error, 'string');
           if (expected === 405) assert.ok(response.headers.Allow);
         };
         await request('OPTIONS', 405);
         ${["api/ai.ts", "api/planning-theme.ts", "api/instagram-publish.ts", "api/instagram-reference.ts"].includes(entrypoint) ? "await request('POST', 401);" : ""}
+        ${entrypoint === "api/admin-accounts.ts" ? "await request('POST', 503, {scope: 'clients'}); await request('POST', 401, {scope: 'create-user'});" : ""}
         ${
           entrypoint === "api/ai.ts" && staging.SUPABASE_URL
             ? `
