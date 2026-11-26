@@ -1165,6 +1165,19 @@ html {
   }
 }
 
+@utility animate-file-import-progress {
+  animation: file-import-progress 8s ease-out forwards;
+}
+
+@keyframes file-import-progress {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(180%);
+  }
+}
+
 /* Ensure Cloudinary widget is clickable even when Radix Dialog locks the body */
 iframe[data-test="uw-iframe"] {
   pointer-events: auto;

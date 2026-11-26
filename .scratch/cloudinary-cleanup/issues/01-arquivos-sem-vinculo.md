@@ -129,6 +129,8 @@ Opções para decisão: manter a limpeza conjunta com checagem de saldo, ou
 limpar originais e derivados primeiro e oferecer os backups em uma rodada
 separada. Nenhuma alteração de código nesta análise.
 
+**Decisão em 26/11/2026.** O proprietário manteve uma única operação para original, derivados e backups.
+
 ## Cruzamento das pastas com os parceiros atuais — 26/11/2026
 
 A leitura após 16h confirmou as 22 pastas raiz da captura, cruzadas com 16 parceiros ativos e com as referências às mídias. “Só backup” conta arquivos sem original ativo, não as versões de backup dos originais ativos.

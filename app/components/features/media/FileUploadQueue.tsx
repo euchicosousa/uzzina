@@ -126,7 +126,7 @@ export function FileUploadQueue({
                       className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-input"
                       role="progressbar"
                     >
-                      <div className="h-full w-1/3 rounded-full bg-success motion-safe:animate-pulse" />
+                      <div className="h-full w-1/3 rounded-full bg-success motion-safe:animate-file-import-progress" />
                     </div>
                     <span className="text-xs text-secondary-foreground">
                       Importando…

@@ -4,16 +4,16 @@ Comece aqui para encontrar o próximo passo, a autorização e a ficha correspon
 
 ## Pendências do piloto de Instagram
 
-Em 25/11/2026 o proprietário aceitou e encerrou os tickets 02 a 05 (conexão, publicar agora, programar e várias datas); os testes que ele deixou para depois reabrem o ticket se falharem. Os tickets 06 (relatórios) e 07 (comentários) foram excluídos em 25/11, porque a busca de dados do Instagram saiu. Pendências ativas:
+Em 26/11/2026 o proprietário confirmou Reel agendado, várias datas, duplicação sem agendamentos e calendário. A publicação imediata de Reel funcionou na segunda tentativa. O diagnóstico já publicado fica disponível se a falha voltar.
 
-| Entrega                                                                                                                                                                             | Situação e próxima ação                                                                           | Responsável         |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------- |
-| [Publicar Reel pela UZZINA](instagram-composio/issues/03-publicar-agora.md) | A segunda tentativa publicou a mesma mídia. O diagnóstico já está em produção para eventual nova falha. Falta conferir agendamento de Reel. | Proprietário valida; Codex analisa se a falha voltar |
-| Testes adiados do Instagram | Reconexão e desconexão; várias datas na mesma programação. Duplicação sem agendamentos e calendário já foram confirmados em 26/11. | Proprietário |
+| Entrega | Situação e próxima ação | Responsável |
+| --- | --- | --- |
+| [Desconectar o Instagram em Administração → Parceiros](instagram-composio/issues/02-conectar-perfil.md) | O Composio recusou a revogação. As conexões atuais ainda retornam perfis ativos. Conferir em qual ação a seção Publicação sumiu e diagnosticar a recusa. | Codex |
+| Progresso individual em Ação → Essencial → Arquivos → Importar por link | Importação de quatro arquivos e contagem por lote aprovadas. O segmento individual percorre o trilho uma vez, em até oito segundos, e aguarda a conclusão sem exibir porcentagem. Falta conferir no app publicado. | Proprietário |
 
 ## Investigação em produção
 
-- [Limite de consultas em Administração → Cloudinary](cloudinary-cleanup/issues/01-arquivos-sem-vinculo.md#limite-de-consultas-da-auditoria--26112026) — auditoria bloqueada pela cota horária após a validação da exclusão definitiva. A redução de consultas foi autorizada. Conferir a pré-checagem por IDs, a verificação em lote e a atualização final do catálogo.
+- [Limite de consultas em Administração → Cloudinary](cloudinary-cleanup/issues/01-arquivos-sem-vinculo.md#limite-de-consultas-da-auditoria--26112026) — auditoria bloqueada pela cota horária após a validação da exclusão definitiva. A redução de consultas está publicada. A cota voltou a acabar após poucas exclusões. O proprietário manteve a remoção conjunta de original, derivados e backups.
 
 ## Referências fora da fila de execução
 
