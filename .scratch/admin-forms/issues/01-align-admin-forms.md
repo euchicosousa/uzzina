@@ -1,6 +1,6 @@
 # Adequar os formulários administrativos ao modelo de Parceiros
 
-**Status:** implementado localmente em 26/11/2026; aceite visual pendente.
+**Status:** commit e push em 26/11/2026; aceite visual e deploy Ready pendentes.
 
 **Bloqueado por:** nenhum.
 
@@ -21,7 +21,7 @@ Em Administração → Usuários e Administração → Clientes, as telas Novo e
 
 ## Entrega em 26/11/2026
 
-Em Administração → Usuários, a tela de Novo e Editar agora organiza perfil e acesso/permissões em seções com cabeçalho, descrição e divisória. Em Administração → Clientes, Novo e Editar organizam perfil, acesso à conta e parceiros com acesso na mesma estrutura. Antes os campos apareciam em blocos próprios, sem seções; agora os campos comuns seguem o padrão visual de Parceiros, preservando os fluxos existentes de credenciais, salvamento, permissões, vínculos e arquivamento. A alteração está local em `main`, sem commit ou publicação.
+Em Administração → Usuários, a tela de Novo e Editar agora organiza perfil e acesso/permissões em seções com cabeçalho, descrição e divisória. Em Administração → Clientes, Novo e Editar organizam perfil, acesso à conta e parceiros com acesso na mesma estrutura. Antes os campos apareciam em blocos próprios, sem seções; agora os campos comuns seguem o padrão visual de Parceiros, preservando os fluxos existentes de credenciais, salvamento, permissões, vínculos e arquivamento. O commit `4f0a8161` foi enviado a `origin/main` em 26/11/2026. O status Ready da Vercel ainda não foi confirmado.
 
 O proprietário pode conferir as quatro telas abrindo Administração → Usuários → Novo Usuário e um usuário existente; depois Administração → Clientes → Novo Cliente e um cliente existente. Em cada tela, conferir a leitura das seções, credenciais, áreas/permissões, parceiros vinculados, ações e a versão estreita. O aceite visual fica pendente.
 
