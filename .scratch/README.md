@@ -8,12 +8,12 @@ Em 25/11/2026 o proprietário aceitou e encerrou os tickets 02 a 05 (conexão, p
 
 | Entrega                                                                                                                                                                             | Situação e próxima ação                                                                           | Responsável         |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------- |
-| [Publicar Reel pela UZZINA](instagram-composio/issues/03-publicar-agora.md) | Primeira tentativa falhou na preparação; a segunda publicou a mesma mídia. Agendamento de Reel ainda sem confirmação. | Codex investiga; proprietário valida |
+| [Publicar Reel pela UZZINA](instagram-composio/issues/03-publicar-agora.md) | A segunda tentativa publicou a mesma mídia. O diagnóstico já está em produção para eventual nova falha. Falta conferir agendamento de Reel. | Proprietário valida; Codex analisa se a falha voltar |
 | Testes adiados do Instagram | Reconexão e desconexão; várias datas na mesma programação. Duplicação sem agendamentos e calendário já foram confirmados em 26/11. | Proprietário |
 
 ## Investigação em produção
 
-- [Contagem de arquivos sem vínculo após a exclusão](cloudinary-cleanup/issues/01-arquivos-sem-vinculo.md) — investigar em Administração → Cloudinary. A auditoria contava registros de backup como arquivos ativos. O painel diferencia arquivos de ações, perfis e logos. Para as duas pastas confirmadas de ex-clientes, cada lote de exclusão definitiva depende de revisão e confirmação pelo proprietário.
+- [Limite de consultas em Administração → Cloudinary](cloudinary-cleanup/issues/01-arquivos-sem-vinculo.md#limite-de-consultas-da-auditoria--26112026) — auditoria bloqueada pela cota horária após a validação da exclusão definitiva. A redução de consultas foi autorizada. Conferir a pré-checagem por IDs, a verificação em lote e a atualização final do catálogo.
 
 ## Referências fora da fila de execução
 
@@ -23,6 +23,8 @@ Em 25/11/2026 o proprietário aceitou e encerrou os tickets 02 a 05 (conexão, p
 Novos tickets entram na série correspondente. Ao encerrar, manter somente pendências na lista ativa e consolidar finalidade, aceite, commit e limites no histórico.
 
 ## Registros anteriores da fila
+
+- **Cloudinary aprovado em 26/11/2026.** Em Administração → Cloudinary, o proprietário confirmou a exclusão definitiva publicada em `735e4de3`. A tela diferencia ações, perfis e logotipos, e pede confirmação por lote. [Registro do aceite](cloudinary-cleanup/issues/01-arquivos-sem-vinculo.md#ex-clientes-e-exclusão-definitiva--26112026).
 
 Em 22/11/2026, HOJE-06 foi aprovado e encerrado pelo proprietário; implementação local, sem publicação, registrada no [histórico](archive/resolved-tickets.md). Os demais ajustes de uso (HOJE-05, CAL-02, GAV-01), o seletor de modelos (IA-M10), design system (DS35 a DS37) e Planejamento (T01–T12, T11 aceito como parecer parcial) foram aprovados; o site publicado foi conferido pelo proprietário. HOJE-04 também foi conferido no app publicado em 22/11.
 

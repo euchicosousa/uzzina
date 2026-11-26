@@ -612,12 +612,172 @@ export async function deleteCloudinaryResourcesByType(
   return { deletedIds, notFoundIds, failed };
 }
 
-// After the original is gone, delete only versions belonging to that exact asset.
-export async function clearCloudinaryBackup(
+const ASSET_LOOKUP_BATCH = 10;
+
+function cloudinaryResourcesUrl(config: CloudinaryAdminConfig) {
+  return `https://api.cloudinary.com/v1_1/${encodeURIComponent(config.cloudName)}/resources`;
+}
+
+function cloudinaryReadOptions(config: CloudinaryAdminConfig): RequestInit {
+  return {
+    headers: {
+      Authorization: `Basic ${Buffer.from(`${config.apiKey}:${config.apiSecret}`).toString("base64")}`,
+      "Cache-Control": "no-cache",
+    },
+    cache: "no-store",
+    signal: AbortSignal.timeout(8_000),
+  };
+}
+
+async function readExactResourceRows(
+  config: CloudinaryAdminConfig,
+  url: URL,
+  ids: readonly string[],
+  fetchImpl: typeof fetch,
+) {
+  const response = await fetchImpl(
+    url.toString(),
+    cloudinaryReadOptions(config),
+  );
+  if (response.status === 420 || response.status === 429)
+    throw new CloudinaryAdminError(
+      "Limite de consultas do Cloudinary atingido. Tente novamente após a renovação.",
+      429,
+      "CLOUDINARY_RATE_LIMITED",
+    );
+  if (!response.ok)
+    throw new CloudinaryAdminError(
+      "Não foi possível conferir os arquivos do lote no Cloudinary.",
+      502,
+      "CLOUDINARY_UPSTREAM_ERROR",
+    );
+  const payload: unknown = await response.json();
+  if (
+    !payload ||
+    typeof payload !== "object" ||
+    !("resources" in payload) ||
+    !Array.isArray(payload.resources) ||
+    ("next_cursor" in payload && payload.next_cursor)
+  )
+    throw new Error("O Cloudinary não devolveu uma lista completa do lote.");
+  const rows = new Map<string, Record<string, unknown>>();
+  for (const entry of payload.resources as unknown[]) {
+    if (
+      !entry ||
+      typeof entry !== "object" ||
+      !("asset_id" in entry) ||
+      typeof entry.asset_id !== "string" ||
+      !ids.includes(entry.asset_id) ||
+      rows.has(entry.asset_id)
+    )
+      throw new Error("A resposta do Cloudinary não corresponde ao lote.");
+    rows.set(entry.asset_id, entry as Record<string, unknown>);
+  }
+  if ("total_count" in payload && payload.total_count !== rows.size)
+    throw new Error("O Cloudinary não devolveu todos os resultados do lote.");
+  return rows;
+}
+
+async function readResourcesByAssetIds(
+  config: CloudinaryAdminConfig,
+  assetIds: readonly string[],
+  fetchImpl: typeof fetch,
+) {
+  const ids = [...new Set(assetIds)];
+  const rows = new Map<string, Record<string, unknown>>();
+  for (let i = 0; i < ids.length; i += ASSET_LOOKUP_BATCH) {
+    const batch = ids.slice(i, i + ASSET_LOOKUP_BATCH);
+    const url = new URL(`${cloudinaryResourcesUrl(config)}/by_asset_ids`);
+    for (const id of batch) url.searchParams.append("asset_ids[]", id);
+    for (const [id, row] of await readExactResourceRows(
+      config,
+      url,
+      batch,
+      fetchImpl,
+    ))
+      rows.set(id, row);
+  }
+  return rows;
+}
+
+export async function readCloudinarySelection(
+  config: CloudinaryAdminConfig,
+  assetIds: readonly string[],
+  fetchImpl: typeof fetch = globalThis.fetch,
+) {
+  const rows = await readResourcesByAssetIds(config, assetIds, fetchImpl);
+  const resources: CloudinaryRawResource[] = [];
+  const backupResources: CloudinaryRawResource[] = [];
+  for (const row of rows.values()) {
+    if (
+      row.type !== "upload" ||
+      (row.resource_type !== "image" &&
+        row.resource_type !== "video" &&
+        row.resource_type !== "raw")
+    )
+      continue;
+    const parsed = parseRawResource(row, row.resource_type);
+    if (!parsed) continue;
+    if (row.placeholder === true) backupResources.push(parsed);
+    else resources.push(parsed);
+  }
+  return { resources, backupResources, truncated: false };
+}
+
+export async function verifyCloudinaryBackupsBatch(
+  config: CloudinaryAdminConfig,
+  assetIds: readonly string[],
+  fetchImpl: typeof fetch = globalThis.fetch,
+): Promise<Set<string>> {
+  if (assetIds.length === 0) return new Set();
+  const rows = await readResourcesByAssetIds(config, assetIds, fetchImpl);
+  const cleared = new Set<string>();
+  const unresolved: string[] = [];
+  for (const id of assetIds) {
+    const row = rows.get(id);
+    if (row && row.placeholder !== true) continue;
+    if (row?.backup === true && row.backup_bytes === 0) continue;
+    if (row?.backup === false || row?.backup_bytes === 0) cleared.add(id);
+    else if (
+      !row ||
+      (row.backup !== true && typeof row.backup_bytes !== "number")
+    )
+      unresolved.push(id);
+  }
+  if (unresolved.length === 0) return cleared;
+
+  // Search includes deleted assets and reports backup_bytes even when the
+  // lookup by ID omits that field. Treat a contradictory result as pending.
+  if (unresolved.some((id) => !/^[a-z0-9]+$/i.test(id)))
+    throw new Error("Identificador inválido na conferência de backups.");
+  const url = new URL(`${cloudinaryResourcesUrl(config)}/search`);
+  url.searchParams.set(
+    "expression",
+    `(status=active OR status=deleted) AND (${unresolved.map((id) => `asset_id=${id}`).join(" OR ")})`,
+  );
+  url.searchParams.set("max_results", String(unresolved.length));
+  const indexed = await readExactResourceRows(
+    config,
+    url,
+    unresolved,
+    fetchImpl,
+  );
+  for (const id of unresolved) {
+    const row = indexed.get(id);
+    if (
+      row ? row.status === "deleted" && row.backup_bytes === 0 : !rows.has(id)
+    )
+      cleared.add(id);
+  }
+  return cleared;
+}
+
+// Submit backup removal for the exact asset. Positive removals are verified as a batch.
+export async function requestCloudinaryBackupRemoval(
   config: CloudinaryAdminConfig,
   resource: CloudinaryRawResource,
   fetchImpl: typeof fetch = globalThis.fetch,
-): Promise<void> {
+): Promise<"absent" | "submitted"> {
   if (!resource.asset_id)
     throw new Error("Não foi possível identificar o backup.");
   const base = `https://api.cloudinary.com/v1_1/${encodeURIComponent(config.cloudName)}/resources`;
@@ -626,15 +786,12 @@ export async function clearCloudinaryBackup(
     "Cache-Control": "no-cache",
   };
   const detailsUrl = `${base}/${encodeURIComponent(resource.asset_id)}`;
-  async function readDetails(includeVersions: boolean) {
-    const response = await fetchImpl(
-      includeVersions ? detailsUrl + "?versions=true" : detailsUrl,
-      {
-        headers,
-        cache: "no-store",
-        signal: AbortSignal.timeout(8_000),
-      },
-    );
+  async function readDetails() {
+    const response = await fetchImpl(detailsUrl + "?versions=true", {
+      headers,
+      cache: "no-store",
+      signal: AbortSignal.timeout(8_000),
+    });
     if (response.status === 404) return null;
     if (!response.ok)
       throw new Error("Não foi possível consultar as versões do backup.");
@@ -651,7 +808,7 @@ export async function clearCloudinaryBackup(
     return payload;
   }
   async function readVersions() {
-    const payload = await readDetails(true);
+    const payload = await readDetails();
     if (
       !payload ||
       (payload.backup === false && payload.versions === undefined)
@@ -676,7 +833,7 @@ export async function clearCloudinaryBackup(
     return ids;
   }
   const versions = await readVersions();
-  if (versions.length === 0) return;
+  if (versions.length === 0) return "absent";
   const url = new URL(
     `${base}/backup/${encodeURIComponent(resource.asset_id)}`,
   );
@@ -689,9 +846,5 @@ export async function clearCloudinaryBackup(
   });
   if (!response.ok)
     throw new Error("O Cloudinary não confirmou a exclusão do backup.");
-  const after = await readDetails(false);
-  if (after && after.backup !== false && (await readVersions()).length > 0)
-    throw new Error(
-      "Ainda há versões no backup. Confira a aba Backups antes de tentar novamente.",
-    );
+  return "submitted";
 }

@@ -141,4 +141,5 @@ export interface CloudinaryDeleteResponse {
   failed: CloudinaryDeleteFailedItem[];
   originalsAndDerivativesRemoved?: number;
   backupsCleared?: number;
+  backupVerificationPending?: CloudinaryDeleteFailedItem[];
 }

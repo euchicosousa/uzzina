@@ -1,4 +1,7 @@
-import { deleteCloudinaryResourcesByType } from "../server/cloudinary-admin";
+import {
+  deleteCloudinaryResourcesByType,
+  verifyCloudinaryBackupsBatch,
+} from "../server/cloudinary-admin";
 import { beforeEach, describe, expect, it, mock } from "bun:test";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { buildCloudinaryAuditReport } from "../server/cloudinary-admin";
@@ -303,6 +306,44 @@ it("counts assets missing or represented only by backups after the deletion ackn
   expect(result.failed).toMatchObject([{ publicId: requested[1] }]);
 });
 
+it("confirms a batch without reloading version histories and leaves ambiguous backups pending", async () => {
+  const requests: string[] = [];
+  const provider = (async (input: RequestInfo | URL) => {
+    const url = new URL(String(input));
+    requests.push(url.pathname);
+    if (url.pathname.endsWith("/by_asset_ids")) {
+      expect(url.searchParams.getAll("asset_ids[]")).toEqual([
+        "cleared",
+        "ambiguous",
+        "stillbacked",
+        "restored",
+      ]);
+      return Response.json({
+        resources: [
+          { asset_id: "ambiguous", placeholder: true },
+          { asset_id: "stillbacked", placeholder: true, backup: true },
+          { asset_id: "restored", backup: false },
+        ],
+      });
+    }
+    expect(url.searchParams.get("expression")).toBe(
+      "(status=active OR status=deleted) AND (asset_id=cleared OR asset_id=ambiguous)",
+    );
+    return Response.json({
+      resources: [
+        { asset_id: "ambiguous", status: "deleted", backup_bytes: 1024 },
+      ],
+    });
+  }) as typeof fetch;
+  const confirmed = await verifyCloudinaryBackupsBatch(
+    { cloudName: "cloud", apiKey: "fixture", apiSecret: "fixture" },
+    ["cleared", "ambiguous", "stillbacked", "restored"],
+    provider,
+  );
+  expect([...confirmed]).toEqual(["cleared"]);
+  expect(requests).toHaveLength(2);
+});
+
 describe("API /api/cloudinary-audit", () => {
   beforeEach(() => {
     process.env.SUPABASE_URL = "https://example.supabase.co";
@@ -570,6 +611,7 @@ describe("API /api/cloudinary-audit", () => {
     const restoredId = "anaarcanjoodontologia/restored";
     const restoredAssetId = "restoredasset";
     const media = {
+      type: "upload",
       public_id: id,
       asset_id: assetId,
       resource_type: "image",
@@ -582,6 +624,9 @@ describe("API /api/cloudinary-audit", () => {
       asset_id: restoredAssetId,
     };
     const operations: string[] = [];
+    let versionReads = 0;
+    let batchReads = 0;
+    let fullCatalogReads = 0;
     let backupCleared = false;
     globalThis.fetch = (async (
       input: RequestInfo | URL,
@@ -602,15 +647,27 @@ describe("API /api/cloudinary-audit", () => {
         operations.push("original");
         return Response.json({ deleted: { [assetId]: "deleted" } });
       }
-      if (url.pathname.endsWith("/resources/" + assetId))
+      if (url.pathname.endsWith("/by_asset_ids")) {
+        batchReads += 1;
+        return Response.json({
+          resources: backupCleared
+            ? [{ ...media, placeholder: true, backup: false }]
+            : [media, restored],
+        });
+      }
+      if (url.pathname.endsWith("/resources/" + assetId)) {
+        expect(url.searchParams.get("versions")).toBe("true");
+        versionReads += 1;
         return Response.json({
           ...media,
           placeholder: true,
           backup: !backupCleared,
           versions: backupCleared ? [] : [{ version_id: "version-a" }],
         });
+      }
       if (url.searchParams.has("public_ids[]"))
         return Response.json({ resources: [{ ...media, placeholder: true }] });
+      fullCatalogReads += 1;
       return Response.json({
         resources: url.pathname.includes("/image/upload")
           ? [media, restored]
@@ -640,6 +697,7 @@ describe("API /api/cloudinary-audit", () => {
       });
       await cloudinaryAuditHandler(oldRequest.req, oldRequest.res);
       expect(operations).toEqual([]);
+      const legacyReads = fullCatalogReads;
       const confirmed = createMockReqRes({
         method: "POST",
         headers: { authorization: "Bearer admin-token" },
@@ -648,6 +706,9 @@ describe("API /api/cloudinary-audit", () => {
       await cloudinaryAuditHandler(confirmed.req, confirmed.res);
       expect(confirmed.getStatus()).toBe(200);
       expect(operations).toEqual(["original", "backup"]);
+      expect(versionReads).toBe(1);
+      expect(batchReads).toBe(2);
+      expect(fullCatalogReads).toBe(legacyReads);
       expect(confirmed.getBody()).toMatchObject({
         deletedCount: 1,
         originalsAndDerivativesRemoved: 1,

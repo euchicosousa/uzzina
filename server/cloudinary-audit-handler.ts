@@ -26,7 +26,9 @@ import {
   buildCloudinaryAuditReport,
   canAssetUnlinkFromActions,
   classifyOrigin,
-  clearCloudinaryBackup,
+  readCloudinarySelection,
+  requestCloudinaryBackupRemoval,
+  verifyCloudinaryBackupsBatch,
   deleteCloudinaryResourcesByType,
   getCloudinaryAdminConfig,
   listCloudinaryResources,
@@ -530,7 +532,14 @@ async function handlePostDelete(
       catalog,
     ] = await Promise.all([
       collectDatabaseReferences(supabaseAdmin),
-      listCloudinaryResources(cloudinaryConfig),
+      permanent
+        ? readCloudinarySelection(
+            cloudinaryConfig,
+            parsed.data.items.flatMap(({ providerAssetId }) =>
+              providerAssetId ? [providerAssetId] : [],
+            ),
+          )
+        : listCloudinaryResources(cloudinaryConfig),
     ]);
 
     if (catalog.truncated) {
@@ -886,34 +895,68 @@ async function handlePostDelete(
     }
 
     let backupsCleared = 0;
+    const backupVerificationPending: CloudinaryDeleteFailedItem[] = [];
     if (permanent) {
       const unlinkFailures = new Set(failed.map((item) => item.assetKey));
+      const submitted: typeof pendingBackups = [];
+      const confirmBackup = ({
+        resource,
+        assetKey,
+        backupOnly,
+      }: (typeof pendingBackups)[number]) => {
+        backupsCleared += 1;
+        if (backupOnly) {
+          deleted.push({
+            publicId: resource.public_id,
+            resourceType: resource.resource_type,
+            assetKey,
+            bytes: 0,
+          });
+        }
+      };
       for (let offset = 0; offset < pendingBackups.length; offset += 5) {
         await Promise.all(
-          pendingBackups
-            .slice(offset, offset + 5)
-            .map(async ({ resource, assetKey, backupOnly }) => {
-              if (unlinkFailures.has(assetKey)) return;
-              const item = {
+          pendingBackups.slice(offset, offset + 5).map(async (entry) => {
+            const { resource, assetKey } = entry;
+            if (unlinkFailures.has(assetKey)) return;
+            try {
+              const outcome = await requestCloudinaryBackupRemoval(
+                cloudinaryConfig,
+                resource,
+              );
+              if (outcome === "absent") confirmBackup(entry);
+              else submitted.push(entry);
+            } catch (error) {
+              failed.push({
                 publicId: resource.public_id,
                 resourceType: resource.resource_type,
                 assetKey,
-              };
-              try {
-                await clearCloudinaryBackup(cloudinaryConfig, resource);
-                backupsCleared += 1;
-                if (backupOnly) deleted.push({ ...item, bytes: 0 });
-              } catch (error) {
-                failed.push({
-                  ...item,
-                  message:
-                    error instanceof Error
-                      ? error.message
-                      : "Não foi possível concluir a remoção do backup.",
-                });
-              }
-            }),
+                message:
+                  error instanceof Error
+                    ? error.message
+                    : "Não foi possível concluir a remoção do backup.",
+              });
+            }
+          }),
         );
+      }
+      const verified = await verifyCloudinaryBackupsBatch(
+        cloudinaryConfig,
+        submitted.flatMap(({ resource }) =>
+          resource.asset_id ? [resource.asset_id] : [],
+        ),
+      ).catch(() => new Set<string>());
+      for (const entry of submitted) {
+        const { resource, assetKey } = entry;
+        if (resource.asset_id && verified.has(resource.asset_id))
+          confirmBackup(entry);
+        else
+          backupVerificationPending.push({
+            publicId: resource.public_id,
+            resourceType: resource.resource_type,
+            assetKey,
+            message: "Pendente de conferência no Cloudinary.",
+          });
       }
     }
     const result: CloudinaryDeleteResponse = {
@@ -929,6 +972,7 @@ async function handlePostDelete(
               (item) => !item.backupOnly,
             ).length,
             backupsCleared,
+            backupVerificationPending,
           }
         : {}),
     };

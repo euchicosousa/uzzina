@@ -1,6 +1,6 @@
 # Encontrar e excluir arquivos sem uso no Cloudinary
 
-**Status:** publicado. Reaberto em 26/11/2026. O proprietário executou a exclusão em Administração → Cloudinary, mas a contagem de candidatos sem vínculo permaneceu igual. A exclusão e a atualização do catálogo precisam ser reconciliadas.
+**Status:** limpeza definitiva aprovada pelo proprietário em produção em 26/11/2026. Reaberto para investigar o limite de consultas na auditoria, observado depois do aceite. A correção da contagem saiu em `eede297e`. A separação por uso, as pastas dos ex-clientes e a confirmação definitiva saíram em `735e4de3`.
 
 **Bloqueado por:** Nenhum
 
@@ -55,7 +55,7 @@ relatório de uso têm escopos e momentos de leitura diferentes. Limpar os
 319 backups de arquivos excluídos recuperaria aproximadamente 0,51 crédito
 de armazenamento. A recomendação é manter os backups com a folga atual.
 
-## Ex-clientes e exclusão definitiva proposta — 26/11/2026
+## Ex-clientes e exclusão definitiva — 26/11/2026
 
 Consulta somente de leitura no Cloudinary e no banco de produção. O
 proprietário identificou `executetecnologia` e `anaarcanjoodontologia` como
@@ -84,3 +84,30 @@ imutável, com até 20 itens por lote. As abas Ex-clientes e Backups exibem os
 registros elegíveis. A operação relata originais, vínculos e backups
 separadamente. A verificação de produção fica em leitura até o proprietário
 confirmar um lote na tela.
+
+**Aceite em produção (26/11):** o proprietário confirmou que a operação funcionou. A confirmação encerra a entrega, sem registrar volume de arquivos apagados ou espaço liberado. [Deploy Ready](https://vercel.com/agenciacnvt/uzzina/2rugd8L79MHmrNrttSPeXmhVsgiH).
+
+## Limite de consultas da auditoria — 26/11/2026
+
+O proprietário mostrou o painel bloqueado às 14h49. Uma única consulta de
+leitura ao Cloudinary retornou HTTP 420, 0 de 500 consultas restantes e
+renovação às 15h00 em America/Fortaleza. A exclusão definitiva consulta
+versões de backup por arquivo, revalida a remoção e atualiza o catálogo.
+Até duas consultas de versões podem ser feitas por arquivo. A investigação
+anterior também consumiu parte da mesma cota compartilhada.
+
+Proposta: mostrar o horário de renovação, preservar o último relatório com
+aviso de desatualização, e verificar o saldo e reservar capacidade para
+confirmar o lote antes de alterar originais. Se um lote ficar parcial,
+identificar e retomar só os backups restantes após a renovação e a
+confirmação do proprietário. Nenhuma alteração foi publicada nesta análise.
+
+### Redução de consultas aprovada em 26/11
+
+O proprietário autorizou reduzir consultas durante a limpeza. O servidor
+revalida os metadados apenas dos IDs selecionados e mantém a rechecagem de
+vínculos e de publicações pendentes no banco. Depois da tentativa de
+remoção de versões, confirma os backups por lote. Um resultado ambíguo
+aparece como pendente e só pode ser revisto após atualizar a análise.
+O painel mantém o último catálogo durante a rodada e desconta as exclusões
+confirmadas. `Atualizar análise` reconcilia o catálogo completo no encerramento.

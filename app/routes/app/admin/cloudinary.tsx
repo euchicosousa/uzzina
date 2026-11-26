@@ -526,6 +526,9 @@ function reconcileConfirmedDeletions(
 
   return {
     ...report,
+    backups: report.backups?.filter(
+      (asset) => deleted.get(asset.assetKey) !== asset.createdAt,
+    ),
     summary,
     orphanCandidates: remaining(
       report.orphanCandidates,
@@ -574,6 +577,7 @@ function AdminCloudinaryPage() {
     userId: string;
     reportAtDeletion: number;
     items: ReadonlyMap<string, string>;
+    pendingBackupKeys: ReadonlySet<string>;
   }>();
   const {
     data: report,
@@ -587,6 +591,8 @@ function AdminCloudinaryPage() {
     queryKey: ["cloudinary-audit", person.user_id],
     queryFn: () => getCloudinaryAudit(supabase),
     retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     staleTime: 60_000,
   });
 
@@ -603,6 +609,10 @@ function AdminCloudinaryPage() {
     [report, currentDeletions],
   );
   const data = hasNewCatalog ? report : reconciled;
+  const pendingBackupKeys = !hasNewCatalog
+    ? currentDeletions?.pendingBackupKeys
+    : undefined;
+  const awaitingFullReview = Boolean(currentDeletions && !hasNewCatalog);
   const catalogDisagrees =
     hasNewCatalog &&
     report &&
@@ -648,7 +658,10 @@ function AdminCloudinaryPage() {
         ...(allowReferencedInActions ? { allowReferencedInActions: true } : {}),
       }),
     onSuccess: (result, { items }) => {
-      if (result.deleted.length > 0) {
+      if (
+        result.deleted.length > 0 ||
+        result.backupVerificationPending?.length
+      ) {
         const sent = new Map(
           items.map((asset) => [asset.assetKey, asset.createdAt]),
         );
@@ -664,10 +677,21 @@ function AdminCloudinaryPage() {
             if (createdAt !== undefined)
               confirmed.set(asset.assetKey, createdAt);
           }
+          const pendingBackupKeys = new Set(
+            previous?.userId === person.user_id &&
+              previous.reportAtDeletion === dataUpdatedAt
+              ? previous.pendingBackupKeys
+              : undefined,
+          );
+          for (const asset of result.deleted)
+            pendingBackupKeys.delete(asset.assetKey);
+          for (const item of result.backupVerificationPending ?? [])
+            pendingBackupKeys.add(item.assetKey);
           return {
             userId: person.user_id,
             reportAtDeletion: dataUpdatedAt,
             items: confirmed,
+            pendingBackupKeys,
           };
         });
       }
@@ -680,7 +704,11 @@ function AdminCloudinaryPage() {
           queryKey: QUERY_KEYS.actions.all(),
         });
       }
-      if (result.deletedCount > 0 && result.unlinkedActionsCount > 0) {
+      if (result.backupVerificationPending?.length) {
+        toast.warning("Há backups pendentes de conferência.");
+      } else if (result.failed.length > 0) {
+        toast.warning("Parte da limpeza precisa de revisão.");
+      } else if (result.deletedCount > 0 && result.unlinkedActionsCount > 0) {
         toast.success(
           `${result.deletedCount} arquivo(s) excluído(s) (${formatBytes(result.freedBytes)} liberados) e ${result.unlinkedActionsCount} ação(ões) atualizada(s).`,
         );
@@ -691,7 +719,6 @@ function AdminCloudinaryPage() {
       } else {
         toast.info("Nenhum arquivo foi excluído após a rechecagem.");
       }
-      void refetch();
     },
     onError: (err) => {
       setDeleteError(
@@ -790,7 +817,9 @@ function AdminCloudinaryPage() {
           : activeTab === "orphans"
             ? filteredOrphans
             : []
-  ).filter((item) => item.providerAssetId);
+  ).filter(
+    (item) => item.providerAssetId && !pendingBackupKeys?.has(item.assetKey),
+  );
   const selectedAssets = selectionPool.filter((item) =>
     selectedKeys.has(item.assetKey),
   );
@@ -870,7 +899,7 @@ function AdminCloudinaryPage() {
         </div>
 
         <PrismButton
-          isDisabled={isFetching}
+          isDisabled={isFetching || deleteMutation.isPending}
           onPress={() => {
             setVisibleLimit(PAGE_LIMIT);
             void refetch();
@@ -996,6 +1025,19 @@ function AdminCloudinaryPage() {
             </span>
           </div>
 
+          {awaitingFullReview && (
+            <PrismAlert variant={pendingBackupKeys?.size ? "warning" : "info"}>
+              <PrismAlertTitle>
+                {pendingBackupKeys?.size
+                  ? `${pendingBackupKeys.size} backup(s) pendentes de conferência`
+                  : "Lista atualizada com as exclusões confirmadas"}
+              </PrismAlertTitle>
+              <PrismAlertDescription>
+                Continue com os próximos lotes. Ao terminar, clique em Atualizar
+                análise para conferir o catálogo inteiro.
+              </PrismAlertDescription>
+            </PrismAlert>
+          )}
           {catalogDisagrees && (
             <PrismAlert variant="warning">
               <AlertTriangleIcon />
@@ -1011,6 +1053,7 @@ function AdminCloudinaryPage() {
             <PrismAlert
               variant={
                 lastDeleteResult.failed.length > 0 ||
+                Boolean(lastDeleteResult.backupVerificationPending?.length) ||
                 catalogDisagrees ||
                 lastDeleteResult.deletedCount === 0
                   ? "warning"
@@ -1046,6 +1089,18 @@ function AdminCloudinaryPage() {
                     versões de backup após conferência.
                   </p>
                 )}
+                {Boolean(
+                  lastDeleteResult.backupVerificationPending?.length,
+                ) && (
+                  <p>
+                    Pendente de conferência:{" "}
+                    {lastDeleteResult.backupVerificationPending
+                      ?.slice(0, 3)
+                      .map((item) => item.publicId)
+                      .join(", ")}
+                    .
+                  </p>
+                )}
                 {lastDeleteResult.skipped.length > 0 && (
                   <span>
                     {lastDeleteResult.skipped.length} arquivo(s) preservado(s)
@@ -1074,6 +1129,7 @@ function AdminCloudinaryPage() {
                   </span>
                 )}
                 {!catalogDisagrees &&
+                  !lastDeleteResult.backupVerificationPending?.length &&
                   lastDeleteResult.deletedCount > 0 &&
                   lastDeleteResult.skipped.length === 0 &&
                   lastDeleteResult.failed.length === 0 && (
@@ -1221,7 +1277,11 @@ function AdminCloudinaryPage() {
                 notice="Arquivos em pastas da UZZINA ou de parceiros conhecidos que não têm nenhuma referência no banco e foram enviados há mais de 24 horas."
                 onShowMore={() => setVisibleLimit((prev) => prev + PAGE_LIMIT)}
                 selection={{
-                  isSelectable: (asset) => Boolean(asset.providerAssetId),
+                  isSelectable: (asset) =>
+                    Boolean(
+                      asset.providerAssetId &&
+                      !pendingBackupKeys?.has(asset.assetKey),
+                    ),
                   maxReached:
                     selectedAssets.length >= MAX_CLOUDINARY_PERMANENT_BATCH,
                   onToggle: toggleAsset,
@@ -1335,7 +1395,11 @@ function AdminCloudinaryPage() {
                     setVisibleLimit((prev) => prev + PAGE_LIMIT)
                   }
                   selection={{
-                    isSelectable: (asset) => Boolean(asset.providerAssetId),
+                    isSelectable: (asset) =>
+                      Boolean(
+                        asset.providerAssetId &&
+                        !pendingBackupKeys?.has(asset.assetKey),
+                      ),
                     maxReached:
                       selectedAssets.length >= MAX_CLOUDINARY_PERMANENT_BATCH,
                     onToggle: toggleAsset,
