@@ -1,3 +1,4 @@
+import { CLOUDINARY_PERMANENT_CONFIRMATION } from "~/lib/cloudinary-audit-contract";
 import { AlertTriangleIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
@@ -23,6 +24,8 @@ interface CloudinaryDeleteConfirmDialogProps {
   formattedTotalBytes: string;
   affectedActionsCount?: number;
   isDeleting: boolean;
+  permanent?: boolean;
+  backupOnlyCount?: number;
   errorMessage: string | null;
   onConfirm: () => void;
 }
@@ -36,12 +39,17 @@ export function CloudinaryDeleteConfirmDialog({
   formattedTotalBytes,
   affectedActionsCount = 0,
   isDeleting,
+  permanent = false,
+  backupOnlyCount = 0,
   errorMessage,
   onConfirm,
 }: CloudinaryDeleteConfirmDialogProps) {
   const [typedConfirmation, setTypedConfirmation] = useState("");
+  const confirmationWord = permanent
+    ? CLOUDINARY_PERMANENT_CONFIRMATION
+    : CONFIRMATION_WORD;
   const canConfirm =
-    typedConfirmation.trim().toUpperCase() === CONFIRMATION_WORD;
+    typedConfirmation.trim().toUpperCase() === confirmationWord;
 
   useEffect(() => {
     if (!isOpen) {
@@ -67,12 +75,15 @@ export function CloudinaryDeleteConfirmDialog({
       <form onSubmit={handleSubmit}>
         <PrismDialogHeader>
           <PrismDialogTitle>
-            Excluir {selectedCount} arquivo(s) do Cloudinary?
+            {permanent ? "Excluir definitivamente" : "Excluir"} {selectedCount}{" "}
+            arquivo(s) do Cloudinary?
           </PrismDialogTitle>
           <PrismDialogDescription>
-            {affectedActionsCount > 0
-              ? `Esta ação remove os arquivos selecionados definitivamente do Cloudinary, limpa os links correspondentes em ${affectedActionsCount} ação(ões) da UZZINA e libera cerca de ${formattedTotalBytes}.`
-              : `Esta ação remove os arquivos selecionados definitivamente do Cloudinary e libera cerca de ${formattedTotalBytes}.`}
+            {permanent
+              ? `O Cloudinary removerá os originais, derivados e versões de backup dos arquivos selecionados. A exclusão das versões impede a restauração. Originais selecionados: ${formattedTotalBytes}.`
+              : affectedActionsCount > 0
+                ? `Esta ação remove os arquivos selecionados definitivamente do Cloudinary, limpa os links correspondentes em ${affectedActionsCount} ação(ões) da UZZINA e libera cerca de ${formattedTotalBytes}.`
+                : `Esta ação remove os arquivos selecionados definitivamente do Cloudinary e libera cerca de ${formattedTotalBytes}.`}
           </PrismDialogDescription>
         </PrismDialogHeader>
 
@@ -99,6 +110,10 @@ export function CloudinaryDeleteConfirmDialog({
             </div>
           )}
 
+          {backupOnlyCount > 0 && (
+            <p>{backupOnlyCount} item(ns) desta seleção têm apenas backup.</p>
+          )}
+
           {errorMessage && (
             <PrismAlert variant="error">
               <PrismAlertTitle>Não foi possível excluir</PrismAlertTitle>
@@ -110,7 +125,7 @@ export function CloudinaryDeleteConfirmDialog({
             <PrismLabel htmlFor="confirm-cloudinary-delete">
               Para confirmar, digite{" "}
               <code className="rounded bg-card px-1.5 py-0.5 font-mono text-xs text-foreground">
-                {CONFIRMATION_WORD}
+                {confirmationWord}
               </code>
             </PrismLabel>
             <PrismInput
@@ -118,7 +133,7 @@ export function CloudinaryDeleteConfirmDialog({
               disabled={isDeleting}
               id="confirm-cloudinary-delete"
               onChange={(event) => setTypedConfirmation(event.target.value)}
-              placeholder={CONFIRMATION_WORD}
+              placeholder={confirmationWord}
               value={typedConfirmation}
             />
           </div>
@@ -145,7 +160,7 @@ export function CloudinaryDeleteConfirmDialog({
               </>
             ) : (
               <>
-                Excluir selecionados
+                {permanent ? "Excluir definitivamente" : "Excluir selecionados"}
                 <Trash2Icon />
               </>
             )}

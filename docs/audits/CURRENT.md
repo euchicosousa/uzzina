@@ -13,6 +13,7 @@ Piloto documental aplicado no checkout em 24/11/2026. O estado abaixo vem dos re
 | Contador de arquivos sem vínculo | Correção em main | **26/11/2026.** Os dois arquivos dos prints foram excluídos e permaneceram no catálogo como backups de zero bytes; a API agora ignora esses registros e verifica a exclusão dos IDs antes de descontar o lote. | Proprietário confere depois da publicação. |
 | Nome de arquivo na publicação do Instagram | main | **26/11/2026.** Modal e rótulos de arquivo adotam uma linha com reticências e extensão visível. | Proprietário confere a largura do modal com arquivo longo. |
 | Prévia de mídia na publicação e progresso da importação | main | **26/11/2026.** Seleção local mostra imagem ou vídeo na fila; publicação exibe quadro dos vídeos salvos. Importar por link tem barra por item e contagem real no lote. | Proprietário confere prévias e barra durante a transferência. |
+| Exclusão definitiva e pastas de ex-clientes no Cloudinary | `main`; produção a confirmar | **26/11/2026.** A aba Ex-clientes reúne Execute Tecnologia e Ana Arcanjo Odontologia. Em uso distingue arquivos de ação, perfis e logos. A exclusão por ID revalida os vínculos e exige confirmação explícita para remover original, derivados e backup. Typecheck, 13 testes focados e 7 verificações serverless passaram. | Proprietário revisa e confirma cada lote no painel. A consulta de produção foi somente leitura. |
 
 Comece pela [fila de tickets](../../.scratch/README.md) para saber qual ação pode ser assumida. Ideias e verificações gerais estão no [TODO](../../TODO.md).
 

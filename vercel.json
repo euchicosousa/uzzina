@@ -1,5 +1,6 @@
 {
   "functions": {
+    "api/admin.ts": { "maxDuration": 180 },
     "api/import-from-link.ts": { "maxDuration": 180 },
     "api/instagram-publish.ts": { "maxDuration": 180 },
     "api/ai.ts": { "maxDuration": 180 },

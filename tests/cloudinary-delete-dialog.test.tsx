@@ -41,6 +41,33 @@ describe("CloudinaryDeleteConfirmDialog", () => {
     expect(onConfirm).toHaveBeenCalledTimes(1);
   });
 
+  it("requires the full confirmation phrase before removing backups", () => {
+    const onConfirm = mock(() => {});
+    render(
+      <CloudinaryDeleteConfirmDialog
+        permanent
+        selectedCount={1}
+        formattedTotalBytes="1 MB"
+        isOpen
+        isDeleting={false}
+        errorMessage={null}
+        onConfirm={onConfirm}
+        onOpenChange={() => {}}
+      />,
+    );
+    const button = screen.getByRole<HTMLButtonElement>("button", {
+      name: "Excluir definitivamente",
+    });
+    const input = screen.getByPlaceholderText("EXCLUIR DEFINITIVAMENTE");
+    fireEvent.change(input, { target: { value: "EXCLUIR" } });
+    expect(button.disabled).toBe(true);
+    fireEvent.change(input, { target: { value: "EXCLUIR DEFINITIVAMENTE" } });
+    expect(button.disabled).toBe(false);
+    const form = button.closest("form");
+    if (form) fireEvent.submit(form);
+    expect(onConfirm).toHaveBeenCalledTimes(1);
+  });
+
   it("displays deletion errors inside the dialog", () => {
     render(
       <CloudinaryDeleteConfirmDialog

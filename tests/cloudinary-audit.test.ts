@@ -61,6 +61,11 @@ mock.module("@supabase/supabase-js", () => ({
           filters.push((row) => row[key] === value);
           return chain;
         },
+        in: (key: string, values: unknown[]) => {
+          filters.push((row) => values.includes(row[key]));
+          return chain;
+        },
+        order: () => chain,
         range: (from: number, to: number) => {
           start = from;
           end = to;
@@ -553,6 +558,103 @@ describe("API /api/cloudinary-audit", () => {
       expect(body.protectedUnknown.map((item) => item.publicId)).toEqual([
         "outro-site/intro",
       ]);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it("cleans only the confirmed former-client asset and its backup versions", async () => {
+    const originalFetch = globalThis.fetch;
+    const id = "executetecnologia/old-file";
+    const assetId = "formerasset";
+    const restoredId = "anaarcanjoodontologia/restored";
+    const restoredAssetId = "restoredasset";
+    const media = {
+      public_id: id,
+      asset_id: assetId,
+      resource_type: "image",
+      bytes: 20,
+      created_at: "2025-01-01T00:00:00Z",
+    };
+    const restored = {
+      ...media,
+      public_id: restoredId,
+      asset_id: restoredAssetId,
+    };
+    const operations: string[] = [];
+    let backupCleared = false;
+    globalThis.fetch = (async (
+      input: RequestInfo | URL,
+      init?: RequestInit,
+    ) => {
+      const url = new URL(String(input));
+      if (init?.method === "DELETE") {
+        if (url.pathname.endsWith("/backup/" + assetId)) {
+          expect(url.searchParams.getAll("version_ids[]")).toEqual([
+            "version-a",
+          ]);
+          operations.push("backup");
+          backupCleared = true;
+          return Response.json({ deleted: ["version-a"] });
+        }
+        expect(url.pathname).toMatch(/\/resources$/);
+        expect(url.searchParams.getAll("asset_ids[]")).toEqual([assetId]);
+        operations.push("original");
+        return Response.json({ deleted: { [assetId]: "deleted" } });
+      }
+      if (url.pathname.endsWith("/resources/" + assetId))
+        return Response.json({
+          ...media,
+          placeholder: true,
+          backup: !backupCleared,
+          versions: backupCleared ? [] : [{ version_id: "version-a" }],
+        });
+      if (url.searchParams.has("public_ids[]"))
+        return Response.json({ resources: [{ ...media, placeholder: true }] });
+      return Response.json({
+        resources: url.pathname.includes("/image/upload")
+          ? [media, restored]
+          : [],
+      });
+    }) as typeof fetch;
+    const items = [
+      {
+        publicId: id,
+        resourceType: "image",
+        assetKey: "dvfpxjskm/image/" + id,
+        providerAssetId: assetId,
+      },
+      {
+        publicId: restoredId,
+        resourceType: "image",
+        assetKey: "dvfpxjskm/image/" + restoredId,
+        providerAssetId: restoredAssetId,
+        backupOnly: true,
+      },
+    ];
+    try {
+      const oldRequest = createMockReqRes({
+        method: "POST",
+        headers: { authorization: "Bearer admin-token" },
+        body: { items },
+      });
+      await cloudinaryAuditHandler(oldRequest.req, oldRequest.res);
+      expect(operations).toEqual([]);
+      const confirmed = createMockReqRes({
+        method: "POST",
+        headers: { authorization: "Bearer admin-token" },
+        body: { items, permanentConfirmation: "EXCLUIR DEFINITIVAMENTE" },
+      });
+      await cloudinaryAuditHandler(confirmed.req, confirmed.res);
+      expect(confirmed.getStatus()).toBe(200);
+      expect(operations).toEqual(["original", "backup"]);
+      expect(confirmed.getBody()).toMatchObject({
+        deletedCount: 1,
+        originalsAndDerivativesRemoved: 1,
+        backupsCleared: 1,
+        failed: [],
+        skipped: [{ publicId: restoredId, reason: "not_found" }],
+      });
     } finally {
       globalThis.fetch = originalFetch;
     }

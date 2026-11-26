@@ -1,7 +1,10 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { z } from "zod";
 import {
+  CLOUDINARY_PERMANENT_CONFIRMATION,
   MAX_CLOUDINARY_DELETE_BATCH,
+  MAX_CLOUDINARY_PERMANENT_BATCH,
   type CloudinaryAssetReference,
   type CloudinaryDeleteDeletedItem,
   type CloudinaryDeleteFailedItem,
@@ -23,6 +26,7 @@ import {
   buildCloudinaryAuditReport,
   canAssetUnlinkFromActions,
   classifyOrigin,
+  clearCloudinaryBackup,
   deleteCloudinaryResourcesByType,
   getCloudinaryAdminConfig,
   listCloudinaryResources,
@@ -37,11 +41,20 @@ const deleteBodySchema = z
           publicId: z.string().trim().min(1).max(500),
           resourceType: z.enum(["image", "video", "raw"]),
           assetKey: z.string().trim().min(1).max(600),
+          providerAssetId: z
+            .string()
+            .regex(/^[a-z0-9]+$/i)
+            .max(128)
+            .optional(),
+          backupOnly: z.boolean().optional(),
         }),
       )
       .min(1)
       .max(MAX_CLOUDINARY_DELETE_BATCH),
     allowReferencedInActions: z.boolean().optional(),
+    permanentConfirmation: z
+      .literal(CLOUDINARY_PERMANENT_CONFIRMATION)
+      .optional(),
   })
   .strict();
 
@@ -422,6 +435,45 @@ async function handleGetAudit(
       databaseSourcesChecked: [...DATABASE_SOURCES_CHECKED],
     });
 
+    report.backups = catalog.backupResources.flatMap((resource) => {
+      const assetKey = buildCloudinaryAssetKey(
+        cloudinaryConfig.cloudName,
+        resource.resource_type,
+        resource.public_id,
+      );
+      const origin = classifyOrigin(
+        resource.public_id,
+        resource.asset_folder,
+        knownPartnerSlugs,
+      );
+      if (
+        !resource.asset_id ||
+        origin === "unknown_external" ||
+        referencedKeys.has(assetKey)
+      )
+        return [];
+      return [
+        {
+          assetKey,
+          providerAssetId: resource.asset_id,
+          publicId: resource.public_id,
+          resourceType: resource.resource_type,
+          format: resource.format,
+          bytes: 0,
+          width: null,
+          height: null,
+          createdAt: resource.created_at,
+          secureUrl: "",
+          previewUrl: null,
+          folder:
+            resource.asset_folder ??
+            resource.public_id.split("/").slice(0, -1).join("/"),
+          origin,
+          status: "orphan_candidate",
+          backupOnly: true,
+        },
+      ];
+    });
     return res.status(200).json(report);
   } catch (error) {
     if (error instanceof CloudinaryAdminError) {
@@ -458,6 +510,17 @@ async function handlePostDelete(
     });
   }
 
+  const permanent =
+    parsed.data.permanentConfirmation === CLOUDINARY_PERMANENT_CONFIRMATION;
+  if (
+    permanent &&
+    (parsed.data.items.length > MAX_CLOUDINARY_PERMANENT_BATCH ||
+      parsed.data.items.some((item) => !item.providerAssetId))
+  ) {
+    return res.status(400).json({
+      error: "Atualize a análise e selecione até 20 arquivos identificados.",
+    });
+  }
   const allowReferencedInActions =
     parsed.data.allowReferencedInActions === true;
 
@@ -470,6 +533,54 @@ async function handlePostDelete(
       listCloudinaryResources(cloudinaryConfig),
     ]);
 
+    if (catalog.truncated) {
+      return res.status(409).json({
+        error:
+          "O catálogo não pôde ser lido por inteiro. Nenhum arquivo foi excluído.",
+      });
+    }
+    // Pending sends are protected even when their media is no longer attached to an action.
+    const pendingKeys = new Set<string>();
+    if (permanent) {
+      const scheduleClient: SupabaseClient = supabaseAdmin;
+      const [schedules, attempts] = await Promise.all([
+        fetchAllPages<{ files: unknown }>((from, to) =>
+          scheduleClient
+            .from("instagram_schedule_batches")
+            .select("files, instagram_scheduled_publications!inner(status)")
+            .in("instagram_scheduled_publications.status", [
+              "scheduled",
+              "processing",
+              "uncertain",
+              "partial",
+            ])
+            .order("id")
+            .range(from, to),
+        ),
+        fetchAllPages<{ files: unknown }>((from, to) =>
+          scheduleClient
+            .from("instagram_publish_attempts")
+            .select("files")
+            .in("status", ["pending", "uncertain", "partial"])
+            .order("id")
+            .range(from, to),
+        ),
+      ]);
+      for (const { files } of [...schedules, ...attempts]) {
+        for (const url of extractCloudinaryUrls(files)) {
+          const key = normalizeCloudinaryAssetKey(url);
+          if (key) pendingKeys.add(key);
+        }
+      }
+    }
+    const backupsById = new Map(
+      catalog.backupResources.map((resource) => [resource.asset_id, resource]),
+    );
+    const pendingBackups: Array<{
+      resource: CloudinaryRawResource;
+      assetKey: string;
+      backupOnly: boolean;
+    }> = [];
     const catalogByKey = new Map<string, CloudinaryRawResource>();
     for (const resource of catalog.resources) {
       const key = buildCloudinaryAssetKey(
@@ -508,7 +619,51 @@ async function handlePostDelete(
         item.assetKey === expectedKey
           ? catalogByKey.get(expectedKey)
           : undefined;
-      if (!liveResource) {
+      if (pendingKeys.has(expectedKey)) {
+        skipped.push({ ...item, reason: "protected_reference" });
+        continue;
+      }
+      const backup =
+        permanent &&
+        item.backupOnly &&
+        !liveResource &&
+        item.assetKey === expectedKey
+          ? backupsById.get(item.providerAssetId)
+          : undefined;
+      if (
+        backup &&
+        !liveResource &&
+        backup.public_id === item.publicId &&
+        backup.resource_type === item.resourceType &&
+        !catalogByKey.has(expectedKey)
+      ) {
+        const origin = classifyOrigin(
+          backup.public_id,
+          backup.asset_folder,
+          knownPartnerSlugs,
+        );
+        if (origin === "unknown_external" || referencedKeys.has(expectedKey)) {
+          skipped.push({
+            ...item,
+            reason:
+              origin === "unknown_external"
+                ? "unknown_origin"
+                : "now_referenced",
+          });
+        } else {
+          pendingBackups.push({
+            resource: backup,
+            assetKey: expectedKey,
+            backupOnly: true,
+          });
+        }
+        continue;
+      }
+      if (
+        !liveResource ||
+        item.backupOnly ||
+        (permanent && liveResource.asset_id !== item.providerAssetId)
+      ) {
         skipped.push({ ...item, reason: "not_found" });
         continue;
       }
@@ -530,7 +685,10 @@ async function handlePostDelete(
           liveResource.asset_folder,
           knownPartnerSlugs,
         );
-        if (origin === "unknown_external") {
+        if (
+          origin === "unknown_external" ||
+          (origin === "former_client_folder" && !permanent)
+        ) {
           skipped.push({ ...item, reason: "unknown_origin" });
           continue;
         }
@@ -570,6 +728,15 @@ async function handlePostDelete(
         cloudinaryConfig,
         resourceType,
         batch.map((entry) => entry.publicId),
+        undefined,
+        permanent
+          ? new Map(
+              batch.flatMap(({ publicId, assetKey }) => {
+                const assetId = catalogByKey.get(assetKey)?.asset_id;
+                return assetId ? [[publicId, assetId] as const] : [];
+              }),
+            )
+          : undefined,
       );
 
       for (const publicId of outcome.deletedIds) {
@@ -582,6 +749,13 @@ async function handlePostDelete(
           assetKey: entry.assetKey,
           bytes: entry.bytes,
         });
+        const resource = catalogByKey.get(entry.assetKey);
+        if (permanent && resource)
+          pendingBackups.push({
+            resource,
+            assetKey: entry.assetKey,
+            backupOnly: false,
+          });
         if (allowReferencedInActions) {
           deletedItemsByKey.set(entry.assetKey, {
             publicId,
@@ -643,24 +817,56 @@ async function handlePostDelete(
         const actionRow = actionRowsById.get(actionId);
         if (!actionRow) continue;
 
-        const workResult = filterRemovedCloudinaryUrls(
-          actionRow.workFiles,
-          removedKeys,
-        );
-        const contentResult = filterRemovedCloudinaryUrls(
-          actionRow.contentFiles,
-          removedKeys,
-        );
-        if (!workResult.changed && !contentResult.changed) continue;
+        const fresh = permanent
+          ? await supabaseAdmin
+              .from("actions")
+              .select("work_files, content_files, updated_at")
+              .eq("id", actionId)
+              .maybeSingle()
+          : null;
+        let updateError: { message: string } | null = null;
+        if (fresh?.error) {
+          updateError = {
+            message:
+              "O original foi removido, mas não foi possível reler a ação para limpar o vínculo.",
+          };
+        } else if (fresh && !fresh.data) {
+          // The action no longer exists, so it has no link to clear.
+          continue;
+        } else {
+          const workResult = filterRemovedCloudinaryUrls(
+            fresh?.data ? fresh.data.work_files : actionRow.workFiles,
+            removedKeys,
+          );
+          const contentResult = filterRemovedCloudinaryUrls(
+            fresh?.data ? fresh.data.content_files : actionRow.contentFiles,
+            removedKeys,
+          );
+          if (!workResult.changed && !contentResult.changed) continue;
 
-        const patch: { work_files?: string[]; content_files?: string[] } = {};
-        if (workResult.changed) patch.work_files = workResult.next;
-        if (contentResult.changed) patch.content_files = contentResult.next;
+          const patch: { work_files?: string[]; content_files?: string[] } = {};
+          if (workResult.changed) patch.work_files = workResult.next;
+          if (contentResult.changed) patch.content_files = contentResult.next;
 
-        const { error: updateError } = await supabaseAdmin
-          .from("actions")
-          .update(patch)
-          .eq("id", actionId);
+          const update = supabaseAdmin
+            .from("actions")
+            .update(patch)
+            .eq("id", actionId);
+          if (fresh?.data) {
+            const result = await update
+              .eq("updated_at", fresh.data.updated_at)
+              .select("id")
+              .maybeSingle();
+            if (result.error || !result.data)
+              updateError = {
+                message:
+                  "O original foi removido, mas a ação mudou durante a limpeza. O backup foi preservado.",
+              };
+          } else {
+            const result = await update;
+            updateError = result.error;
+          }
+        }
 
         if (updateError) {
           for (const key of assetKeys) {
@@ -679,6 +885,37 @@ async function handlePostDelete(
       }
     }
 
+    let backupsCleared = 0;
+    if (permanent) {
+      const unlinkFailures = new Set(failed.map((item) => item.assetKey));
+      for (let offset = 0; offset < pendingBackups.length; offset += 5) {
+        await Promise.all(
+          pendingBackups
+            .slice(offset, offset + 5)
+            .map(async ({ resource, assetKey, backupOnly }) => {
+              if (unlinkFailures.has(assetKey)) return;
+              const item = {
+                publicId: resource.public_id,
+                resourceType: resource.resource_type,
+                assetKey,
+              };
+              try {
+                await clearCloudinaryBackup(cloudinaryConfig, resource);
+                backupsCleared += 1;
+                if (backupOnly) deleted.push({ ...item, bytes: 0 });
+              } catch (error) {
+                failed.push({
+                  ...item,
+                  message:
+                    error instanceof Error
+                      ? error.message
+                      : "Não foi possível concluir a remoção do backup.",
+                });
+              }
+            }),
+        );
+      }
+    }
     const result: CloudinaryDeleteResponse = {
       deleted,
       deletedCount: deleted.length,
@@ -686,6 +923,14 @@ async function handlePostDelete(
       unlinkedActionsCount,
       skipped,
       failed,
+      ...(permanent
+        ? {
+            originalsAndDerivativesRemoved: pendingBackups.filter(
+              (item) => !item.backupOnly,
+            ).length,
+            backupsCleared,
+          }
+        : {}),
     };
 
     return res.status(200).json(result);

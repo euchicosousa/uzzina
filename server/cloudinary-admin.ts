@@ -27,6 +27,7 @@ export interface CloudinaryRawResource {
   created_at: string;
   secure_url: string;
   asset_folder?: string;
+  asset_id?: string;
 }
 
 export class CloudinaryAdminError extends Error {
@@ -103,6 +104,15 @@ export function classifyOrigin(
       return "partner_legacy_folder";
     }
   }
+  if (
+    candidates.some((path) =>
+      ["executetecnologia", "anaarcanjoodontologia"].includes(
+        path.split("/")[0],
+      ),
+    )
+  ) {
+    return "former_client_folder";
+  }
   return "unknown_external";
 }
 
@@ -114,8 +124,6 @@ function parseRawResource(
   const item = entry as Record<string, unknown>;
   if (typeof item.public_id !== "string" || !item.public_id) return null;
 
-  if (item.placeholder === true) return null;
-
   const resourceType: CloudinaryResourceType =
     item.resource_type === "image" ||
     item.resource_type === "video" ||
@@ -125,6 +133,7 @@ function parseRawResource(
 
   return {
     public_id: item.public_id,
+    asset_id: typeof item.asset_id === "string" ? item.asset_id : undefined,
     resource_type: resourceType,
     format: typeof item.format === "string" ? item.format : "",
     bytes:
@@ -160,11 +169,13 @@ export async function listCloudinaryResources(
   fetchImpl: typeof fetch = globalThis.fetch,
 ): Promise<{
   resources: CloudinaryRawResource[];
+  backupResources: CloudinaryRawResource[];
   pagesScanned: number;
   truncated: boolean;
 }> {
   const authHeader = `Basic ${Buffer.from(`${config.apiKey}:${config.apiSecret}`).toString("base64")}`;
   const resources: CloudinaryRawResource[] = [];
+  const backupResources: CloudinaryRawResource[] = [];
   let pagesScanned = 0;
   let truncated = false;
 
@@ -214,7 +225,15 @@ export async function listCloudinaryResources(
 
       for (const entry of payload.resources ?? []) {
         const parsed = parseRawResource(entry, resourceType);
-        if (parsed) resources.push(parsed);
+        if (!parsed) continue;
+        if (
+          entry &&
+          typeof entry === "object" &&
+          "placeholder" in entry &&
+          entry.placeholder === true
+        )
+          backupResources.push(parsed);
+        else resources.push(parsed);
       }
 
       nextCursor =
@@ -228,7 +247,7 @@ export async function listCloudinaryResources(
     }
   }
 
-  return { resources, pagesScanned, truncated };
+  return { resources, backupResources, pagesScanned, truncated };
 }
 
 const MAX_ASSET_REFERENCES_PER_ITEM = 20;
@@ -314,6 +333,7 @@ export function buildCloudinaryAuditReport({
 
     const baseAsset = {
       assetKey,
+      providerAssetId: resource.asset_id,
       publicId: resource.public_id,
       resourceType: resource.resource_type,
       format: resource.format,
@@ -335,6 +355,7 @@ export function buildCloudinaryAuditReport({
         ...baseAsset,
         status: "in_use",
         references: rawReferences.slice(0, MAX_ASSET_REFERENCES_PER_ITEM),
+        usageSources: [...new Set(rawReferences.map(({ source }) => source))],
         canUnlinkFromActions: canAssetUnlinkFromActions(rawReferences),
       });
       continue;
@@ -481,6 +502,7 @@ export async function deleteCloudinaryResourcesByType(
   resourceType: CloudinaryResourceType,
   publicIds: readonly string[],
   fetchImpl: typeof fetch = globalThis.fetch,
+  assetIds?: ReadonlyMap<string, string>,
 ): Promise<{
   deletedIds: string[];
   notFoundIds: string[];
@@ -496,14 +518,28 @@ export async function deleteCloudinaryResourcesByType(
     const url = new URL(
       `https://api.cloudinary.com/v1_1/${encodeURIComponent(config.cloudName)}/resources/${resourceType}/upload`,
     );
+    const deleteUrl = new URL(url);
+    if (assetIds)
+      deleteUrl.pathname = deleteUrl.pathname.replace(/\/[^/]+\/upload$/, "");
+    if (assetIds && chunk.some((id) => !assetIds.get(id))) {
+      for (const publicId of chunk)
+        failed.push({
+          publicId,
+          message: "O arquivo não tem identificador confirmado.",
+        });
+      continue;
+    }
+    const idFor = (publicId: string) => assetIds?.get(publicId) ?? publicId;
+    const parameter = assetIds ? "asset_ids[]" : "public_ids[]";
     for (const publicId of chunk) {
-      url.searchParams.append("public_ids[]", publicId);
+      deleteUrl.searchParams.append(parameter, idFor(publicId));
     }
 
     let response: Response;
     try {
-      response = await fetchImpl(url.toString(), {
+      response = await fetchImpl(deleteUrl.toString(), {
         method: "DELETE",
+        signal: AbortSignal.timeout(12_000),
         headers: { Authorization: authHeader },
       });
     } catch {
@@ -533,7 +569,8 @@ export async function deleteCloudinaryResourcesByType(
       deleted?: Record<string, string>;
     };
     const statusMap = payload.deleted ?? {};
-    const acknowledged = chunk.filter((id) => statusMap[id] === "deleted");
+    const statusFor = (id: string) => statusMap[idFor(id)] ?? statusMap[id];
+    const acknowledged = chunk.filter((id) => statusFor(id) === "deleted");
     let stillPresent: Set<string> | null = null;
     if (acknowledged.length > 0) {
       try {
@@ -549,7 +586,7 @@ export async function deleteCloudinaryResourcesByType(
     }
 
     for (const publicId of chunk) {
-      const status = statusMap[publicId];
+      const status = statusFor(publicId);
       if (status === "deleted") {
         if (stillPresent && !stillPresent.has(publicId)) {
           deletedIds.push(publicId);
@@ -573,4 +610,88 @@ export async function deleteCloudinaryResourcesByType(
   }
 
   return { deletedIds, notFoundIds, failed };
+}
+
+// After the original is gone, delete only versions belonging to that exact asset.
+export async function clearCloudinaryBackup(
+  config: CloudinaryAdminConfig,
+  resource: CloudinaryRawResource,
+  fetchImpl: typeof fetch = globalThis.fetch,
+): Promise<void> {
+  if (!resource.asset_id)
+    throw new Error("Não foi possível identificar o backup.");
+  const base = `https://api.cloudinary.com/v1_1/${encodeURIComponent(config.cloudName)}/resources`;
+  const headers = {
+    Authorization: `Basic ${Buffer.from(`${config.apiKey}:${config.apiSecret}`).toString("base64")}`,
+    "Cache-Control": "no-cache",
+  };
+  const detailsUrl = `${base}/${encodeURIComponent(resource.asset_id)}`;
+  async function readDetails(includeVersions: boolean) {
+    const response = await fetchImpl(
+      includeVersions ? detailsUrl + "?versions=true" : detailsUrl,
+      {
+        headers,
+        cache: "no-store",
+        signal: AbortSignal.timeout(8_000),
+      },
+    );
+    if (response.status === 404) return null;
+    if (!response.ok)
+      throw new Error("Não foi possível consultar as versões do backup.");
+    const payload = (await response.json()) as {
+      placeholder?: unknown;
+      asset_id?: unknown;
+      backup?: unknown;
+      versions?: unknown;
+    };
+    if (payload.placeholder !== true || payload.asset_id !== resource.asset_id)
+      throw new Error(
+        "O identificador mudou ou o original ainda está ativo. O backup foi preservado.",
+      );
+    return payload;
+  }
+  async function readVersions() {
+    const payload = await readDetails(true);
+    if (
+      !payload ||
+      (payload.backup === false && payload.versions === undefined)
+    )
+      return [];
+    if (!Array.isArray(payload.versions))
+      throw new Error(
+        "O Cloudinary não retornou a lista de versões do backup.",
+      );
+    const ids: string[] = [];
+    for (const version of payload.versions) {
+      if (
+        !version ||
+        typeof version !== "object" ||
+        !("version_id" in version) ||
+        typeof version.version_id !== "string" ||
+        !version.version_id
+      )
+        throw new Error("Uma versão de backup não pôde ser identificada.");
+      ids.push(version.version_id);
+    }
+    return ids;
+  }
+  const versions = await readVersions();
+  if (versions.length === 0) return;
+  const url = new URL(
+    `${base}/backup/${encodeURIComponent(resource.asset_id)}`,
+  );
+  for (const version of versions)
+    url.searchParams.append("version_ids[]", version);
+  const response = await fetchImpl(url.toString(), {
+    method: "DELETE",
+    headers,
+    signal: AbortSignal.timeout(8_000),
+  });
+  if (!response.ok)
+    throw new Error("O Cloudinary não confirmou a exclusão do backup.");
+  const after = await readDetails(false);
+  if (after && after.backup !== false && (await readVersions()).length > 0)
+    throw new Error(
+      "Ainda há versões no backup. Confira a aba Backups antes de tentar novamente.",
+    );
 }

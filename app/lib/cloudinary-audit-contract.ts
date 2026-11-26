@@ -1,7 +1,10 @@
 export type CloudinaryResourceType = "image" | "video" | "raw";
 
 export type CloudinaryAssetOrigin =
-  "uzzina_folder" | "partner_legacy_folder" | "unknown_external";
+  | "uzzina_folder"
+  | "partner_legacy_folder"
+  | "former_client_folder"
+  | "unknown_external";
 
 export type CloudinaryAssetStatus =
   | "orphan_candidate"
@@ -18,7 +21,8 @@ export type CloudinaryAssetReferenceSource =
   | "client_image"
   | "comment"
   | "social_plan"
-  | "lead";
+  | "lead"
+  | "instagram_schedule";
 
 export interface CloudinaryAssetReference {
   source: CloudinaryAssetReferenceSource;
@@ -42,7 +46,10 @@ export interface CloudinaryAuditAsset {
   origin: CloudinaryAssetOrigin;
   status: CloudinaryAssetStatus;
   references?: CloudinaryAssetReference[];
+  usageSources?: CloudinaryAssetReferenceSource[];
   canUnlinkFromActions?: boolean;
+  backupOnly?: boolean;
+  providerAssetId?: string;
 }
 
 export interface CloudinaryAuditCoverage {
@@ -76,19 +83,25 @@ export interface CloudinaryAuditResponse {
   orphanCandidates: CloudinaryAuditAsset[];
   protectedRecent: CloudinaryAuditAsset[];
   protectedUnknown: CloudinaryAuditAsset[];
+  backups?: CloudinaryAuditAsset[];
 }
 
 export const MAX_CLOUDINARY_DELETE_BATCH = 100;
+export const MAX_CLOUDINARY_PERMANENT_BATCH = 20;
+export const CLOUDINARY_PERMANENT_CONFIRMATION = "EXCLUIR DEFINITIVAMENTE";
 
 export interface CloudinaryDeleteItemRequest {
   publicId: string;
   resourceType: CloudinaryResourceType;
   assetKey: string;
+  providerAssetId?: string;
+  backupOnly?: boolean;
 }
 
 export interface CloudinaryDeleteRequest {
   items: CloudinaryDeleteItemRequest[];
   allowReferencedInActions?: boolean;
+  permanentConfirmation?: typeof CLOUDINARY_PERMANENT_CONFIRMATION;
 }
 
 export type CloudinaryDeleteSkipReason =
@@ -126,4 +139,6 @@ export interface CloudinaryDeleteResponse {
   unlinkedActionsCount: number;
   skipped: CloudinaryDeleteSkippedItem[];
   failed: CloudinaryDeleteFailedItem[];
+  originalsAndDerivativesRemoved?: number;
+  backupsCleared?: number;
 }

@@ -44,7 +44,8 @@ import {
   type CloudinaryDeleteResponse,
   type CloudinaryDeleteSkipReason,
   type CloudinaryResourceType,
-  MAX_CLOUDINARY_DELETE_BATCH,
+  CLOUDINARY_PERMANENT_CONFIRMATION,
+  MAX_CLOUDINARY_PERMANENT_BATCH,
 } from "~/lib/cloudinary-audit-contract";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
@@ -66,7 +67,8 @@ function AdminCloudinaryPageWrapper() {
   );
 }
 
-type AuditTabKey = "orphans" | "in_use" | "recent" | "unknown";
+type AuditTabKey =
+  "orphans" | "in_use" | "recent" | "unknown" | "former" | "backups";
 type TypeFilter = "all" | CloudinaryResourceType;
 type SortOrder = "size_desc" | "size_asc" | "date_desc" | "date_asc";
 
@@ -111,6 +113,8 @@ function originBadge(origin: CloudinaryAssetOrigin): {
   if (origin === "partner_legacy_folder") {
     return { label: "Pasta de parceiro", variant: "default" };
   }
+  if (origin === "former_client_folder")
+    return { label: "Ex-cliente", variant: "warning" };
   return { label: "Origem desconhecida", variant: "warning" };
 }
 
@@ -188,6 +192,36 @@ function skipReasonLabel(reason: CloudinaryDeleteSkipReason): string {
   return "não encontrado no catálogo";
 }
 
+const purposeOptions = [
+  ["all", "Todos os usos"],
+  ["action", "Arquivos de ação"],
+  ["profile", "Imagens de perfil"],
+  ["logo", "Logotipos"],
+  ["other", "Outros vínculos"],
+] as const;
+type AssetPurpose = Exclude<(typeof purposeOptions)[number][0], "all">;
+
+function assetPurposes(asset: CloudinaryAuditAsset): Set<AssetPurpose> {
+  return new Set(
+    (
+      asset.usageSources ??
+      asset.references?.map(({ source }) => source) ??
+      []
+    ).map((source): AssetPurpose => {
+      if (
+        source === "action_work_files" ||
+        source === "action_content_files" ||
+        source === "action_text"
+      )
+        return "action";
+      if (source === "person_image" || source === "client_image")
+        return "profile";
+      if (source === "partner_image") return "logo";
+      return "other";
+    }),
+  );
+}
+
 function referenceSourceLabel(source: CloudinaryAssetReferenceSource): string {
   if (source === "action_work_files") return "Arquivos de trabalho";
   if (source === "action_content_files") return "Mídias do Instagram";
@@ -197,6 +231,7 @@ function referenceSourceLabel(source: CloudinaryAssetReferenceSource): string {
   if (source === "client_image") return "Avatar de cliente";
   if (source === "comment") return "Comentário";
   if (source === "social_plan") return "Planejamento";
+  if (source === "instagram_schedule") return "Publicação pendente";
   return "Lead";
 }
 
@@ -249,14 +284,14 @@ function SelectionActionBar({
         <PrismButton
           isDisabled={
             selectableCount === 0 ||
-            selectedCount >= MAX_CLOUDINARY_DELETE_BATCH
+            selectedCount >= MAX_CLOUDINARY_PERMANENT_BATCH
           }
           onPress={onSelectVisibleBatch}
           size="sm"
           type="button"
           variant="outline"
         >
-          Selecionar até {MAX_CLOUDINARY_DELETE_BATCH} visíveis
+          Selecionar até {MAX_CLOUDINARY_PERMANENT_BATCH} visíveis
         </PrismButton>
         <PrismButton
           isDisabled={selectedCount === 0}
@@ -272,8 +307,8 @@ function SelectionActionBar({
           selecionado(s) · {formatBytes(selectedBytes)} estimados
           {affectedActionsCount > 0 &&
             ` · ${affectedActionsCount} ação(ões) afetada(s)`}
-          {selectedCount >= MAX_CLOUDINARY_DELETE_BATCH &&
-            ` (limite de ${MAX_CLOUDINARY_DELETE_BATCH} por lote)`}
+          {selectedCount >= MAX_CLOUDINARY_PERMANENT_BATCH &&
+            ` (limite de ${MAX_CLOUDINARY_PERMANENT_BATCH} por lote)`}
         </span>
       </div>
 
@@ -333,6 +368,7 @@ function AssetList({
                 ? (selection.isSelectable?.(asset) ?? true)
                 : false;
               const references = asset.references ?? [];
+              const purposes = assetPurposes(asset);
 
               return (
                 <li
@@ -364,6 +400,16 @@ function AssetList({
                       <PrismBadge variant={badge.variant}>
                         {badge.label}
                       </PrismBadge>
+                      {asset.backupOnly && <PrismBadge>Só backup</PrismBadge>}
+                      {purposes.has("action") && (
+                        <PrismBadge>Arquivo de ação</PrismBadge>
+                      )}
+                      {purposes.has("profile") && (
+                        <PrismBadge>Imagem de perfil</PrismBadge>
+                      )}
+                      {purposes.has("logo") && (
+                        <PrismBadge>Logotipo</PrismBadge>
+                      )}
                       <PrismBadge variant="default">
                         {resourceTypeLabel(asset.resourceType)}
                       </PrismBadge>
@@ -418,7 +464,7 @@ function AssetList({
                     )}
                   </div>
 
-                  {asset.secureUrl && (
+                  {asset.secureUrl && !asset.backupOnly && (
                     <a
                       className={buttonVariants({
                         variant: "outline",
@@ -509,6 +555,8 @@ function AdminCloudinaryPage() {
   const queryClient = useQueryClient();
   const supabase = createSupabaseBrowserClient();
 
+  const [purpose, setPurpose] =
+    useState<(typeof purposeOptions)[number][0]>("all");
   const [activeTab, setActiveTab] = useState<AuditTabKey>("orphans");
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [sortOrder, setSortOrder] = useState<SortOrder>("size_desc");
@@ -564,6 +612,7 @@ function AdminCloudinaryPage() {
   useEffect(() => {
     if (!data) return;
     const validKeys = new Set<string>([
+      ...(data.backups ?? []).map((item) => item.assetKey),
       ...data.orphanCandidates.map((item) => item.assetKey),
       ...(data.inUseAssets ?? [])
         .filter((item) => item.canUnlinkFromActions === true)
@@ -592,7 +641,10 @@ function AdminCloudinaryPage() {
           publicId: item.publicId,
           resourceType: item.resourceType,
           assetKey: item.assetKey,
+          providerAssetId: item.providerAssetId,
+          ...(item.backupOnly ? { backupOnly: true } : {}),
         })),
+        permanentConfirmation: CLOUDINARY_PERMANENT_CONFIRMATION,
         ...(allowReferencedInActions ? { allowReferencedInActions: true } : {}),
       }),
     onSuccess: (result, { items }) => {
@@ -678,12 +730,24 @@ function AdminCloudinaryPage() {
   }, [search, typeFilter, sortOrder]);
 
   const filteredOrphans = useMemo(
-    () => (data ? filterAndSortItems(data.orphanCandidates) : []),
+    () =>
+      data
+        ? filterAndSortItems(
+            data.orphanCandidates.filter(
+              (item) => item.origin !== "former_client_folder",
+            ),
+          )
+        : [],
     [data, filterAndSortItems],
   );
   const filteredInUse = useMemo(
-    () => (data ? filterAndSortItems(data.inUseAssets ?? []) : []),
-    [data, filterAndSortItems],
+    () =>
+      filterAndSortItems(
+        (data?.inUseAssets ?? []).filter(
+          (item) => purpose === "all" || assetPurposes(item).has(purpose),
+        ),
+      ),
+    [data, filterAndSortItems, purpose],
   );
   const filteredRecent = useMemo(
     () => (data ? filterAndSortItems(data.protectedRecent) : []),
@@ -694,18 +758,42 @@ function AdminCloudinaryPage() {
     [data, filterAndSortItems],
   );
 
-  const selectedAssets = useMemo(() => {
-    if (!data || selectedKeys.size === 0) return [];
-    const pool =
-      activeTab === "in_use"
-        ? (data.inUseAssets ?? []).filter(
-            (item) => item.canUnlinkFromActions === true,
-          )
-        : activeTab === "orphans"
-          ? data.orphanCandidates
-          : [];
-    return pool.filter((item) => selectedKeys.has(item.assetKey));
-  }, [activeTab, data, selectedKeys]);
+  const filteredFormer = useMemo(
+    () =>
+      filterAndSortItems([
+        ...(data?.orphanCandidates ?? []).filter(
+          (item) => item.origin === "former_client_folder",
+        ),
+        ...(data?.backups ?? []).filter(
+          (item) => item.origin === "former_client_folder",
+        ),
+      ]),
+    [data, filterAndSortItems],
+  );
+  const filteredBackups = useMemo(
+    () =>
+      filterAndSortItems(
+        (data?.backups ?? []).filter(
+          (item) => item.origin !== "former_client_folder",
+        ),
+      ),
+    [data, filterAndSortItems],
+  );
+
+  const selectionPool = (
+    activeTab === "in_use"
+      ? filteredInUse.filter((item) => item.canUnlinkFromActions)
+      : activeTab === "former"
+        ? filteredFormer
+        : activeTab === "backups"
+          ? filteredBackups
+          : activeTab === "orphans"
+            ? filteredOrphans
+            : []
+  ).filter((item) => item.providerAssetId);
+  const selectedAssets = selectionPool.filter((item) =>
+    selectedKeys.has(item.assetKey),
+  );
 
   const selectedBytes = useMemo(
     () => selectedAssets.reduce((sum, item) => sum + item.bytes, 0),
@@ -732,7 +820,7 @@ function AdminCloudinaryPage() {
     setSelectedKeys((prev) => {
       const next = new Set(prev);
       if (checked) {
-        if (next.size >= MAX_CLOUDINARY_DELETE_BATCH) return prev;
+        if (next.size >= MAX_CLOUDINARY_PERMANENT_BATCH) return prev;
         next.add(assetKey);
       } else {
         next.delete(assetKey);
@@ -742,16 +830,11 @@ function AdminCloudinaryPage() {
   };
 
   const selectVisibleBatch = () => {
-    const visibleItems =
-      activeTab === "in_use"
-        ? filteredInUse
-            .slice(0, visibleLimit)
-            .filter((item) => item.canUnlinkFromActions === true)
-        : filteredOrphans.slice(0, visibleLimit);
+    const visibleItems = selectionPool.slice(0, visibleLimit);
     setSelectedKeys((prev) => {
       const next = new Set(prev);
       for (const item of visibleItems) {
-        if (next.size >= MAX_CLOUDINARY_DELETE_BATCH) break;
+        if (next.size >= MAX_CLOUDINARY_PERMANENT_BATCH) break;
         next.add(item.assetKey);
       }
       return next;
@@ -760,7 +843,9 @@ function AdminCloudinaryPage() {
 
   const selectableInUseCount = useMemo(
     () =>
-      filteredInUse.filter((item) => item.canUnlinkFromActions === true).length,
+      filteredInUse.filter(
+        (item) => item.canUnlinkFromActions && item.providerAssetId,
+      ).length,
     [filteredInUse],
   );
 
@@ -859,7 +944,7 @@ function AdminCloudinaryPage() {
             />
             <SummaryCard
               hint={`Recuperável estimado: ${formatBytes(data.summary.recoverableBytes)}`}
-              label="Candidatos sem vínculo"
+              label="Sem vínculo (inclui ex-clientes)"
               tone={
                 data.summary.orphanCandidatesCount > 0 ? "warning" : "default"
               }
@@ -944,14 +1029,23 @@ function AdminCloudinaryPage() {
               </PrismAlertAction>
               <PrismAlertTitle>
                 Resultado da limpeza ({lastDeleteResult.deletedCount}{" "}
-                excluído(s) · {formatBytes(lastDeleteResult.freedBytes)}{" "}
-                liberados
+                excluído(s) · {formatBytes(lastDeleteResult.freedBytes)} em
+                originais
                 {lastDeleteResult.unlinkedActionsCount > 0
                   ? ` · ${lastDeleteResult.unlinkedActionsCount} ação(ões) atualizada(s)`
                   : ""}
                 )
               </PrismAlertTitle>
               <PrismAlertDescription>
+                {lastDeleteResult.originalsAndDerivativesRemoved !==
+                  undefined && (
+                  <p>
+                    {lastDeleteResult.originalsAndDerivativesRemoved}{" "}
+                    original(is) com derivados removidos.{" "}
+                    {lastDeleteResult.backupsCleared ?? 0} arquivo(s) sem
+                    versões de backup após conferência.
+                  </p>
+                )}
                 {lastDeleteResult.skipped.length > 0 && (
                   <span>
                     {lastDeleteResult.skipped.length} arquivo(s) preservado(s)
@@ -1081,7 +1175,10 @@ function AdminCloudinaryPage() {
             }}
             selectedKey={activeTab}
           >
-            <PrismTabList aria-label="Categorias da auditoria do Cloudinary">
+            <PrismTabList
+              aria-label="Categorias da auditoria do Cloudinary"
+              className="h-auto flex-wrap"
+            >
               <PrismTab id="orphans">
                 Candidatos sem vínculo ({filteredOrphans.length})
               </PrismTab>
@@ -1091,6 +1188,12 @@ function AdminCloudinaryPage() {
               <PrismTab id="recent">
                 Recentes &lt; {data.coverage.recentGraceHours}h (
                 {filteredRecent.length})
+              </PrismTab>
+              <PrismTab id="former">
+                Ex-clientes ({filteredFormer.length})
+              </PrismTab>
+              <PrismTab id="backups">
+                Backups ({filteredBackups.length})
               </PrismTab>
               <PrismTab id="unknown">
                 Origem desconhecida ({filteredUnknown.length})
@@ -1118,8 +1221,9 @@ function AdminCloudinaryPage() {
                 notice="Arquivos em pastas da UZZINA ou de parceiros conhecidos que não têm nenhuma referência no banco e foram enviados há mais de 24 horas."
                 onShowMore={() => setVisibleLimit((prev) => prev + PAGE_LIMIT)}
                 selection={{
+                  isSelectable: (asset) => Boolean(asset.providerAssetId),
                   maxReached:
-                    selectedAssets.length >= MAX_CLOUDINARY_DELETE_BATCH,
+                    selectedAssets.length >= MAX_CLOUDINARY_PERMANENT_BATCH,
                   onToggle: toggleAsset,
                   selectedKeys,
                 }}
@@ -1128,6 +1232,27 @@ function AdminCloudinaryPage() {
             </PrismTabPanel>
 
             <PrismTabPanel id="in_use">
+              <div
+                role="group"
+                aria-label="Filtrar pelo uso do arquivo"
+                className="flex flex-wrap gap-2 py-3"
+              >
+                {purposeOptions.map(([key, label]) => (
+                  <PrismButton
+                    aria-pressed={purpose === key}
+                    key={key}
+                    size="sm"
+                    variant={purpose === key ? "default" : "outline"}
+                    onPress={() => {
+                      setPurpose(key);
+                      setSelectedKeys(new Set());
+                      setVisibleLimit(PAGE_LIMIT);
+                    }}
+                  >
+                    {label}
+                  </PrismButton>
+                ))}
+              </div>
               <SelectionActionBar
                 actionLabel="Excluir e limpar ações"
                 affectedActionsCount={affectedActionsCount}
@@ -1149,9 +1274,12 @@ function AdminCloudinaryPage() {
                 notice="Arquivos referenciados na UZZINA. Arquivos ligados apenas a anexos ou mídias do Instagram em ações podem ser selecionados para exclusão e limpeza automática dos links. Logotipos, avatares e citações em texto permanecem protegidos."
                 onShowMore={() => setVisibleLimit((prev) => prev + PAGE_LIMIT)}
                 selection={{
-                  isSelectable: (asset) => asset.canUnlinkFromActions === true,
+                  isSelectable: (asset) =>
+                    Boolean(
+                      asset.canUnlinkFromActions && asset.providerAssetId,
+                    ),
                   maxReached:
-                    selectedAssets.length >= MAX_CLOUDINARY_DELETE_BATCH,
+                    selectedAssets.length >= MAX_CLOUDINARY_PERMANENT_BATCH,
                   onToggle: toggleAsset,
                   selectedKeys,
                 }}
@@ -1169,6 +1297,55 @@ function AdminCloudinaryPage() {
               />
             </PrismTabPanel>
 
+            {(
+              [
+                [
+                  "former",
+                  filteredFormer,
+                  "Arquivos sem vínculo de Execute Tecnologia e Ana Arcanjo Odontologia, incluindo os que só têm backup.",
+                ],
+                [
+                  "backups",
+                  filteredBackups,
+                  "Versões recuperáveis de arquivos já excluídos, sem vínculo conhecido na UZZINA.",
+                ],
+              ] as const
+            ).map(([tab, items, notice]) => (
+              <PrismTabPanel id={tab} key={tab}>
+                <SelectionActionBar
+                  actionLabel="Excluir definitivamente"
+                  isDeleting={deleteMutation.isPending}
+                  onClearSelection={() => setSelectedKeys(new Set())}
+                  onRequestDelete={() => {
+                    setDeleteError(null);
+                    setIsDeleteOpen(true);
+                  }}
+                  onSelectVisibleBatch={selectVisibleBatch}
+                  selectableCount={
+                    items.filter((item) => item.providerAssetId).length
+                  }
+                  selectedBytes={selectedBytes}
+                  selectedCount={selectedAssets.length}
+                />
+                <AssetList
+                  emptyMessage="Nenhum arquivo encontrado com os filtros atuais."
+                  items={items}
+                  notice={notice}
+                  onShowMore={() =>
+                    setVisibleLimit((prev) => prev + PAGE_LIMIT)
+                  }
+                  selection={{
+                    isSelectable: (asset) => Boolean(asset.providerAssetId),
+                    maxReached:
+                      selectedAssets.length >= MAX_CLOUDINARY_PERMANENT_BATCH,
+                    onToggle: toggleAsset,
+                    selectedKeys,
+                  }}
+                  visibleLimit={visibleLimit}
+                />
+              </PrismTabPanel>
+            ))}
+
             <PrismTabPanel id="unknown">
               <AssetList
                 emptyMessage="Nenhum arquivo em pasta desconhecida encontrado."
@@ -1183,6 +1360,10 @@ function AdminCloudinaryPage() {
       )}
 
       <CloudinaryDeleteConfirmDialog
+        permanent
+        backupOnlyCount={
+          selectedAssets.filter((item) => item.backupOnly).length
+        }
         affectedActionsCount={affectedActionsCount}
         errorMessage={deleteError}
         formattedTotalBytes={formatBytes(selectedBytes)}

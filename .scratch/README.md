@@ -13,7 +13,7 @@ Em 25/11/2026 o proprietário aceitou e encerrou os tickets 02 a 05 (conexão, p
 
 ## Investigação em produção
 
-- [Contagem de arquivos sem vínculo após a exclusão](cloudinary-cleanup/issues/01-arquivos-sem-vinculo.md) — investigar em Administração → Cloudinary. A auditoria contava registros de backup como arquivos ativos. Após publicar a correção, conferir os números em uma nova leitura.
+- [Contagem de arquivos sem vínculo após a exclusão](cloudinary-cleanup/issues/01-arquivos-sem-vinculo.md) — investigar em Administração → Cloudinary. A auditoria contava registros de backup como arquivos ativos. O painel diferencia arquivos de ações, perfis e logos. Para as duas pastas confirmadas de ex-clientes, cada lote de exclusão definitiva depende de revisão e confirmação pelo proprietário.
 
 ## Referências fora da fila de execução
 
