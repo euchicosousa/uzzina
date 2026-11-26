@@ -87,6 +87,8 @@ function getScheduleStatus(status: string) {
   switch (status) {
     case "scheduled":
       return { label: "Programado", variant: "info" as const };
+    case "preparing":
+      return { label: "Preparando", variant: "info" as const };
     case "processing":
       return { label: "Publicando", variant: "warning" as const };
     case "published":

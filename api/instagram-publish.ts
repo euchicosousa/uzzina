@@ -140,6 +140,10 @@ async function graph(
 const preparationFailureMessages = new Map([
   ["PROCESSING_DEADLINE", "O Instagram demorou para preparar a mídia."],
   [
+    "SCHEDULE_REEL_PREPARATION_TIMEOUT",
+    "O Reel não ficou pronto no Instagram em cinco minutos.",
+  ],
+  [
     "CONTAINER_PROCESSING_TIMEOUT",
     "O Instagram demorou para processar a mídia.",
   ],
@@ -186,6 +190,21 @@ async function createContainer(
     throw new Error("CONTAINER_RESPONSE_INVALID");
   return data.id;
 }
+
+async function readContainerStatus(
+  apiKey: string,
+  connection: Connection,
+  container: string,
+) {
+  const status = await graph(
+    apiKey,
+    connection,
+    `/v21.0/${container}?fields=status_code`,
+    "GET",
+  );
+  return status.status_code;
+}
+
 async function waitReady(
   apiKey: string,
   connection: Connection,
@@ -194,18 +213,49 @@ async function waitReady(
 ): Promise<void> {
   for (let i = 0; i < 12; i++) {
     if (Date.now() > deadline) throw new Error("PROCESSING_DEADLINE");
-    const status = await graph(
-      apiKey,
-      connection,
-      `/v21.0/${container}?fields=status_code`,
-      "GET",
-    );
-    if (status.status_code === "FINISHED") return;
-    if (status.status_code !== "IN_PROGRESS")
-      throw new Error("CONTAINER_NOT_READY");
+    const status = await readContainerStatus(apiKey, connection, container);
+    if (status === "FINISHED") return;
+    if (status !== "IN_PROGRESS") throw new Error("CONTAINER_NOT_READY");
     await new Promise((resolve) => setTimeout(resolve, 3000));
   }
   throw new Error("CONTAINER_PROCESSING_TIMEOUT");
+}
+
+const REEL_PREPARATION_TIMEOUT_MS = 5 * 60_000;
+
+async function scheduledReelIsReady(
+  apiKey: string,
+  connection: Connection,
+  container: string,
+  deadline: number,
+): Promise<boolean> {
+  if (Date.now() >= deadline)
+    throw new Error("SCHEDULE_REEL_PREPARATION_TIMEOUT");
+  const status = await readContainerStatus(apiKey, connection, container).catch(
+    () => null,
+  );
+  if (status === "PUBLISHED") {
+    throw new Error("SCHEDULE_CONTAINER_ALREADY_PUBLISHED");
+  }
+  if (Date.now() >= deadline)
+    throw new Error("SCHEDULE_REEL_PREPARATION_TIMEOUT");
+  if (status === "FINISHED") return true;
+  if (status === "IN_PROGRESS" || status === null) return false;
+  throw new Error("CONTAINER_NOT_READY");
+}
+
+function createVideoContainer(
+  apiKey: string,
+  connection: Connection,
+  format: "video" | "reel",
+  file: string,
+  caption: string,
+) {
+  return createContainer(apiKey, connection, {
+    media_type: format === "reel" ? "REELS" : "VIDEO",
+    video_url: file,
+    caption,
+  });
 }
 
 /**
@@ -259,15 +309,14 @@ async function sendPublication(opts: {
     );
   } else {
     const file = files[0];
-    const body =
+    await opts.onContainer(
       format === "feed"
-        ? { image_url: file, caption }
-        : {
-            media_type: format === "reel" ? "REELS" : "VIDEO",
-            video_url: file,
+        ? await createContainer(apiKey, connection, {
+            image_url: file,
             caption,
-          };
-    await opts.onContainer(await createContainer(apiKey, connection, body));
+          })
+        : await createVideoContainer(apiKey, connection, format, file, caption),
+    );
   }
 }
 
@@ -312,7 +361,7 @@ async function runScheduledPublications(
   const apiKey = getComposioConfiguration().apiKey;
   const { data, error } = await service.rpc(
     "claim_instagram_scheduled_publications",
-    { p_limit: 1 },
+    { p_limit: 1, p_resume_preparing: true },
   );
   if (error) throw new Error("SCHEDULE_CLAIM_FAILED");
   const rows = z.array(claimedScheduleSchema).safeParse(data);
@@ -321,11 +370,13 @@ async function runScheduledPublications(
   for (const schedule of rows.data) {
     let attemptId = schedule.attempt_id;
     let results = [...schedule.results];
-    let status: "published" | "failed" | "uncertain" | "partial" = "failed";
+    let status: "preparing" | "published" | "failed" | "uncertain" | "partial" =
+      "failed";
     let detail: string | null = "Não foi possível preparar a publicação.";
     let phase = "preparing";
     let currentContainerId: string | null = null;
     let publishSent = false;
+    let reelDeadline = 0;
     const deadline = Date.now() + 150_000;
     try {
       const format = z
@@ -333,6 +384,29 @@ async function runScheduledPublications(
         .safeParse(schedule.format);
       if (!format.success || schedule.files.length === 0)
         throw new Error("SCHEDULE_FORMAT_INVALID");
+      if (format.data === "reel" && attemptId) {
+        const { data: previous, error: previousError } = await service
+          .from("instagram_publish_attempts")
+          .select("status, phase, current_container_id, created_at")
+          .eq("id", attemptId)
+          .maybeSingle();
+        if (
+          previousError ||
+          previous?.status !== "pending" ||
+          previous.phase !== "preparing" ||
+          typeof previous.current_container_id !== "string" ||
+          !/^\d+$/.test(previous.current_container_id)
+        ) {
+          throw new Error("SCHEDULE_CONTAINER_STATE_UNKNOWN");
+        }
+        currentContainerId = previous.current_container_id;
+        reelDeadline =
+          Date.parse(previous.created_at) + REEL_PREPARATION_TIMEOUT_MS;
+        if (!Number.isFinite(reelDeadline))
+          throw new Error("SCHEDULE_CONTAINER_STATE_UNKNOWN");
+        if (Date.now() >= reelDeadline)
+          throw new Error("SCHEDULE_REEL_PREPARATION_TIMEOUT");
+      }
       const caption = format.data === "stories" ? "" : schedule.caption;
       const { data: action, error: actionError } = await service
         .from("actions")
@@ -417,11 +491,13 @@ async function runScheduledPublications(
             files: schedule.files,
             caption,
           })
-          .select("id")
+          .select("id, created_at")
           .single();
         if (attemptError || !attempt)
           throw new Error("SCHEDULE_ATTEMPT_CONFLICT");
         attemptId = attempt.id;
+        reelDeadline =
+          Date.parse(attempt.created_at) + REEL_PREPARATION_TIMEOUT_MS;
       }
       const saveAttempt = async (
         nextStatus: string,
@@ -443,9 +519,6 @@ async function runScheduledPublications(
       };
       const publishContainer = async (container: string) => {
         if (Date.now() > deadline) throw new Error("SCHEDULE_DEADLINE");
-        currentContainerId = container;
-        await saveAttempt("pending", null);
-        await waitReady(apiKey, connection, container, deadline);
         const { data: currentConnection, error: currentConnectionError } =
           await service
             .from("partner_instagram_connections")
@@ -496,37 +569,86 @@ async function runScheduledPublications(
           // The published media ID is already persisted.
         }
       };
-      await sendPublication({
-        apiKey,
-        connection,
-        format: format.data,
-        files: schedule.files,
-        caption,
-        deadline,
-        onContainer: publishContainer,
-      });
-      phase = "finished";
-      status = "published";
-      detail = null;
-      await saveAttempt(status, detail);
+      if (format.data === "reel") {
+        if (!Number.isFinite(reelDeadline))
+          throw new Error("SCHEDULE_CONTAINER_STATE_UNKNOWN");
+        if (!currentContainerId) {
+          currentContainerId = await createVideoContainer(
+            apiKey,
+            connection,
+            format.data,
+            schedule.files[0],
+            caption,
+          );
+          await saveAttempt("pending", null);
+        }
+        if (
+          await scheduledReelIsReady(
+            apiKey,
+            connection,
+            currentContainerId,
+            reelDeadline,
+          )
+        ) {
+          await publishContainer(currentContainerId);
+        } else {
+          status = "preparing";
+          detail = null;
+        }
+      } else {
+        await sendPublication({
+          apiKey,
+          connection,
+          format: format.data,
+          files: schedule.files,
+          caption,
+          deadline,
+          onContainer: async (container) => {
+            if (Date.now() > deadline) throw new Error("SCHEDULE_DEADLINE");
+            currentContainerId = container;
+            await saveAttempt("pending", null);
+            await waitReady(apiKey, connection, container, deadline);
+            await publishContainer(container);
+          },
+        });
+      }
+      if (status !== "preparing") {
+        phase = "finished";
+        status = "published";
+        detail = null;
+        await saveAttempt(status, detail);
+      }
     } catch (error) {
-      status = publishSent
-        ? "uncertain"
-        : results.length
-          ? "partial"
-          : "failed";
-      detail = publishSent
-        ? "Confira o Instagram antes de tentar novamente."
-        : results.length
-          ? "A sequência foi interrompida. Confira os itens publicados."
-          : error instanceof Error &&
-              error.message === "SCHEDULE_PROFILE_UNAVAILABLE"
-            ? "O perfil do Instagram não está disponível. Reconecte e revise a programação."
-            : error instanceof Error &&
-                error.message === "SCHEDULE_TARGET_CHANGED"
-              ? "A ação, o parceiro ou a conexão mudou antes do envio."
-              : "Não foi possível preparar a publicação programada.";
-      if (attemptId) {
+      const code = error instanceof Error ? error.message : "";
+      const alreadyPublished = code === "SCHEDULE_CONTAINER_ALREADY_PUBLISHED";
+      const unknownContainer = code === "SCHEDULE_CONTAINER_STATE_UNKNOWN";
+      status =
+        publishSent || alreadyPublished || unknownContainer
+          ? "uncertain"
+          : results.length
+            ? "partial"
+            : "failed";
+      detail =
+        status === "uncertain"
+          ? "Confira o Instagram antes de tentar novamente."
+          : results.length
+            ? "A sequência foi interrompida. Confira os itens publicados."
+            : code === "SCHEDULE_PROFILE_UNAVAILABLE"
+              ? "O perfil do Instagram não está disponível. Reconecte e revise a programação."
+              : code === "SCHEDULE_TARGET_CHANGED"
+                ? "A ação, o parceiro ou a conexão mudou antes do envio."
+                : (preparationFailureMessages.get(publishFailureCode(error)) ??
+                  "Não foi possível preparar a publicação programada.");
+      console.warn("Instagram scheduled publication failed", {
+        publicationId: schedule.publication_id,
+        attemptId,
+        phase,
+        status,
+        code: /^SCHEDULE_[A-Z_]+$/.test(code)
+          ? code
+          : publishFailureCode(error),
+      });
+      if (attemptId && !unknownContainer) {
         await service
           .from("instagram_publish_attempts")
           .update({
@@ -553,7 +675,7 @@ async function runScheduledPublications(
     );
     if (finishError || finished !== true)
       throw new Error("SCHEDULE_FINISH_FAILED");
-    completed += 1;
+    if (status !== "preparing") completed += 1;
   }
   return { claimed: rows.data.length, completed };
 }
@@ -728,6 +850,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .in("instagram_schedule_batches.partner_id", partnerIds)
         .in("status", [
           "scheduled",
+          "preparing",
           "processing",
           "published",
           "failed",

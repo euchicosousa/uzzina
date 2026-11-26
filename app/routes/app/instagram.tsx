@@ -46,6 +46,8 @@ function eventStatus(status: string) {
       return { label: "Publicado", variant: "success" as const };
     case "scheduled":
       return { label: "Programado", variant: "info" as const };
+    case "preparing":
+      return { label: "Preparando", variant: "info" as const };
     case "processing":
       return { label: "Publicando", variant: "warning" as const };
     case "partial":

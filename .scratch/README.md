@@ -9,7 +9,7 @@ Em 26/11/2026 o proprietário confirmou várias datas, duplicação sem agendame
 | Entrega | Situação e próxima ação | Responsável |
 | --- | --- | --- |
 | [Desconectar o Instagram em Administração → Parceiros](instagram-composio/issues/02-conectar-perfil.md) | O Composio recusou a revogação. As conexões atuais ainda retornam perfis ativos. Conferir em qual ação a seção Publicação sumiu e diagnosticar a recusa. | Codex |
-| [Agendar Reel em Ação → Instagram → Publicação](instagram-composio/issues/04-programar-stories.md) | O envio da ação teste às 18h03 falhou na preparação. A ação estava classificada como Post com vídeo. Falta confirmar um envio agendado de categoria Reels. | Codex |
+| [Agendar Reel em Ação → Instagram → Publicação](instagram-composio/issues/04-programar-stories.md) | O Reel das 19h02 foi agendado corretamente e o Instagram criou o contêiner. O executor desistiu na preparação e a leitura posterior encontrou o vídeo pronto. Proprietário autorizou aguardar até cinco minutos com o mesmo contêiner. Falta validar um Reel programado no app publicado. | Codex |
 | Progresso individual em Ação → Essencial → Arquivos → Importar por link | Importação de quatro arquivos e contagem por lote aprovadas. O preenchimento parte da esquerda, desacelera e aguarda a resposta antes do fim do trilho. Falta conferir no app publicado. | Proprietário |
 
 ## Investigação em produção
