@@ -4,12 +4,13 @@ Comece aqui para encontrar o próximo passo, a autorização e a ficha correspon
 
 ## Pendências do piloto de Instagram
 
-Em 26/11/2026 o proprietário confirmou Reel agendado, várias datas, duplicação sem agendamentos e calendário. A publicação imediata de Reel funcionou na segunda tentativa. O diagnóstico já publicado fica disponível se a falha voltar.
+Em 26/11/2026 o proprietário confirmou várias datas, duplicação sem agendamentos e calendário. A programação de Reel foi reaberta após novo relato de falha. A publicação imediata de Reel funcionou na segunda tentativa. O diagnóstico já publicado fica disponível se a falha voltar.
 
 | Entrega | Situação e próxima ação | Responsável |
 | --- | --- | --- |
 | [Desconectar o Instagram em Administração → Parceiros](instagram-composio/issues/02-conectar-perfil.md) | O Composio recusou a revogação. As conexões atuais ainda retornam perfis ativos. Conferir em qual ação a seção Publicação sumiu e diagnosticar a recusa. | Codex |
-| Progresso individual em Ação → Essencial → Arquivos → Importar por link | Importação de quatro arquivos e contagem por lote aprovadas. O segmento individual percorre o trilho uma vez, em até oito segundos, e aguarda a conclusão sem exibir porcentagem. Falta conferir no app publicado. | Proprietário |
+| [Agendar Reel em Ação → Instagram → Publicação](instagram-composio/issues/04-programar-stories.md) | O envio da ação teste às 18h03 falhou na preparação. A ação estava classificada como Post com vídeo. Falta confirmar um envio agendado de categoria Reels. | Codex |
+| Progresso individual em Ação → Essencial → Arquivos → Importar por link | Importação de quatro arquivos e contagem por lote aprovadas. O preenchimento parte da esquerda, desacelera e aguarda a resposta antes do fim do trilho. Falta conferir no app publicado. | Proprietário |
 
 ## Investigação em produção
 

@@ -1171,10 +1171,10 @@ html {
 
 @keyframes file-import-progress {
   from {
-    transform: translateX(0);
+    transform: scaleX(0);
   }
   to {
-    transform: translateX(180%);
+    transform: scaleX(0.9);
   }
 }
 
