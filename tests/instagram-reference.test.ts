@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, expect, it } from "bun:test";
 import { createHash } from "node:crypto";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import handler from "../api/instagram-reference";
+import handler from "../api/import-from-link";
 import { normalizeInstagramReference } from "../app/lib/instagram-reference";
 import { referenceAssetIdentity } from "../server/instagram-reference-transfer";
 

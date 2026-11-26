@@ -107,7 +107,7 @@ export function InstagramReferencePopover({
                 if (failure) setError(failure);
               }}
             >
-              <label htmlFor={linkId}>Link do Instagram</label>
+              <label htmlFor={linkId}>Link público</label>
               <PrismInput
                 autoFocus
                 id={linkId}

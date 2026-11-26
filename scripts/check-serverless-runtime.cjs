@@ -62,7 +62,7 @@ const { FileFsRef } = require("@vercel/build-utils");
       "api/admin.ts",
       "api/partner-instagram-connection.ts",
       "api/instagram-publish.ts",
-      "api/instagram-reference.ts",
+      "api/import-from-link.ts",
       "app/lib/action-color.ts",
       "app/lib/cloudinary-audit-contract.ts",
       "app/lib/cloudinary-references.ts",
@@ -160,7 +160,7 @@ const { FileFsRef } = require("@vercel/build-utils");
           return response;
         };
         await request('OPTIONS', 405);
-        ${["api/instagram-publish.ts", "api/instagram-reference.ts"].includes(entrypoint) ? "await request('POST', 401);" : ""}
+        ${["api/instagram-publish.ts", "api/import-from-link.ts"].includes(entrypoint) ? "await request('POST', 401);" : ""}
         ${
           entrypoint === "api/ai.ts"
             ? `

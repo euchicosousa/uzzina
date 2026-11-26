@@ -39,7 +39,8 @@ const HANDLERS: Record<string, HandlerRoute> = {
     path: "./api/admin.ts",
     query: { legacy: "cleanup", scope: "cloudinary-audit" },
   },
-  "/api/instagram-reference": { path: "./api/instagram-reference.ts" },
+  "/api/import-from-link": { path: "./api/import-from-link.ts" },
+  "/api/instagram-reference": { path: "./api/import-from-link.ts" },
   "/api/instagram-publish": { path: "./api/instagram-publish.ts" },
   "/api/partner-instagram-connection": {
     path: "./api/partner-instagram-connection.ts",

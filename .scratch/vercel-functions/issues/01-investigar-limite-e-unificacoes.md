@@ -157,3 +157,10 @@ administrador ativo e mantém quota, lotes e retomada. A duração configurada
 O proprietário autorizou remover `/api/strategy-worker` e publicar. A fila
 antiga tinha sido drenada e o cron pausado em 25/11. Gerar e Recriar
 continuam em `/api/strategy-operations`. A remoção deixa **7 funções**.
+
+## Nome da importação por link — 26/11/2026
+
+Em Gaveta da ação → Essencial → Arquivos, a importação por link usa
+`/api/import-from-link`. O Instagram é a origem aceita hoje. A URL
+`/api/instagram-reference` encaminha para a nova, com o mesmo formato de
+requisição. A troca de nome mantém o total em **7 funções**.

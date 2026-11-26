@@ -35,7 +35,7 @@ async function request<T>(
   const { data } = await createSupabaseBrowserClient().auth.getSession();
   const token = data.session?.access_token;
   if (!token) throw new Error("Sua sessão expirou.");
-  const response = await fetch("/api/instagram-reference", {
+  const response = await fetch("/api/import-from-link", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,

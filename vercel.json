@@ -1,11 +1,15 @@
 {
   "functions": {
-    "api/instagram-reference.ts": { "maxDuration": 180 },
+    "api/import-from-link.ts": { "maxDuration": 180 },
     "api/instagram-publish.ts": { "maxDuration": 180 },
     "api/ai.ts": { "maxDuration": 180 },
     "api/strategy-operations.ts": { "maxDuration": 180 }
   },
   "rewrites": [
+    {
+      "source": "/api/instagram-reference",
+      "destination": "/api/import-from-link"
+    },
     {
       "source": "/api/planning-theme",
       "destination": "/api/ai?scope=planning-theme"

@@ -2739,7 +2739,7 @@ describe("phone-width action panel", () => {
     const transfers: { position: number; retry: boolean }[] = [];
     const fallback = globalThis.fetch;
     globalThis.fetch = (async (input, init) => {
-      if (String(input) !== "/api/instagram-reference")
+      if (String(input) !== "/api/import-from-link")
         return fallback(input, init);
       const body = JSON.parse(String(init?.body));
       expect(body.actionId).toBe(action.id);
@@ -2785,7 +2785,7 @@ describe("phone-width action panel", () => {
     const getSubmit = () =>
       within(popover).getByRole("button", { name: "Importar" });
     const input = within(popover).getByRole("textbox", {
-      name: "Link do Instagram",
+      name: "Link público",
     });
     expect(getSubmit().hasAttribute("disabled")).toBe(true);
     fireEvent.blur(input);
@@ -2825,7 +2825,7 @@ describe("phone-width action panel", () => {
       name: "Importar arquivos por link",
     });
     const valid = within(reopenedPopover).getByRole("textbox", {
-      name: "Link do Instagram",
+      name: "Link público",
     });
     await user.clear(valid);
     await user.paste("https://www.instagram.com/p/mixed/?igsh=ignored");
@@ -2885,7 +2885,7 @@ describe("phone-width action panel", () => {
     const requestedPartners: string[] = [];
     const fallback = globalThis.fetch;
     globalThis.fetch = (async (input, init) => {
-      if (String(input) !== "/api/instagram-reference")
+      if (String(input) !== "/api/import-from-link")
         return fallback(input, init);
       const body = JSON.parse(String(init?.body));
       requestedPartners.push(body.partnerSlug);
@@ -2932,7 +2932,7 @@ describe("phone-width action panel", () => {
     expect(popover.querySelector('[data-slot="select-trigger"]')).toBeTruthy();
 
     const input = within(popover).getByRole("textbox", {
-      name: "Link do Instagram",
+      name: "Link público",
     });
     await user.click(input);
     await user.paste("https://www.instagram.com/p/photo/");

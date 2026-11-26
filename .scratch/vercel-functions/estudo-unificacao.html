@@ -262,8 +262,8 @@
         <p class="eyebrow">UZZINA · estudo para decisão · 26 nov 2026</p>
         <h1>Funções da Vercel</h1>
         <p class="intro">
-          O plano Hobby está confirmado. Contas de clientes, criação de
-          usuários e limpeza administrativa compartilham uma função.
+          O plano Hobby está confirmado. Contas de clientes, criação de usuários
+          e limpeza administrativa compartilham uma função.
         </p>
         <div class="meta">
           <span class="pill">Plano informado: Hobby</span>
@@ -275,14 +275,12 @@
         <div>
           <strong>Resultado da fusão administrativa</strong>
           <p>
-            <code>admin-accounts</code> e <code>admin-cleanup</code> agora
-            são <code>admin</code>. Cada operação mantém sua autorização e
-            os caminhos anteriores são encaminhados para a nova função.
+            <code>admin-accounts</code> e <code>admin-cleanup</code> agora são
+            <code>admin</code>. Cada operação mantém sua autorização e os
+            caminhos anteriores são encaminhados para a nova função.
           </p>
         </div>
-        <div class="count">
-          7 / 12<small>funções · 5 vagas</small>
-        </div>
+        <div class="count">7 / 12<small>funções · 5 vagas</small></div>
       </div>
 
       <section>
@@ -305,7 +303,10 @@
                   parceiros já arquivados e audita ou limpa referências a
                   arquivos no Cloudinary.
                 </td>
-                <td>Cada operação exige administrador ativo e mantém suas validações.</td>
+                <td>
+                  Cada operação exige administrador ativo e mantém suas
+                  validações.
+                </td>
               </tr>
               <tr>
                 <td><code>api/ai.ts</code></td>
@@ -342,10 +343,10 @@
                 </td>
               </tr>
               <tr>
-                <td><code>api/instagram-reference.ts</code></td>
+                <td><code>api/import-from-link.ts</code></td>
                 <td>
-                  Importa imagem, Reel ou carrossel público do Instagram para os
-                  arquivos da ação no Cloudinary.
+                  Importa mídia de um link público para os arquivos da ação.
+                  Hoje aceita imagem, Reel e carrossel do Instagram.
                 </td>
                 <td>
                   Transferência de mídia em fluxo, autorizada pela sessão do
@@ -386,8 +387,8 @@
             <span class="label">Função compartilhada</span>
             <h3><code>ai.ts</code></h3>
             <p>
-              A equipe usa a geração geral. Administradores geram propostas
-              no Planejamento. Cada fluxo tem sua própria autorização e lógica.
+              A equipe usa a geração geral. Administradores geram propostas no
+              Planejamento. Cada fluxo tem sua própria autorização e lógica.
             </p>
           </article>
           <article class="card">
@@ -427,8 +428,8 @@
             <h3>IA e Planejamento: 2 → 1</h3>
             <p>
               A rota <code>/api/planning-theme</code> encaminha as propostas
-              para o handler de Planejamento dentro de <code>api/ai.ts</code>.
-              A mesma função atende a geração de conteúdo da equipe.
+              para o handler de Planejamento dentro de <code>api/ai.ts</code>. A
+              mesma função atende a geração de conteúdo da equipe.
             </p>
           </article>
           <article class="card">
@@ -443,7 +444,7 @@
             <span class="label">Possível · economiza 1</span>
             <h3>Publicação + importação</h3>
             <p>
-              <code>instagram-publish</code> e <code>instagram-reference</code>
+              <code>instagram-publish</code> e <code>import-from-link</code>
               podem usar um router e preservar escopos e URLs antigas. O ganho
               seria uma função (7 → 6); ambas servem fluxos de membro, mas têm
               contratos de mídia e efeitos externos distintos.
@@ -492,8 +493,8 @@
         </div>
       </section>
       <footer>
-        Inventário atualizado em 26/11/2026. A ficha registra a decisão e
-        as validações das unificações.
+        Inventário atualizado em 26/11/2026. A ficha registra a decisão e as
+        validações das unificações.
       </footer>
     </main>
   </body>
