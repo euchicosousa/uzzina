@@ -1,6 +1,6 @@
 # Adequar os formulários administrativos ao modelo de Parceiros
 
-**Status:** commit e push em 26/11/2026; aceite visual e deploy Ready pendentes.
+**Status:** aprovado pelo proprietário em 26/11/2026 e encerrado. Código em produção.
 
 **Bloqueado por:** nenhum.
 
@@ -13,7 +13,7 @@ Em Administração → Usuários e Administração → Clientes, as telas Novo e
 - [x] Adequar Novo e Editar Usuário e Novo e Editar Cliente. Reutilizar `FormSection` e a organização de Parceiros, com controles Prism, seções no fundo da página e ações com rótulos que digam o que fazem.
 - [x] Preservar os fluxos de salvamento, acesso, permissões, credenciais e vínculos. Manter campos exclusivos de um modo apenas onde se aplicam.
 - [x] Percorrer as demais rotas administrativas, incluindo listas, Datas Comemorativas, Temas e a página de exclusão de parceiro. Registrar onde há um formulário ou bloco adequado a esse padrão, o que mudaria em cada tela e em que ordem. O levantamento dessas páginas entrega uma proposta para revisão antes de alterá-las.
-- [ ] Apresentar as quatro telas de Usuários e Clientes para conferência visual, incluindo tela estreita, e registrar em que ambiente a mudança está disponível.
+- [x] Apresentar as quatro telas de Usuários e Clientes para conferência visual, incluindo tela estreita, e registrar em que ambiente a mudança está disponível.
 
 ## Referência
 
@@ -21,9 +21,9 @@ Em Administração → Usuários e Administração → Clientes, as telas Novo e
 
 ## Entrega em 26/11/2026
 
-Em Administração → Usuários, a tela de Novo e Editar agora organiza perfil e acesso/permissões em seções com cabeçalho, descrição e divisória. Em Administração → Clientes, Novo e Editar organizam perfil, acesso à conta e parceiros com acesso na mesma estrutura. Antes os campos apareciam em blocos próprios, sem seções; agora os campos comuns seguem o padrão visual de Parceiros, preservando os fluxos existentes de credenciais, salvamento, permissões, vínculos e arquivamento. O commit `4f0a8161` foi enviado a `origin/main` em 26/11/2026. O status Ready da Vercel ainda não foi confirmado.
+Em Administração → Usuários, a tela de Novo e Editar agora organiza perfil e acesso/permissões em seções com cabeçalho, descrição e divisória. Em Administração → Clientes, Novo e Editar organizam perfil, acesso à conta e parceiros com acesso na mesma estrutura. Antes os campos apareciam em blocos próprios, sem seções; agora os campos comuns seguem o padrão visual de Parceiros, preservando os fluxos existentes de credenciais, salvamento, permissões, vínculos e arquivamento. O commit `4f0a8161` foi enviado a `origin/main` em 26/11/2026. A alteração está incluída no [deploy de produção Ready da revisão `701df5d8`](https://vercel.com/agenciacnvt/uzzina/9P4U6FEkL1rMFgTuVdLhocvXZ7FD).
 
-O proprietário pode conferir as quatro telas abrindo Administração → Usuários → Novo Usuário e um usuário existente; depois Administração → Clientes → Novo Cliente e um cliente existente. Em cada tela, conferir a leitura das seções, credenciais, áreas/permissões, parceiros vinculados, ações e a versão estreita. O aceite visual fica pendente.
+O proprietário pode conferir as quatro telas abrindo Administração → Usuários → Novo Usuário e um usuário existente; depois Administração → Clientes → Novo Cliente e um cliente existente. Em cada tela, conferir a leitura das seções, credenciais, áreas/permissões, parceiros vinculados, ações e a versão estreita. O proprietário aprovou os formulários em 26/11/2026.
 
 ## Levantamento das demais rotas administrativas
 
