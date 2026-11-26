@@ -1,4 +1,5 @@
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
+import { FormSection } from "~/components/layout/FormSection";
 import { getQuerySessionGeneration } from "~/lib/query-client";
 import { useRef } from "react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
@@ -169,113 +170,135 @@ function AdminClientPage() {
       <form className="flex flex-col gap-8" onSubmit={handleSubmit}>
         <input name="image" type="hidden" value={imageUrl || ""} />
 
-        {/* Avatar / UploadIcon Widget */}
-        <div className="flex items-center gap-6">
-          <UAvatarUpload
-            aria-label="Alterar foto"
-            cloudName={appData.cloudName}
-            fallback={client?.name || "?"}
-            folder="uzzina/clients"
-            image={imageUrl}
-            onUpload={setImageUrl}
-            uploadPreset={appData.uploadPreset}
-          />
+        <FormSection
+          title="Perfil do cliente"
+          description="Defina o nome e a imagem exibidos para esta conta."
+        >
+          {/* Avatar / UploadIcon Widget */}
+          <div className="flex items-center gap-6">
+            <UAvatarUpload
+              aria-label="Alterar foto"
+              cloudName={appData.cloudName}
+              fallback={client?.name || "?"}
+              folder="uzzina/clients"
+              image={imageUrl}
+              onUpload={setImageUrl}
+              uploadPreset={appData.uploadPreset}
+            />
 
-          <div className="grid gap-1">
-            <p className="font-medium">Foto de Perfil</p>
-            <p className="text-sm text-secondary-foreground">
-              Clique para fazer upload e recortar
-            </p>
-            {imageUrl && (
-              <PrismButton
-                onPress={() => setImageUrl(null)}
-                size="xs"
-                variant="link"
-              >
-                Remover imagem
-              </PrismButton>
-            )}
+            <div className="grid gap-1">
+              <p className="font-medium">Foto de Perfil</p>
+              <p className="text-sm text-secondary-foreground">
+                Clique para fazer upload e recortar
+              </p>
+              {imageUrl && (
+                <PrismButton
+                  onPress={() => setImageUrl(null)}
+                  size="xs"
+                  variant="link"
+                >
+                  Remover imagem
+                </PrismButton>
+              )}
+            </div>
           </div>
-        </div>
 
-        <div className="grid gap-2">
-          <PrismLabel htmlFor="name">Nome</PrismLabel>
-          <PrismInput
-            defaultValue={client?.name || ""}
-            id="name"
-            name="name"
-            placeholder="Nome do cliente"
-            required
-          />
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
           <div className="grid gap-2">
-            <PrismLabel htmlFor="email">E-mail</PrismLabel>
+            <PrismLabel htmlFor="name">Nome</PrismLabel>
             <PrismInput
-              defaultValue={client?.email || ""}
-              id="email"
-              name="email"
-              placeholder="cliente@empresa.com"
+              defaultValue={client?.name || ""}
+              id="name"
+              name="name"
+              placeholder="Nome do cliente"
               required
-              type="email"
             />
           </div>
+        </FormSection>
 
-          <div className="grid gap-2">
-            <PrismLabel htmlFor="password">Senha</PrismLabel>
-            <PrismInputGroup>
-              <PrismInputGroupInput
-                id="password"
-                name="password"
-                placeholder={
-                  isNew
-                    ? "Senha de acesso (mínimo 8 caracteres)"
-                    : "Deixe em branco para manter a senha atual"
-                }
-                required={isNew}
-                type={showPassword ? "text" : "password"}
+        <hr />
+
+        <FormSection
+          title="Acesso à conta"
+          description="Configure o e-mail e a senha usados pelo cliente para entrar."
+        >
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-2">
+              <PrismLabel htmlFor="email">E-mail</PrismLabel>
+              <PrismInput
+                defaultValue={client?.email || ""}
+                id="email"
+                name="email"
+                placeholder="cliente@empresa.com"
+                required
+                type="email"
               />
-              <PrismInputGroupAddon align="inline-end" className="pr-2 pl-1">
-                <PrismInputGroupButton
-                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setShowPassword(!showPassword);
-                  }}
-                  type="button"
-                >
-                  {showPassword ? (
-                    <EyeIcon className="size-4" />
-                  ) : (
-                    <EyeOffIcon className="size-4" />
-                  )}
-                </PrismInputGroupButton>
-              </PrismInputGroupAddon>
-            </PrismInputGroup>
+            </div>
+
+            <div className="grid gap-2">
+              <PrismLabel htmlFor="password">Senha</PrismLabel>
+              <PrismInputGroup>
+                <PrismInputGroupInput
+                  id="password"
+                  name="password"
+                  placeholder={
+                    isNew
+                      ? "Senha de acesso (mínimo 8 caracteres)"
+                      : "Deixe em branco para manter a senha atual"
+                  }
+                  required={isNew}
+                  type={showPassword ? "text" : "password"}
+                />
+                <PrismInputGroupAddon align="inline-end" className="pr-2 pl-1">
+                  <PrismInputGroupButton
+                    aria-label={
+                      showPassword ? "Ocultar senha" : "Mostrar senha"
+                    }
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowPassword(!showPassword);
+                    }}
+                    type="button"
+                  >
+                    {showPassword ? (
+                      <EyeIcon className="size-4" />
+                    ) : (
+                      <EyeOffIcon className="size-4" />
+                    )}
+                  </PrismInputGroupButton>
+                </PrismInputGroupAddon>
+              </PrismInputGroup>
+            </div>
           </div>
-        </div>
+        </FormSection>
 
-        <div className="grid gap-4">
-          <div className="font-medium">Partners com acesso</div>
-          <UAvatarSelector
-            initialSelectedIds={client?.partners || []}
-            name="partner_slugs"
-            options={partners
-              .filter((p) => !p.archived)
-              .sort((a, b) => a.title.localeCompare(b.title))
-              .map((p) => ({
-                id: p.slug,
-                fallback: p.short,
-                image: p.image,
-                backgroundColor: p.colors[0],
-                color: p.colors[1],
-                title: p.title,
-              }))}
-          />
-        </div>
+        <hr />
 
-        <div className="flex items-center justify-between gap-4 border-t pt-6">
+        <FormSection
+          title="Parceiros com acesso"
+          description="Escolha quais marcas e ações este cliente pode consultar."
+        >
+          <div className="grid gap-4">
+            <UAvatarSelector
+              initialSelectedIds={client?.partners || []}
+              name="partner_slugs"
+              options={partners
+                .filter((p) => !p.archived)
+                .sort((a, b) => a.title.localeCompare(b.title))
+                .map((p) => ({
+                  id: p.slug,
+                  fallback: p.short,
+                  image: p.image,
+                  backgroundColor: p.colors[0],
+                  color: p.colors[1],
+                  title: p.title,
+                }))}
+            />
+          </div>
+        </FormSection>
+
+        <hr />
+
+        <div className="flex items-center justify-between gap-4">
           {!isNew && (
             <div className="flex gap-2">
               <PrismButton
@@ -288,7 +311,7 @@ function AdminClientPage() {
                 type="button"
                 variant="error"
               >
-                Arquivar Cliente
+                Arquivar cliente
               </PrismButton>
             </div>
           )}
@@ -297,7 +320,11 @@ function AdminClientPage() {
             isDisabled={isSubmitting}
             type="submit"
           >
-            {isSubmitting ? "Salvando..." : isNew ? "Criar Cliente" : "Salvar"}
+            {isSubmitting
+              ? "Salvando..."
+              : isNew
+                ? "Criar cliente"
+                : "Salvar cliente"}
           </PrismButton>
         </div>
       </form>

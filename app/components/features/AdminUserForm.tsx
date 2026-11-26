@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FormSection } from "~/components/layout/FormSection";
 import { UAvatarUpload } from "~/components/uzzina/UAvatarUpload";
 import { EyeIcon, EyeOffIcon, SaveIcon } from "lucide-react";
 import {
@@ -46,7 +47,10 @@ export function AdminUserForm({
       {/* URL da imagem já enviada pelo widget — campo oculto */}
       <input name="image" type="hidden" value={imageUrl || ""} />
 
-      <div className="grid gap-8">
+      <FormSection
+        title="Perfil do usuário"
+        description="Defina como este membro aparece na equipe."
+      >
         {/* Avatar / UploadIcon Widget */}
         <div className="flex items-center gap-6">
           <UAvatarUpload
@@ -76,7 +80,6 @@ export function AdminUserForm({
           </div>
         </div>
 
-        {/* Nome e Sobrenome */}
         <div className="grid gap-4 md:grid-cols-2">
           <div className="grid gap-4">
             <PrismLabel htmlFor="name">Nome</PrismLabel>
@@ -98,7 +101,6 @@ export function AdminUserForm({
           </div>
         </div>
 
-        {/* Iniciais e Nome Curto */}
         <div className="grid gap-4 md:grid-cols-2">
           <div className="grid gap-4">
             <PrismLabel htmlFor="initials">Iniciais</PrismLabel>
@@ -122,7 +124,6 @@ export function AdminUserForm({
           </div>
         </div>
 
-        {/* Email */}
         <div className="grid gap-4">
           <PrismLabel htmlFor="email">E-mail</PrismLabel>
           <PrismInput
@@ -133,13 +134,19 @@ export function AdminUserForm({
             type="email"
           />
           {!isNew && (
-            <p className="text-xs text-secondary-foreground">
+            <p className="text-base text-secondary-foreground">
               Nota: Alterar o email aqui não altera o login, apenas o perfil.
             </p>
           )}
         </div>
+      </FormSection>
 
-        {/* Senha (apenas criação) */}
+      <hr />
+
+      <FormSection
+        title="Acesso e permissões"
+        description="Configure as credenciais e o acesso deste membro."
+      >
         {isNew && (
           <div className="grid gap-4">
             <PrismLabel htmlFor="password">Senha Provisória</PrismLabel>
@@ -168,7 +175,6 @@ export function AdminUserForm({
           </div>
         )}
 
-        {/* Áreas */}
         {areas.length > 0 && (
           <div className="grid gap-4">
             <span className="font-medium">Áreas</span>
@@ -198,8 +204,7 @@ export function AdminUserForm({
           </div>
         )}
 
-        {/* Visibilidade e Admin */}
-        <div className="flex items-center gap-6 border-t pt-6">
+        <div className="flex flex-wrap items-center gap-6">
           <PrismCheckbox
             defaultSelected={person?.visible ?? true}
             name="visible"
@@ -216,11 +221,17 @@ export function AdminUserForm({
             Admin
           </PrismCheckbox>
         </div>
-      </div>
+      </FormSection>
 
-      <div className="flex justify-end gap-4 pb-8">
+      <hr />
+
+      <div className="flex justify-end gap-4">
         <PrismButton isDisabled={isSubmitting} type="submit">
-          {isSubmitting ? "Salvando..." : "Salvar Usuário"}
+          {isSubmitting
+            ? "Salvando..."
+            : isNew
+              ? "Criar usuário"
+              : "Salvar usuário"}
           <SaveIcon className="size-4" />
         </PrismButton>
       </div>
