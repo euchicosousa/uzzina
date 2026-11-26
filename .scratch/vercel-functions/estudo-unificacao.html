@@ -281,12 +281,12 @@
           </p>
         </div>
         <div class="count">
-          9 / 12<small>funções · 3 vagas</small>
+          8 / 12<small>funções · 4 vagas</small>
         </div>
       </div>
 
       <section>
-        <h2>Inventário das 9 funções depois da fusão</h2>
+        <h2>Inventário das 8 funções depois da fusão</h2>
         <div class="table-wrap">
           <table>
             <thead>
@@ -310,12 +310,13 @@
               <tr>
                 <td><code>api/ai.ts</code></td>
                 <td>
-                  Gera conteúdo de IA para a equipe, incluindo texto e leitura
-                  de arquivos anexados conforme a intenção.
+                  Gera conteúdo e lê anexos nas solicitações da equipe. No
+                  Planejamento, gera propostas por tema ou por período, com
+                  quota, lotes e retomada.
                 </td>
                 <td>
-                  Autorização para membro ativo e uso de quota/serviços de IA;
-                  não misturar com geração administrativa do Planejamento.
+                  O fluxo geral exige membro ativo. O Planejamento exige
+                  administrador ativo e usa seu próprio handler.
                 </td>
               </tr>
               <tr>
@@ -363,17 +364,6 @@
                 </td>
               </tr>
               <tr>
-                <td><code>api/planning-theme.ts</code></td>
-                <td>
-                  Gera propostas de Planejamento por tema ou por período,
-                  reservando quota e retomando solicitações.
-                </td>
-                <td>
-                  Somente administrador ativo. Tem duração longa e estado de
-                  geração; audiência e fluxo diferem de <code>ai.ts</code>.
-                </td>
-              </tr>
-              <tr>
                 <td><code>api/strategy-operations.ts</code></td>
                 <td>
                   Cria e consulta operações de estratégia solicitadas pela
@@ -402,15 +392,14 @@
       </section>
 
       <section>
-        <h2>IA e Planejamento: quatro funções no código</h2>
+        <h2>IA, Planejamento e estratégias: três funções</h2>
         <div class="result-grid">
           <article class="card">
-            <span class="label">Duas APIs principais</span>
-            <h3><code>ai.ts</code> e <code>planning-theme.ts</code></h3>
+            <span class="label">Função compartilhada</span>
+            <h3><code>ai.ts</code></h3>
             <p>
-              Geração de IA geral para a equipe e geração de propostas para
-              Planejamento. São dois arquivos distintos por público, autorização
-              e fluxo de quota.
+              A equipe usa a geração geral. Administradores geram propostas
+              no Planejamento. Cada fluxo tem sua própria autorização e lógica.
             </p>
           </article>
           <article class="card">
@@ -426,7 +415,7 @@
             <h3><code>strategy-worker.ts</code></h3>
             <p>
               Endpoint antigo de fila. O cron foi pausado; o arquivo ficou para
-              reversão e ainda ocupa uma das 9 funções.
+              reversão e ainda ocupa uma das 8 funções.
             </p>
           </article>
         </div>
@@ -454,13 +443,12 @@
             </p>
           </article>
           <article class="card">
-            <span class="label">Não recomendado agora</span>
-            <h3>IA e Planejamento</h3>
+            <span class="label">Unificado</span>
+            <h3>IA e Planejamento: 2 → 1</h3>
             <p>
-              A geração geral aceita membros ativos. O Planejamento exige
-              administrador ativo e gera propostas em lotes, com retomada.
-              Uma função poderia encaminhar os dois fluxos, cada qual com sua
-              autorização e seu tratamento de geração.
+              A rota <code>/api/planning-theme</code> encaminha as propostas
+              para o handler de Planejamento dentro de <code>api/ai.ts</code>.
+              A mesma função atende a geração de conteúdo da equipe.
             </p>
           </article>
           <article class="card">
@@ -478,7 +466,7 @@
             <p>
               <code>instagram-publish</code> e <code>instagram-reference</code>
               podem usar um router e preservar escopos e URLs antigas. O ganho
-              seria uma função (9 → 8); ambas servem fluxos de membro, mas têm
+              seria uma função (8 → 7); ambas servem fluxos de membro, mas têm
               contratos de mídia e efeitos externos distintos.
             </p>
           </article>
@@ -494,7 +482,7 @@
           </article>
         </div>
         <p style="margin-top: 12px; color: var(--muted)">
-          Com 9 de 12 funções, não é preciso unir APIs do Instagram para caber
+          Com 8 de 12 funções, não é preciso unir APIs do Instagram para caber
           no Hobby. Juntar publicação e importação economizaria uma vaga, mas
           não é necessário para o limite atual. A remoção de
           <code>strategy-worker</code> requer decisão explícita porque o
@@ -526,7 +514,7 @@
       </section>
       <footer>
         Inventário atualizado em 26/11/2026. A ficha registra a decisão e
-        as validações da mudança administrativa.
+        as validações das unificações.
       </footer>
     </main>
   </body>

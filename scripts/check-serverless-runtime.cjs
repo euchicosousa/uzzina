@@ -57,7 +57,6 @@ const { FileFsRef } = require("@vercel/build-utils");
   try {
     const sources = [
       "api/ai.ts",
-      "api/planning-theme.ts",
       "api/strategy-operations.ts",
       "api/strategy-worker.ts",
       "api/dash.ts",
@@ -83,6 +82,8 @@ const { FileFsRef } = require("@vercel/build-utils");
       "app/lib/social-planning/slot-calculator.ts",
       "app/lib/social-planning/types.ts",
       "app/models/social_plans.ts",
+      "server/ai-handler.ts",
+      "server/planning-theme-handler.ts",
       "server/strategy-generation.ts",
       "server/planning-period.ts",
       "server/ai-generation.ts",
@@ -160,7 +161,21 @@ const { FileFsRef } = require("@vercel/build-utils");
           return response;
         };
         await request('OPTIONS', 405);
-        ${["api/ai.ts", "api/planning-theme.ts", "api/instagram-publish.ts", "api/instagram-reference.ts"].includes(entrypoint) ? "await request('POST', 401);" : ""}
+        ${["api/instagram-publish.ts", "api/instagram-reference.ts"].includes(entrypoint) ? "await request('POST', 401);" : ""}
+        ${
+          entrypoint === "api/ai.ts"
+            ? `
+          const ai = await request('POST', 401);
+          assert.equal(ai.body.error, 'Sessão inválida ou expirada. Entre novamente.');
+          const planningScope = {scope: 'planning-theme'};
+          const planning = await request('POST', 401, planningScope);
+          assert.equal(planning.body.error, 'Entre novamente para usar o Planejamento.');
+          assert.equal(planning.headers['Cache-Control'], 'no-store');
+          const invalidPlanningMethod = await request('OPTIONS', 405, planningScope);
+          assert.equal(invalidPlanningMethod.headers.Allow, 'POST');
+        `
+            : ""
+        }
         ${
           entrypoint === "api/admin.ts"
             ? `

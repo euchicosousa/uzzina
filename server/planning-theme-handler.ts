@@ -7,24 +7,21 @@ import {
 } from "../app/lib/social-planning/theme-contract.js";
 import { planningToday } from "../app/lib/social-planning/dates.js";
 import { isSocialPlan } from "../app/models/social_plans.js";
-import { generateAI } from "../server/ai-generation.js";
+import { generateAI } from "./ai-generation.js";
 import {
   aiOutputLimits,
   defaultAIModelId,
   findAIModel,
-} from "../server/ai-model-catalog.js";
-import { recordAIUsage } from "../server/ai-usage.js";
-import { extractBearerToken } from "../server/auth.js";
+} from "./ai-model-catalog.js";
+import { recordAIUsage } from "./ai-usage.js";
+import { extractBearerToken } from "./auth.js";
 import {
   operationMode,
   preparePlanningPeriod,
   runPlanningPeriodBatch,
-} from "../server/planning-period.js";
+} from "./planning-period.js";
 
-import {
-  createServiceClient,
-  getServiceConfig,
-} from "../server/supabase-admin.js";
+import { createServiceClient, getServiceConfig } from "./supabase-admin.js";
 import type { Database } from "../types/database";
 
 const intent = "ai-planning-theme";

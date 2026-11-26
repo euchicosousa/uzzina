@@ -2,7 +2,7 @@
 
 **Estado atualizado em 26/11/2026:** o proprietário confirmou o plano Hobby e autorizou publicar uma função para toda a administração. A segunda fusão reúne `admin-accounts` e `admin-cleanup` em `admin`, reduzindo de 10 para 9 funções. O [HTML de resultado](../estudo-unificacao.html) mostra o que cada função faz.
 
-**Escopo atual:** manter o inventário das funções no Hobby e reunir em `/api/admin` a gestão de contas de clientes, a criação de credenciais da equipe, a exclusão definitiva de parceiros arquivados e a auditoria e limpeza do Cloudinary. Preservar URLs anteriores e os contratos de cada operação.
+**Escopo atual:** manter o inventário das funções no Hobby e reunir em `/api/admin` a gestão de contas de clientes, a criação de credenciais da equipe, a exclusão definitiva de parceiros arquivados e a auditoria e limpeza do Cloudinary. A geração geral e as propostas de Planejamento compartilham uma função, com suas rotinas e permissões próprias. Preservar URLs anteriores e os contratos de cada operação.
 
 As seções 1–5 e a decisão de 23/11 abaixo documentam os estudos anteriores. Para estado vigente após a decisão de 26/11, use “Unificação administrativa completa”.
 
@@ -143,3 +143,11 @@ continuam disponíveis por rewrites e pelo adaptador local.
 
 A contagem passa de **10 para 9 funções**, com três vagas no limite de 12
 adotado no estudo. O [inventário](../estudo-unificacao.html) lista as nove.
+
+## Unificação de IA e Planejamento — 26/11/2026
+
+O proprietário aprovou compartilhar uma função da Vercel. `/api/ai` atende a
+geração da equipe e recebe, por rewrite, as chamadas a `/api/planning-theme`.
+O fluxo da equipe exige membro ativo. A geração de propostas exige
+administrador ativo e mantém quota, lotes e retomada. A duração configurada
+é de 180 segundos. Contagem após esta fusão: **8 funções**.

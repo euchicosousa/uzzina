@@ -8,7 +8,10 @@ type HandlerRoute = {
 };
 const HANDLERS: Record<string, HandlerRoute> = {
   "/api/ai": { path: "./api/ai.ts" },
-  "/api/planning-theme": { path: "./api/planning-theme.ts" },
+  "/api/planning-theme": {
+    path: "./api/ai.ts",
+    query: { scope: "planning-theme" },
+  },
   "/api/strategy-operations": { path: "./api/strategy-operations.ts" },
   "/api/strategy-worker": { path: "./api/strategy-worker.ts" },
   "/api/dash": { path: "./api/dash.ts" },
