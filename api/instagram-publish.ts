@@ -9,6 +9,7 @@ import {
 } from "../app/lib/instagram-publish-media.js";
 import {
   buildInstagramCalendarEvents,
+  firstRelation,
   type CalendarAttemptRow,
   type CalendarScheduleRow,
 } from "../app/lib/instagram-calendar-events.js";
@@ -772,26 +773,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!parsedRange.success)
       return res.status(400).json({ error: "Período inválido." });
     const { from, to } = parsedRange.data;
-    const { data: visibleActions, error: visibleActionsError } = await viewer
-      .from("actions")
-      .select("id, title, partners")
-      .eq("archived", false);
-    if (visibleActionsError || !visibleActions)
-      return res
-        .status(503)
-        .json({ error: "Não foi possível consultar suas ações." });
-    const actionById = new Map(
-      visibleActions.map((action) => [action.id, action]),
-    );
-    const partnerSlugs = [
-      ...new Set(visibleActions.flatMap((action) => action.partners)),
-    ];
-    if (partnerSlugs.length === 0)
-      return res.status(200).json({ events: [], connectedPartnerIds: [] });
     const { data: visiblePartners, error: visiblePartnersError } = await viewer
       .from("partners")
-      .select("id, slug, title")
-      .in("slug", partnerSlugs);
+      .select("id, title");
     if (visiblePartnersError || !visiblePartners)
       return res
         .status(503)
@@ -869,6 +853,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       scheduleRows.push(...data);
       if (data.length < 1000) break;
     }
+
+    const eventActionIds = new Set(
+      attemptRows.map((attempt) => attempt.action_id),
+    );
+    for (const schedule of scheduleRows) {
+      const batch = firstRelation(schedule.instagram_schedule_batches);
+      if (batch) eventActionIds.add(batch.action_id);
+    }
+    const actionIds = [...eventActionIds];
+    const actionById = new Map<string, { title: string }>();
+    const actionBatchSize = 100;
+    for (let offset = 0; offset < actionIds.length; offset += actionBatchSize) {
+      // Only return events for actions the authenticated viewer can still read.
+      const { data, error } = await viewer
+        .from("actions")
+        .select("id, title")
+        .eq("archived", false)
+        .in("id", actionIds.slice(offset, offset + actionBatchSize));
+      if (error || !data)
+        return res
+          .status(503)
+          .json({ error: "Não foi possível consultar suas ações." });
+      for (const action of data) actionById.set(action.id, action);
+    }
+
     const events = buildInstagramCalendarEvents({
       attempts: attemptRows,
       schedules: scheduleRows,
