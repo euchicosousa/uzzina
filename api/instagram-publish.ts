@@ -790,6 +790,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res
       .status(503)
       .json({ error: "Não foi possível verificar os perfis." });
+  const available = partners.map((partner) => ({
+    id: partner.id,
+    slug: partner.slug,
+    title: partner.title,
+    username:
+      connections?.find((c) => c.partner_id === partner.id)?.profile_username ??
+      null,
+    avatarUrl:
+      connections?.find((c) => c.partner_id === partner.id)
+        ?.profile_picture_url ?? null,
+    feedTime:
+      normalizePostTime(partner.instagram_feed_time) ??
+      DEFAULT_INSTAGRAM_FEED_TIME,
+    storiesTime:
+      normalizePostTime(partner.instagram_stories_time) ??
+      DEFAULT_INSTAGRAM_STORIES_TIME,
+  }));
+  if (req.method === "GET" && req.query.view === "connection")
+    return res
+      .status(200)
+      .json({ partners: available, attempts: [], schedules: [] });
+
   const { data: attempts, error: historyError } = await service
     .from("instagram_publish_attempts")
     .select(
@@ -816,23 +838,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(503).json({
       error: "O registro de programações não está disponível.",
     });
-  const available = partners.map((partner) => ({
-    id: partner.id,
-    slug: partner.slug,
-    title: partner.title,
-    username:
-      connections?.find((c) => c.partner_id === partner.id)?.profile_username ??
-      null,
-    avatarUrl:
-      connections?.find((c) => c.partner_id === partner.id)
-        ?.profile_picture_url ?? null,
-    feedTime:
-      normalizePostTime(partner.instagram_feed_time) ??
-      DEFAULT_INSTAGRAM_FEED_TIME,
-    storiesTime:
-      normalizePostTime(partner.instagram_stories_time) ??
-      DEFAULT_INSTAGRAM_STORIES_TIME,
-  }));
   if (req.method === "GET")
     return res.status(200).json({
       partners: available,

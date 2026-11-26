@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { PrismButton } from "~/components/prism";
+import { UImage } from "~/components/uzzina/UImage";
 import { detectPostType } from "./InstagramHelpers";
 import { ChevronLeftIcon, ChevronRightIcon, ImageIcon } from "lucide-react";
 
@@ -18,7 +19,7 @@ function clampIndex(index: number, total: number) {
  * Prévia visual de um post do Instagram com base nos content_files.
  * - 0 arquivos → placeholder
  * - 1 imagem → imagem estática
- * - N imagens → carrossel com swipe (scroll-snap) e navegação
+ * - N imagens → carrossel com swipe (scroll-snap) e navegaçãog
  * - 1 vídeo → player de vídeo (com capa opcional em files[1])
  */
 export function InstagramPreview({ files, compact }: InstagramPreviewProps) {
@@ -70,7 +71,7 @@ export function InstagramPreview({ files, compact }: InstagramPreviewProps) {
   if (type === "image") {
     return (
       <div className={`${frameClass} ${aspectClass}`}>
-        <img src={files[0]} alt="" className="h-full w-full object-cover" />
+        <UImage src={files[0]} alt="" className="h-full w-full object-cover" />
       </div>
     );
   }
@@ -139,7 +140,7 @@ export function InstagramPreview({ files, compact }: InstagramPreviewProps) {
             aria-label={`Slide ${i + 1} de ${total}`}
             className="h-full w-full shrink-0 snap-center snap-always"
           >
-            <img
+            <UImage
               src={url}
               alt={`Slide ${i + 1}`}
               loading={i === 0 ? "eager" : "lazy"}
@@ -153,24 +154,24 @@ export function InstagramPreview({ files, compact }: InstagramPreviewProps) {
       {/* Setas de navegação */}
       {canPrev && (
         <PrismButton
-          size="icon-xs"
+          size="icon-sm"
           variant="ghost"
           onClick={() => scrollToSlide(carouselIndex - 1)}
           className="absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-transparent image-icon hover:bg-transparent"
           aria-label="Imagem anterior"
         >
-          <ChevronLeftIcon className="size-4 opacity-100" />
+          <ChevronLeftIcon className="size-6 opacity-100" />
         </PrismButton>
       )}
       {canNext && (
         <PrismButton
-          size="icon-xs"
+          size="icon-sm"
           variant="ghost"
           onClick={() => scrollToSlide(carouselIndex + 1)}
           className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-transparent image-icon hover:bg-transparent"
           aria-label="Próxima imagem"
         >
-          <ChevronRightIcon className="size-4 opacity-100" />
+          <ChevronRightIcon className="size-6 opacity-100" />
         </PrismButton>
       )}
 

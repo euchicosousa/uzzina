@@ -118,3 +118,57 @@ grupos rejeitados e ignora os IDs ausentes. O modo de pastas fixas usa
 caminho público nas buscas. A conferência final consulta todos os caminhos
 do lote juntos e valida os IDs retornados. A amostra real reconheceu um
 original ativo, um backup existente e um caminho ausente, sem exclusões.
+
+**Recorrência em produção, 26/11 às 15h47.** O proprietário relatou que
+a cota acabou após excluir algumas imagens. Uma leitura retornou HTTP 420,
+0/500 de saldo e renovação às 16h00 em Fortaleza. A verificação em lote
+eliminou leituras repetidas, mas a primeira consulta de versões continua
+necessária para apagar os backups e consome a maior parte da cota. Não há
+contagem por lote que permita atribuir todas as 500 unidades a essa rodada.
+Opções para decisão: manter a limpeza conjunta com checagem de saldo, ou
+limpar originais e derivados primeiro e oferecer os backups em uma rodada
+separada. Nenhuma alteração de código nesta análise.
+
+## Cruzamento das pastas com os parceiros atuais — 26/11/2026
+
+A leitura após 16h confirmou as 22 pastas raiz da captura, cruzadas com 16 parceiros ativos e com as referências às mídias. “Só backup” conta arquivos sem original ativo, não as versões de backup dos originais ativos.
+
+| Nº | Pasta | Cruzamento | Originais ativos | Só backup | Arquivos referenciados |
+| ---: | --- | --- | ---: | ---: | ---: |
+| 1 | `agenciacnvt` | Agência CNVT ™ | 12 | 0 | 12 |
+| 2 | `anaarcanjoodontologia` | Ex-cliente confirmado | 90 | 22 | 0 |
+| 3 | `brendavasconcelos` | Brenda Vasconcelos | 142 | 10 | 142 |
+| 4 | `bussola` | Vínculo com ações da Clínica Dengo | 5 | 4 | 4 |
+| 5 | `cali.pizza.holiday` | Sem parceiro no cadastro e sem vínculo detectado | 30 | 5 | 0 |
+| 6 | `clinicadengo` | Clínica Dengo | 186 | 6 | 186 |
+| 7 | `clinicaunivetsobral` | Clínica Univet | 58 | 0 | 58 |
+| 8 | `donaformigasobral` | Sem parceiro no cadastro e sem vínculo detectado | 6 | 0 | 0 |
+| 9 | `draiaratomaz` | Dra. Iara Tomaz | 100 | 58 | 103 |
+| 10 | `dramargaridacarneiro` | Dra. Margarida Carneiro | 24 | 0 | 24 |
+| 11 | `dranataliagomes` | Sem parceiro no cadastro e sem vínculo detectado | 1 | 0 | 0 |
+| 12 | `dubecco` | Sem parceiro no cadastro e sem vínculo detectado | 8 | 0 | 0 |
+| 13 | `euchicosousa` | Chico Sousa | 7 | 0 | 7 |
+| 14 | `executetecnologia` | Ex-cliente confirmado | 45 | 2 | 0 |
+| 15 | `frotasgas` | Sem parceiro no cadastro e sem vínculo detectado | 52 | 0 | 0 |
+| 16 | `hospitaldrthomazcorrea` | Hospital Dr. Thomaz Corrêa | 118 | 1 | 118 |
+| 17 | `ochicosousa` | Vínculo com ações que usam o cadastro antigo ochicosousa | 12 | 0 | 12 |
+| 18 | `parksobral` | PARK Sobral | 227 | 20 | 227 |
+| 19 | `postosfrotas` | Sem parceiro no cadastro e sem vínculo detectado | 81 | 0 | 0 |
+| 20 | `smartmed_massape` | SmartMed | 240 | 2 | 240 |
+| 21 | `toroburgerandbeer` | Toro Burger & Beer | 116 | 0 | 116 |
+| 22 | `uzzina` | Pasta compartilhada da UZZINA | 625 | 114 | 590 |
+
+Ana Lia Rocha, Exacta Consultoria, Luma Torre, Odonto Melo e VIDERE SAÚDE não têm pasta própria na raiz. O cruzamento não é uma autorização de exclusão.
+
+### Exclusão manual das pastas — 26/11/2026 às 16h04
+
+O proprietário removeu pastas pelo console do Cloudinary. A captura e
+a leitura subsequente confirmaram 12 pastas raiz. A busca por prefixo
+encontrou zero originais ativos em `bussola`, `ochicosousa`,
+`executetecnologia` e `anaarcanjoodontologia`. As referências anteriores
+a 4 arquivos de `bussola` e 12 de `ochicosousa` correspondem a ativos
+que agora só estão no backup. Os quatro de `bussola` aparecem em ações
+da Clínica Dengo; os do outro prefixo aparecem em ações com o identificador
+histórico `ochicosousa`. Backups remanescentes: 9, 12, 47 e 112,
+respectivamente. Consulta somente de leitura. O proprietário dispensou a restauração
+desses ativos nessa rodada.

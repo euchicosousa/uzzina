@@ -231,7 +231,6 @@ export function InstagramPublishPreparation({
   const [selected, setSelected] = useState<number[]>([]);
   const [state, setState] = useState<PublishState | null>(null);
   const [loading, setLoading] = useState(false);
-  const [connectionFailed, setConnectionFailed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [scheduleBusy, setScheduleBusy] = useState(false);
   const scheduleLock = useRef(false);
@@ -272,10 +271,8 @@ export function InstagramPublishPreparation({
       try {
         const next = await instagramPublishRequest(actionId);
         setState(next);
-        setConnectionFailed(false);
       } catch (error) {
         setState(null);
-        setConnectionFailed(true);
         if (!silent)
           toast.error(
             error instanceof Error
@@ -289,9 +286,18 @@ export function InstagramPublishPreparation({
 
   useEffect(() => {
     if (!actionId) return;
-    setLoading(true);
-    void refresh().finally(() => setLoading(false));
-  }, [actionId, refresh]);
+    let active = true;
+    void instagramPublishRequest(actionId, undefined, "connection")
+      .then((next) => {
+        if (active) setState(next);
+      })
+      .catch(() => {
+        // An unavailable check keeps the entry point hidden.
+      });
+    return () => {
+      active = false;
+    };
+  }, [actionId]);
 
   const connectedPartners =
     state?.partners.filter(
@@ -541,33 +547,23 @@ export function InstagramPublishPreparation({
   }
 
   const hasConnectedProfile = connectedPartners.length > 0;
-  if (!actionId) return null;
+  if (!actionId || (!hasConnectedProfile && !open)) return null;
 
   return (
     <>
-      {loading && state === null ? (
-        <p className="text-sm text-secondary-foreground">
-          Verificando conexão do Instagram…
-        </p>
-      ) : connectionFailed || state === null ? (
-        <p className="text-sm text-secondary-foreground">
-          Não foi possível verificar a conexão do Instagram agora.
-        </p>
-      ) : !hasConnectedProfile ? (
-        <p className="text-sm text-secondary-foreground">
-          Conecte o perfil do Instagram para ter acesso às ferramentas de
-          publicação.
-        </p>
-      ) : (
-        <PrismButton
-          className="w-full"
-          isDisabled={files.length === 0}
-          size="sm"
-          variant="secondary"
-          onPress={openDialog}
-        >
-          Publicar ou programar
-        </PrismButton>
+      {hasConnectedProfile && (
+        <section className="flex flex-col gap-2 pt-4">
+          <p className="font-medium">Publicação</p>
+          <PrismButton
+            className="w-full"
+            isDisabled={files.length === 0}
+            size="sm"
+            variant="secondary"
+            onPress={openDialog}
+          >
+            Publicar ou programar
+          </PrismButton>
+        </section>
       )}
 
       <PrismDialog
@@ -755,6 +751,7 @@ export function InstagramPublishPreparation({
             <PrismButton
               className="w-full"
               isDisabled={
+                loading ||
                 busy ||
                 !partner?.username ||
                 !format ||
@@ -900,6 +897,7 @@ export function InstagramPublishPreparation({
               )}
               <PrismButton
                 isDisabled={
+                  loading ||
                   scheduleBusy ||
                   !partner?.username ||
                   !format ||

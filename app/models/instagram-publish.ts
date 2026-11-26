@@ -92,6 +92,7 @@ export class InstagramPublishError extends Error {
 export async function instagramPublishRequest(
   actionId: string,
   input?: PublishInput | ScheduleInput,
+  view?: "connection",
 ): Promise<PublishState | null> {
   const { data } = await createSupabaseBrowserClient().auth.getSession();
   const token = data.session?.access_token;
@@ -99,7 +100,10 @@ export async function instagramPublishRequest(
   const response = await fetch(
     input
       ? "/api/instagram-publish"
-      : `/api/instagram-publish?actionId=${encodeURIComponent(actionId)}`,
+      : `/api/instagram-publish?${new URLSearchParams({
+          actionId,
+          ...(view ? { view } : {}),
+        })}`,
     {
       method: input ? "POST" : "GET",
       headers: {

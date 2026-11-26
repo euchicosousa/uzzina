@@ -182,16 +182,14 @@ export function InstagramTab({
             uploadPreset={uploadPreset}
           />
         </div>
-        <section className="flex flex-col gap-2 pt-4">
-          <p className="font-medium">Publicação</p>
-          <InstagramPublishPreparation
-            files={contentFiles}
-            actionId={RawAction.id}
-            caption={RawAction.instagram_caption}
-            actionCategory={RawAction.category}
-            partnerSlugs={RawAction.partners}
-          />
-        </section>
+        <InstagramPublishPreparation
+          key={RawAction.id}
+          files={contentFiles}
+          actionId={RawAction.id}
+          caption={RawAction.instagram_caption}
+          actionCategory={RawAction.category}
+          partnerSlugs={RawAction.partners}
+        />
       </div>
 
       <PrismTabs

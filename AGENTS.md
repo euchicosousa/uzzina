@@ -59,7 +59,7 @@ As regras detalhadas por área ficam em `docs/contracts/`. Ao mexer em uma área
 | Gaveta de ação, listas/calendários de ações, cache de consultas, notificações                           | [docs/contracts/action-drawer.md](docs/contracts/action-drawer.md)                               |
 | Busca global, comandos, data comemorativa pela busca                                                    | [docs/contracts/search-and-commands.md](docs/contracts/search-and-commands.md)                   |
 | Hoje/Home, Minha Conta, Planejamento, Ajuda, AppBar/Header, altura de calendários, preferências e temas | [docs/contracts/pages-today-profile-planning.md](docs/contracts/pages-today-profile-planning.md) |
-| Foco, movimento, abas, containers flutuantes, galeria `/ui`                                             | [docs/contracts/prism-details.md](docs/contracts/prism-details.md)                               |
+| Foco, movimento, ícones, abas, containers flutuantes, galeria `/ui`                                     | [docs/contracts/prism-details.md](docs/contracts/prism-details.md)                               |
 | IA, estratégias, catálogo de modelos, quota                                                             | [docs/contracts/ai-and-strategies.md](docs/contracts/ai-and-strategies.md)                       |
 | Migrations, RPCs, triggers, tabelas, `bun run dev`, ambientes, publicação                               | [docs/contracts/database-and-deploy.md](docs/contracts/database-and-deploy.md)                   |
 | Portal `/dash`, componente `Content`                                                                    | [docs/contracts/portal-and-review.md](docs/contracts/portal-and-review.md)                       |

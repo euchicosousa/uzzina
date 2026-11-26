@@ -441,13 +441,12 @@
             </p>
           </article>
           <article class="card">
-            <span class="label">Possível · economiza 1</span>
-            <h3>Publicação + importação</h3>
+            <span class="label">Decisão do proprietário</span>
+            <h3>Publicação e importação por link separadas</h3>
             <p>
-              <code>instagram-publish</code> e <code>import-from-link</code>
-              podem usar um router e preservar escopos e URLs antigas. O ganho
-              seria uma função (7 → 6); ambas servem fluxos de membro, mas têm
-              contratos de mídia e efeitos externos distintos.
+              <code>instagram-publish</code> cuida dos envios ao Instagram.
+              <code>import-from-link</code> traz mídia pública para os arquivos
+              da ação e pode receber novas plataformas no futuro.
             </p>
           </article>
           <article class="card caution">
@@ -462,11 +461,9 @@
           </article>
         </div>
         <p style="margin-top: 12px; color: var(--muted)">
-          Com 7 de 12 funções, não é preciso unir APIs do Instagram para caber
-          no Hobby. Juntar publicação e importação economizaria uma vaga, mas
-          não é necessário para o limite atual. O agendador antigo de
-          estratégias foi pausado em 25/11, com a fila vazia. A função
-          <code>strategy-worker</code> foi removida.
+          O deploy de produção <code>701df5d8</code> ficou Ready com 7 funções.
+          O agendador antigo de estratégias foi pausado em 25/11, com a fila
+          vazia. A função <code>strategy-worker</code> foi removida.
         </p>
       </section>
 

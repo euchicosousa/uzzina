@@ -30,6 +30,17 @@ Padrão oficial de campos de entrada (`PrismInput`, `Textarea`, `PrismColorField
 - **Grupos (DS18, 13/11/2026).** Cantos internos retos e raio do tamanho só nas pontas (`--group-radius`). O puxão de 1px (bordas sobrepostas) existe só onde a borda é opaca: `default` e `outline` no `PrismButtonGroup`, `outline` no `PrismToggleGroup`; secondary e ghost ficam lado a lado, sem sobreposição, para que fundos translúcidos não formem linha. A regra lê o `data-variant` de cada filho, sem configuração por tela. `PrismButtonGroup`: `attached` (padrão) junto; `attached={false}` põe 1px de respiro só após itens default e secondary (outline e ghost ficam sempre juntos). `PrismToggleGroup`: outline e secondary juntos por padrão, `attached={false}` separa por 4px; ghost sempre separado por 4px. O `spacing` numérico saiu. `PrismInputGroup` não segue essa regra (caixa única). Na gaveta, os grupos de IA usam `attached={false}` sem `PrismButtonGroupSeparator`.
 - **Controles sobre imagem (12/11/2026):** ícones sobrepostos a imagem ou miniatura (alça de arrastar, caixa de seleção, estado) não têm fundo; são brancos com sombra que acompanha o desenho do ícone, por filtro `drop-shadow` (não `shadow-*`, que sombreia a caixa). Uso restrito a espaços de imagem. Cor invertida (`mix-blend-mode: difference`) foi testada na simulação do IA-M08 e descartada: some sobre tons médios e muda de cor a cada imagem. A classe `image-icon` (`app/tailwind.css`: texto/ícone branco e `filter: drop-shadow` no `svg`, sem fundo) foi criada no IA-M08 e vale para a alça e a caixa de seleção do `FileManagerDialog`; a galeria `/ui` (foco) mostra a réplica sobre branco, preto, cinza e âmbar. Ainda falta conferir a legibilidade no navegador sobre imagem branca, preta, cinza médio e foto.
 
+## Opacidade dos ícones
+
+Escolha a opacidade pela função do ícone.
+
+| Opacidade | Uso |
+| --- | --- |
+| **10%** | Ícone decorativo de fundo, como o ícone grande do `PrismAlert`. |
+| **20%** | Indicador de ausência de conteúdo, como a imagem indisponível na prévia e nas miniaturas. |
+| **60%** | Ícone de controle ou navegação, como busca, filtro e edição. |
+| **100%** | Visto que confirma uma opção selecionada. |
+
 ## Ordem de ícone e texto
 
 Regra do proprietário (DS05, decisão final de 11/11/2026): a posição do ícone segue a função do controle.

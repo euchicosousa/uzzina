@@ -40,6 +40,7 @@ import {
   PrismToggleGroup,
   PrismToggleGroupItem,
 } from "~/components/prism";
+import { UImage } from "~/components/uzzina/UImage";
 import { useIsDesktop } from "~/hooks/useIsDesktop";
 import { MAX_INSTAGRAM_FILES } from "~/lib/instagram-reference";
 import { CloudinaryUpload } from "./CloudinaryUpload";
@@ -120,13 +121,20 @@ function SortableThumbnail({
   };
 
   const [failedPosterUrl, setFailedPosterUrl] = useState<string | null>(null);
+  const imageFallbackId = useId();
   const { name: fileName, extension, type } = getFilePreviewDetails(url);
   const posterUrl = type === "video" ? getCloudinaryVideoPosterUrl(url) : null;
   const showPoster = Boolean(posterUrl && failedPosterUrl !== url);
 
   const preview =
     type === "image" ? (
-      <img src={url} alt="" className="h-full w-full object-cover" />
+      <UImage
+        alt=""
+        className="h-full w-full object-cover"
+        fallback="icon"
+        fallbackId={imageFallbackId}
+        src={url}
+      />
     ) : showPoster && posterUrl ? (
       <>
         <img
@@ -275,6 +283,7 @@ function SortableThumbnail({
       {onPreview ? (
         <button
           aria-controls={previewPanelId}
+          aria-describedby={type === "image" ? imageFallbackId : undefined}
           aria-label={`Visualizar ${fileName}`}
           data-focus-thumbnail-control=""
           aria-pressed={Boolean(previewPanelId)}
@@ -288,6 +297,7 @@ function SortableThumbnail({
         </button>
       ) : canOpen && !selecting ? (
         <a
+          aria-describedby={type === "image" ? imageFallbackId : undefined}
           aria-label={`Abrir ${fileName}`}
           data-focus-thumbnail-control=""
           className="block h-full w-full"

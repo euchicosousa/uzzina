@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { PlusIcon } from "lucide-react";
 import { PrismButton } from "~/components/prism";
+import { UImage } from "~/components/uzzina/UImage";
 import { FileManagerDialog } from "~/components/features/media/FileManagerDialog";
 import type { FileUploadTransport } from "~/components/features/media/useDirectFileUploads";
 import sampleImage from "./file-manager-samples/imagem-exemplo.jpg?url&no-inline";
@@ -84,6 +85,16 @@ export function UzzinaFileUploadSection() {
           </GalleryItem>
           <GalleryItem label="Imagens e vídeos · Instagram">
             <FileUploadExample />
+          </GalleryItem>
+          <GalleryItem label="Imagem indisponível · Prévia">
+            <div className="aspect-[4/5] w-40 max-w-full overflow-hidden rounded-xl border squircle">
+              <UImage alt="" src="data:image/png;base64,AA==" />
+            </div>
+          </GalleryItem>
+          <GalleryItem label="Imagem indisponível · Miniatura">
+            <div className="size-20 overflow-hidden rounded-xl border squircle">
+              <UImage alt="" fallback="icon" src="data:image/png;base64,AA==" />
+            </div>
           </GalleryItem>
         </GallerySectionContent>
       </GallerySection>

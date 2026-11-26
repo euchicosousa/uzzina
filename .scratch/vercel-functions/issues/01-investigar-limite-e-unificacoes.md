@@ -164,3 +164,12 @@ Em Gaveta da ação → Essencial → Arquivos, a importação por link usa
 `/api/import-from-link`. O Instagram é a origem aceita hoje. A URL
 `/api/instagram-reference` encaminha para a nova, com o mesmo formato de
 requisição. A troca de nome mantém o total em **7 funções**.
+
+## Decisão sobre publicação e importação por link — 26/11/2026
+
+O proprietário decidiu manter `instagram-publish` e `import-from-link` em
+funções separadas. Publicar no Instagram e trazer arquivos de links públicos
+são operações de contextos diferentes. A importação pode receber outras
+plataformas no futuro. O deployment de produção do commit `701df5d8` ficou
+[Ready na Vercel](https://vercel.com/agenciacnvt/uzzina/9P4U6FEkL1rMFgTuVdLhocvXZ7FD),
+com sete funções.
