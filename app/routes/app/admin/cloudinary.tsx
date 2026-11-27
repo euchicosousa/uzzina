@@ -265,6 +265,7 @@ function SelectionActionBar({
   onSelectVisibleBatch,
   onClearSelection,
   onRequestDelete,
+  onRequestBackupOnly,
 }: {
   selectableCount: number;
   selectedCount: number;
@@ -275,6 +276,7 @@ function SelectionActionBar({
   onSelectVisibleBatch: () => void;
   onClearSelection: () => void;
   onRequestDelete: () => void;
+  onRequestBackupOnly?: () => void;
 }) {
   if (selectableCount === 0 && selectedCount === 0) return null;
 
@@ -312,16 +314,29 @@ function SelectionActionBar({
         </span>
       </div>
 
-      <PrismButton
-        isDisabled={selectedCount === 0 || isDeleting}
-        onPress={onRequestDelete}
-        size="sm"
-        type="button"
-        variant="error"
-      >
-        {actionLabel}
-        <Trash2Icon />
-      </PrismButton>
+      <div className="flex flex-wrap gap-2">
+        {onRequestBackupOnly && (
+          <PrismButton
+            isDisabled={selectedCount === 0 || isDeleting}
+            onPress={onRequestBackupOnly}
+            size="sm"
+            type="button"
+            variant="outline"
+          >
+            Apagar só backups
+          </PrismButton>
+        )}
+        <PrismButton
+          isDisabled={selectedCount === 0 || isDeleting}
+          onPress={onRequestDelete}
+          size="sm"
+          type="button"
+          variant="error"
+        >
+          {actionLabel}
+          <Trash2Icon />
+        </PrismButton>
+      </div>
     </div>
   );
 }
@@ -569,7 +584,13 @@ function AdminCloudinaryPage() {
     () => new Set(),
   );
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [liveBackupOnly, setLiveBackupOnly] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const openBackupOnly = () => {
+    setDeleteError(null);
+    setLiveBackupOnly(true);
+    setIsDeleteOpen(true);
+  };
   const [lastDeleteResult, setLastDeleteResult] =
     useState<CloudinaryDeleteResponse | null>(null);
 
@@ -642,9 +663,11 @@ function AdminCloudinaryPage() {
     mutationFn: async ({
       items,
       allowReferencedInActions,
+      liveBackupOnly,
     }: {
       items: CloudinaryAuditAsset[];
       allowReferencedInActions: boolean;
+      liveBackupOnly: boolean;
     }) =>
       deleteCloudinaryAssets(supabase, {
         items: items.map((item) => ({
@@ -655,12 +678,13 @@ function AdminCloudinaryPage() {
           ...(item.backupOnly ? { backupOnly: true } : {}),
         })),
         permanentConfirmation: CLOUDINARY_PERMANENT_CONFIRMATION,
+        ...(liveBackupOnly ? { backupOnlyWithOriginal: true } : {}),
         ...(allowReferencedInActions ? { allowReferencedInActions: true } : {}),
       }),
-    onSuccess: (result, { items }) => {
+    onSuccess: (result, { items, liveBackupOnly }) => {
       if (
-        result.deleted.length > 0 ||
-        result.backupVerificationPending?.length
+        !liveBackupOnly &&
+        (result.deleted.length > 0 || result.backupVerificationPending?.length)
       ) {
         const sent = new Map(
           items.map((asset) => [asset.assetKey, asset.createdAt]),
@@ -696,6 +720,7 @@ function AdminCloudinaryPage() {
         });
       }
       setIsDeleteOpen(false);
+      setLiveBackupOnly(false);
       setDeleteError(null);
       setSelectedKeys(new Set());
       setLastDeleteResult(result);
@@ -708,6 +733,13 @@ function AdminCloudinaryPage() {
         toast.warning("Há backups pendentes de conferência.");
       } else if (result.failed.length > 0) {
         toast.warning("Parte da limpeza precisa de revisão.");
+      } else if (
+        result.deletedCount > 0 &&
+        result.originalsAndDerivativesRemoved === 0
+      ) {
+        toast.success(
+          "Limpeza de backups conferida. Os originais existentes foram preservados.",
+        );
       } else if (result.deletedCount > 0 && result.unlinkedActionsCount > 0) {
         toast.success(
           `${result.deletedCount} arquivo(s) excluído(s) (${formatBytes(result.freedBytes)} liberados) e ${result.unlinkedActionsCount} ação(ões) atualizada(s).`,
@@ -1071,13 +1103,13 @@ function AdminCloudinaryPage() {
                 </PrismButton>
               </PrismAlertAction>
               <PrismAlertTitle>
-                Resultado da limpeza ({lastDeleteResult.deletedCount}{" "}
-                excluído(s) · {formatBytes(lastDeleteResult.freedBytes)} em
-                originais
+                {lastDeleteResult.originalsAndDerivativesRemoved === 0
+                  ? `Resultado dos backups (${lastDeleteResult.backupsCleared ?? 0} arquivo(s) sem versões)`
+                  : `Resultado da limpeza (${lastDeleteResult.deletedCount} excluído(s) · ${formatBytes(lastDeleteResult.freedBytes)} em originais`}
                 {lastDeleteResult.unlinkedActionsCount > 0
                   ? ` · ${lastDeleteResult.unlinkedActionsCount} ação(ões) atualizada(s)`
                   : ""}
-                )
+                {lastDeleteResult.originalsAndDerivativesRemoved !== 0 && ")"}
               </PrismAlertTitle>
               <PrismAlertDescription>
                 {lastDeleteResult.originalsAndDerivativesRemoved !==
@@ -1136,7 +1168,9 @@ function AdminCloudinaryPage() {
                     <span>
                       {lastDeleteResult.unlinkedActionsCount > 0
                         ? `Arquivos removidos do Cloudinary e links limpos em ${lastDeleteResult.unlinkedActionsCount} ação(ões).`
-                        : "Todos os arquivos selecionados foram removidos do Cloudinary."}
+                        : lastDeleteResult.originalsAndDerivativesRemoved === 0
+                          ? "Os itens selecionados estão sem backup. Os originais existentes foram preservados."
+                          : "Todos os arquivos selecionados foram removidos do Cloudinary."}
                     </span>
                   )}
               </PrismAlertDescription>
@@ -1260,6 +1294,7 @@ function AdminCloudinaryPage() {
               <SelectionActionBar
                 actionLabel="Excluir selecionados"
                 isDeleting={deleteMutation.isPending}
+                onRequestBackupOnly={openBackupOnly}
                 onClearSelection={() => setSelectedKeys(new Set())}
                 onRequestDelete={() => {
                   setDeleteError(null);
@@ -1375,6 +1410,9 @@ function AdminCloudinaryPage() {
                 <SelectionActionBar
                   actionLabel="Excluir definitivamente"
                   isDeleting={deleteMutation.isPending}
+                  onRequestBackupOnly={
+                    tab === "former" ? openBackupOnly : undefined
+                  }
                   onClearSelection={() => setSelectedKeys(new Set())}
                   onRequestDelete={() => {
                     setDeleteError(null);
@@ -1426,7 +1464,9 @@ function AdminCloudinaryPage() {
       <CloudinaryDeleteConfirmDialog
         permanent
         backupOnlyCount={
-          selectedAssets.filter((item) => item.backupOnly).length
+          liveBackupOnly
+            ? selectedAssets.length
+            : selectedAssets.filter((item) => item.backupOnly).length
         }
         affectedActionsCount={affectedActionsCount}
         errorMessage={deleteError}
@@ -1438,12 +1478,16 @@ function AdminCloudinaryPage() {
           deleteMutation.mutate({
             items: selectedAssets,
             allowReferencedInActions: activeTab === "in_use",
+            liveBackupOnly,
           });
         }}
         onOpenChange={(open) => {
           if (!deleteMutation.isPending) {
             setIsDeleteOpen(open);
-            if (!open) setDeleteError(null);
+            if (!open) {
+              setDeleteError(null);
+              setLiveBackupOnly(false);
+            }
           }
         }}
         selectedCount={selectedAssets.length}

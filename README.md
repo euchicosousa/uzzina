@@ -58,6 +58,8 @@ As variáveis de banco/servidor do arquivo local vêm da cópia de produção, s
 
 Variáveis VITE_ são públicas quando usadas no build. VITE_SESSION_SECRET, VITE_CLOUDINARY_API_KEY e VITE_CLOUDINARY_API_SECRET não são usadas pelo código atual e foram retiradas dos arquivos locais. Preserve cloud name/upload preset.
 
+O preset `bussola_unsigned` está com `backup=false` no Cloudinary para uploads diretos e pelo widget. As cópias assinadas via importação por link enviam a mesma opção. Essa configuração é aplicada aos novos uploads da UZZINA.
+
 ## Contratos de funcionamento
 
 O cliente Supabase do navegador é singleton. Equipe autentica por Supabase Auth; clientes externos usam cookie HttpOnly e sessão verificada pelas APIs. Revisão pública usa token com escopo/expiração/revogação. O formulário externo de Leads grava pela API do seu próprio projeto, com cookie de edição, sem acesso anônimo direto à tabela.

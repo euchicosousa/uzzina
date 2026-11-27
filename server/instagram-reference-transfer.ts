@@ -197,6 +197,7 @@ export async function transferReferenceAsset(
     const boundary = `uzzina-${randomUUID()}`;
     const params = {
       asset_folder: identity.folder,
+      backup: "false",
       overwrite: "false",
       public_id: identity.publicId,
       timestamp: String(Math.floor(Date.now() / 1000)),

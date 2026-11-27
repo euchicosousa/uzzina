@@ -219,7 +219,13 @@ beforeEach(() => {
         kind === "video" ? videoBytes : imageBytes,
       );
       const publicId = String(form.get("public_id"));
-      const signature = ["asset_folder", "overwrite", "public_id", "timestamp"]
+      const signature = [
+        "asset_folder",
+        "backup",
+        "overwrite",
+        "public_id",
+        "timestamp",
+      ]
         .map((field) => `${field}=${form.get(field)}`)
         .join("&");
       expect(form.get("signature")).toBe(
@@ -228,6 +234,7 @@ beforeEach(() => {
           .digest("hex"),
       );
       expect(form.get("overwrite")).toBe("false");
+      expect(form.get("backup")).toBe("false");
       expect(form.get("asset_folder")).toBe(
         `uzzina/work/${partnerId}/instagram`,
       );

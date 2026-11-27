@@ -54,6 +54,7 @@ const deleteBodySchema = z
       .min(1)
       .max(MAX_CLOUDINARY_DELETE_BATCH),
     allowReferencedInActions: z.boolean().optional(),
+    backupOnlyWithOriginal: z.boolean().optional(),
     permanentConfirmation: z
       .literal(CLOUDINARY_PERMANENT_CONFIRMATION)
       .optional(),
@@ -514,6 +515,12 @@ async function handlePostDelete(
 
   const permanent =
     parsed.data.permanentConfirmation === CLOUDINARY_PERMANENT_CONFIRMATION;
+  const backupOnlyWithOriginal = parsed.data.backupOnlyWithOriginal === true;
+  if (backupOnlyWithOriginal && !permanent) {
+    return res.status(400).json({
+      error: "Confirme a exclusão definitiva para remover versões de backup.",
+    });
+  }
   if (
     permanent &&
     (parsed.data.items.length > MAX_CLOUDINARY_PERMANENT_BATCH ||
@@ -559,6 +566,7 @@ async function handlePostDelete(
             .select("files, instagram_scheduled_publications!inner(status)")
             .in("instagram_scheduled_publications.status", [
               "scheduled",
+              "preparing",
               "processing",
               "uncertain",
               "partial",
@@ -589,6 +597,7 @@ async function handlePostDelete(
       resource: CloudinaryRawResource;
       assetKey: string;
       backupOnly: boolean;
+      originalIsLive?: boolean;
     }> = [];
     const catalogByKey = new Map<string, CloudinaryRawResource>();
     for (const resource of catalog.resources) {
@@ -616,6 +625,7 @@ async function handlePostDelete(
     };
 
     for (const item of parsed.data.items) {
+      const backupOnly = backupOnlyWithOriginal || item.backupOnly;
       const expectedKey = buildCloudinaryAssetKey(
         cloudinaryConfig.cloudName,
         item.resourceType,
@@ -633,18 +643,18 @@ async function handlePostDelete(
         continue;
       }
       const backup =
-        permanent &&
-        item.backupOnly &&
-        !liveResource &&
-        item.assetKey === expectedKey
-          ? backupsById.get(item.providerAssetId)
+        permanent && backupOnly && item.assetKey === expectedKey
+          ? backupOnlyWithOriginal
+            ? liveResource
+            : liveResource
+              ? undefined
+              : backupsById.get(item.providerAssetId)
           : undefined;
       if (
         backup &&
-        !liveResource &&
+        backup.asset_id === item.providerAssetId &&
         backup.public_id === item.publicId &&
-        backup.resource_type === item.resourceType &&
-        !catalogByKey.has(expectedKey)
+        backup.resource_type === item.resourceType
       ) {
         const origin = classifyOrigin(
           backup.public_id,
@@ -659,18 +669,25 @@ async function handlePostDelete(
                 ? "unknown_origin"
                 : "now_referenced",
           });
+        } else if (
+          liveResource &&
+          (!Number.isFinite(Date.parse(liveResource.created_at)) ||
+            nowMs - Date.parse(liveResource.created_at) < graceMs)
+        ) {
+          skipped.push({ ...item, reason: "recent_upload" });
         } else {
           pendingBackups.push({
             resource: backup,
             assetKey: expectedKey,
             backupOnly: true,
+            originalIsLive: Boolean(liveResource),
           });
         }
         continue;
       }
       if (
         !liveResource ||
-        item.backupOnly ||
+        backupOnly ||
         (permanent && liveResource.asset_id !== item.providerAssetId)
       ) {
         skipped.push({ ...item, reason: "not_found" });
@@ -898,6 +915,32 @@ async function handlePostDelete(
     const backupVerificationPending: CloudinaryDeleteFailedItem[] = [];
     if (permanent) {
       const unlinkFailures = new Set(failed.map((item) => item.assetKey));
+      const candidates = pendingBackups.filter(
+        ({ assetKey }) => !unlinkFailures.has(assetKey),
+      );
+      const liveAssetIds = new Set(
+        candidates.flatMap(({ resource, originalIsLive }) =>
+          originalIsLive && resource.asset_id ? [resource.asset_id] : [],
+        ),
+      );
+      let batchRateLimited = false;
+      const alreadyCleared = await verifyCloudinaryBackupsBatch(
+        cloudinaryConfig,
+        candidates.map(({ resource }) => resource),
+        undefined,
+        {
+          liveAssetIds,
+          requireIndexedAssetIds: new Set(
+            candidates.flatMap(({ resource, backupOnly }) =>
+              backupOnly && resource.asset_id ? [resource.asset_id] : [],
+            ),
+          ),
+        },
+      ).catch((error: unknown) => {
+        batchRateLimited =
+          error instanceof CloudinaryAdminError && error.status === 429;
+        return new Set<string>();
+      });
       const submitted: typeof pendingBackups = [];
       const confirmBackup = ({
         resource,
@@ -914,15 +957,30 @@ async function handlePostDelete(
           });
         }
       };
-      for (let offset = 0; offset < pendingBackups.length; offset += 5) {
+      for (let offset = 0; offset < candidates.length; offset += 5) {
         await Promise.all(
-          pendingBackups.slice(offset, offset + 5).map(async (entry) => {
-            const { resource, assetKey } = entry;
-            if (unlinkFailures.has(assetKey)) return;
+          candidates.slice(offset, offset + 5).map(async (entry) => {
+            const { resource, assetKey, originalIsLive } = entry;
+            if (resource.asset_id && alreadyCleared.has(resource.asset_id)) {
+              confirmBackup(entry);
+              return;
+            }
+            if (batchRateLimited) {
+              backupVerificationPending.push({
+                publicId: resource.public_id,
+                resourceType: resource.resource_type,
+                assetKey,
+                message:
+                  "A cota do Cloudinary impediu a conferência do backup.",
+              });
+              return;
+            }
             try {
               const outcome = await requestCloudinaryBackupRemoval(
                 cloudinaryConfig,
                 resource,
+                undefined,
+                originalIsLive,
               );
               if (outcome === "absent") confirmBackup(entry);
               else submitted.push(entry);
@@ -943,6 +1001,8 @@ async function handlePostDelete(
       const verified = await verifyCloudinaryBackupsBatch(
         cloudinaryConfig,
         submitted.map(({ resource }) => resource),
+        undefined,
+        { liveAssetIds },
       ).catch(() => new Set<string>());
       for (const entry of submitted) {
         const { resource, assetKey } = entry;

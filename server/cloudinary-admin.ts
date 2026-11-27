@@ -756,6 +756,13 @@ export async function verifyCloudinaryBackupsBatch(
   config: CloudinaryAdminConfig,
   assets: readonly CloudinaryRawResource[],
   fetchImpl: typeof fetch = globalThis.fetch,
+  {
+    liveAssetIds = new Set<string>(),
+    requireIndexedAssetIds = new Set<string>(),
+  }: {
+    liveAssetIds?: ReadonlySet<string>;
+    requireIndexedAssetIds?: ReadonlySet<string>;
+  } = {},
 ): Promise<Set<string>> {
   if (assets.length === 0) return new Set();
   // Fixed-folder Cloudinary environments cannot search by asset ID.
@@ -796,9 +803,12 @@ export async function verifyCloudinaryBackupsBatch(
       const cleared = row
         ? row.public_id === asset.public_id &&
           row.resource_type === asset.resource_type &&
-          row.status === "deleted" &&
+          row.status ===
+            (liveAssetIds.has(asset.asset_id) ? "active" : "deleted") &&
           row.backup_bytes === 0
-        : !occupied.has(key(asset.public_id, asset.resource_type));
+        : !liveAssetIds.has(asset.asset_id) &&
+          !requireIndexedAssetIds.has(asset.asset_id) &&
+          !occupied.has(key(asset.public_id, asset.resource_type));
       return cleared ? [asset.asset_id] : [];
     }),
   );
@@ -809,6 +819,7 @@ export async function requestCloudinaryBackupRemoval(
   config: CloudinaryAdminConfig,
   resource: CloudinaryRawResource,
   fetchImpl: typeof fetch = globalThis.fetch,
+  originalIsLive = false,
 ): Promise<"absent" | "submitted"> {
   if (!resource.asset_id)
     throw new Error("Não foi possível identificar o backup.");
@@ -824,7 +835,7 @@ export async function requestCloudinaryBackupRemoval(
       cache: "no-store",
       signal: AbortSignal.timeout(8_000),
     });
-    if (response.status === 404) return null;
+    if (response.status === 404 && !originalIsLive) return null;
     if (!response.ok)
       throw new Error("Não foi possível consultar as versões do backup.");
     const payload = (await response.json()) as {
@@ -833,9 +844,12 @@ export async function requestCloudinaryBackupRemoval(
       backup?: unknown;
       versions?: unknown;
     };
-    if (payload.placeholder !== true || payload.asset_id !== resource.asset_id)
+    if (
+      (payload.placeholder === true) === originalIsLive ||
+      payload.asset_id !== resource.asset_id
+    )
       throw new Error(
-        "O identificador mudou ou o original ainda está ativo. O backup foi preservado.",
+        "O identificador ou o estado do original mudou. O backup foi preservado.",
       );
     return payload;
   }

@@ -687,7 +687,11 @@ describe("API /api/cloudinary-audit", () => {
       }
       if (url.pathname.endsWith("/search")) {
         searchReads += 1;
-        return Response.json({ resources: [], total_count: 0 });
+        return Response.json({
+          resources: backupCleared
+            ? []
+            : [{ ...media, status: "deleted", backup_bytes: 20 }],
+        });
       }
       if (url.pathname.endsWith("/resources/" + assetId)) {
         expect(url.searchParams.get("versions")).toBe("true");
@@ -742,7 +746,7 @@ describe("API /api/cloudinary-audit", () => {
       expect(operations).toEqual(["original", "backup"]);
       expect(versionReads).toBe(1);
       expect(batchReads).toBe(1);
-      expect(searchReads).toBe(1);
+      expect(searchReads).toBe(2);
       expect(fullCatalogReads).toBe(legacyReads);
       expect(confirmed.getBody()).toMatchObject({
         deletedCount: 1,
@@ -750,6 +754,95 @@ describe("API /api/cloudinary-audit", () => {
         backupsCleared: 1,
         failed: [],
         skipped: [{ publicId: restoredId, reason: "not_found" }],
+      });
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it("purges only orphan backups, skipping version reads for an asset with zero backup bytes", async () => {
+    const originalFetch = globalThis.fetch;
+    const rows = [
+      { id: "backed", path: "uzzina/work/has-backup", bytes: 30 },
+      { id: "zero", path: "uzzina/work/no-backup", bytes: 0 },
+      { id: "linked", path: "clinicadengo/2025/4/post-em-uso", bytes: 30 },
+    ].map(({ id, path, bytes }) => ({
+      asset_id: id,
+      public_id: path,
+      type: "upload",
+      resource_type: "image",
+      status: "active",
+      created_at: "2025-01-01T00:00:00Z",
+      backup_bytes: bytes,
+    }));
+    const calls: string[] = [];
+    let purged = false;
+    globalThis.fetch = (async (
+      input: RequestInfo | URL,
+      init?: RequestInit,
+    ) => {
+      const url = new URL(String(input));
+      if (url.pathname.endsWith("/by_asset_ids")) {
+        return Response.json({ resources: rows });
+      }
+      if (url.pathname.endsWith("/search")) {
+        const expression = url.searchParams.get("expression");
+        calls.push("search");
+        return Response.json({
+          resources: rows
+            .filter(({ public_id }) => expression?.includes(public_id))
+            .map((row) => (purged ? { ...row, backup_bytes: 0 } : row)),
+        });
+      }
+      if (
+        url.pathname.endsWith("/resources/backed") &&
+        url.searchParams.get("versions") === "true"
+      ) {
+        calls.push("versions");
+        return Response.json({
+          asset_id: "backed",
+          versions: [{ version_id: "v1" }],
+        });
+      }
+      if (
+        url.pathname.endsWith("/backup/backed") &&
+        init?.method === "DELETE"
+      ) {
+        calls.push("purge");
+        purged = true;
+        return Response.json({ deleted: ["v1"] });
+      }
+      calls.push("unexpected");
+      return Response.json({}, { status: 500 });
+    }) as typeof fetch;
+    try {
+      const request = createMockReqRes({
+        method: "POST",
+        headers: { authorization: "Bearer admin-token" },
+        body: {
+          backupOnlyWithOriginal: true,
+          permanentConfirmation: "EXCLUIR DEFINITIVAMENTE",
+          items: rows.map((row) => ({
+            publicId: row.public_id,
+            resourceType: row.resource_type,
+            assetKey: "dvfpxjskm/image/" + row.public_id,
+            providerAssetId: row.asset_id,
+          })),
+        },
+      });
+      await cloudinaryAuditHandler(request.req, request.res);
+      expect(request.getStatus()).toBe(200);
+      expect(calls).toEqual(["search", "versions", "purge", "search"]);
+      expect(request.getBody()).toMatchObject({
+        originalsAndDerivativesRemoved: 0,
+        backupsCleared: 2,
+        skipped: [
+          {
+            publicId: "clinicadengo/2025/4/post-em-uso",
+            reason: "now_referenced",
+          },
+        ],
+        failed: [],
       });
     } finally {
       globalThis.fetch = originalFetch;

@@ -99,6 +99,7 @@ export interface CloudinaryDeleteItemRequest {
 }
 
 export interface CloudinaryDeleteRequest {
+  backupOnlyWithOriginal?: boolean;
   items: CloudinaryDeleteItemRequest[];
   allowReferencedInActions?: boolean;
   permanentConfirmation?: typeof CLOUDINARY_PERMANENT_CONFIRMATION;

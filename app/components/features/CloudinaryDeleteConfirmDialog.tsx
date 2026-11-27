@@ -45,6 +45,7 @@ export function CloudinaryDeleteConfirmDialog({
   onConfirm,
 }: CloudinaryDeleteConfirmDialogProps) {
   const [typedConfirmation, setTypedConfirmation] = useState("");
+  const backupsOnly = selectedCount > 0 && backupOnlyCount === selectedCount;
   const confirmationWord = permanent
     ? CLOUDINARY_PERMANENT_CONFIRMATION
     : CONFIRMATION_WORD;
@@ -75,15 +76,18 @@ export function CloudinaryDeleteConfirmDialog({
       <form onSubmit={handleSubmit}>
         <PrismDialogHeader>
           <PrismDialogTitle>
-            {permanent ? "Excluir definitivamente" : "Excluir"} {selectedCount}{" "}
-            arquivo(s) do Cloudinary?
+            {backupsOnly
+              ? `Apagar só os backups de ${selectedCount} arquivo(s)?`
+              : `${permanent ? "Excluir definitivamente" : "Excluir"} ${selectedCount} arquivo(s) do Cloudinary?`}
           </PrismDialogTitle>
           <PrismDialogDescription>
-            {permanent
-              ? `O Cloudinary removerá os originais, derivados e versões de backup dos arquivos selecionados. A exclusão das versões impede a restauração. Originais selecionados: ${formattedTotalBytes}.`
-              : affectedActionsCount > 0
-                ? `Esta ação remove os arquivos selecionados definitivamente do Cloudinary, limpa os links correspondentes em ${affectedActionsCount} ação(ões) da UZZINA e libera cerca de ${formattedTotalBytes}.`
-                : `Esta ação remove os arquivos selecionados definitivamente do Cloudinary e libera cerca de ${formattedTotalBytes}.`}
+            {backupsOnly
+              ? "A limpeza remove as versões de backup dos arquivos sem vínculo. Os originais existentes e seus derivados ficam preservados."
+              : permanent
+                ? `O Cloudinary removerá os originais, derivados e versões de backup dos arquivos selecionados. A exclusão das versões impede a restauração. Originais selecionados: ${formattedTotalBytes}.`
+                : affectedActionsCount > 0
+                  ? `Esta ação remove os arquivos selecionados definitivamente do Cloudinary, limpa os links correspondentes em ${affectedActionsCount} ação(ões) da UZZINA e libera cerca de ${formattedTotalBytes}.`
+                  : `Esta ação remove os arquivos selecionados definitivamente do Cloudinary e libera cerca de ${formattedTotalBytes}.`}
           </PrismDialogDescription>
         </PrismDialogHeader>
 
@@ -108,10 +112,6 @@ export function CloudinaryDeleteConfirmDialog({
               pasta. Se algum arquivo tiver ganhado vínculo durante sua revisão,
               ele será pulado automaticamente e preservado.
             </div>
-          )}
-
-          {backupOnlyCount > 0 && (
-            <p>{backupOnlyCount} item(ns) desta seleção têm apenas backup.</p>
           )}
 
           {errorMessage && (
