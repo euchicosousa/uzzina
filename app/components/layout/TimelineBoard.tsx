@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { isToday } from "date-fns";
-import { FocusIcon, ScanIcon } from "lucide-react";
+import { FocusIcon, RotateCcwIcon, ScanIcon } from "lucide-react";
 import {
   useCallback,
   useEffect,
@@ -885,6 +885,23 @@ export function TimelineGrid({
                 variant="secondary"
               >
                 <ScanIcon />
+              </PrismButton>
+            </PrismTooltip>
+            <PrismTooltip label="Voltar à posição inicial">
+              <PrismButton
+                aria-label="Voltar à posição inicial"
+                isDisabled={
+                  viewportWidth === 0 ||
+                  (!showNowLine && initialMinute === undefined)
+                }
+                onPress={() => {
+                  setNowMinutes(getCurrentMinutesOfDay());
+                  setCamera({ scale: TIMELINE_PX_PER_MINUTE });
+                }}
+                size="icon-sm"
+                variant="secondary"
+              >
+                <RotateCcwIcon />
               </PrismButton>
             </PrismTooltip>
           </PrismButtonGroup>
