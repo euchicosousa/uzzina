@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Focusable } from "react-aria-components";
 import { useAppContext } from "~/contexts/AppContext";
 import type { Action } from "~/types";
 
@@ -320,11 +321,9 @@ export function ActionItem({
       />
     </div>
   );
-  return isDraggable ? (
-    <Draggable id={action.id}>{content}</Draggable>
-  ) : (
-    content
-  );
+  const card =
+    variant === VARIANT.timeline ? <Focusable>{content}</Focusable> : content;
+  return isDraggable ? <Draggable id={action.id}>{card}</Draggable> : card;
 }
 
 function ActionVariantRenderer(props: ActionVariantRendererProps) {
