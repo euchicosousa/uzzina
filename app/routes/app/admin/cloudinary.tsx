@@ -611,10 +611,11 @@ function AdminCloudinaryPage() {
   } = useQuery<CloudinaryAuditResponse, Error>({
     queryKey: ["cloudinary-audit", person.user_id],
     queryFn: () => getCloudinaryAudit(supabase),
+    enabled: false,
     retry: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    staleTime: 60_000,
+    staleTime: Infinity,
   });
 
   const currentDeletions =
@@ -938,7 +939,11 @@ function AdminCloudinaryPage() {
           }}
           variant="secondary"
         >
-          {isFetching ? "Analisando..." : "Atualizar análise"}
+          {isFetching
+            ? "Analisando..."
+            : data
+              ? "Atualizar análise"
+              : "Carregar análise"}
           <RefreshCwIcon className={isFetching ? "animate-spin" : undefined} />
         </PrismButton>
       </div>
@@ -953,6 +958,10 @@ function AdminCloudinaryPage() {
             Consultando catálogo do Cloudinary e referências no banco...
           </p>
         </div>
+      ) : !data && !error ? (
+        <p className="text-base text-secondary-foreground">
+          Carregar a análise consulta o catálogo do Cloudinary.
+        </p>
       ) : !data ? (
         <div className="flex flex-col gap-4">
           <PrismAlert variant={missingCredentials ? "warning" : "error"}>
@@ -1065,8 +1074,9 @@ function AdminCloudinaryPage() {
                   : "Lista atualizada com as exclusões confirmadas"}
               </PrismAlertTitle>
               <PrismAlertDescription>
-                Continue com os próximos lotes. Ao terminar, clique em Atualizar
-                análise para conferir o catálogo inteiro.
+                {pendingBackupKeys?.size
+                  ? "O Cloudinary ainda não confirmou todos os itens. Confira o resultado da limpeza antes de iniciar outro lote."
+                  : "Os totais já refletem as exclusões confirmadas nesta sessão."}
               </PrismAlertDescription>
             </PrismAlert>
           )}
@@ -1104,7 +1114,7 @@ function AdminCloudinaryPage() {
               </PrismAlertAction>
               <PrismAlertTitle>
                 {lastDeleteResult.originalsAndDerivativesRemoved === 0
-                  ? `Resultado dos backups (${lastDeleteResult.backupsCleared ?? 0} arquivo(s) sem versões)`
+                  ? `Resultado dos backups (${lastDeleteResult.backupsCleared ?? 0} arquivo(s) com limpeza confirmada)`
                   : `Resultado da limpeza (${lastDeleteResult.deletedCount} excluído(s) · ${formatBytes(lastDeleteResult.freedBytes)} em originais`}
                 {lastDeleteResult.unlinkedActionsCount > 0
                   ? ` · ${lastDeleteResult.unlinkedActionsCount} ação(ões) atualizada(s)`
@@ -1117,15 +1127,21 @@ function AdminCloudinaryPage() {
                   <p>
                     {lastDeleteResult.originalsAndDerivativesRemoved}{" "}
                     original(is) com derivados removidos.{" "}
-                    {lastDeleteResult.backupsCleared ?? 0} arquivo(s) sem
-                    versões de backup após conferência.
+                    {lastDeleteResult.backupsCleared ?? 0} arquivo(s) com
+                    limpeza de backup confirmada.
                   </p>
                 )}
                 {Boolean(
                   lastDeleteResult.backupVerificationPending?.length,
                 ) && (
                   <p>
-                    Pendente de conferência:{" "}
+                    {Array.from(
+                      new Set(
+                        lastDeleteResult.backupVerificationPending?.map(
+                          (item) => item.message,
+                        ),
+                      ),
+                    ).join(" ")}{" "}
                     {lastDeleteResult.backupVerificationPending
                       ?.slice(0, 3)
                       .map((item) => item.publicId)

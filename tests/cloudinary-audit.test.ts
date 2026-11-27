@@ -674,7 +674,7 @@ describe("API /api/cloudinary-audit", () => {
           ]);
           operations.push("backup");
           backupCleared = true;
-          return Response.json({ deleted: ["version-a"] });
+          return Response.json({ message: "ok" });
         }
         expect(url.pathname).toMatch(/\/resources$/);
         expect(url.searchParams.getAll("asset_ids[]")).toEqual([assetId]);
@@ -683,15 +683,21 @@ describe("API /api/cloudinary-audit", () => {
       }
       if (url.pathname.endsWith("/by_asset_ids")) {
         batchReads += 1;
-        return Response.json({ resources: [media, restored] });
+        return Response.json(
+          { resources: [media, restored] },
+          { headers: { "x-featureratelimit-remaining": "450" } },
+        );
       }
       if (url.pathname.endsWith("/search")) {
         searchReads += 1;
-        return Response.json({
-          resources: backupCleared
-            ? []
-            : [{ ...media, status: "deleted", backup_bytes: 20 }],
-        });
+        return Response.json(
+          {
+            resources: backupCleared
+              ? []
+              : [{ ...media, status: "deleted", backup_bytes: 20 }],
+          },
+          { headers: { "x-featureratelimit-remaining": "450" } },
+        );
       }
       if (url.pathname.endsWith("/resources/" + assetId)) {
         expect(url.searchParams.get("versions")).toBe("true");
@@ -760,94 +766,168 @@ describe("API /api/cloudinary-audit", () => {
     }
   });
 
-  it("purges only orphan backups, skipping version reads for an asset with zero backup bytes", async () => {
+  it("preserves originals when the reported balance cannot cover the selected backups", async () => {
     const originalFetch = globalThis.fetch;
-    const rows = [
-      { id: "backed", path: "uzzina/work/has-backup", bytes: 30 },
-      { id: "zero", path: "uzzina/work/no-backup", bytes: 0 },
-      { id: "linked", path: "clinicadengo/2025/4/post-em-uso", bytes: 30 },
-    ].map(({ id, path, bytes }) => ({
-      asset_id: id,
-      public_id: path,
+    const asset = {
       type: "upload",
+      public_id: "uzzina/content/orphan",
       resource_type: "image",
-      status: "active",
+      asset_id: "orphan",
       created_at: "2025-01-01T00:00:00Z",
-      backup_bytes: bytes,
-    }));
-    const calls: string[] = [];
-    let purged = false;
+    };
+    const reads: string[] = [];
     globalThis.fetch = (async (
       input: RequestInfo | URL,
       init?: RequestInit,
     ) => {
       const url = new URL(String(input));
-      if (url.pathname.endsWith("/by_asset_ids")) {
-        return Response.json({ resources: rows });
-      }
-      if (url.pathname.endsWith("/search")) {
-        const expression = url.searchParams.get("expression");
-        calls.push("search");
-        return Response.json({
-          resources: rows
-            .filter(({ public_id }) => expression?.includes(public_id))
-            .map((row) => (purged ? { ...row, backup_bytes: 0 } : row)),
-        });
-      }
-      if (
-        url.pathname.endsWith("/resources/backed") &&
-        url.searchParams.get("versions") === "true"
-      ) {
-        calls.push("versions");
-        return Response.json({
-          asset_id: "backed",
-          versions: [{ version_id: "v1" }],
-        });
-      }
-      if (
-        url.pathname.endsWith("/backup/backed") &&
-        init?.method === "DELETE"
-      ) {
-        calls.push("purge");
-        purged = true;
-        return Response.json({ deleted: ["v1"] });
-      }
-      calls.push("unexpected");
-      return Response.json({}, { status: 500 });
+      reads.push(init?.method ?? "GET");
+      return Response.json(
+        { resources: [{ ...asset, status: "active", backup_bytes: 500 }] },
+        { headers: { "x-featureratelimit-remaining": "12" } },
+      );
     }) as typeof fetch;
     try {
       const request = createMockReqRes({
         method: "POST",
         headers: { authorization: "Bearer admin-token" },
         body: {
-          backupOnlyWithOriginal: true,
+          items: [
+            {
+              publicId: asset.public_id,
+              resourceType: "image",
+              providerAssetId: asset.asset_id,
+              assetKey: "dvfpxjskm/image/" + asset.public_id,
+            },
+          ],
           permanentConfirmation: "EXCLUIR DEFINITIVAMENTE",
-          items: rows.map((row) => ({
-            publicId: row.public_id,
-            resourceType: row.resource_type,
-            assetKey: "dvfpxjskm/image/" + row.public_id,
-            providerAssetId: row.asset_id,
-          })),
         },
       });
       await cloudinaryAuditHandler(request.req, request.res);
-      expect(request.getStatus()).toBe(200);
-      expect(calls).toEqual(["search", "versions", "purge", "search"]);
+      expect(request.getStatus()).toBe(429);
       expect(request.getBody()).toMatchObject({
-        originalsAndDerivativesRemoved: 0,
-        backupsCleared: 2,
-        skipped: [
-          {
-            publicId: "clinicadengo/2025/4/post-em-uso",
-            reason: "now_referenced",
-          },
-        ],
-        failed: [],
+        code: "CLOUDINARY_CLEANUP_BUDGET",
       });
+      expect(reads).toEqual(["GET", "GET"]);
     } finally {
       globalThis.fetch = originalFetch;
     }
   });
+
+  it.each([
+    {
+      balance: 450,
+      receipt: true,
+      calls: ["search", "versions", "purge"],
+      cleared: 2,
+    },
+    {
+      balance: 450,
+      receipt: false,
+      calls: ["search", "versions", "purge", "search"],
+      cleared: 1,
+    },
+    { balance: 12, receipt: false, calls: ["search"], cleared: 1 },
+  ])(
+    "bounds version reads with provider balance $balance and explicit receipt $receipt",
+    async (scenario) => {
+      const originalFetch = globalThis.fetch;
+      const rows = [
+        { id: "backed", path: "uzzina/work/has-backup", bytes: 30 },
+        { id: "zero", path: "uzzina/work/no-backup", bytes: 0 },
+        { id: "linked", path: "clinicadengo/2025/4/post-em-uso", bytes: 30 },
+      ].map(({ id, path, bytes }) => ({
+        asset_id: id,
+        public_id: path,
+        type: "upload",
+        resource_type: "image",
+        status: "active",
+        created_at: "2025-01-01T00:00:00Z",
+        backup_bytes: bytes,
+      }));
+      const calls: string[] = [];
+      globalThis.fetch = (async (
+        input: RequestInfo | URL,
+        init?: RequestInit,
+      ) => {
+        const url = new URL(String(input));
+        if (url.pathname.endsWith("/by_asset_ids")) {
+          return Response.json({ resources: rows });
+        }
+        if (url.pathname.endsWith("/search")) {
+          const expression = url.searchParams.get("expression");
+          calls.push("search");
+          return Response.json(
+            {
+              resources: rows.filter(({ public_id }) =>
+                expression?.includes(public_id),
+              ),
+            },
+            {
+              headers: {
+                "x-featureratelimit-remaining": String(scenario.balance),
+              },
+            },
+          );
+        }
+        if (
+          url.pathname.endsWith("/resources/backed") &&
+          url.searchParams.get("versions") === "true"
+        ) {
+          calls.push("versions");
+          return Response.json({
+            asset_id: "backed",
+            versions: [{ version_id: "v1" }],
+          });
+        }
+        if (
+          url.pathname.endsWith("/backup/backed") &&
+          init?.method === "DELETE"
+        ) {
+          calls.push("purge");
+          return Response.json(
+            scenario.receipt ? { deleted: ["v1"] } : { message: "ok" },
+          );
+        }
+        calls.push("unexpected");
+        return Response.json({}, { status: 500 });
+      }) as typeof fetch;
+      try {
+        const request = createMockReqRes({
+          method: "POST",
+          headers: { authorization: "Bearer admin-token" },
+          body: {
+            backupOnlyWithOriginal: true,
+            permanentConfirmation: "EXCLUIR DEFINITIVAMENTE",
+            items: rows.map((row) => ({
+              publicId: row.public_id,
+              resourceType: row.resource_type,
+              assetKey: "dvfpxjskm/image/" + row.public_id,
+              providerAssetId: row.asset_id,
+            })),
+          },
+        });
+        await cloudinaryAuditHandler(request.req, request.res);
+        expect(request.getStatus()).toBe(200);
+        expect(calls).toEqual([...scenario.calls]);
+        expect(request.getBody()).toMatchObject({
+          originalsAndDerivativesRemoved: 0,
+          backupsCleared: scenario.cleared,
+          backupVerificationPending:
+            scenario.cleared === 2 ? [] : [{ publicId: rows[0].public_id }],
+          skipped: [
+            {
+              publicId: "clinicadengo/2025/4/post-em-uso",
+              reason: "now_referenced",
+            },
+          ],
+          failed: [],
+        });
+      } finally {
+        globalThis.fetch = originalFetch;
+      }
+    },
+  );
 
   it("rechecks database links, recent uploads, and origin before deleting, and handles partial failures", async () => {
     const originalFetch = globalThis.fetch;

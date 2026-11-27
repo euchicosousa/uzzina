@@ -26,6 +26,7 @@ import {
   buildCloudinaryAuditReport,
   canAssetUnlinkFromActions,
   classifyOrigin,
+  createCloudinaryCleanupBudget,
   readCloudinarySelection,
   requestCloudinaryBackupRemoval,
   verifyCloudinaryBackupsBatch,
@@ -534,6 +535,7 @@ async function handlePostDelete(
     parsed.data.allowReferencedInActions === true;
 
   try {
+    const cleanupBudget = createCloudinaryCleanupBudget();
     const [
       { referencedKeys, knownPartnerSlugs, referencesByKey, actionRowsById },
       catalog,
@@ -545,6 +547,7 @@ async function handlePostDelete(
             parsed.data.items.flatMap(({ providerAssetId }) =>
               providerAssetId ? [providerAssetId] : [],
             ),
+            cleanupBudget.fetch,
           )
         : listCloudinaryResources(cloudinaryConfig),
     ]);
@@ -733,6 +736,47 @@ async function handlePostDelete(
       });
     }
 
+    if (permanent) {
+      const groups = Object.values(eligibleByType).filter(
+        (items) => items.length,
+      );
+      const originals = groups.flat().flatMap(({ assetKey }) => {
+        const resource = catalogByKey.get(assetKey);
+        return resource ? [resource] : [];
+      });
+      // One deletion and one verification per media type, plus individual checks for "+" IDs.
+      const catalogCalls =
+        2 * groups.length +
+        originals.filter((asset) => asset.public_id.includes("+")).length;
+      if (
+        originals.length &&
+        !cleanupBudget.canFinishOriginals(originals.length, catalogCalls)
+      ) {
+        const liveAssetIds = new Set(
+          originals.flatMap((asset) =>
+            asset.asset_id ? [asset.asset_id] : [],
+          ),
+        );
+        const noBackup = await verifyCloudinaryBackupsBatch(
+          cloudinaryConfig,
+          originals,
+          cleanupBudget.fetch,
+          { liveAssetIds },
+        );
+        if (
+          !cleanupBudget.canFinishOriginals(
+            originals.length - noBackup.size,
+            catalogCalls,
+          )
+        ) {
+          return res.status(429).json({
+            code: "CLOUDINARY_CLEANUP_BUDGET",
+            error:
+              "O saldo da cota é insuficiente para concluir este lote. Os originais foram preservados. Selecione menos arquivos ou aguarde a renovação da cota.",
+          });
+        }
+      }
+    }
     const deleted: CloudinaryDeleteDeletedItem[] = [];
     const failed: CloudinaryDeleteFailedItem[] = [];
     const deletedItemsByKey = new Map<
@@ -923,11 +967,12 @@ async function handlePostDelete(
           originalIsLive && resource.asset_id ? [resource.asset_id] : [],
         ),
       );
-      let batchRateLimited = false;
+      const backupFetch = cleanupBudget.fetch;
+      let pauseReason: string | undefined;
       const alreadyCleared = await verifyCloudinaryBackupsBatch(
         cloudinaryConfig,
         candidates.map(({ resource }) => resource),
-        undefined,
+        backupFetch,
         {
           liveAssetIds,
           requireIndexedAssetIds: new Set(
@@ -937,8 +982,10 @@ async function handlePostDelete(
           ),
         },
       ).catch((error: unknown) => {
-        batchRateLimited =
-          error instanceof CloudinaryAdminError && error.status === 429;
+        pauseReason =
+          error instanceof CloudinaryAdminError
+            ? error.message
+            : "A conferência em lote ficou indisponível.";
         return new Set<string>();
       });
       const submitted: typeof pendingBackups = [];
@@ -965,13 +1012,12 @@ async function handlePostDelete(
               confirmBackup(entry);
               return;
             }
-            if (batchRateLimited) {
+            if (pauseReason) {
               backupVerificationPending.push({
                 publicId: resource.public_id,
                 resourceType: resource.resource_type,
                 assetKey,
-                message:
-                  "A cota do Cloudinary impediu a conferência do backup.",
+                message: pauseReason,
               });
               return;
             }
@@ -979,12 +1025,25 @@ async function handlePostDelete(
               const outcome = await requestCloudinaryBackupRemoval(
                 cloudinaryConfig,
                 resource,
-                undefined,
+                backupFetch,
                 originalIsLive,
               );
-              if (outcome === "absent") confirmBackup(entry);
+              if (outcome !== "submitted") confirmBackup(entry);
               else submitted.push(entry);
             } catch (error) {
+              if (
+                error instanceof CloudinaryAdminError &&
+                error.status === 429
+              ) {
+                pauseReason = error.message;
+                backupVerificationPending.push({
+                  publicId: resource.public_id,
+                  resourceType: resource.resource_type,
+                  assetKey,
+                  message: error.message,
+                });
+                return;
+              }
               failed.push({
                 publicId: resource.public_id,
                 resourceType: resource.resource_type,
@@ -1001,20 +1060,30 @@ async function handlePostDelete(
       const verified = await verifyCloudinaryBackupsBatch(
         cloudinaryConfig,
         submitted.map(({ resource }) => resource),
-        undefined,
+        backupFetch,
         { liveAssetIds },
-      ).catch(() => new Set<string>());
+      ).catch((error: unknown) => {
+        pauseReason =
+          error instanceof CloudinaryAdminError
+            ? error.message
+            : "A conferência em lote ficou indisponível.";
+        return new Set<string>();
+      });
       for (const entry of submitted) {
         const { resource, assetKey } = entry;
-        if (resource.asset_id && verified.has(resource.asset_id))
+        const assetId = resource.asset_id;
+        if (assetId && verified.has(assetId)) {
           confirmBackup(entry);
-        else
-          backupVerificationPending.push({
-            publicId: resource.public_id,
-            resourceType: resource.resource_type,
-            assetKey,
-            message: "Pendente de conferência no Cloudinary.",
-          });
+          continue;
+        }
+        backupVerificationPending.push({
+          publicId: resource.public_id,
+          resourceType: resource.resource_type,
+          assetKey,
+          message:
+            pauseReason ??
+            "O índice do Cloudinary ainda não confirmou a exclusão das versões.",
+        });
       }
     }
     const result: CloudinaryDeleteResponse = {

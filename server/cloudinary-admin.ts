@@ -6,6 +6,11 @@ import type {
   CloudinaryResourceType,
 } from "../app/lib/cloudinary-audit-contract.js";
 
+type CloudinaryFetch = (
+  input: RequestInfo | URL,
+  init?: RequestInit,
+) => Promise<Response>;
+
 const RESOURCE_TYPES: CloudinaryResourceType[] = ["image", "video", "raw"];
 const MAX_RESULTS_PER_PAGE = 500;
 const MAX_PAGES_PER_TYPE = 40;
@@ -166,7 +171,7 @@ function parseRawResource(
 
 export async function listCloudinaryResources(
   config: CloudinaryAdminConfig,
-  fetchImpl: typeof fetch = globalThis.fetch,
+  fetchImpl: CloudinaryFetch = globalThis.fetch,
 ): Promise<{
   resources: CloudinaryRawResource[];
   backupResources: CloudinaryRawResource[];
@@ -434,7 +439,7 @@ async function verifyCloudinaryDeletion(
   url: URL,
   authorization: string,
   ids: readonly string[],
-  fetchImpl: typeof fetch,
+  fetchImpl: CloudinaryFetch,
 ): Promise<Set<string>> {
   const options = {
     cache: "no-store" as const,
@@ -501,7 +506,7 @@ export async function deleteCloudinaryResourcesByType(
   config: CloudinaryAdminConfig,
   resourceType: CloudinaryResourceType,
   publicIds: readonly string[],
-  fetchImpl: typeof fetch = globalThis.fetch,
+  fetchImpl: CloudinaryFetch = globalThis.fetch,
   assetIds?: ReadonlyMap<string, string>,
 ): Promise<{
   deletedIds: string[];
@@ -633,7 +638,7 @@ async function readExactResourceRows(
   config: CloudinaryAdminConfig,
   url: URL,
   ids: readonly string[],
-  fetchImpl: typeof fetch,
+  fetchImpl: CloudinaryFetch,
   matches?: (row: Record<string, unknown>) => boolean,
 ) {
   const response = await fetchImpl(
@@ -696,7 +701,7 @@ async function readExactResourceRows(
 async function readResourcesByAssetIds(
   config: CloudinaryAdminConfig,
   assetIds: readonly string[],
-  fetchImpl: typeof fetch,
+  fetchImpl: CloudinaryFetch,
 ) {
   const ids = [...new Set(assetIds)];
   const rows = new Map<string, Record<string, unknown>>();
@@ -731,7 +736,7 @@ async function readResourcesByAssetIds(
 export async function readCloudinarySelection(
   config: CloudinaryAdminConfig,
   assetIds: readonly string[],
-  fetchImpl: typeof fetch = globalThis.fetch,
+  fetchImpl: CloudinaryFetch = globalThis.fetch,
 ) {
   const rows = await readResourcesByAssetIds(config, assetIds, fetchImpl);
   const resources: CloudinaryRawResource[] = [];
@@ -755,7 +760,7 @@ export async function readCloudinarySelection(
 export async function verifyCloudinaryBackupsBatch(
   config: CloudinaryAdminConfig,
   assets: readonly CloudinaryRawResource[],
-  fetchImpl: typeof fetch = globalThis.fetch,
+  fetchImpl: CloudinaryFetch = globalThis.fetch,
   {
     liveAssetIds = new Set<string>(),
     requireIndexedAssetIds = new Set<string>(),
@@ -814,83 +819,152 @@ export async function verifyCloudinaryBackupsBatch(
   );
 }
 
-// Submit backup removal for the exact asset. Positive removals are verified as a batch.
+// A versions lookup costs 11 Admin API units. Leave room for its deletion,
+// the batch verification, and the eight pages in the last production audit.
+export function createCloudinaryCleanupBudget() {
+  const versionLookupAndDelete = 11 + 1;
+  const auditAndVerification = 8 + 1;
+  let remaining: number | undefined;
+  const fetchWithBudget: CloudinaryFetch = async (input, init) => {
+    const url = new URL(input instanceof Request ? input.url : String(input));
+    const versions = url.searchParams.get("versions") === "true";
+    // Reserve both the lookup and its possible DELETE before starting a file.
+    if (
+      remaining === 0 ||
+      (versions &&
+        (remaining ?? 0) < versionLookupAndDelete + auditAndVerification)
+    ) {
+      throw new CloudinaryAdminError(
+        "Limpeza pausada para preservar a cota do Cloudinary.",
+        429,
+        "CLOUDINARY_RATE_LIMITED",
+      );
+    }
+    if (remaining !== undefined && init?.method !== "DELETE") {
+      remaining = Math.max(
+        0,
+        remaining - (versions ? versionLookupAndDelete : 1),
+      );
+    }
+    const response = await fetch(input, init);
+    const available = response.headers.get("x-featureratelimit-remaining");
+    if (response.status === 420 || response.status === 429) {
+      remaining = 0;
+      throw new CloudinaryAdminError(
+        "Cota do Cloudinary atingida.",
+        429,
+        "CLOUDINARY_RATE_LIMITED",
+      );
+    }
+    if (available !== null && /^\d+$/.test(available)) {
+      remaining = Math.min(remaining ?? Infinity, Number(available));
+    }
+    return response;
+  };
+  return {
+    fetch: fetchWithBudget,
+    canFinishOriginals(backupCount: number, catalogCalls: number) {
+      return (
+        remaining !== undefined &&
+        remaining >=
+          backupCount * versionLookupAndDelete +
+            catalogCalls +
+            1 +
+            auditAndVerification
+      );
+    },
+  };
+}
+
+async function readCloudinaryBackupVersionIds(
+  config: CloudinaryAdminConfig,
+  assetId: string,
+  originalIsLive: boolean,
+  fetchImpl: CloudinaryFetch = globalThis.fetch,
+): Promise<string[]> {
+  const url = new URL(
+    `${cloudinaryResourcesUrl(config)}/${encodeURIComponent(assetId)}`,
+  );
+  url.searchParams.set("versions", "true");
+  const response = await fetchImpl(
+    url.toString(),
+    cloudinaryReadOptions(config),
+  );
+  if (response.status === 404 && !originalIsLive) return [];
+  if (response.status === 420 || response.status === 429)
+    throw new CloudinaryAdminError(
+      "A cota do Cloudinary impediu a conferência do backup.",
+      429,
+      "CLOUDINARY_RATE_LIMITED",
+    );
+  if (!response.ok)
+    throw new Error("Não foi possível consultar as versões do backup.");
+  const payload = (await response.json()) as {
+    placeholder?: unknown;
+    asset_id?: unknown;
+    backup?: unknown;
+    versions?: unknown;
+  };
+  if (
+    (payload.placeholder === true) === originalIsLive ||
+    payload.asset_id !== assetId
+  )
+    throw new Error(
+      "O identificador ou o estado do original mudou. O backup foi preservado.",
+    );
+  if (payload.backup === false && payload.versions === undefined) return [];
+  if (!Array.isArray(payload.versions))
+    throw new Error("O Cloudinary não retornou a lista de versões do backup.");
+  return payload.versions.map((version: unknown) => {
+    if (
+      !version ||
+      typeof version !== "object" ||
+      !("version_id" in version) ||
+      typeof version.version_id !== "string" ||
+      !version.version_id
+    )
+      throw new Error("Uma versão de backup não pôde ser identificada.");
+    return version.version_id;
+  });
+}
+
+// Submit backup removal for the exact asset. Positive removals are verified separately.
 export async function requestCloudinaryBackupRemoval(
   config: CloudinaryAdminConfig,
   resource: CloudinaryRawResource,
-  fetchImpl: typeof fetch = globalThis.fetch,
+  fetchImpl: CloudinaryFetch = globalThis.fetch,
   originalIsLive = false,
-): Promise<"absent" | "submitted"> {
+): Promise<"absent" | "confirmed" | "submitted"> {
   if (!resource.asset_id)
     throw new Error("Não foi possível identificar o backup.");
-  const base = `https://api.cloudinary.com/v1_1/${encodeURIComponent(config.cloudName)}/resources`;
-  const headers = {
-    Authorization: `Basic ${Buffer.from(`${config.apiKey}:${config.apiSecret}`).toString("base64")}`,
-    "Cache-Control": "no-cache",
-  };
-  const detailsUrl = `${base}/${encodeURIComponent(resource.asset_id)}`;
-  async function readDetails() {
-    const response = await fetchImpl(detailsUrl + "?versions=true", {
-      headers,
-      cache: "no-store",
-      signal: AbortSignal.timeout(8_000),
-    });
-    if (response.status === 404 && !originalIsLive) return null;
-    if (!response.ok)
-      throw new Error("Não foi possível consultar as versões do backup.");
-    const payload = (await response.json()) as {
-      placeholder?: unknown;
-      asset_id?: unknown;
-      backup?: unknown;
-      versions?: unknown;
-    };
-    if (
-      (payload.placeholder === true) === originalIsLive ||
-      payload.asset_id !== resource.asset_id
-    )
-      throw new Error(
-        "O identificador ou o estado do original mudou. O backup foi preservado.",
-      );
-    return payload;
-  }
-  async function readVersions() {
-    const payload = await readDetails();
-    if (
-      !payload ||
-      (payload.backup === false && payload.versions === undefined)
-    )
-      return [];
-    if (!Array.isArray(payload.versions))
-      throw new Error(
-        "O Cloudinary não retornou a lista de versões do backup.",
-      );
-    const ids: string[] = [];
-    for (const version of payload.versions) {
-      if (
-        !version ||
-        typeof version !== "object" ||
-        !("version_id" in version) ||
-        typeof version.version_id !== "string" ||
-        !version.version_id
-      )
-        throw new Error("Uma versão de backup não pôde ser identificada.");
-      ids.push(version.version_id);
-    }
-    return ids;
-  }
-  const versions = await readVersions();
+  const versions = await readCloudinaryBackupVersionIds(
+    config,
+    resource.asset_id,
+    originalIsLive,
+    fetchImpl,
+  );
   if (versions.length === 0) return "absent";
   const url = new URL(
-    `${base}/backup/${encodeURIComponent(resource.asset_id)}`,
+    `${cloudinaryResourcesUrl(config)}/backup/${encodeURIComponent(resource.asset_id)}`,
   );
   for (const version of versions)
     url.searchParams.append("version_ids[]", version);
   const response = await fetchImpl(url.toString(), {
+    ...cloudinaryReadOptions(config),
     method: "DELETE",
-    headers,
-    signal: AbortSignal.timeout(8_000),
   });
   if (!response.ok)
     throw new Error("O Cloudinary não confirmou a exclusão do backup.");
+  const receipt: unknown = await response.json().catch(() => null);
+  if (
+    response.status === 200 &&
+    receipt &&
+    typeof receipt === "object" &&
+    "deleted" in receipt &&
+    Array.isArray(receipt.deleted)
+  ) {
+    const deleted = new Set<unknown>(receipt.deleted);
+    if (versions.every((version) => deleted.has(version))) return "confirmed";
+  }
   return "submitted";
 }
