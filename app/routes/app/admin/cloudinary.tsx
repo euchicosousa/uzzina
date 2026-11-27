@@ -1283,7 +1283,7 @@ function AdminCloudinaryPage() {
           >
             <PrismTabList
               aria-label="Categorias da auditoria do Cloudinary"
-              className="h-auto flex-wrap"
+              className="overflow-x-auto overscroll-x-contain text-sm [&>[role=tab]]:shrink-0 [&>[role=tab]]:px-3"
             >
               <PrismTab id="orphans">
                 Candidatos sem vínculo ({filteredOrphans.length})
