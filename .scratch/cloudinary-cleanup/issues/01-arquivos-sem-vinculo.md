@@ -174,3 +174,7 @@ da Clínica Dengo; os do outro prefixo aparecem em ações com o identificador
 histórico `ochicosousa`. Backups remanescentes: 9, 12, 47 e 112,
 respectivamente. Consulta somente de leitura. O proprietário dispensou a restauração
 desses ativos nessa rodada.
+
+## Teste do painel em 27/11/2026
+
+Às 12h35, dois lotes confirmaram a exclusão de 20 e 15 originais com seus derivados. Às 12h36, a rodada de backups não removeu originais e registrou zero limpezas de backup confirmadas. O painel acumulou 55 backups pendentes de conferência. Os avisos registraram indisponibilidade da conferência em lote e pausa para preservar a cota. As capturas deixam em aberto o estado dos backups no provedor.

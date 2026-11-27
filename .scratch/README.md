@@ -4,17 +4,13 @@ Comece aqui para encontrar o próximo passo, a autorização e a ficha correspon
 
 ## Pendências do piloto de Instagram
 
-Em 26/11/2026 o proprietário confirmou várias datas, duplicação sem agendamentos e calendário. A programação de Reel foi reaberta após novo relato de falha. A publicação imediata de Reel funcionou na segunda tentativa. O diagnóstico já publicado fica disponível se a falha voltar.
+Em 26/11/2026 o proprietário confirmou várias datas, duplicação sem agendamentos e calendário. O proprietário também confirmou em produção que o Reel agendado funcionou após a correção da preparação. A publicação imediata de Reel funcionou na segunda tentativa. O diagnóstico já publicado fica disponível se a falha voltar.
 
-| Entrega | Situação e próxima ação | Responsável |
-| --- | --- | --- |
-| [Desconectar o Instagram em Administração → Parceiros](instagram-composio/issues/02-conectar-perfil.md) | O Composio recusou a revogação. As conexões atuais ainda retornam perfis ativos. Conferir em qual ação a seção Publicação sumiu e diagnosticar a recusa. | Codex |
-| [Agendar Reel em Ação → Instagram → Publicação](instagram-composio/issues/04-programar-stories.md) | O Reel das 19h02 foi agendado corretamente e o Instagram criou o contêiner. O executor desistiu na preparação e a leitura posterior encontrou o vídeo pronto. Proprietário autorizou aguardar até cinco minutos com o mesmo contêiner. Falta validar um Reel programado no app publicado. | Codex |
-| Progresso individual em Ação → Essencial → Arquivos → Importar por link | Importação de quatro arquivos e contagem por lote aprovadas. O preenchimento parte da esquerda, desacelera e aguarda a resposta antes do fim do trilho. Falta conferir no app publicado. | Proprietário |
+A desconexão e a reconexão com um perfil real foram aprovadas pelo proprietário em produção em 27/11/2026, no commit `3876e0fc`. [Registro do aceite](instagram-composio/issues/02-conectar-perfil.md).
 
-## Investigação em produção
+## Cloudinary em produção
 
-- [Limite de consultas em Administração → Cloudinary](cloudinary-cleanup/issues/01-arquivos-sem-vinculo.md#limite-de-consultas-da-auditoria--26112026) — auditoria bloqueada pela cota horária após a validação da exclusão definitiva. A redução de consultas está publicada. A cota voltou a acabar após poucas exclusões. O proprietário manteve a remoção conjunta de original, derivados e backups.
+- Em 27/11/2026, as capturas do painel registraram a remoção de 35 originais com derivados. Os avisos mostraram 55 backups pendentes e zero limpezas de backup confirmadas. A investigação sobre os backups aguarda retomada. [Registro do teste](cloudinary-cleanup/issues/01-arquivos-sem-vinculo.md#teste-do-painel-em-27112026)
 
 ## Referências fora da fila de execução
 
