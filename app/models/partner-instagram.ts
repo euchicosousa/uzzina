@@ -91,8 +91,8 @@ export async function finishPartnerInstagramConnection(
 export async function disconnectPartnerInstagram(
   supabase: SupabaseClient<Database>,
   partnerSlug: string,
-): Promise<void> {
-  await requestPartnerInstagram(supabase, {
+): Promise<{ method: "revoked" | "disabled" }> {
+  return requestPartnerInstagram(supabase, {
     method: "DELETE",
     body: { partnerSlug },
   });

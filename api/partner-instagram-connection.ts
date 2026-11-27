@@ -12,7 +12,7 @@ import {
   createInstagramConnectLink,
   getInstagramConnectedAccount,
   getInstagramProfile,
-  revokeInstagramConnectedAccount,
+  disconnectInstagramConnectedAccount,
   type InstagramProfile,
 } from "../server/composio-instagram.js";
 import { getComposioConfiguration } from "../server/composio-config.js";
@@ -748,12 +748,12 @@ async function handleDelete(
     res.status(502).json({ error: "Não foi possível verificar a conexão." });
     return;
   }
-  const expectedUserId = makePartnerComposioUserId(partner.id);
-  const observation = parseInstagramAccountObservation(account, {
+  const expected = {
     connectedAccountId: row.connected_account_id,
-    composioUserId: expectedUserId,
+    composioUserId: makePartnerComposioUserId(partner.id),
     authConfigId,
-  });
+  };
+  const observation = parseInstagramAccountObservation(account, expected);
   if (!observation) {
     res
       .status(409)
@@ -761,41 +761,25 @@ async function handleDelete(
     return;
   }
 
-  if (observation.status !== "REVOKED") {
-    let revoked: boolean;
-    try {
-      revoked = await revokeInstagramConnectedAccount(
-        apiKey,
-        row.connected_account_id,
-      );
-    } catch (error) {
-      if (
-        error instanceof ComposioInstagramError &&
-        (error.status === 400 || error.status === 409)
-      ) {
-        res.status(409).json({
-          error:
-            "O Composio não permite revogar este estado. A conexão foi mantida.",
-        });
-        return;
-      }
-      res.status(502).json({
-        error: "O Composio não confirmou a revogação. A conexão foi mantida.",
-      });
-      return;
-    }
-    if (!revoked) {
-      res.status(502).json({
-        error: "O Composio não confirmou a revogação. A conexão foi mantida.",
-      });
-      return;
-    }
+  let disconnectMethod: "revoked" | "disabled";
+  try {
+    disconnectMethod = await disconnectInstagramConnectedAccount(
+      apiKey,
+      expected,
+      observation.status,
+    );
+  } catch {
+    res.status(502).json({
+      error:
+        "Não foi possível confirmar a desconexão no Composio. Atualize a tela e tente novamente.",
+    });
+    return;
   }
 
   const { data: disconnected, error: updateError } = await client
     .from("partner_instagram_connections")
     .update({
-      status: "revoked",
+      status: disconnectMethod === "revoked" ? "revoked" : "attention",
       is_current: false,
       updated_at: new Date().toISOString(),
     })
@@ -807,12 +791,12 @@ async function handleDelete(
   if (updateError || !disconnected) {
     res.status(503).json({
       error:
-        "A revogação ocorreu, mas não foi possível atualizar o cadastro. Atualize a tela.",
+        "O Composio confirmou a desconexão. Atualize a tela para tentar concluir a alteração no cadastro.",
     });
     return;
   }
 
-  res.status(200).json({ disconnected: true });
+  res.status(200).json({ disconnected: true, method: disconnectMethod });
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {

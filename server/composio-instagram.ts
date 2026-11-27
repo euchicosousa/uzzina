@@ -1,4 +1,7 @@
-import { parsePartnerInstagramLink } from "../app/lib/partner-instagram-contract.js";
+import {
+  parseInstagramAccountObservation,
+  parsePartnerInstagramLink,
+} from "../app/lib/partner-instagram-contract.js";
 
 const COMPOSIO_API = "https://backend.composio.dev/api/v3.1";
 
@@ -187,7 +190,7 @@ function optionalHttpsUrl(value: unknown, maxLength: number): string | null {
   }
 }
 
-export async function revokeInstagramConnectedAccount(
+async function revokeInstagramConnectedAccount(
   apiKey: string,
   connectedAccountId: string,
 ): Promise<boolean> {
@@ -207,4 +210,40 @@ export async function revokeInstagramConnectedAccount(
     "status" in account &&
     account.status === "REVOKED"
   );
+}
+
+export async function disconnectInstagramConnectedAccount(
+  apiKey: string,
+  expected: Parameters<typeof parseInstagramAccountObservation>[1],
+  currentStatus: string,
+): Promise<"revoked" | "disabled"> {
+  if (currentStatus === "REVOKED") return "revoked";
+  if (currentStatus === "INACTIVE") return "disabled";
+
+  const { connectedAccountId } = expected;
+  try {
+    if (await revokeInstagramConnectedAccount(apiKey, connectedAccountId))
+      return "revoked";
+    throw new ComposioInstagramError(502);
+  } catch (error) {
+    if (
+      !(error instanceof ComposioInstagramError) ||
+      (error.status !== 400 && error.status !== 409)
+    )
+      throw error;
+  }
+
+  await requestComposio(
+    apiKey,
+    `/connected_accounts/${encodeURIComponent(connectedAccountId)}/status`,
+    { method: "PATCH", body: JSON.stringify({ enabled: false }) },
+  );
+  const account = await getInstagramConnectedAccount(
+    apiKey,
+    connectedAccountId,
+  );
+  const observation = parseInstagramAccountObservation(account, expected);
+  if (observation?.status === "REVOKED") return "revoked";
+  if (observation?.status === "INACTIVE") return "disabled";
+  throw new ComposioInstagramError(502);
 }

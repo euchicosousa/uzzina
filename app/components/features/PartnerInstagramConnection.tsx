@@ -132,8 +132,12 @@ export function PartnerInstagramConnection({
 
   const disconnectMutation = useMutation({
     mutationFn: () => disconnectPartnerInstagram(supabase, partnerSlug),
-    onSuccess: async () => {
-      toast.success("Perfil desconectado.");
+    onSuccess: async ({ method }) => {
+      toast.success(
+        method === "disabled"
+          ? "Perfil desconectado. A conexão foi desativada no Composio."
+          : "Perfil desconectado.",
+      );
       await queryClient.invalidateQueries({ queryKey: connectionKey });
     },
     onError: (error) =>
@@ -352,8 +356,8 @@ export function PartnerInstagramConnection({
                         </PrismDialogTitle>
                         <PrismDialogDescription className="text-base">
                           O Composio tentará revogar o acesso de{" "}
-                          {connection.profileUsername}. Se a revogação não for
-                          confirmada, o cadastro continuará conectado.
+                          {connection.profileUsername}. Se a revogação estiver
+                          indisponível, a conexão será desativada no Composio.
                         </PrismDialogDescription>
                       </PrismDialogHeader>
                       <PrismDialogBody className="text-base">
